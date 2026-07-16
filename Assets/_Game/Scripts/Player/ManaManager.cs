@@ -5,8 +5,12 @@ using UnityEngine;
 
 namespace CindarsHope.Player
 {
+    // arch: quebra do par mutuo Core|Player (2026-07-15) — implementa IManaRuntime (Foundation) para
+    // que GameBootstrap resolva/chame Initialize() sem nomear CindarsHope.Player; o campo
+    // GameBootstrap._manaManager virou MonoBehaviour, resolvido via cast local
+    // (_manaManager as IManaRuntime).
     [DisallowMultipleComponent]
-    public class ManaManager : MonoBehaviour
+    public class ManaManager : MonoBehaviour, IManaRuntime
     {
         /// <summary>
         /// Valor canonico da regeneracao base de mana (MP/s). Fonte unica: o field serializado usa

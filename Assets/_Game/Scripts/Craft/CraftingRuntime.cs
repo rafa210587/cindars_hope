@@ -67,9 +67,11 @@ namespace CindarsHope.Craft
             Initialize();
         }
 
-        public void RebindStaminaManager(StaminaManager staminaManager)
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — aceita MonoBehaviour; cast
+        // para o tipo concreto aqui dentro.
+        public void RebindStaminaManager(MonoBehaviour staminaManagerRef)
         {
-            _staminaManager = staminaManager;
+            _staminaManager = staminaManagerRef as StaminaManager;
         }
 
         public CraftingStation GetOrCreateStation(string stationInstanceId, WorkshopType stationType)

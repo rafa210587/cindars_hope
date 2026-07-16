@@ -130,7 +130,7 @@ namespace CindarsHope.Player.Death
         private void CompleteRespawnAtFountain(IAnyaFountainRespawnPoint fountain)
         {
             var bootstrap = GameBootstrap.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
             if (playerManager == null)
             {
                 Debug.LogError("[AnyaFountainRespawnFlow] PlayerManager indisponivel; respawn na Fonte abortado.");
@@ -139,8 +139,8 @@ namespace CindarsHope.Player.Death
 
             var respawnService = new AnyaRespawnService(
                 playerManager,
-                bootstrap.StaminaManager,
-                bootstrap.ManaManager,
+                bootstrap.StaminaManager as CindarsHope.Player.StaminaManager,
+                bootstrap.ManaManager as CindarsHope.Player.ManaManager,
                 fountain.RespawnPoint);
 
             respawnService.RespawnAtAnyaFountain();
@@ -167,7 +167,7 @@ namespace CindarsHope.Player.Death
         private static void ReviveInPlaceFallback()
         {
             var bootstrap = GameBootstrap.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
             if (playerManager != null)
             {
                 playerManager.SetHP(playerManager.MaxHP);

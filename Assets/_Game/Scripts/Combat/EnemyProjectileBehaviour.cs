@@ -95,7 +95,7 @@ namespace CindarsHope.Combat
             }
 
             _hasHit = true;
-            var playerManager = GameBootstrap.Instance?.PlayerManager;
+            var playerManager = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
             if (playerManager != null)
             {
                 // F03/F18: redução central por Defense + resistência do tipo de dano.

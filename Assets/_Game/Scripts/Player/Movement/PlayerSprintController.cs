@@ -111,7 +111,7 @@ namespace CindarsHope.Player.Movement
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap != null && _staminaManager == null)
             {
-                _staminaManager = bootstrap.StaminaManager;
+                _staminaManager = bootstrap.StaminaManager as StaminaManager;
             }
         }
 

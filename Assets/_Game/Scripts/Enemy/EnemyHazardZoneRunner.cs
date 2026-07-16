@@ -77,7 +77,7 @@ namespace CindarsHope.Enemy
 
         private void ApplyTick()
         {
-            var playerManager = GameBootstrap.Instance?.PlayerManager;
+            var playerManager = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
             if (playerManager == null)
             {
                 return;

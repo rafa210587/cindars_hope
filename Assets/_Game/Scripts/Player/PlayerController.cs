@@ -244,7 +244,7 @@ namespace CindarsHope.Player
 
         private float GetHungerMoveSpeedModifier()
         {
-            var hungerManager = GameBootstrap.Instance != null ? GameBootstrap.Instance.HungerManager : null;
+            var hungerManager = GameBootstrap.Instance != null ? GameBootstrap.Instance.HungerManager as HungerManager : null;
             if (hungerManager == null)
             {
                 return 1f;

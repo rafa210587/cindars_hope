@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CindarsHope.Player
 {
     [DisallowMultipleComponent]
-    public class HungerManager : MonoBehaviour
+    public class HungerManager : MonoBehaviour, CindarsHope.Foundation.IHungerRuntime
     {
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private PlayerManager _playerManager;
@@ -27,6 +27,12 @@ namespace CindarsHope.Player
         public int MaxHunger { get; private set; } = 1;
         public bool IsEmpty => CurrentHunger <= 0;
         public bool IsCritical => CurrentHunger > 0 && CurrentHunger <= GetCriticalThreshold();
+
+        // arch: quebra do par mutuo Core|Player (2026-07-15) — implementacao explicita da porta
+        // IHungerRuntime.Initialize(object): o campo GameBootstrap._hungerManager virou MonoBehaviour
+        // (Core nao pode mais nomear HungerManager); Core resolve esta porta via cast local
+        // (_hungerManager as IHungerRuntime) so para a chamada de lifecycle.
+        void CindarsHope.Foundation.IHungerRuntime.Initialize(object playerData) => Initialize(playerData as PlayerDataSO);
 
         public void Initialize(PlayerDataSO playerData)
         {

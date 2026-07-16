@@ -8,12 +8,14 @@ using UnityEngine;
 namespace CindarsHope.Player.Progression
 {
     [DisallowMultipleComponent]
-    public class PlayerProgressionManager : MonoBehaviour
+    public class PlayerProgressionManager : MonoBehaviour, IPlayerProgressionRuntime
     {
         // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
         // self-registro estatico (molde Craft/Economy/Skills/Equipment) para o GameBootstrap parar
         // de segurar esta referencia serializada. Nao proibido pelo ratchet GlobalGoldAccess (que so
-        // cobre PlayerManager/GoldManager/EconomyManager).
+        // cobre PlayerManager/GoldManager/EconomyManager). Registrado tambem sob a porta marcadora
+        // IPlayerProgressionRuntime (Foundation, 2026-07-15): GameBootstrap so expoe a referencia
+        // (nao chama nenhum metodo de dominio), entao a porta nao precisa de membros.
         public static PlayerProgressionManager Instance { get; private set; }
 
         [SerializeField] private PlayerProgressionSaveData _state = new PlayerProgressionSaveData();
@@ -40,6 +42,7 @@ namespace CindarsHope.Player.Progression
 
             Instance = this;
             NormalizeState();
+            CindarsHope.Foundation.DomainManagerRegistry.Register<IPlayerProgressionRuntime>(this);
         }
 
         private void OnDestroy()
@@ -48,6 +51,8 @@ namespace CindarsHope.Player.Progression
             {
                 Instance = null;
             }
+
+            CindarsHope.Foundation.DomainManagerRegistry.Unregister<IPlayerProgressionRuntime>(this);
         }
 
         private void OnEnable()

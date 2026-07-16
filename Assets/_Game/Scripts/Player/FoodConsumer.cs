@@ -54,8 +54,8 @@ namespace CindarsHope.Player
                     continue;
                 }
 
-                var staminaManager = _staminaManager ?? GameBootstrap.Instance?.StaminaManager;
-                var statusManager = _statusEffectManager ?? GameBootstrap.Instance?.StatusEffectManager;
+                var staminaManager = _staminaManager ?? GameBootstrap.Instance?.StaminaManager as StaminaManager;
+                var statusManager = _statusEffectManager ?? GameBootstrap.Instance?.StatusEffectManager as StatusEffectManager;
                 var restoresHunger = itemData.HungerRestore > 0 && _hungerManager.CurrentHunger < _hungerManager.MaxHunger;
                 var restoresStamina = itemData.StaminaRestore > 0
                     && staminaManager != null

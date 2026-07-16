@@ -59,7 +59,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (context?.Caster == null)
                 return SkillEffectResult.Failed("NoCaster", "Jogador nao encontrado.");
 
-            var staminaManager = GameBootstrap.Instance?.StaminaManager;
+            var staminaManager = GameBootstrap.Instance?.StaminaManager as CindarsHope.Player.StaminaManager;
             if (staminaManager != null && !staminaManager.TrySpendStamina(_staminaCost))
                 return SkillEffectResult.Failed("InsufficientStamina", $"Stamina insuficiente ({_staminaCost}).");
 

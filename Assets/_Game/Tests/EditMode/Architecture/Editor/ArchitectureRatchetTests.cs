@@ -271,7 +271,18 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // InventoryManager sem nomear CindarsHope.Inventory. InitializeFromStartingItems fica
                 // de fora da porta (assinatura cross-modulo); InventoryManager agora implementa
                 // IGameBootstrapRuntimeService e resolve isso via GameBootstrapRuntimeContext.
-                "IInventoryRuntime.cs"
+                "IInventoryRuntime.cs",
+                // arch: quebra do par mutuo Core|Player (2026-07-15) — portas puras (sem UnityEngine)
+                // que permitem a GameBootstrap (Core) resolver/operar PlayerManager,
+                // PlayerProgressionManager, StatusEffectManager, HungerManager, StaminaManager e
+                // ManaManager via DomainManagerRegistry sem nomear CindarsHope.Player. Initialize(object)
+                // recebe PlayerDataSO como object para nao exigir ScriptableObject (UnityEngine).
+                "IPlayerRuntime.cs",
+                "IPlayerProgressionRuntime.cs",
+                "IStatusEffectRuntime.cs",
+                "IHungerRuntime.cs",
+                "IStaminaRuntime.cs",
+                "IManaRuntime.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

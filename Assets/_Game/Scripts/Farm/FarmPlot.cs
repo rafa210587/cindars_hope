@@ -162,9 +162,12 @@ namespace CindarsHope.Farm
             _inventoryManager = inventoryManager;
         }
 
-        public void RebindStaminaManager(Player.StaminaManager staminaManager)
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — aceita MonoBehaviour (o
+        // FarmSceneRuntimeReferenceInstaller so tem bootstrap.StaminaManager como MonoBehaviour,
+        // ja que Core nao nomeia mais CindarsHope.Player); cast para o tipo concreto aqui dentro.
+        public void RebindStaminaManager(MonoBehaviour staminaManagerRef)
         {
-            _staminaManager = staminaManager;
+            _staminaManager = staminaManagerRef as Player.StaminaManager;
         }
 
         // WAVE_INTEGRATION_11: Public bridge for skill effect executors to water this plot.

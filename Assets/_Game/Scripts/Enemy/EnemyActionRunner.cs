@@ -368,7 +368,7 @@ namespace CindarsHope.Enemy
             if (result.FinalDamage > 0)
             {
                 // F27: caminho central com atacante (perfect block reflete postura neste GO).
-                var playerManager = GameBootstrap.Instance?.PlayerManager;
+                var playerManager = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
                 var playerTarget = _getPlayerTarget();
                 var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
                     playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, _ownerGameObject, playerTarget);
@@ -685,7 +685,7 @@ namespace CindarsHope.Enemy
             var result = DamageCalculator.Calculate(req, _enemyData?.defense ?? 0);
             if (result.FinalDamage > 0)
             {
-                var playerManager = GameBootstrap.Instance?.PlayerManager;
+                var playerManager = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
                 var applied = CindarsHope.Combat.PlayerDamageReceiver.ApplyDamage(
                     playerManager, result.FinalDamage, _enemyData?.enemyId ?? "enemy", dmgType, _ownerGameObject, playerTarget);
                 if (applied > 0)
@@ -744,7 +744,7 @@ namespace CindarsHope.Enemy
                 dmgType = DamageType.Fire;
 
             float radius = action.AreaRadius > 0f ? action.AreaRadius : action.Range;
-            var playerManager = GameBootstrap.Instance?.PlayerManager;
+            var playerManager = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
             if (playerManager == null) return;
 
             var playerTarget = _getPlayerTarget();
@@ -786,7 +786,7 @@ namespace CindarsHope.Enemy
         internal void ApplySingleHitToPlayer(EnemyActionSO action, int damage, DamageType dmgType)
         {
             if (damage <= 0) return;
-            var playerManager = GameBootstrap.Instance?.PlayerManager;
+            var playerManager = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
             if (playerManager == null) return;
 
             var req = new DamageRequest(

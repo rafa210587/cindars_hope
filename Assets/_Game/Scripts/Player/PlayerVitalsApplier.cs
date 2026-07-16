@@ -160,9 +160,9 @@ namespace CindarsHope.Player
                 return;
             }
 
-            _playerManager = bootstrap.PlayerManager;
-            _staminaManager = bootstrap.StaminaManager;
-            _manaManager = bootstrap.ManaManager;
+            _playerManager = bootstrap.PlayerManager as PlayerManager;
+            _staminaManager = bootstrap.StaminaManager as StaminaManager;
+            _manaManager = bootstrap.ManaManager as ManaManager;
             _hungerManager = bootstrap.GetComponent<HungerManager>();
             _skillTreeRuntime = DomainManagerRegistry.Get<ISkillTreeRuntime>();
 

@@ -407,8 +407,8 @@ namespace CindarsHope.UI
         private void DrawStaminaAndStatusState()
         {
             var bootstrap = GameBootstrap.Instance;
-            var staminaManager = _staminaManager != null ? _staminaManager : bootstrap?.StaminaManager;
-            var statusEffectManager = _statusEffectManager != null ? _statusEffectManager : bootstrap?.StatusEffectManager;
+            var staminaManager = _staminaManager != null ? _staminaManager : bootstrap?.StaminaManager as StaminaManager;
+            var statusEffectManager = _statusEffectManager != null ? _statusEffectManager : bootstrap?.StatusEffectManager as StatusEffectManager;
 
             if (staminaManager != null)
             {
@@ -746,19 +746,28 @@ namespace CindarsHope.UI
 
         private static PlayerProgressionManager GetProgressionManager()
         {
-            return GameBootstrap.Instance != null ? GameBootstrap.Instance.PlayerProgressionManager : null;
+            return GameBootstrap.Instance != null ? GameBootstrap.Instance.PlayerProgressionManager as PlayerProgressionManager : null;
         }
 
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — playerManagerRef/
+        // hungerManagerRef/staminaManagerRef/statusEffectManagerRef agora sao MonoBehaviour (os
+        // *SceneRuntimeReferenceInstaller so tem bootstrap.PlayerManager/etc. como MonoBehaviour, ja
+        // que Core nao nomeia mais CindarsHope.Player); cast para o tipo concreto acontece aqui.
         public void RebindRuntimeReferences(
-            PlayerManager playerManager,
+            MonoBehaviour playerManagerRef,
             InventoryManager inventoryManager,
-            HungerManager hungerManager,
-            StaminaManager staminaManager,
-            StatusEffectManager statusEffectManager,
+            MonoBehaviour hungerManagerRef,
+            MonoBehaviour staminaManagerRef,
+            MonoBehaviour statusEffectManagerRef,
             InteractionSystem interactionSystem,
             TimeManager timeManager,
             SaveManager saveManager)
         {
+            var playerManager = playerManagerRef as PlayerManager;
+            var hungerManager = hungerManagerRef as HungerManager;
+            var staminaManager = staminaManagerRef as StaminaManager;
+            var statusEffectManager = statusEffectManagerRef as StatusEffectManager;
+
             if (playerManager != null)
             {
                 _playerManager = playerManager;
@@ -830,11 +839,11 @@ namespace CindarsHope.UI
         }
 
         public static void RebindExisting(
-            PlayerManager playerManager,
+            MonoBehaviour playerManager,
             InventoryManager inventoryManager,
-            HungerManager hungerManager,
-            StaminaManager staminaManager,
-            StatusEffectManager statusEffectManager,
+            MonoBehaviour hungerManager,
+            MonoBehaviour staminaManager,
+            MonoBehaviour statusEffectManager,
             InteractionSystem interactionSystem,
             TimeManager timeManager,
             SaveManager saveManager)

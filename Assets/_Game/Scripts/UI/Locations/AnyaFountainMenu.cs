@@ -80,8 +80,8 @@ namespace CindarsHope.UI.Locations
             if (bootstrap == null) return;
 
             var skillMgr = SkillTreeManager.Instance;
-            var playerMgr = bootstrap.PlayerManager;
-            var progMgr = bootstrap.PlayerProgressionManager;
+            var playerMgr = bootstrap.PlayerManager as CindarsHope.Player.PlayerManager;
+            var progMgr = bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager;
 
             if (skillMgr == null || playerMgr == null || progMgr == null)
             {

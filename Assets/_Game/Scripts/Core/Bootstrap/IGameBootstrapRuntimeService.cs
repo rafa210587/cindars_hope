@@ -1,4 +1,3 @@
-using CindarsHope.Player.Data;
 using UnityEngine;
 
 namespace CindarsHope.Core.Bootstrap
@@ -10,7 +9,11 @@ namespace CindarsHope.Core.Bootstrap
         // CindarsHope.Inventory; consumidores fora de Core (SaveManager, ShopManager,
         // InventoryManager) castam para o tipo concreto localmente (molde MonoBehaviour usado por
         // ModalManager/SaveManager no cort do par Core|UI/Core|Save).
-        public GameBootstrapRuntimeContext(ScriptableObject itemDatabase, PlayerDataSO playerData = null)
+        // arch: quebra do par mutuo Core|Player (2026-07-15) — PlayerData tipado como ScriptableObject
+        // (nao mais CindarsHope.Player.Data.PlayerDataSO) para que Core pare de nomear
+        // CindarsHope.Player; consumidores fora de Core (InventoryManager, SaveManager) castam para o
+        // tipo concreto (ou para o contrato neutro IStartingItemsSource) localmente.
+        public GameBootstrapRuntimeContext(ScriptableObject itemDatabase, ScriptableObject playerData = null)
         {
             ItemDatabase = itemDatabase;
             PlayerData = playerData;
@@ -22,7 +25,7 @@ namespace CindarsHope.Core.Bootstrap
         // PlayerDataSO canonica via IGameBootstrapRuntimeService.InitializeFromBootstrap em vez de
         // GameBootstrap chamar SaveManager.RebindStarterInventoryData diretamente (o que nomearia
         // CindarsHope.Save no arquivo de Core).
-        public PlayerDataSO PlayerData { get; }
+        public ScriptableObject PlayerData { get; }
     }
 
     public interface IGameBootstrapRuntimeService

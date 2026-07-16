@@ -14,13 +14,17 @@ namespace CindarsHope.Core.Bootstrap
 
         private static GameBootstrap _instance;
 
-        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) — PlayerManager
-        // nao eh mais passado por aqui via campo serializado; resolvido via DomainManagerRegistry (nao
-        // static Instance/Active, proibido pela regra de ratchet GlobalGoldAccess para este tipo).
-        // PlayerProgressionManager/StatusEffectManager idem, self-registram via static Instance (molde
-        // Craft/Economy/Skills/Equipment). StaminaManager/ManaManager/HungerManager/PlayerDataSO
-        // permanecem campos serializados, com o tipo totalmente qualificado (sem using
-        // CindarsHope.Player*) para nao reintroduzir a aresta Core->Player.
+        // arch: quebra do par mutuo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+        // finalizado 2026-07-15) — PlayerManager nao eh mais passado por aqui via campo serializado;
+        // resolvido via DomainManagerRegistry sob a porta IPlayerRuntime (Foundation), nao Instance/
+        // Active estatico (proibido pela regra de ratchet GlobalGoldAccess para este tipo) e sem
+        // nomear CindarsHope.Player. PlayerProgressionManager/StatusEffectManager idem, self-registram
+        // via Instance estatico (molde Craft/Economy/Skills/Equipment) E via DomainManagerRegistry sob
+        // as portas IPlayerProgressionRuntime/IStatusEffectRuntime para Core resolver sem nomear o
+        // tipo concreto. StaminaManager/ManaManager/HungerManager/PlayerDataSO viram campos
+        // serializados tipados como MonoBehaviour/ScriptableObject (molde ModalManager/SaveManager do
+        // corte Core|UI/Core|Save); as portas IStaminaRuntime/IManaRuntime/IHungerRuntime (Foundation)
+        // sao resolvidas via cast local so para as chamadas de lifecycle.
         [SerializeField] private TimeManager _timeManager;
         [SerializeField] private GameTimeManager _gameTimeManager;
         // arch: quebra do par mutuo Core|UI (2026-07-15) — campo agora tipado como MonoBehaviour
@@ -37,9 +41,9 @@ namespace CindarsHope.Core.Bootstrap
         // (assinaturas cross-modulo) agora sao acionados via IGameBootstrapRuntimeService, que
         // SaveManager implementa (ver InitializeBootstrapRuntimeServices/ShutdownBootstrapRuntimeServices).
         [SerializeField] private MonoBehaviour _saveManager;
-        [SerializeField] private CindarsHope.Player.HungerManager _hungerManager;
-        [SerializeField] private CindarsHope.Player.StaminaManager _staminaManager;
-        [SerializeField] private CindarsHope.Player.Data.PlayerDataSO _playerData;
+        [SerializeField] private MonoBehaviour _hungerManager;
+        [SerializeField] private MonoBehaviour _staminaManager;
+        [SerializeField] private ScriptableObject _playerData;
         // arch: quebra do par mutuo Core|Inventory (2026-07-15) — campo agora tipado como
         // ScriptableObject (nao mais CindarsHope.Inventory.Data.ItemDatabaseSO) para que Core pare de
         // nomear CindarsHope.Inventory; Unity mantem a referencia de cena serializada normalmente
@@ -50,15 +54,18 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
         [SerializeField] private SpellDatabaseSO _spellDatabase;
         [SerializeField] private StatusEffectDatabaseSO _statusEffectDatabase;
-        [SerializeField] private CindarsHope.Player.ManaManager _manaManager;
+        [SerializeField] private MonoBehaviour _manaManager;
         [SerializeField] private AnyaFountain _anyaFountain;
 
-        private CindarsHope.Player.Death.CorpseRecoveryManager _corpseRecoveryManager;
+        // arch: quebra do par mutuo Core|Player (2026-07-15) — CorpseRecoveryManager (Player.Death)
+        // e uma classe C# pura (nao MonoBehaviour), construida via IPlayerRuntime.CreateCorpseRecoveryManager
+        // (fabrica dentro do modulo Player); guardado como object pois Core nao pode nomear o tipo.
+        private object _corpseRecoveryManager;
 
         public static GameBootstrap Instance => _instance;
 
-        public CindarsHope.Player.PlayerManager PlayerManager =>
-            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
+        public MonoBehaviour PlayerManager =>
+            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IPlayerRuntime>() as MonoBehaviour;
 
         // arch: quebra do par mutuo Core|Inventory (2026-07-15) — InventoryManager nao eh mais passado
         // por aqui via campo serializado; resolvido via DomainManagerRegistry sob a porta
@@ -71,20 +78,22 @@ namespace CindarsHope.Core.Bootstrap
         public GameTimeManager GameTimeManager => _gameTimeManager;
         public CindarsHope.Foundation.IModalRuntime ModalManager => _modalManager as CindarsHope.Foundation.IModalRuntime;
         public CindarsHope.Foundation.ISaveRuntime SaveManager => _saveManager as CindarsHope.Foundation.ISaveRuntime;
-        public CindarsHope.Player.HungerManager HungerManager => _hungerManager;
-        public CindarsHope.Player.StaminaManager StaminaManager => _staminaManager;
-        public CindarsHope.Player.ManaManager ManaManager => _manaManager;
+        public MonoBehaviour HungerManager => _hungerManager;
+        public MonoBehaviour StaminaManager => _staminaManager;
+        public MonoBehaviour ManaManager => _manaManager;
 
-        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
-        // PlayerProgressionManager/StatusEffectManager nao sao mais passados por aqui; self-registram
-        // via static Instance (molde Craft/Economy/Skills/Equipment).
-        public CindarsHope.Player.Progression.PlayerProgressionManager PlayerProgressionManager =>
-            CindarsHope.Player.Progression.PlayerProgressionManager.Instance;
+        // arch: quebra do par mutuo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+        // finalizado 2026-07-15) — PlayerProgressionManager/StatusEffectManager nao sao mais
+        // resolvidos pelo tipo concreto; resolvidos via DomainManagerRegistry sob as portas
+        // IPlayerProgressionRuntime/IStatusEffectRuntime (Foundation), que os managers registram em
+        // Awake alem do static Instance (molde Craft/Economy/Skills/Equipment).
+        public MonoBehaviour PlayerProgressionManager =>
+            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IPlayerProgressionRuntime>() as MonoBehaviour;
 
-        public CindarsHope.Player.StatusEffectManager StatusEffectManager =>
-            CindarsHope.Player.StatusEffectManager.Instance;
+        public MonoBehaviour StatusEffectManager =>
+            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IStatusEffectRuntime>() as MonoBehaviour;
 
-        public CindarsHope.Player.Death.CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
+        public object CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
         public ScriptableObject ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
@@ -125,21 +134,22 @@ namespace CindarsHope.Core.Bootstrap
             // CindarsHope.Inventory.
             var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IInventoryRuntime>();
 
-            // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido
-            // via DomainManagerRegistry (nao static Instance/Active, proibido pela regra de ratchet
-            // GlobalGoldAccess) em vez do campo serializado removido.
-            var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
+            // arch: quebra do par mutuo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+            // finalizado 2026-07-15) — resolvido via DomainManagerRegistry sob a porta IPlayerRuntime
+            // (nao static Instance/Active, proibido pela regra de ratchet GlobalGoldAccess) e sem
+            // nomear CindarsHope.Player.
+            var playerRuntime = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IPlayerRuntime>();
 
-            if (playerManager != null)
+            if (playerRuntime != null)
             {
                 if (_playerData != null)
                 {
-                    playerManager.Initialize(_playerData);
+                    playerRuntime.Initialize(_playerData);
                 }
                 else
                 {
                     Debug.LogWarning("GameBootstrap is missing a PlayerDataSO reference. PlayerManager will initialize without starting state.", this);
-                    playerManager.Initialize();
+                    playerRuntime.Initialize();
                 }
             }
             else
@@ -189,11 +199,15 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogWarning("GameBootstrap is missing a SaveManager reference.", this);
             }
 
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — _hungerManager/_staminaManager/
+            // _manaManager sao MonoBehaviour (Core nao pode nomear os tipos concretos); as chamadas de
+            // lifecycle resolvem as portas IHungerRuntime/IStaminaRuntime/IManaRuntime (Foundation)
+            // por cast local.
             if (_hungerManager != null)
             {
                 if (_playerData != null)
                 {
-                    _hungerManager.Initialize(_playerData);
+                    (_hungerManager as CindarsHope.Foundation.IHungerRuntime)?.Initialize(_playerData);
                 }
                 else
                 {
@@ -203,7 +217,7 @@ namespace CindarsHope.Core.Bootstrap
 
             if (_staminaManager != null)
             {
-                _staminaManager.Initialize();
+                (_staminaManager as CindarsHope.Foundation.IStaminaRuntime)?.Initialize();
             }
             else
             {
@@ -212,7 +226,7 @@ namespace CindarsHope.Core.Bootstrap
 
             if (_manaManager != null)
             {
-                _manaManager.Initialize();
+                (_manaManager as CindarsHope.Foundation.IManaRuntime)?.Initialize();
             }
 
             var craftingManager = DomainManagerRegistry.Get<ICraftingRuntimeManager>();
@@ -250,14 +264,14 @@ namespace CindarsHope.Core.Bootstrap
                     CindarsHope.Foundation.HotbarState.SlotCount);
             }
 
-            // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
-            // PlayerProgressionManager/StatusEffectManager nao sao mais passados por aqui; self-registram
-            // via static Instance (molde Craft/Economy/Skills/Equipment).
-            var statusEffectManager = CindarsHope.Player.StatusEffectManager.Instance;
+            // arch: quebra do par mutuo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+            // finalizado 2026-07-15) — StatusEffectManager nao e mais resolvido pelo tipo concreto
+            // (.Instance); resolvido via DomainManagerRegistry sob a porta IStatusEffectRuntime.
+            var statusEffectRuntime = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IStatusEffectRuntime>();
 
-            if (statusEffectManager != null)
+            if (statusEffectRuntime != null)
             {
-                statusEffectManager.Initialize();
+                statusEffectRuntime.Initialize();
             }
 
             // arch: Core|Skills (spec_arch_core_skills_cycle_reduction_v34_followup) — SkillTreeManager
@@ -368,13 +382,25 @@ namespace CindarsHope.Core.Bootstrap
                 return;
             }
 
-            _manaManager = GetComponent<CindarsHope.Player.ManaManager>();
-            if (_manaManager != null)
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — antes deste corte, o fallback
+            // fazia GetComponent<CindarsHope.Player.ManaManager>()/AddComponent<...>() no proprio
+            // GameObject, o que exigiria Core nomear o tipo concreto (proibido). Agora procura por
+            // qualquer MonoBehaviour no GameObject que implemente a porta IManaRuntime; se nao achar,
+            // loga wiring error em vez de auto-criar o componente (auto-criar exigiria conhecer o tipo
+            // concreto, que Core nao pode mais nomear).
+            // Residual risk: perde o auto-heal por AddComponent; confirmado por grep que as 3 cenas
+            // canonicas (Town/Farm/Cave) ja tem _manaManager serializado, entao este fallback e
+            // defensivo e nao e exercitado em producao.
+            foreach (var behaviour in GetComponents<MonoBehaviour>())
             {
-                return;
+                if (behaviour is CindarsHope.Foundation.IManaRuntime)
+                {
+                    _manaManager = behaviour;
+                    return;
+                }
             }
 
-            _manaManager = gameObject.AddComponent<CindarsHope.Player.ManaManager>();
+            Debug.LogError("GameBootstrap: ManaManager ausente no GameObject e Core nao pode mais auto-criar o componente (corte do par Core|Player, 2026-07-15). Adicione o componente ManaManager manualmente na cena.", this);
         }
 
         private void InitializeDeathSystem()
@@ -384,12 +410,16 @@ namespace CindarsHope.Core.Bootstrap
             // IInventoryRuntime, sem nomear CindarsHope.Inventory. CorpseRecoveryManager agora recebe
             // IInventoryRuntime no construtor (nao mais o tipo concreto InventoryManager).
             var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IInventoryRuntime>();
-            // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido via
-            // DomainManagerRegistry em vez do campo serializado removido.
-            var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
-            if (playerManager != null && inventoryManager != null && equipmentRuntime != null)
+            // arch: quebra do par mutuo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+            // finalizado 2026-07-15) — resolvido via DomainManagerRegistry sob a porta IPlayerRuntime.
+            // CorpseRecoveryManager (Player.Death) e construido pela fabrica
+            // IPlayerRuntime.CreateCorpseRecoveryManager, dentro do modulo Player (mesmo modulo de
+            // CorpseRecoveryManager), em vez de 'new CindarsHope.Player.Death.CorpseRecoveryManager(...)'
+            // aqui — o que exigiria Core nomear o tipo concreto.
+            var playerRuntime = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IPlayerRuntime>();
+            if (playerRuntime != null && inventoryManager != null && equipmentRuntime != null)
             {
-                _corpseRecoveryManager = new CindarsHope.Player.Death.CorpseRecoveryManager(playerManager, inventoryManager, equipmentRuntime);
+                _corpseRecoveryManager = playerRuntime.CreateCorpseRecoveryManager(inventoryManager, equipmentRuntime);
             }
             else
             {
@@ -406,18 +436,18 @@ namespace CindarsHope.Core.Bootstrap
             // ShopManager). SaveManager.Shutdown() so alterna a flag IsInitialized (sem efeito
             // colateral observavel), entao a mudanca de ordem relativa e segura.
 
-            // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — StatusEffectManager
-            // resolvido via static Instance (molde Craft/Economy/Skills/Equipment) em vez do campo
-            // serializado removido.
-            var statusEffectManager = CindarsHope.Player.StatusEffectManager.Instance;
-            if (statusEffectManager != null)
+            // arch: quebra do par mutuo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+            // finalizado 2026-07-15) — StatusEffectManager resolvido via DomainManagerRegistry sob a
+            // porta IStatusEffectRuntime, sem nomear CindarsHope.Player.
+            var statusEffectRuntime = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IStatusEffectRuntime>();
+            if (statusEffectRuntime != null)
             {
-                statusEffectManager.Shutdown();
+                statusEffectRuntime.Shutdown();
             }
 
             if (_staminaManager != null)
             {
-                _staminaManager.Shutdown();
+                (_staminaManager as CindarsHope.Foundation.IStaminaRuntime)?.Shutdown();
             }
 
             if (_gameTimeManager != null)
@@ -438,12 +468,12 @@ namespace CindarsHope.Core.Bootstrap
                 inventoryManager.Shutdown();
             }
 
-            // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido via
-            // DomainManagerRegistry em vez do campo serializado removido.
-            var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
-            if (playerManager != null)
+            // arch: quebra do par mutuo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+            // finalizado 2026-07-15) — resolvido via DomainManagerRegistry sob a porta IPlayerRuntime.
+            var playerRuntimeForShutdown = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IPlayerRuntime>();
+            if (playerRuntimeForShutdown != null)
             {
-                playerManager.Shutdown();
+                playerRuntimeForShutdown.Shutdown();
             }
 
             var craftingManager = DomainManagerRegistry.Get<ICraftingRuntimeManager>();

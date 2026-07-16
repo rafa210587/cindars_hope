@@ -53,7 +53,7 @@ namespace CindarsHope.UI.Skills
         {
             base.InitializeModal(modalManager);
             _skillTreeManager = SkillTreeManager.Instance;
-            _skillTreeManager?.RebindProgressionManager(GameBootstrap.Instance?.PlayerProgressionManager);
+            _skillTreeManager?.RebindProgressionManager(GameBootstrap.Instance?.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager);
             RefreshDisplay();
             GameEventBus.Publish(new SkillTreeOpenedEvent());
         }
@@ -139,7 +139,7 @@ namespace CindarsHope.UI.Skills
             if (nodes.Count == 0 || _currentNodeIndex >= nodes.Count) return;
 
             var bootstrap = GameBootstrap.Instance;
-            int level = bootstrap?.PlayerProgressionManager?.Level ?? 1;
+            int level = (bootstrap?.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager)?.Level ?? 1;
             _skillTreeManager.TryPurchaseNode(nodes[_currentNodeIndex].SkillNodeId, level, out _feedback);
             RefreshDisplay();
         }

@@ -69,7 +69,7 @@ namespace CindarsHope.Player
         private static void ApplyLivingWaterEffects()
         {
             var bootstrap = CindarsHope.Core.Bootstrap.GameBootstrap.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as PlayerManager : null;
             if (playerManager != null)
             {
                 playerManager.SetHP(playerManager.MaxHP);

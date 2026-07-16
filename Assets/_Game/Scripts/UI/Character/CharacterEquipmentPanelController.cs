@@ -156,7 +156,7 @@ namespace CindarsHope.UI.Character
         {
             if (_mode == PanelMode.Attributes)
             {
-                var progression = GameBootstrap.Instance?.PlayerProgressionManager;
+                var progression = GameBootstrap.Instance?.PlayerProgressionManager as PlayerProgressionManager;
                 if (progression == null || _selectedIndex >= AttributeTypes.Length)
                 {
                     return;
@@ -216,7 +216,7 @@ namespace CindarsHope.UI.Character
             if (_mode == PanelMode.Attributes)
             {
                 GUILayout.Label("Atributos / Progressao");
-                DrawAttributes(GameBootstrap.Instance?.PlayerProgressionManager);
+                DrawAttributes(GameBootstrap.Instance?.PlayerProgressionManager as PlayerProgressionManager);
             }
             else
             {

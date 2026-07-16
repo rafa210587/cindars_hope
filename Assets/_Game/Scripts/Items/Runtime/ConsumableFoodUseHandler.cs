@@ -44,9 +44,9 @@ namespace CindarsHope.Items.Runtime
             }
 
             var bootstrap = GameBootstrap.Instance;
-            var hungerManager = bootstrap != null ? bootstrap.HungerManager : null;
-            var staminaManager = bootstrap != null ? bootstrap.StaminaManager : null;
-            var statusManager = bootstrap != null ? bootstrap.StatusEffectManager : null;
+            var hungerManager = bootstrap != null ? bootstrap.HungerManager as CindarsHope.Player.HungerManager : null;
+            var staminaManager = bootstrap != null ? bootstrap.StaminaManager as CindarsHope.Player.StaminaManager : null;
+            var statusManager = bootstrap != null ? bootstrap.StatusEffectManager as CindarsHope.Player.StatusEffectManager : null;
 
             var hungerRestoreBase = itemData.HungerRestore;
             var staminaRestoreBase = itemData.StaminaRestore;

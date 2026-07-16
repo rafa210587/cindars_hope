@@ -146,7 +146,7 @@ namespace CindarsHope.NPC
             // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
             // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
             RebindIfAvailable(ref _shopManager, ShopManager.Instance, nameof(_shopManager), reason);
-            RebindIfAvailable(ref _playerManager, bootstrap.PlayerManager, nameof(_playerManager), reason);
+            RebindIfAvailable(ref _playerManager, bootstrap.PlayerManager as PlayerManager, nameof(_playerManager), reason);
             // arch: quebra do par mutuo Core|Inventory (2026-07-15) — bootstrap.InventoryManager /
             // bootstrap.ItemDatabase agora retornam a porta IInventoryRuntime / ScriptableObject; cast
             // local para os tipos concretos preserva o RebindIfAvailable<T> where T : Object.

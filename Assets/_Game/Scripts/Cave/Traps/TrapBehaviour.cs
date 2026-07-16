@@ -326,9 +326,11 @@ namespace CindarsHope.Cave.Traps
                 return;
             }
 
-            if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager != null)
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager agora
+            // retorna MonoBehaviour; cast local para o tipo concreto.
+            if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager as PlayerManager != null)
             {
-                _playerManager = GameBootstrap.Instance.PlayerManager;
+                _playerManager = GameBootstrap.Instance.PlayerManager as PlayerManager;
                 return;
             }
 

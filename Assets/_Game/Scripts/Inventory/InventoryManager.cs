@@ -59,9 +59,13 @@ namespace CindarsHope.Inventory
         public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
         {
             var itemDatabase = context.ItemDatabase as ItemDatabaseSO;
-            if (context.PlayerData != null && itemDatabase != null)
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — context.PlayerData agora e
+            // ScriptableObject (Core nao pode mais nomear PlayerDataSO); castado aqui para o contrato
+            // neutro IStartingItemsSource que PlayerDataSO ja implementa (molde do corte Inventory|Player).
+            var startingItemsSource = context.PlayerData as IStartingItemsSource;
+            if (startingItemsSource != null && itemDatabase != null)
             {
-                InitializeFromStartingItems(context.PlayerData, itemDatabase);
+                InitializeFromStartingItems(startingItemsSource, itemDatabase);
             }
             else
             {

@@ -63,6 +63,14 @@ namespace CindarsHope.SceneManagement
                 return;
             }
 
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager/
+            // HungerManager/StaminaManager/PlayerProgressionManager/StatusEffectManager agora
+            // retornam MonoBehaviour. arch: quebra do par mutuo Player|SceneManagement (2026-07-15) —
+            // este installer NAO faz cast para o tipo concreto (reintroduziria a aresta
+            // SceneManagement->Player, formando par novo com a aresta existente
+            // Player->SceneManagement via AnyaFountainRespawnFlow); repassa os MonoBehaviour direto
+            // para os Rebind* (FarmPlot/TreeNode/FishingSpot/SeedShopPoint/SellPoint/CraftingRuntime/
+            // SaveManager/DebugHud), que fazem o cast internamente.
             var playerManager = bootstrap.PlayerManager;
             // arch: quebra do par mutuo Core|Inventory (2026-07-15) — bootstrap.InventoryManager agora
             // retorna a porta IInventoryRuntime; este installer (SceneManagement, fora do par cortado)
@@ -70,6 +78,8 @@ namespace CindarsHope.SceneManagement
             var inventoryManager = bootstrap.InventoryManager as InventoryManager;
             var hungerManager = bootstrap.HungerManager;
             var staminaManager = bootstrap.StaminaManager;
+            var progressionManager = bootstrap.PlayerProgressionManager;
+            var statusEffectManager = bootstrap.StatusEffectManager;
             var timeManager = bootstrap.TimeManager;
             // arch: quebra do par mutuo Core|Save (2026-07-15) — bootstrap.SaveManager agora retorna
             // a porta ISaveRuntime; este installer (SceneManagement, fora do par cortado) resolve o
@@ -142,11 +152,11 @@ namespace CindarsHope.SceneManagement
                 // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
                 // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — idem para
                 // EquipmentManager, via EquipmentManager.Instance.
-                saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, bootstrap.PlayerProgressionManager, bootstrap.GameTimeManager, staminaManager, bootstrap.StatusEffectManager, CindarsHope.Skills.SkillTreeManager.Instance, ShopManager.Instance);
+                saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, progressionManager, bootstrap.GameTimeManager, staminaManager, statusEffectManager, CindarsHope.Skills.SkillTreeManager.Instance, ShopManager.Instance);
             }
 
             var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
-            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, staminaManager, bootstrap.StatusEffectManager, interactionSystem, timeManager, saveManager);
+            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, staminaManager, statusEffectManager, interactionSystem, timeManager, saveManager);
 
             var restored = FarmSceneRuntimeStateCache.TryRestore(_farmPlotRegistry, _treeRegistry, _itemPickupRegistry);
             var plotCount = _farmPlotRegistry?.Plots?.Count ?? 0;

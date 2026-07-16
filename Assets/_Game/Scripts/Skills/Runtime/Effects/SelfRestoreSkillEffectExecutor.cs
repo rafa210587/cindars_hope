@@ -44,21 +44,28 @@ namespace CindarsHope.Skills.Runtime.Effects
 
             bool restoredAnything = false;
 
-            if (_restoreHp > 0 && bootstrap.PlayerManager != null)
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager/
+            // StaminaManager/ManaManager agora retornam MonoBehaviour; cast local para os tipos
+            // concretos.
+            var playerManager = bootstrap.PlayerManager as CindarsHope.Player.PlayerManager;
+            var staminaManager = bootstrap.StaminaManager as CindarsHope.Player.StaminaManager;
+            var manaManager = bootstrap.ManaManager as CindarsHope.Player.ManaManager;
+
+            if (_restoreHp > 0 && playerManager != null)
             {
-                bootstrap.PlayerManager.RestoreHP(_restoreHp);
+                playerManager.RestoreHP(_restoreHp);
                 restoredAnything = true;
             }
 
-            if (_restoreStamina > 0 && bootstrap.StaminaManager != null)
+            if (_restoreStamina > 0 && staminaManager != null)
             {
-                bootstrap.StaminaManager.AddStamina(_restoreStamina);
+                staminaManager.AddStamina(_restoreStamina);
                 restoredAnything = true;
             }
 
-            if (_restoreMana > 0 && bootstrap.ManaManager != null)
+            if (_restoreMana > 0 && manaManager != null)
             {
-                bootstrap.ManaManager.RestoreMana(_restoreMana);
+                manaManager.RestoreMana(_restoreMana);
                 restoredAnything = true;
             }
 

@@ -646,7 +646,7 @@ namespace CindarsHope.Enemy
             }
 
             _volatileExploded = true;
-            int playerMaxHp = GameBootstrap.Instance?.PlayerManager?.MaxHP ?? 0;
+            int playerMaxHp = (GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager)?.MaxHP ?? 0;
             int raw = Mathf.Max(1, (_enemyData?.contactDamage ?? 1) * 3);
             int damage = EliteAffixRules.ResolveVolatileExplosionDamage(raw, playerMaxHp);
 

@@ -69,13 +69,13 @@ namespace CindarsHope.Skills.Runtime.Effects
             // Physical shots cost stamina; elemental/arcane shots cost mana.
             if (_damageType == DamageType.Physical)
             {
-                var staminaManager = GameBootstrap.Instance?.StaminaManager;
+                var staminaManager = GameBootstrap.Instance?.StaminaManager as CindarsHope.Player.StaminaManager;
                 if (staminaManager != null && !staminaManager.TrySpendStamina(_resourceCost))
                     return SkillEffectResult.Failed("InsufficientStamina", $"Stamina insuficiente ({_resourceCost}).");
             }
             else
             {
-                var manaManager = GameBootstrap.Instance?.ManaManager;
+                var manaManager = GameBootstrap.Instance?.ManaManager as CindarsHope.Player.ManaManager;
                 if (manaManager != null && !manaManager.TrySpendMana(_resourceCost))
                     return SkillEffectResult.Failed("InsufficientMana", $"Mana insuficiente ({_resourceCost}).");
             }

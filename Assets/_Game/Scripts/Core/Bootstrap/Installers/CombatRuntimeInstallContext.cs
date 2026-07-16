@@ -15,9 +15,10 @@ namespace CindarsHope.Core.Bootstrap.Installers
     /// ScriptableObject (nao mais CindarsHope.Inventory.Data.ItemDatabaseSO) para que Core pare de
     /// nomear CindarsHope.Inventory; CombatRuntimeInstaller so faz null-check/.name (nao precisa do
     /// tipo concreto). Consumidores fora de Core (ex.: PlayerAttackController) castam localmente.
-    /// arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — StaminaManager/ManaManager
-    /// referenciados por nome totalmente qualificado (sem using CindarsHope.Player) para nao
-    /// reintroduzir a aresta Core->Player.
+    /// arch: quebra do par mutuo Core|Player (2026-07-15) — StaminaManager/ManaManager tipados como
+    /// MonoBehaviour (nao mais CindarsHope.Player.StaminaManager/ManaManager) para que Core pare de
+    /// nomear CindarsHope.Player; CombatRuntimeInstaller so faz null-check (nao precisa do tipo
+    /// concreto). Consumidores fora de Core castam localmente se precisarem da API completa.
     /// </summary>
     [Serializable]
     public class CombatRuntimeInstallContext
@@ -26,7 +27,7 @@ namespace CindarsHope.Core.Bootstrap.Installers
         public WeaponDatabaseSO WeaponDatabase;
         public SpellDatabaseSO SpellDatabase;
         public StatusEffectDatabaseSO StatusEffectDatabase;
-        public CindarsHope.Player.StaminaManager StaminaManager;
-        public CindarsHope.Player.ManaManager ManaManager;
+        public MonoBehaviour StaminaManager;
+        public MonoBehaviour ManaManager;
     }
 }

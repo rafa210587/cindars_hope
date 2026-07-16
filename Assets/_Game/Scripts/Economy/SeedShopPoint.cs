@@ -51,8 +51,13 @@ namespace CindarsHope.Economy
             Debug.Log($"Bought '{_seedId}' x{_amount} for {_totalCost} gold.", this);
         }
 
-        public void RebindRuntimeManagers(InventoryManager inventoryManager, PlayerManager playerManager)
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — playerManagerRef agora e
+        // MonoBehaviour (FarmSceneRuntimeReferenceInstaller so tem bootstrap.PlayerManager como
+        // MonoBehaviour); cast para o tipo concreto aqui dentro.
+        public void RebindRuntimeManagers(InventoryManager inventoryManager, MonoBehaviour playerManagerRef)
         {
+            var playerManager = playerManagerRef as PlayerManager;
+
             if (inventoryManager == null)
             {
                 Debug.LogWarning("SeedShopPoint received null InventoryManager for rebind.", this);

@@ -8,20 +8,24 @@ using UnityEngine;
 namespace CindarsHope.Player
 {
     [DisallowMultipleComponent]
-    public class PlayerManager : MonoBehaviour, IWalletTransactionPort
+    public class PlayerManager : MonoBehaviour, IWalletTransactionPort, IPlayerRuntime
     {
-        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
-        // PlayerManager se anuncia via DomainManagerRegistry (nao um static Instance/Active proprio,
-        // proibido pela regra de ratchet GlobalGoldAccess) para o GameBootstrap parar de segurar
-        // referencia serializada direta a este tipo.
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37,
+        // 2026-07-15) — PlayerManager se anuncia via DomainManagerRegistry (nao um Instance/
+        // Active estatico proprio, proibido pela regra de ratchet GlobalGoldAccess) para o
+        // GameBootstrap parar de segurar referencia serializada direta a este tipo. Registrado tanto
+        // sob o tipo concreto (compat) quanto sob a porta IPlayerRuntime (Foundation), que
+        // GameBootstrap usa para resolver/operar sem nomear CindarsHope.Player.
         private void Awake()
         {
             DomainManagerRegistry.Register(this);
+            DomainManagerRegistry.Register<IPlayerRuntime>(this);
         }
 
         private void OnDestroy()
         {
             DomainManagerRegistry.Unregister(this);
+            DomainManagerRegistry.Unregister<IPlayerRuntime>(this);
         }
 
         public bool IsInitialized { get; private set; }
@@ -44,6 +48,21 @@ namespace CindarsHope.Player
 
             IsInitialized = true;
         }
+
+        // arch: quebra do par mutuo Core|Player (2026-07-15) — implementacao explicita da porta
+        // IPlayerRuntime.Initialize(object): GameBootstrap so tem um ScriptableObject generico (para
+        // nao nomear PlayerDataSO), entao a porta recebe object e o cast para o tipo concreto
+        // acontece aqui, dentro do modulo Player.
+        void IPlayerRuntime.Initialize(object playerData) => Initialize(playerData as PlayerDataSO);
+
+        // arch: quebra do par mutuo Core|Player (2026-07-15) — fabrica do CorpseRecoveryManager
+        // (Player.Death, mesmo modulo). GameBootstrap.InitializeDeathSystem() construia este objeto
+        // via 'new CindarsHope.Player.Death.CorpseRecoveryManager(...)' diretamente; isso nomeava
+        // CindarsHope.Player em Core. Agora GameBootstrap chama esta fabrica via IPlayerRuntime e
+        // guarda o retorno como 'object' (CorpseRecoveryManager e uma classe C# pura, nao
+        // MonoBehaviour; consumidores fora de Core castam localmente).
+        object IPlayerRuntime.CreateCorpseRecoveryManager(IInventoryRuntime inventoryManager, IEquipmentRuntime equipmentRuntime)
+            => new CindarsHope.Player.Death.CorpseRecoveryManager(this, inventoryManager, equipmentRuntime);
 
         public void Initialize(PlayerDataSO playerData)
         {

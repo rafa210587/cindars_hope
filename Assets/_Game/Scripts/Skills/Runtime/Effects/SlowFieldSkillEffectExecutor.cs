@@ -47,7 +47,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (context?.Caster == null)
                 return SkillEffectResult.Failed("NoCaster", "Jogador nao encontrado.");
 
-            var manaManager = GameBootstrap.Instance?.ManaManager;
+            var manaManager = GameBootstrap.Instance?.ManaManager as CindarsHope.Player.ManaManager;
             if (manaManager != null && !manaManager.TrySpendMana(_manaCost))
                 return SkillEffectResult.Failed("InsufficientMana", $"Mana insuficiente ({_manaCost}).");
 

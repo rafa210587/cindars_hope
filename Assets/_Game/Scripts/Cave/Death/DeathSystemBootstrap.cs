@@ -99,8 +99,11 @@ namespace CindarsHope.Cave.Death
         private void Initialize(GameBootstrap bootstrap)
         {
             _policy = new CaveDeathPolicy();
-            _recoveryManager = bootstrap.CorpseRecoveryManager;
-            _playerManager = bootstrap.PlayerManager;
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.CorpseRecoveryManager/
+            // PlayerManager/PlayerProgressionManager agora retornam object/MonoBehaviour (Core nao
+            // nomeia mais CindarsHope.Player); cast local para os tipos concretos.
+            _recoveryManager = bootstrap.CorpseRecoveryManager as CorpseRecoveryManager;
+            _playerManager = bootstrap.PlayerManager as PlayerManager;
 
             // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
             // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
@@ -109,10 +112,10 @@ namespace CindarsHope.Cave.Death
             _resolver = new CaveDeathResolver(
                 _policy,
                 CindarsHope.Cave.Runtime.CaveRunManager.Instance,
-                bootstrap.PlayerManager,
+                _playerManager,
                 bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager,
                 CindarsHope.Equipment.EquipmentManager.Instance,
-                bootstrap.PlayerProgressionManager,
+                bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager,
                 bootstrap.TimeManager
             );
 

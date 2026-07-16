@@ -256,7 +256,7 @@ namespace CindarsHope.UI.Skills
         private void BuySelectedNode()
         {
             var manager = SkillTreeManager.Instance;
-            var progression = GameBootstrap.Instance?.PlayerProgressionManager;
+            var progression = GameBootstrap.Instance?.PlayerProgressionManager as PlayerProgressionManager;
             if (manager == null || string.IsNullOrEmpty(_selectedTreeId))
             {
                 return;
@@ -285,7 +285,7 @@ namespace CindarsHope.UI.Skills
 
             CindarsHope.Core.MenuGuiStyle.Apply();
             var manager = SkillTreeManager.Instance;
-            var progression = GameBootstrap.Instance?.PlayerProgressionManager;
+            var progression = GameBootstrap.Instance?.PlayerProgressionManager as PlayerProgressionManager;
             manager?.RebindProgressionManager(progression);
             var rect = new Rect((Screen.width - 580f) * 0.5f, (Screen.height - 590f) * 0.5f, 580f, 590f);
             GUILayout.BeginArea(rect, GUI.skin.window);

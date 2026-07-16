@@ -115,7 +115,7 @@ namespace CindarsHope.Farm.Shipping
             }
 
             var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
             if (playerManager != null && totalGold > 0)
             {
                 playerManager.AddGold(totalGold);

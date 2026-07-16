@@ -107,8 +107,8 @@ namespace CindarsHope.Combat
                 // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
                 // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
                 if (_equipmentManager == null) _equipmentManager = EquipmentManager.Instance;
-                if (_staminaManager == null) _staminaManager = bootstrap.StaminaManager;
-                if (_manaManager == null) _manaManager = bootstrap.ManaManager;
+                if (_staminaManager == null) _staminaManager = bootstrap.StaminaManager as StaminaManager;
+                if (_manaManager == null) _manaManager = bootstrap.ManaManager as ManaManager;
                 // arch: quebra do par mutuo Core|Inventory (2026-07-15) — bootstrap.InventoryManager /
                 // bootstrap.ItemDatabase agora retornam a porta IInventoryRuntime / ScriptableObject
                 // (Core parou de nomear CindarsHope.Inventory); cast local para o tipo concreto,
@@ -142,7 +142,7 @@ namespace CindarsHope.Combat
 
             // F02: provider de stats derivados (DerivedStatsCalculator WAVE 05, antes Ã³rfÃ£o).
             // Base de Attack = ForÃ§a do player; equipment dict entra quando F03 criar o registry.
-            var progression = bootstrap != null ? bootstrap.PlayerProgressionManager : null;
+            var progression = bootstrap != null ? bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager : null;
             // arch: quebra do par mutuo Combat|Skills (2026-07-15) — porta ISkillTreeRuntime em vez
             // do tipo concreto SkillTreeManager.
             var skillTree = DomainManagerRegistry.Get<ISkillTreeRuntime>();
@@ -212,9 +212,12 @@ namespace CindarsHope.Combat
             CombatLog.Log($"CombatLog: EquipmentSlotChanged. Slot={evt.Slot}, ItemInstanceId='{evt.ItemInstanceId ?? "<null>"}'", this);
         }
 
-        public void RebindStaminaManager(StaminaManager staminaManager)
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — aceita MonoBehaviour (o
+        // CaveSceneRuntimeReferenceInstaller so tem bootstrap.StaminaManager como MonoBehaviour); cast
+        // para o tipo concreto aqui dentro.
+        public void RebindStaminaManager(MonoBehaviour staminaManagerRef)
         {
-            _staminaManager = staminaManager;
+            _staminaManager = staminaManagerRef as StaminaManager;
             // SPEC_07B: Refresh services to pick up updated stamina manager
             RefreshServices();
         }
@@ -266,7 +269,7 @@ namespace CindarsHope.Combat
             {
                 _spellCastService.StatsProvider = _statsProvider;
                 // fable_08: alvos de SelfRestore + spellbook (fable_07).
-                _spellCastService.PlayerManager = GameBootstrap.Instance?.PlayerManager;
+                _spellCastService.PlayerManager = GameBootstrap.Instance?.PlayerManager as PlayerManager;
                 _spellCastService.StaminaManager = _staminaManager;
                 _spellCastService.Spellbook = CindarsHope.Magic.PlayerSpellbook.Instance;
                 // fable_08 EMENDA 6.6-A: auto-target via QUERY de Physics2D (inimigos no raio),

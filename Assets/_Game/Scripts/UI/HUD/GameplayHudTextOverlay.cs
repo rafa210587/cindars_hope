@@ -207,7 +207,10 @@ namespace CindarsHope.UI.HUD
                 return;
             }
 
-            var player = bootstrap.PlayerManager;
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager/
+            // StaminaManager/ManaManager/HungerManager agora retornam MonoBehaviour; cast local para
+            // os tipos concretos.
+            var player = bootstrap.PlayerManager as CindarsHope.Player.PlayerManager;
             if (player != null)
             {
                 _hp = player.CurrentHP;
@@ -216,21 +219,21 @@ namespace CindarsHope.UI.HUD
                 _vitalsSeeded = true;
             }
 
-            var stamina = bootstrap.StaminaManager;
+            var stamina = bootstrap.StaminaManager as CindarsHope.Player.StaminaManager;
             if (stamina != null)
             {
                 _stamina = stamina.CurrentStamina;
                 _maxStamina = stamina.MaxStamina;
             }
 
-            var mana = bootstrap.ManaManager;
+            var mana = bootstrap.ManaManager as CindarsHope.Player.ManaManager;
             if (mana != null)
             {
                 _mana = mana.CurrentMana;
                 _maxMana = mana.MaxMana;
             }
 
-            var hunger = bootstrap.HungerManager;
+            var hunger = bootstrap.HungerManager as CindarsHope.Player.HungerManager;
             if (hunger != null)
             {
                 _hunger = hunger.CurrentHunger;

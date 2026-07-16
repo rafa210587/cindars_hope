@@ -36,9 +36,9 @@ namespace CindarsHope.Locations
             if (bootstrap != null && bootstrap.AnyaFountain != null)
             {
                 _respawnService = new AnyaRespawnService(
-                    bootstrap.PlayerManager,
-                    bootstrap.StaminaManager,
-                    bootstrap.ManaManager,
+                    bootstrap.PlayerManager as CindarsHope.Player.PlayerManager,
+                    bootstrap.StaminaManager as CindarsHope.Player.StaminaManager,
+                    bootstrap.ManaManager as CindarsHope.Player.ManaManager,
                     bootstrap.AnyaFountain.RespawnPoint
                 );
             }

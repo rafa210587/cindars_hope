@@ -6,12 +6,14 @@ using UnityEngine;
 namespace CindarsHope.Player
 {
     [DisallowMultipleComponent]
-    public class StatusEffectManager : MonoBehaviour
+    public class StatusEffectManager : MonoBehaviour, CindarsHope.Foundation.IStatusEffectRuntime
     {
         // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
         // self-registro estatico (molde Craft/Economy/Skills/Equipment) para o GameBootstrap parar
         // de segurar esta referencia serializada. Nao proibido pelo ratchet GlobalGoldAccess (que so
-        // cobre PlayerManager/GoldManager/EconomyManager).
+        // cobre PlayerManager/GoldManager/EconomyManager). Registrado tambem sob a porta
+        // IStatusEffectRuntime (Foundation, 2026-07-15) para GameBootstrap chamar Initialize/Shutdown
+        // sem nomear CindarsHope.Player.
         public static StatusEffectManager Instance { get; private set; }
 
         private const string PlayerTargetId = "player";
@@ -32,6 +34,7 @@ namespace CindarsHope.Player
             }
 
             Instance = this;
+            CindarsHope.Foundation.DomainManagerRegistry.Register<CindarsHope.Foundation.IStatusEffectRuntime>(this);
         }
 
         private void OnDestroy()
@@ -40,6 +43,8 @@ namespace CindarsHope.Player
             {
                 Instance = null;
             }
+
+            CindarsHope.Foundation.DomainManagerRegistry.Unregister<CindarsHope.Foundation.IStatusEffectRuntime>(this);
         }
 
         public void Initialize()

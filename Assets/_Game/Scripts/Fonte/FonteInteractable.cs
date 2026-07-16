@@ -118,8 +118,8 @@ namespace CindarsHope.Fonte
         {
             var bootstrap = GameBootstrap.Instance;
             var skillManager = CindarsHope.Skills.SkillTreeManager.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
-            var progressionManager = bootstrap != null ? bootstrap.PlayerProgressionManager : null;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
+            var progressionManager = bootstrap != null ? bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager : null;
             if (skillManager == null || playerManager == null || progressionManager == null)
             {
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("A Fonte nao conseguiu tocar suas memorias agora."));

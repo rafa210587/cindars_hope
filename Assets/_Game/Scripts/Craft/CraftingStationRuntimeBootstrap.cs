@@ -79,7 +79,7 @@ namespace CindarsHope.Craft
 
                 // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo
                 // concreto (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
-                BindRuntimes(runtimes, bootstrap.InventoryManager as InventoryManager, bootstrap.StaminaManager);
+                BindRuntimes(runtimes, bootstrap.InventoryManager as InventoryManager, bootstrap.StaminaManager as StaminaManager);
                 yield break;
             }
 

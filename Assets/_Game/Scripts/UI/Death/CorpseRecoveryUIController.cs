@@ -55,7 +55,7 @@ namespace CindarsHope.UI.Death
             // ModalBase/MonoBehaviour). CorpseRecoveryUIController ja e do modulo UI, entao nomear
             // ModalManager concreto aqui nao afeta o par Core|UI.
             _modalManager = bootstrap.ModalManager as ModalManager;
-            _recoveryManager = bootstrap.CorpseRecoveryManager;
+            _recoveryManager = bootstrap.CorpseRecoveryManager as CorpseRecoveryManager;
 
             if (_modalManager == null || _recoveryManager == null)
             {

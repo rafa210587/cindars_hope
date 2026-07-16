@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CindarsHope.Player
 {
     [DisallowMultipleComponent]
-    public class StaminaManager : MonoBehaviour
+    public class StaminaManager : MonoBehaviour, CindarsHope.Foundation.IStaminaRuntime
     {
         [SerializeField] private int _maxStamina = 100;
         [SerializeField] private PlayerNeedsBalanceSO _playerNeedsBalance;
@@ -31,6 +31,14 @@ namespace CindarsHope.Player
         {
             GameEventBus.Unsubscribe<DayStartedEvent>(HandleDayStarted);
         }
+
+        // arch: quebra do par mutuo Core|Player (2026-07-15) — implementacoes explicitas da porta
+        // IStaminaRuntime: o campo GameBootstrap._staminaManager virou MonoBehaviour (Core nao pode
+        // mais nomear StaminaManager); Core resolve esta porta via cast local
+        // (_staminaManager as IStaminaRuntime) so para as chamadas de lifecycle. Initialize(int,int)
+        // com defaults nao satisfaz IStaminaRuntime.Initialize() por assinatura (arity diferente),
+        // entao o wrapper explicito chama a sobrecarga default.
+        void CindarsHope.Foundation.IStaminaRuntime.Initialize() => Initialize();
 
         public void Initialize(int maxStamina = 100, int startingStamina = 100)
         {

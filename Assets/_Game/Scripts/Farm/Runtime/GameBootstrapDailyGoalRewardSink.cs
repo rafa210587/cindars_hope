@@ -20,11 +20,16 @@ namespace CindarsHope.Farm.Runtime
                 return;
             }
 
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager/
+            // PlayerProgressionManager agora retornam MonoBehaviour; cast local para os tipos concretos.
+            var playerManager = bootstrap.PlayerManager as CindarsHope.Player.PlayerManager;
+            var progressionManager = bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager;
+
             if (gold > 0)
             {
-                if (bootstrap.PlayerManager != null)
+                if (playerManager != null)
                 {
-                    bootstrap.PlayerManager.AddGold(gold);
+                    playerManager.AddGold(gold);
                 }
                 else
                 {
@@ -34,9 +39,9 @@ namespace CindarsHope.Farm.Runtime
 
             if (xp > 0)
             {
-                if (bootstrap.PlayerProgressionManager != null)
+                if (progressionManager != null)
                 {
-                    bootstrap.PlayerProgressionManager.AddXp(xp);
+                    progressionManager.AddXp(xp);
                 }
                 else
                 {

@@ -52,7 +52,7 @@ namespace CindarsHope.Combat
             {
                 if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager != null)
                 {
-                    _playerManager = GameBootstrap.Instance.PlayerManager;
+                    _playerManager = GameBootstrap.Instance.PlayerManager as PlayerManager;
                 }
                 else
                 {

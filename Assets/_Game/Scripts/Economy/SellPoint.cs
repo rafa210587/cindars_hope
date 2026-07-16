@@ -81,8 +81,12 @@ namespace CindarsHope.Economy
             GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "SellPoint", "all", 0, totalGold, feedbackMsg));
         }
 
-        public void RebindRuntimeManagers(InventoryManager inventoryManager, PlayerManager playerManager)
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — playerManagerRef agora e
+        // MonoBehaviour; cast para o tipo concreto aqui dentro.
+        public void RebindRuntimeManagers(InventoryManager inventoryManager, MonoBehaviour playerManagerRef)
         {
+            var playerManager = playerManagerRef as PlayerManager;
+
             if (inventoryManager == null)
             {
                 Debug.LogWarning("SellPoint received null InventoryManager for rebind.", this);

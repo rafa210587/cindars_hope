@@ -86,7 +86,7 @@ namespace CindarsHope.Player.Movement
 
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap != null && _staminaManager == null)
-                _staminaManager = bootstrap.StaminaManager;
+                _staminaManager = bootstrap.StaminaManager as StaminaManager;
 
             // fable_66 (STAMINA_BLOCK_DEBT): wiring garantido aqui (serialized ref OU bootstrap).
             // Ausente = erro de wiring logado ALTO (rule unity-architecture #1: cena/objeto/campo),

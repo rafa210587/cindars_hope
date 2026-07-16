@@ -43,7 +43,12 @@ namespace CindarsHope.Cave.Death
             }
 
             _policy = new CaveDeathPolicy();
-            _recoveryManager = bootstrap.CorpseRecoveryManager;
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.CorpseRecoveryManager/
+            // PlayerManager/PlayerProgressionManager/StaminaManager/ManaManager agora retornam
+            // object/MonoBehaviour (Core nao nomeia mais CindarsHope.Player); cast local para os
+            // tipos concretos.
+            _recoveryManager = bootstrap.CorpseRecoveryManager as CorpseRecoveryManager;
+            var playerManager = bootstrap.PlayerManager as CindarsHope.Player.PlayerManager;
 
             // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
             // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
@@ -52,19 +57,19 @@ namespace CindarsHope.Cave.Death
             _resolver = new CaveDeathResolver(
                 _policy,
                 CindarsHope.Cave.Runtime.CaveRunManager.Instance,
-                bootstrap.PlayerManager,
+                playerManager,
                 bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager,
                 CindarsHope.Equipment.EquipmentManager.Instance,
-                bootstrap.PlayerProgressionManager,
+                bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager,
                 bootstrap.TimeManager
             );
 
             if (bootstrap.AnyaFountain != null)
             {
                 _respawnService = new AnyaRespawnService(
-                    bootstrap.PlayerManager,
-                    bootstrap.StaminaManager,
-                    bootstrap.ManaManager,
+                    playerManager,
+                    bootstrap.StaminaManager as CindarsHope.Player.StaminaManager,
+                    bootstrap.ManaManager as CindarsHope.Player.ManaManager,
                     bootstrap.AnyaFountain.RespawnPoint
                 );
             }

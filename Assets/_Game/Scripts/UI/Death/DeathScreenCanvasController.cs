@@ -181,7 +181,10 @@ namespace CindarsHope.UI.Death
         private static CorpseRecoveryManager ResolveCorpseRecoveryManager()
         {
             var bootstrap = GameBootstrap.Instance;
-            return bootstrap != null ? bootstrap.CorpseRecoveryManager : null;
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.CorpseRecoveryManager
+            // agora retorna object (Core nao nomeia mais CindarsHope.Player); cast local para o tipo
+            // concreto.
+            return bootstrap != null ? bootstrap.CorpseRecoveryManager as CorpseRecoveryManager : null;
         }
 
         // ---- Show / dismiss (contract preserved) ----
@@ -271,7 +274,7 @@ namespace CindarsHope.UI.Death
             }
 
             var bootstrap = GameBootstrap.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
             if (playerManager != null)
             {
                 // SetHP(MaxHP) re-arma o PlayerDeathController (HP volta > 0).
@@ -303,7 +306,7 @@ namespace CindarsHope.UI.Death
             {
                 // Fallback extremo: o flow ainda nao nasceu. Revive no lugar para nao travar.
                 var bootstrap = GameBootstrap.Instance;
-                var playerManager = bootstrap != null ? bootstrap.PlayerManager : null;
+                var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
                 if (playerManager != null)
                 {
                     playerManager.SetHP(playerManager.MaxHP);

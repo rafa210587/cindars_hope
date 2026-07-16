@@ -297,7 +297,7 @@ namespace CindarsHope.NPC.Services
         private static PlayerManager ResolvePlayer()
         {
             var boot = GameBootstrap.Instance;
-            return boot != null ? boot.PlayerManager : null;
+            return boot != null ? boot.PlayerManager as PlayerManager : null;
         }
 
         private static BestiaryManager ResolveBestiary()

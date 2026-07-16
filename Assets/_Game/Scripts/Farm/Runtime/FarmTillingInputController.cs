@@ -166,7 +166,7 @@ namespace CindarsHope.Farm.Runtime
                 return _staminaManager;
             }
 
-            return GameBootstrap.Instance != null ? GameBootstrap.Instance.StaminaManager : null;
+            return GameBootstrap.Instance != null ? GameBootstrap.Instance.StaminaManager as StaminaManager : null;
         }
 
         private CindarsHope.Core.Time.TimeManager ResolveTimeManager()

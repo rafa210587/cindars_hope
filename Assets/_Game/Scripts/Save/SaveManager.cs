@@ -164,7 +164,10 @@ namespace CindarsHope.Save
             // arch: quebra do par mutuo Core|Inventory (2026-07-15) — context.ItemDatabase agora e
             // ScriptableObject (Core parou de nomear CindarsHope.Inventory); cast local para o tipo
             // concreto, permitido pois SaveManager (modulo Save) ja referencia CindarsHope.Inventory.
-            RebindStarterInventoryData(context.PlayerData, context.ItemDatabase as ItemDatabaseSO);
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — context.PlayerData agora e
+            // ScriptableObject (Core parou de nomear CindarsHope.Player); cast local para o tipo
+            // concreto, permitido pois SaveManager (modulo Save) ja referencia CindarsHope.Player.Data.
+            RebindStarterInventoryData(context.PlayerData as PlayerDataSO, context.ItemDatabase as ItemDatabaseSO);
             Initialize();
         }
 
@@ -451,8 +454,17 @@ namespace CindarsHope.Save
         }
 
         /// <summary>Rebinda managers obrigatÃ³rios de runtime (player, inventory, hunger, time).</summary>
-        public void RebindRuntimeManagers(PlayerManager playerManager, InventoryManager inventoryManager, HungerManager hungerManager, TimeManager timeManager)
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — playerManager/hungerManager
+        // agora sao MonoBehaviour (nao mais os tipos concretos CindarsHope.Player.*): os
+        // *SceneRuntimeReferenceInstaller (SceneManagement) so tem bootstrap.PlayerManager/
+        // HungerManager como MonoBehaviour (Core nao nomeia mais CindarsHope.Player, ver corte
+        // Core|Player), e casta-los la reintroduziria a aresta SceneManagement->Player. O cast para o
+        // tipo concreto acontece aqui dentro (Save ja referencia CindarsHope.Player normalmente).
+        public void RebindRuntimeManagers(MonoBehaviour playerManagerRef, InventoryManager inventoryManager, MonoBehaviour hungerManagerRef, TimeManager timeManager)
         {
+            var playerManager = playerManagerRef as PlayerManager;
+            var hungerManager = hungerManagerRef as HungerManager;
+
             if (playerManager != null)
             {
                 _playerManager = playerManager;
@@ -500,16 +512,26 @@ namespace CindarsHope.Save
         }
 
         /// <summary>Rebinda managers opcionais de runtime.</summary>
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — progressionManager/
+        // staminaManager/statusEffectManager agora sao MonoBehaviour (nao mais os tipos concretos
+        // CindarsHope.Player.*): os *SceneRuntimeReferenceInstaller (SceneManagement) so tem
+        // bootstrap.PlayerProgressionManager/StaminaManager/StatusEffectManager como MonoBehaviour
+        // (Core nao nomeia mais CindarsHope.Player); castar la reintroduziria a aresta
+        // SceneManagement->Player. O cast para o tipo concreto acontece aqui dentro.
         public void RebindOptionalRuntimeManagers(
             EquipmentManager equipmentManager,
-            PlayerProgressionManager progressionManager,
+            MonoBehaviour progressionManagerRef,
             Core.GameTimeManager gameTimeManager = null,
-            StaminaManager staminaManager = null,
-            Player.StatusEffectManager statusEffectManager = null,
+            MonoBehaviour staminaManagerRef = null,
+            MonoBehaviour statusEffectManagerRef = null,
             Skills.SkillTreeManager skillTreeManager = null,
             ShopManager shopManager = null,
             BestiaryManager bestiaryManager = null)
         {
+            var progressionManager = progressionManagerRef as PlayerProgressionManager;
+            var staminaManager = staminaManagerRef as StaminaManager;
+            var statusEffectManager = statusEffectManagerRef as Player.StatusEffectManager;
+
             if (equipmentManager != null)
             {
                 _equipmentManager = equipmentManager;

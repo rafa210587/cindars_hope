@@ -191,7 +191,7 @@ namespace CindarsHope.Cave.Runtime
 
             if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager != null)
             {
-                _playerManager = GameBootstrap.Instance.PlayerManager;
+                _playerManager = GameBootstrap.Instance.PlayerManager as PlayerManager;
                 return;
             }
 

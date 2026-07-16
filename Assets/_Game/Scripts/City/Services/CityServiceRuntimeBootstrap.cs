@@ -77,13 +77,16 @@ namespace CindarsHope.City.Services
             // Ouro: ligado ao PlayerManager via GameBootstrap (sem busca global de cena).
             CityServiceAccess.CurrentGoldFunc = () =>
             {
-                var pm = GameBootstrap.Instance?.PlayerManager;
+                // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager agora
+                // retorna MonoBehaviour (Core nao nomeia mais CindarsHope.Player); cast local para o
+                // tipo concreto, permitido pois este modulo ja pode nomear CindarsHope.Player.
+                var pm = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
                 return pm != null ? pm.CurrentGold : 0;
             };
 
             CityServiceAccess.SpendGoldFunc = cost =>
             {
-                var pm = GameBootstrap.Instance?.PlayerManager;
+                var pm = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
                 return pm != null && pm.TrySpendGold(cost);
             };
         }
