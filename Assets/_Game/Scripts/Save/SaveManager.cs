@@ -609,14 +609,46 @@ namespace CindarsHope.Save
         }
 
         /// <summary>Rebinda o CaveRunManager apÃ³s entrar na cena de caverna.</summary>
-        public void RebindCaveRuntime(CaveRunManager caveRunManager)
+        /// <remarks>
+        /// arch: quebra do par mutuo Cave|SceneManagement (2026-07-16) â€” recebe o componente como
+        /// MonoBehaviour (o installer em SceneManagement nÃ£o nomeia mais tipos Cave) e faz o cast
+        /// local aqui, jÃ¡ que Save->Cave Ã© aresta existente e nÃ£o-mutua.
+        /// </remarks>
+        public void RebindCaveRuntime(MonoBehaviour caveRunManagerObj)
         {
+            var caveRunManager = caveRunManagerObj as CaveRunManager;
             if (caveRunManager != null)
             {
                 _caveRunManager = caveRunManager;
             }
 
             _caveProvider = new CaveSectionProvider(_caveRunManager);
+        }
+
+        /// <summary>
+        /// Rebinda as combat databases do CaveRuntimeMaterializer anexado ao CaveRunManager.
+        /// arch: quebra do par mutuo Cave|SceneManagement (2026-07-16) â€” movido do installer em
+        /// SceneManagement para cÃ¡ (Save->Cave jÃ¡ Ã© aresta existente e nÃ£o-mutua) para que o
+        /// installer nÃ£o precise nomear CaveRuntimeMaterializer.
+        /// </summary>
+        public void RebindCaveMaterializerCombatDatabases(MonoBehaviour caveRunManagerObj, CombatRuntimeDatabasesRegistrySO registry)
+        {
+            if (registry == null)
+            {
+                return;
+            }
+
+            var caveRunManager = caveRunManagerObj as CaveRunManager;
+            if (caveRunManager == null)
+            {
+                return;
+            }
+
+            var materializer = caveRunManager.GetComponent<CaveRuntimeMaterializer>();
+            if (materializer != null)
+            {
+                materializer.RebindCombatDatabases(registry);
+            }
         }
 
         /// <summary>Rebinda o Transform do player (chamado apÃ³s respawn ou mudanÃ§a de cena).</summary>

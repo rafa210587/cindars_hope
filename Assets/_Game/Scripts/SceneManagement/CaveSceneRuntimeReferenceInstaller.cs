@@ -1,7 +1,4 @@
 using CindarsHope.Core.Bootstrap;
-using CindarsHope.Cave;
-using CindarsHope.Cave.Data;
-using CindarsHope.Cave.Runtime;
 using CindarsHope.Economy;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
@@ -11,14 +8,20 @@ using UnityEngine;
 
 namespace CindarsHope.SceneManagement
 {
+    // arch: quebra do par mutuo Cave|SceneManagement (2026-07-16) — este installer nao nomeia mais
+    // tipos concretos de Cave (CaveRunManager/CaveLevelRuntimeController/CaveDebugLevelSkipController/
+    // CaveRuntimeMaterializer). Os campos de cena continuam wireados via Inspector como
+    // MonoBehaviour, e o cast concreto + as chamadas Cave-especificas (materializer combat rebind,
+    // fallback do CaveDebugLevelSkipController) migraram para SaveManager e DebugHud, que ja tem a
+    // aresta Save->Cave / UI->Cave existente (nao-mutua). _bossGateRegistry foi removido: era
+    // carregado via Resources.Load mas nunca consumido (dead code).
     [DisallowMultipleComponent]
     public sealed class CaveSceneRuntimeReferenceInstaller : MonoBehaviour
     {
         [SerializeField] private Transform _playerTransform;
-        [SerializeField] private CaveRunManager _caveRunManager;
-        [SerializeField] private CaveLevelRuntimeController _caveLevelRuntimeController;
-        [SerializeField] private CaveDebugLevelSkipController _caveDebugLevelSkipController;
-        [SerializeField] private CaveBossGateRegistrySO _bossGateRegistry;
+        [SerializeField] private MonoBehaviour _caveRunManager;
+        [SerializeField] private MonoBehaviour _caveLevelRuntimeController;
+        [SerializeField] private MonoBehaviour _caveDebugLevelSkipController;
 
         private void Start()
         {
@@ -75,22 +78,6 @@ namespace CindarsHope.SceneManagement
                 Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: one or more runtime managers are missing during SaveManager rebind.", this);
             }
 
-            // Try to rebind CaveDebugLevelSkipController locally if null
-            if (_caveDebugLevelSkipController == null && _caveLevelRuntimeController != null)
-            {
-                _caveDebugLevelSkipController = _caveLevelRuntimeController.GetComponent<CaveDebugLevelSkipController>();
-            }
-
-            // Try to rebind CaveBossGateRegistry if null
-            if (_bossGateRegistry == null)
-            {
-                _bossGateRegistry = Resources.Load<CaveBossGateRegistrySO>("CaveBossGateRegistry");
-                if (_bossGateRegistry == null)
-                {
-                    Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: CaveBossGateRegistry not found in Resources or as Inspector reference.", this);
-                }
-            }
-
             var attackController = _playerTransform != null ? _playerTransform.GetComponent<CindarsHope.Combat.PlayerAttackController>() : null;
             if (attackController != null)
             {
@@ -106,11 +93,7 @@ namespace CindarsHope.SceneManagement
             }
             else
             {
-                if (_caveRunManager != null)
-                {
-                    var materializer = _caveRunManager.GetComponent<CaveRuntimeMaterializer>();
-                    if (materializer != null) materializer.RebindCombatDatabases(combatRegistry);
-                }
+                saveManager.RebindCaveMaterializerCombatDatabases(_caveRunManager, combatRegistry);
                 if (attackController != null)
                 {
                     attackController.RebindCombatData(combatRegistry.ItemDatabase, combatRegistry.WeaponDatabase, combatRegistry.SpellDatabase);

@@ -818,8 +818,21 @@ namespace CindarsHope.UI
             Debug.Log("DebugHud: runtime references rebound.");
         }
 
-        public void RebindCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController, CaveDebugLevelSkipController caveDebugLevelSkipController = null)
+        // arch: quebra do par mutuo Cave|SceneManagement (2026-07-16) — recebe os componentes como
+        // MonoBehaviour (o installer em SceneManagement não nomeia mais tipos Cave) e faz o cast
+        // local aqui, já que UI->Cave é aresta existente e não-mutua. O fallback de
+        // CaveDebugLevelSkipController (antes resolvido no installer) também migrou para cá.
+        public void RebindCaveRuntime(MonoBehaviour caveRunManagerObj, MonoBehaviour caveLevelRuntimeControllerObj, MonoBehaviour caveDebugLevelSkipControllerObj = null)
         {
+            var caveRunManager = caveRunManagerObj as CaveRunManager;
+            var caveLevelRuntimeController = caveLevelRuntimeControllerObj as CaveLevelRuntimeController;
+            var caveDebugLevelSkipController = caveDebugLevelSkipControllerObj as CaveDebugLevelSkipController;
+
+            if (caveDebugLevelSkipController == null && caveLevelRuntimeController != null)
+            {
+                caveDebugLevelSkipController = caveLevelRuntimeController.GetComponent<CaveDebugLevelSkipController>();
+            }
+
             if (caveRunManager != null)
             {
                 _caveRunManager = caveRunManager;
@@ -854,7 +867,7 @@ namespace CindarsHope.UI
             }
         }
 
-        public static void RebindExistingCaveRuntime(CaveRunManager caveRunManager, CaveLevelRuntimeController caveLevelRuntimeController, CaveDebugLevelSkipController caveDebugLevelSkipController = null)
+        public static void RebindExistingCaveRuntime(MonoBehaviour caveRunManager, MonoBehaviour caveLevelRuntimeController, MonoBehaviour caveDebugLevelSkipController = null)
         {
             if (_instance != null)
             {
