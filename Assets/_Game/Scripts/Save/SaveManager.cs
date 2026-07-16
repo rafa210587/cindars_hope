@@ -161,7 +161,10 @@ namespace CindarsHope.Save
         /// </summary>
         public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
         {
-            RebindStarterInventoryData(context.PlayerData, context.ItemDatabase);
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — context.ItemDatabase agora e
+            // ScriptableObject (Core parou de nomear CindarsHope.Inventory); cast local para o tipo
+            // concreto, permitido pois SaveManager (modulo Save) ja referencia CindarsHope.Inventory.
+            RebindStarterInventoryData(context.PlayerData, context.ItemDatabase as ItemDatabaseSO);
             Initialize();
         }
 

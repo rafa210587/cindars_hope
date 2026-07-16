@@ -69,7 +69,10 @@ namespace CindarsHope.Economy
 
         public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
         {
-            Configure(context.ItemDatabase);
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — context.ItemDatabase agora e
+            // ScriptableObject (Core parou de nomear CindarsHope.Inventory); cast local para o tipo
+            // concreto, permitido pois ShopManager (modulo Economy) ja referencia CindarsHope.Inventory.
+            Configure(context.ItemDatabase as ItemDatabaseSO);
         }
 
         public void Configure(ItemDatabaseSO itemDatabase)

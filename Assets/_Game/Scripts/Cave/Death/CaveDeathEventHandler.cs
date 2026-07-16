@@ -47,11 +47,13 @@ namespace CindarsHope.Cave.Death
 
             // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
             // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
             _resolver = new CaveDeathResolver(
                 _policy,
                 CindarsHope.Cave.Runtime.CaveRunManager.Instance,
                 bootstrap.PlayerManager,
-                bootstrap.InventoryManager,
+                bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager,
                 CindarsHope.Equipment.EquipmentManager.Instance,
                 bootstrap.PlayerProgressionManager,
                 bootstrap.TimeManager

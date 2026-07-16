@@ -40,10 +40,13 @@ namespace CindarsHope.Core.Bootstrap
         [SerializeField] private CindarsHope.Player.HungerManager _hungerManager;
         [SerializeField] private CindarsHope.Player.StaminaManager _staminaManager;
         [SerializeField] private CindarsHope.Player.Data.PlayerDataSO _playerData;
-        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
-        // ItemDatabaseSO agora vive em CindarsHope.Inventory.Data; referenciado por nome totalmente
-        // qualificado (sem using CindarsHope.Inventory) para nao reintroduzir a aresta Core->Inventory.
-        [SerializeField] private CindarsHope.Inventory.Data.ItemDatabaseSO _itemDatabase;
+        // arch: quebra do par mutuo Core|Inventory (2026-07-15) — campo agora tipado como
+        // ScriptableObject (nao mais CindarsHope.Inventory.Data.ItemDatabaseSO) para que Core pare de
+        // nomear CindarsHope.Inventory; Unity mantem a referencia de cena serializada normalmente
+        // (molde ModalManager/SaveManager). Consumidores fora de Core castam para o tipo concreto
+        // localmente. InventoryManager recebe este valor via GameBootstrapRuntimeContext
+        // (IGameBootstrapRuntimeService), nao mais por chamada direta.
+        [SerializeField] private ScriptableObject _itemDatabase;
         [SerializeField] private WeaponDatabaseSO _weaponDatabase;
         [SerializeField] private SpellDatabaseSO _spellDatabase;
         [SerializeField] private StatusEffectDatabaseSO _statusEffectDatabase;
@@ -57,13 +60,12 @@ namespace CindarsHope.Core.Bootstrap
         public CindarsHope.Player.PlayerManager PlayerManager =>
             CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
 
-        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
-        // InventoryManager nao eh mais passado por aqui via campo serializado; resolvido via
-        // DomainManagerRegistry (nao static Instance/Active, proibido pela regra de ratchet
-        // GlobalInventoryAccess para este tipo). Nome totalmente qualificado, sem using
-        // CindarsHope.Inventory, para nao reintroduzir a aresta Core->Inventory.
-        public CindarsHope.Inventory.InventoryManager InventoryManager =>
-            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+        // arch: quebra do par mutuo Core|Inventory (2026-07-15) — InventoryManager nao eh mais passado
+        // por aqui via campo serializado; resolvido via DomainManagerRegistry sob a porta
+        // IInventoryRuntime (Foundation), nao static Instance/Active (proibido pela regra de ratchet
+        // GlobalInventoryAccess) e sem nomear CindarsHope.Inventory.
+        public CindarsHope.Foundation.IInventoryRuntime InventoryManager =>
+            CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IInventoryRuntime>();
 
         public TimeManager TimeManager => _timeManager;
         public GameTimeManager GameTimeManager => _gameTimeManager;
@@ -84,7 +86,7 @@ namespace CindarsHope.Core.Bootstrap
 
         public CindarsHope.Player.Death.CorpseRecoveryManager CorpseRecoveryManager => _corpseRecoveryManager;
         public AnyaFountain AnyaFountain => _anyaFountain;
-        public CindarsHope.Inventory.Data.ItemDatabaseSO ItemDatabase => _itemDatabase;
+        public ScriptableObject ItemDatabase => _itemDatabase;
         public WeaponDatabaseSO WeaponDatabase => _weaponDatabase;
         public SpellDatabaseSO SpellDatabase => _spellDatabase;
         public StatusEffectDatabaseSO StatusEffectDatabase => _statusEffectDatabase;
@@ -117,10 +119,11 @@ namespace CindarsHope.Core.Bootstrap
         {
             EnsureCombatRuntimeReferences();
 
-            // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
-            // resolvido via DomainManagerRegistry (nao static Instance/Active, proibido para este tipo
-            // pela regra de ratchet GlobalInventoryAccess) em vez do campo serializado removido.
-            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — resolvido via
+            // DomainManagerRegistry sob a porta IInventoryRuntime (nao static Instance/Active,
+            // proibido para este tipo pela regra de ratchet GlobalInventoryAccess), sem nomear
+            // CindarsHope.Inventory.
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IInventoryRuntime>();
 
             // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido
             // via DomainManagerRegistry (nao static Instance/Active, proibido pela regra de ratchet
@@ -144,28 +147,17 @@ namespace CindarsHope.Core.Bootstrap
                 Debug.LogWarning("GameBootstrap: PlayerManager.Awake ainda nao registrou no DomainManagerRegistry (referencia ausente na cena).", this);
             }
 
-            if (inventoryManager != null)
-            {
-                if (_playerData != null && _itemDatabase != null)
-                {
-                    inventoryManager.InitializeFromStartingItems(_playerData, _itemDatabase);
-                }
-                else
-                {
-                    Debug.LogWarning("GameBootstrap is missing PlayerDataSO or ItemDatabaseSO. InventoryManager will initialize without starting items.", this);
-                    inventoryManager.Initialize();
-                }
-            }
-            else
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — a populacao de starting items
+            // (antigo inventoryManager.InitializeFromStartingItems(_playerData, _itemDatabase)) nao e
+            // mais chamada diretamente aqui: exigiria nomear CindarsHope.Inventory.InventoryManager e
+            // CindarsHope.Inventory.Data.ItemDatabaseSO. InventoryManager agora implementa
+            // IGameBootstrapRuntimeService e recebe PlayerData/ItemDatabase via
+            // GameBootstrapRuntimeContext dentro de InitializeBootstrapRuntimeServices() (mesmo molde
+            // ja usado por SaveManager/ShopManager).
+            if (inventoryManager == null)
             {
                 Debug.LogWarning("GameBootstrap: InventoryManager.Awake ainda nao registrou no DomainManagerRegistry (referencia ausente na cena).", this);
             }
-
-            // Loadout inicial de combate: deixa arco + flecha JA EQUIPADOS num jogo novo (arco numa mao,
-            // flecha na outra) para o arco/flecha ser testavel sem abrir o painel de equipamento. So
-            // preenche maos VAZIAS; ao carregar um save, EquipmentManager.RestoreFromSaveData faz
-            // _slots.Clear() e reconstroi do save, entao o save sempre vence (sem vazar este default).
-            EquipStarterCombatLoadout();
 
             if (_timeManager != null)
             {
@@ -235,6 +227,15 @@ namespace CindarsHope.Core.Bootstrap
             // GameBootstrapRuntimeContext dentro do loop abaixo (mesmo molde ja usado por ShopManager).
             InitializeBootstrapRuntimeServices();
 
+            // Loadout inicial de combate: deixa arco + flecha JA EQUIPADOS num jogo novo (arco numa mao,
+            // flecha na outra) para o arco/flecha ser testavel sem abrir o painel de equipamento. So
+            // preenche maos VAZIAS; ao carregar um save, EquipmentManager.RestoreFromSaveData faz
+            // _slots.Clear() e reconstroi do save, entao o save sempre vence (sem vazar este default).
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — movido para depois de
+            // InitializeBootstrapRuntimeServices() porque e ali que InventoryManager.InitializeFromBootstrap
+            // agora popula os starting items (antes rodava mais cedo, via chamada direta removida acima).
+            EquipStarterCombatLoadout();
+
             // SPEC 14A-FIX14: drop hotbar bindings that don't have a matching item in the inventory.
             // Prevents the "hotbar shows item_seed_wheat but Inventory is empty" inconsistency. Movido
             // para depois de InitializeBootstrapRuntimeServices() porque e ali que SaveManager.Initialize()
@@ -298,9 +299,9 @@ namespace CindarsHope.Core.Bootstrap
         private void EquipStarterCombatLoadout()
         {
             var equipmentRuntime = DomainManagerRegistry.Get<IEquipmentRuntime>();
-            // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
-            // DomainManagerRegistry em vez do campo serializado removido.
-            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+            // arch: Core|Inventory (2026-07-15) — resolvido via DomainManagerRegistry sob a porta
+            // IInventoryRuntime, sem nomear CindarsHope.Inventory.
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IInventoryRuntime>();
             if (equipmentRuntime == null || inventoryManager == null)
             {
                 return;
@@ -379,9 +380,10 @@ namespace CindarsHope.Core.Bootstrap
         private void InitializeDeathSystem()
         {
             var equipmentRuntime = DomainManagerRegistry.Get<IEquipmentRuntime>();
-            // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
-            // DomainManagerRegistry em vez do campo serializado removido.
-            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+            // arch: Core|Inventory (2026-07-15) — resolvido via DomainManagerRegistry sob a porta
+            // IInventoryRuntime, sem nomear CindarsHope.Inventory. CorpseRecoveryManager agora recebe
+            // IInventoryRuntime no construtor (nao mais o tipo concreto InventoryManager).
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IInventoryRuntime>();
             // arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — resolvido via
             // DomainManagerRegistry em vez do campo serializado removido.
             var playerManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Player.PlayerManager>();
@@ -428,9 +430,9 @@ namespace CindarsHope.Core.Bootstrap
                 _timeManager.Shutdown();
             }
 
-            // arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — resolvido via
-            // DomainManagerRegistry em vez do campo serializado removido.
-            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Inventory.InventoryManager>();
+            // arch: Core|Inventory (2026-07-15) — resolvido via DomainManagerRegistry sob a porta
+            // IInventoryRuntime, sem nomear CindarsHope.Inventory.
+            var inventoryManager = CindarsHope.Foundation.DomainManagerRegistry.Get<CindarsHope.Foundation.IInventoryRuntime>();
             if (inventoryManager != null)
             {
                 inventoryManager.Shutdown();

@@ -210,7 +210,9 @@ namespace CindarsHope.NPC.Services
             // o item não existir no banco, retorna null ⇒ EffectUnavailable (não cobra). Convenção do
             // catálogo de itens (F32): "item_book_*". Sem banco, fail-closed.
             var boot = GameBootstrap.Instance;
-            var db = boot != null ? boot.ItemDatabase : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.ItemDatabase agora retorna ScriptableObject).
+            var db = boot != null ? boot.ItemDatabase as ItemDatabaseSO : null;
             if (db == null) return null;
 
             foreach (var candidate in CandidateBookItemIds)
@@ -287,7 +289,9 @@ namespace CindarsHope.NPC.Services
         private static InventoryManager ResolveInventory()
         {
             var boot = GameBootstrap.Instance;
-            return boot != null ? boot.InventoryManager : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            return boot != null ? boot.InventoryManager as InventoryManager : null;
         }
 
         private static PlayerManager ResolvePlayer()

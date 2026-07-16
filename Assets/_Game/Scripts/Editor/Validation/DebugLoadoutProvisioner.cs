@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Equipment;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Tools;
 using UnityEditor;
 using UnityEngine;
@@ -69,7 +70,9 @@ namespace CindarsHope.Editor.Validation
                 return;
             }
 
-            var inv = bootstrap.InventoryManager;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            var inv = bootstrap.InventoryManager as InventoryManager;
             if (inv == null || !inv.IsInitialized)
             {
                 Debug.LogError("[DebugLoadout] InventoryManager is null or not initialized.");
@@ -139,8 +142,11 @@ namespace CindarsHope.Editor.Validation
                 return;
             }
 
-            var inv = bootstrap.InventoryManager;
-            var db = bootstrap.ItemDatabase;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para os tipos
+            // concretos (bootstrap.InventoryManager/ItemDatabase agora retornam a porta
+            // IInventoryRuntime / ScriptableObject).
+            var inv = bootstrap.InventoryManager as InventoryManager;
+            var db = bootstrap.ItemDatabase as ItemDatabaseSO;
 
             if (!inv.IsInitialized)
             {

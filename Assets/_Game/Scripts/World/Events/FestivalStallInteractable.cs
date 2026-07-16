@@ -73,7 +73,9 @@ namespace CindarsHope.World.Events
                 return;
             }
 
-            var inventory = GameBootstrap.Instance != null ? GameBootstrap.Instance.InventoryManager : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            var inventory = GameBootstrap.Instance != null ? GameBootstrap.Instance.InventoryManager as CindarsHope.Inventory.InventoryManager : null;
             if (inventory == null)
             {
                 Publish("Sem inventário disponível para a barraca.");

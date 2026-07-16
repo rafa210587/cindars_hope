@@ -183,7 +183,9 @@ namespace CindarsHope.Quests.Runtime
                     continue;
                 }
 
-                var inventoryManager = bootstrap.InventoryManager;
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo
+                // concreto (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+                var inventoryManager = bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager;
                 var playerManager = bootstrap.PlayerManager;
 
                 if (inventoryManager == null)

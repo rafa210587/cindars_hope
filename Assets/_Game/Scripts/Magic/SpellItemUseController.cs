@@ -59,7 +59,9 @@ namespace CindarsHope.Magic
         {
             var bootstrap = GameBootstrap.Instance;
             var spellbook = PlayerSpellbook.Instance;
-            var inventory = bootstrap?.InventoryManager;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            var inventory = bootstrap?.InventoryManager as InventoryManager;
             if (spellbook == null || inventory == null)
             {
                 Debug.LogWarning("SpellItemUseController: PlayerSpellbook ou InventoryManager ausente; uso ignorado.", this);

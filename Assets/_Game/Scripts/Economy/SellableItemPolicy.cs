@@ -12,10 +12,13 @@ namespace CindarsHope.Economy
                 return false;
 
             var bootstrap = GameBootstrap.Instance;
-            if (bootstrap?.ItemDatabase == null)
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.ItemDatabase agora retorna ScriptableObject).
+            var itemDatabase = bootstrap?.ItemDatabase as ItemDatabaseSO;
+            if (itemDatabase == null)
                 return false;
 
-            if (!bootstrap.ItemDatabase.TryGetById(itemId, out var itemData))
+            if (!itemDatabase.TryGetById(itemId, out var itemData))
                 return false;
 
             if (itemData == null || itemData.BaseValue <= 0)

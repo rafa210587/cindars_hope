@@ -39,7 +39,10 @@ namespace CindarsHope.Combat
             var inventoryManager = _inventoryManager;
             if (inventoryManager == null && GameBootstrap.Instance != null)
             {
-                inventoryManager = GameBootstrap.Instance.InventoryManager;
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — GameBootstrap.InventoryManager
+                // agora retorna a porta IInventoryRuntime; cast local para o tipo concreto (permitido,
+                // Combat ja referencia CindarsHope.Inventory).
+                inventoryManager = GameBootstrap.Instance.InventoryManager as InventoryManager;
             }
 
             if (inventoryManager == null)
@@ -67,7 +70,10 @@ namespace CindarsHope.Combat
             var inventoryManager = _inventoryManager;
             if (inventoryManager == null && GameBootstrap.Instance != null)
             {
-                inventoryManager = GameBootstrap.Instance.InventoryManager;
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — GameBootstrap.InventoryManager
+                // agora retorna a porta IInventoryRuntime; cast local para o tipo concreto (permitido,
+                // Combat ja referencia CindarsHope.Inventory).
+                inventoryManager = GameBootstrap.Instance.InventoryManager as InventoryManager;
             }
 
             if (inventoryManager == null)

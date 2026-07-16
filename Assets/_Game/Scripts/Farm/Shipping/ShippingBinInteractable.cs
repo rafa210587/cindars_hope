@@ -91,7 +91,9 @@ namespace CindarsHope.Farm.Shipping
         private InventoryManager ResolveInventory()
         {
             var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
-            return bootstrap != null ? bootstrap.InventoryManager : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            return bootstrap != null ? bootstrap.InventoryManager as InventoryManager : null;
         }
     }
 }

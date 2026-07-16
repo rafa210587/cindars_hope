@@ -174,7 +174,9 @@ namespace CindarsHope.Cave.Resources
 
             if (_inventoryManager == null)
             {
-                _inventoryManager = bootstrap.InventoryManager;
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo
+                // concreto (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+                _inventoryManager = bootstrap.InventoryManager as InventoryManager;
             }
 
             if (_equipmentManager == null)

@@ -138,7 +138,9 @@ namespace CindarsHope.Items.Runtime
             }
 
             var bootstrap = GameBootstrap.Instance;
-            var inventory = bootstrap != null ? bootstrap.InventoryManager : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            var inventory = bootstrap != null ? bootstrap.InventoryManager as InventoryManager : null;
             if (inventory == null || !inventory.IsInitialized)
             {
                 return;

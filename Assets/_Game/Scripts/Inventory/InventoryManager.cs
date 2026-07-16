@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Foundation;
@@ -18,7 +19,7 @@ namespace CindarsHope.Inventory
     }
 
     [DisallowMultipleComponent]
-    public class InventoryManager : MonoBehaviour, IInventoryTransactionPort
+    public class InventoryManager : MonoBehaviour, IInventoryTransactionPort, IInventoryRuntime, IGameBootstrapRuntimeService
     {
         public const int DefaultCapacity = 40;
         public const int MaxCapacity = 40;
@@ -33,19 +34,43 @@ namespace CindarsHope.Inventory
         public IReadOnlyDictionary<string, int> Items => _items;
         public IReadOnlyList<InventorySlot> Slots => _slots;
 
-        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) —
-        // InventoryManager se anuncia via DomainManagerRegistry (nao um static Instance/Active proprio,
+        // arch: quebra do par mutuo Core|Inventory (2026-07-15) — InventoryManager se anuncia via
+        // DomainManagerRegistry sob a porta IInventoryRuntime (nao um static Instance/Active proprio,
         // proibido pela regra de ratchet GlobalInventoryAccess) para o GameBootstrap parar de segurar
-        // referencia serializada direta a este tipo.
+        // referencia serializada direta a este tipo ou nomear CindarsHope.Inventory.
         private void Awake()
         {
-            DomainManagerRegistry.Register(this);
+            DomainManagerRegistry.Register<IInventoryRuntime>(this);
         }
 
         private void OnDestroy()
         {
-            DomainManagerRegistry.Unregister(this);
+            DomainManagerRegistry.Unregister<IInventoryRuntime>(this);
         }
+
+        // arch: quebra do par mutuo Core|Inventory (2026-07-15) — IGameBootstrapRuntimeService
+        // (molde SaveManager/ShopManager): GameBootstrap.InitializeBootstrapRuntimeServices() chama
+        // isto via GetComponents<MonoBehaviour>() (mesmo GameObject), sem precisar nomear
+        // CindarsHope.Inventory.InventoryManager. Substitui a antiga chamada direta
+        // inventoryManager.InitializeFromStartingItems(_playerData, _itemDatabase) feita por
+        // GameBootstrap.InitializeManagers().
+        public string BootstrapServiceId => "InventoryManager";
+
+        public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
+        {
+            var itemDatabase = context.ItemDatabase as ItemDatabaseSO;
+            if (context.PlayerData != null && itemDatabase != null)
+            {
+                InitializeFromStartingItems(context.PlayerData, itemDatabase);
+            }
+            else
+            {
+                Debug.LogWarning("InventoryManager.InitializeFromBootstrap is missing PlayerDataSO or ItemDatabaseSO. InventoryManager will initialize without starting items.", this);
+                Initialize();
+            }
+        }
+
+        public void ShutdownFromBootstrap() => Shutdown();
 
         public void Initialize()
         {

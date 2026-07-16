@@ -94,7 +94,9 @@ namespace CindarsHope.Items.Runtime
                 return;
 
             var bootstrap = GameBootstrap.Instance;
-            var itemDatabase = bootstrap != null ? bootstrap.ItemDatabase : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.ItemDatabase agora retorna ScriptableObject).
+            var itemDatabase = bootstrap != null ? bootstrap.ItemDatabase as ItemDatabaseSO : null;
             if (itemDatabase == null)
                 return;
 

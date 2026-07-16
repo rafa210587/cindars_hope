@@ -265,7 +265,13 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // CindarsHope.Save.SaveManager. Rebind*/Initialize/Shutdown ficam de fora da porta
                 // (assinaturas cross-modulo); GameBootstrap resolve esses via
                 // IGameBootstrapRuntimeService (Core.Bootstrap).
-                "ISaveRuntime.cs"
+                "ISaveRuntime.cs",
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — porta pura que permite a
+                // GameBootstrap (Core) e a CorpseRecoveryManager (Player.Death) consumirem
+                // InventoryManager sem nomear CindarsHope.Inventory. InitializeFromStartingItems fica
+                // de fora da porta (assinatura cross-modulo); InventoryManager agora implementa
+                // IGameBootstrapRuntimeService e resolve isso via GameBootstrapRuntimeContext.
+                "IInventoryRuntime.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

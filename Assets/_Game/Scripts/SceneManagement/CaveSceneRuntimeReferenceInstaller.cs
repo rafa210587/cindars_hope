@@ -4,6 +4,7 @@ using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Economy;
 using CindarsHope.Interaction;
+using CindarsHope.Inventory;
 using CindarsHope.Save;
 using CindarsHope.UI;
 using UnityEngine;
@@ -42,7 +43,10 @@ namespace CindarsHope.SceneManagement
             saveManager.RebindCaveRuntime(_caveRunManager);
 
             var playerManager = bootstrap.PlayerManager;
-            var inventoryManager = bootstrap.InventoryManager;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — bootstrap.InventoryManager agora
+            // retorna a porta IInventoryRuntime; este installer (SceneManagement, fora do par cortado)
+            // resolve o tipo concreto por cast local para os Rebind* cross-modulo (nao portaveis).
+            var inventoryManager = bootstrap.InventoryManager as InventoryManager;
             var hungerManager = bootstrap.HungerManager;
             var staminaManager = bootstrap.StaminaManager;
             var timeManager = bootstrap.TimeManager;

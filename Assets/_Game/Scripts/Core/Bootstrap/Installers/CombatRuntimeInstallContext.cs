@@ -1,5 +1,6 @@
 using System;
 using CindarsHope.Core.Data;
+using UnityEngine;
 
 namespace CindarsHope.Core.Bootstrap.Installers
 {
@@ -10,9 +11,10 @@ namespace CindarsHope.Core.Bootstrap.Installers
     /// arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager nao eh
     /// mais carregado aqui; CombatRuntimeInstaller resolve via EquipmentManager.Instance (self-registro,
     /// molde Craft/Economy/Skills).
-    /// arch: Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — o campo InventoryManager
-    /// foi removido: CombatRuntimeInstaller.Install nunca o lia (campo morto), e mante-lo aqui exigiria
-    /// referenciar CindarsHope.Inventory nesta pasta Core, reintroduzindo a aresta Core->Inventory.
+    /// arch: quebra do par mutuo Core|Inventory (2026-07-15) — ItemDatabase tipado como
+    /// ScriptableObject (nao mais CindarsHope.Inventory.Data.ItemDatabaseSO) para que Core pare de
+    /// nomear CindarsHope.Inventory; CombatRuntimeInstaller so faz null-check/.name (nao precisa do
+    /// tipo concreto). Consumidores fora de Core (ex.: PlayerAttackController) castam localmente.
     /// arch: Core|Player (spec_arch_core_player_cycle_reduction_v37) — StaminaManager/ManaManager
     /// referenciados por nome totalmente qualificado (sem using CindarsHope.Player) para nao
     /// reintroduzir a aresta Core->Player.
@@ -20,10 +22,7 @@ namespace CindarsHope.Core.Bootstrap.Installers
     [Serializable]
     public class CombatRuntimeInstallContext
     {
-        // arch: quebra do ciclo Core|Inventory (spec_arch_core_inventory_cycle_reduction_v36) — tipo
-        // totalmente qualificado (sem using CindarsHope.Inventory) para nao reintroduzir a aresta
-        // Core->Inventory; ItemDatabaseSO agora vive em CindarsHope.Inventory.Data.
-        public CindarsHope.Inventory.Data.ItemDatabaseSO ItemDatabase;
+        public ScriptableObject ItemDatabase;
         public WeaponDatabaseSO WeaponDatabase;
         public SpellDatabaseSO SpellDatabase;
         public StatusEffectDatabaseSO StatusEffectDatabase;

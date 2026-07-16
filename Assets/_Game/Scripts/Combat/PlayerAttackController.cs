@@ -109,8 +109,12 @@ namespace CindarsHope.Combat
                 if (_equipmentManager == null) _equipmentManager = EquipmentManager.Instance;
                 if (_staminaManager == null) _staminaManager = bootstrap.StaminaManager;
                 if (_manaManager == null) _manaManager = bootstrap.ManaManager;
-                if (_inventoryManager == null) _inventoryManager = bootstrap.InventoryManager;
-                if (_itemDatabase == null) _itemDatabase = bootstrap.ItemDatabase;
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — bootstrap.InventoryManager /
+                // bootstrap.ItemDatabase agora retornam a porta IInventoryRuntime / ScriptableObject
+                // (Core parou de nomear CindarsHope.Inventory); cast local para o tipo concreto,
+                // permitido pois Combat ja referencia CindarsHope.Inventory.
+                if (_inventoryManager == null) _inventoryManager = bootstrap.InventoryManager as InventoryManager;
+                if (_itemDatabase == null) _itemDatabase = bootstrap.ItemDatabase as ItemDatabaseSO;
                 if (_weaponDatabase == null) _weaponDatabase = bootstrap.WeaponDatabase;
                 if (_spellDatabase == null) _spellDatabase = bootstrap.SpellDatabase;
                 if (_statusEffectDatabase == null) _statusEffectDatabase = bootstrap.StatusEffectDatabase;

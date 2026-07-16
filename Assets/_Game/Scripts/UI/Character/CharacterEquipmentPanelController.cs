@@ -176,7 +176,9 @@ namespace CindarsHope.UI.Character
                 // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
                 // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
                 var equipment = EquipmentManager.Instance;
-                var inventory = GameBootstrap.Instance?.InventoryManager;
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo
+                // concreto (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+                var inventory = GameBootstrap.Instance?.InventoryManager as InventoryManager;
                 if (equipment == null || inventory == null)
                 {
                     return;
@@ -219,7 +221,7 @@ namespace CindarsHope.UI.Character
             else
             {
                 GUILayout.Label("Equipamento");
-                DrawEquipment(EquipmentManager.Instance, GameBootstrap.Instance?.InventoryManager);
+                DrawEquipment(EquipmentManager.Instance, GameBootstrap.Instance?.InventoryManager as InventoryManager);
             }
 
             GUILayout.Space(8f);

@@ -544,7 +544,9 @@ namespace CindarsHope.UI
         {
             if (_inventoryManager == null && GameBootstrap.Instance != null)
             {
-                _inventoryManager = GameBootstrap.Instance.InventoryManager;
+                // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo
+                // concreto (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+                _inventoryManager = GameBootstrap.Instance.InventoryManager as InventoryManager;
             }
         }
 

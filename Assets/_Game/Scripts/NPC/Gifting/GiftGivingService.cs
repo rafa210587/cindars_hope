@@ -95,7 +95,9 @@ namespace CindarsHope.NPC.Gifting
         private static InventoryManager ResolveInventory()
         {
             var boot = GameBootstrap.Instance;
-            return boot != null ? boot.InventoryManager : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            return boot != null ? boot.InventoryManager as InventoryManager : null;
         }
 
         // ── Adaptadores (mantêm o núcleo puro) ───────────────────────────────────────────────────

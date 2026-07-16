@@ -91,7 +91,9 @@ namespace CindarsHope.Fonte
                 return result;
             }
 
-            var inventory = GameBootstrap.Instance != null ? GameBootstrap.Instance.InventoryManager : null;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
+            // (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
+            var inventory = GameBootstrap.Instance != null ? GameBootstrap.Instance.InventoryManager as CindarsHope.Inventory.InventoryManager : null;
             if (inventory == null || !inventory.AddItem(LivingWaterItemId, 1))
             {
                 return FonteUseResult.Fail("INVENTORY_UNAVAILABLE_OR_FULL");

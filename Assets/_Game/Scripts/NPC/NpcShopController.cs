@@ -147,8 +147,11 @@ namespace CindarsHope.NPC
             // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
             RebindIfAvailable(ref _shopManager, ShopManager.Instance, nameof(_shopManager), reason);
             RebindIfAvailable(ref _playerManager, bootstrap.PlayerManager, nameof(_playerManager), reason);
-            RebindIfAvailable(ref _inventoryManager, bootstrap.InventoryManager, nameof(_inventoryManager), reason);
-            RebindIfAvailable(ref _itemDatabase, bootstrap.ItemDatabase, nameof(_itemDatabase), reason);
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — bootstrap.InventoryManager /
+            // bootstrap.ItemDatabase agora retornam a porta IInventoryRuntime / ScriptableObject; cast
+            // local para os tipos concretos preserva o RebindIfAvailable<T> where T : Object.
+            RebindIfAvailable(ref _inventoryManager, bootstrap.InventoryManager as InventoryManager, nameof(_inventoryManager), reason);
+            RebindIfAvailable(ref _itemDatabase, bootstrap.ItemDatabase as ItemDatabaseSO, nameof(_itemDatabase), reason);
             // arch: quebra do par mutuo NPC|UI (2026-07-15) — GameBootstrap.ModalManager e IModalRuntime
             // (porta); cast para MonoBehaviour (nao mais para o tipo concreto CindarsHope.UI.Modal.
             // ModalManager) preserva o RebindIfAvailable<T> where T : Object sem nomear o modulo UI.
@@ -770,8 +773,8 @@ namespace CindarsHope.NPC
             return bootstrap != null
                 && ((ShopManager.Instance != null && _shopManager != ShopManager.Instance)
                     || (bootstrap.PlayerManager != null && _playerManager != bootstrap.PlayerManager)
-                    || (bootstrap.InventoryManager != null && _inventoryManager != bootstrap.InventoryManager)
-                    || (bootstrap.ItemDatabase != null && _itemDatabase != bootstrap.ItemDatabase)
+                    || (bootstrap.InventoryManager != null && _inventoryManager != (bootstrap.InventoryManager as InventoryManager))
+                    || (bootstrap.ItemDatabase != null && _itemDatabase != (bootstrap.ItemDatabase as ItemDatabaseSO))
                     || (bootstrap.ModalManager != null && _modalManager != (bootstrap.ModalManager as MonoBehaviour)));
         }
 

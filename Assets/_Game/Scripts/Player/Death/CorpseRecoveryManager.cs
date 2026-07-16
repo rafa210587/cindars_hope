@@ -1,18 +1,20 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Foundation;
-using CindarsHope.Inventory;
 using CindarsHope.Player;
 using System;
 using UnityEngine;
 
 namespace CindarsHope.Player.Death
 {
+    // arch: quebra do par mutuo Core|Inventory (2026-07-15) — recebe IInventoryRuntime (porta,
+    // Foundation) em vez do tipo concreto CindarsHope.Inventory.InventoryManager, para que
+    // GameBootstrap (Core) construa esta classe sem nomear CindarsHope.Inventory.
     public class CorpseRecoveryManager
     {
         private Corpse _activeCorpse;
         private readonly PlayerManager _playerManager;
-        private readonly InventoryManager _inventoryManager;
+        private readonly IInventoryRuntime _inventoryManager;
         private readonly IEquipmentRuntime _equipmentRuntime;
 
         public Corpse ActiveCorpse => _activeCorpse;
@@ -20,7 +22,7 @@ namespace CindarsHope.Player.Death
 
         public CorpseRecoveryManager(
             PlayerManager playerManager,
-            InventoryManager inventoryManager,
+            IInventoryRuntime inventoryManager,
             IEquipmentRuntime equipmentRuntime)
         {
             _playerManager = playerManager ?? throw new ArgumentNullException(nameof(playerManager));
@@ -90,7 +92,7 @@ namespace CindarsHope.Player.Death
             var inventoryItemsToRemove = new System.Collections.Generic.List<CorpseItem>();
             foreach (var corpseItem in _activeCorpse.InventoryItems)
             {
-                if (_inventoryManager.TryAddItem(corpseItem.ItemId, corpseItem.Amount).Success)
+                if (_inventoryManager.AddItem(corpseItem.ItemId, corpseItem.Amount))
                 {
                     inventoryItemsToRemove.Add(corpseItem);
                 }
@@ -114,7 +116,7 @@ namespace CindarsHope.Player.Death
                     _equipmentRuntime.EquipItem((EquipmentSlot)corpseItem.SourceSlotType, corpseItem.ItemInstanceId);
                     equipmentItemsToRemove.Add(corpseItem);
                 }
-                else if (_inventoryManager.TryAddItem(corpseItem.ItemId, 1).Success)
+                else if (_inventoryManager.AddItem(corpseItem.ItemId, 1))
                 {
                     equipmentItemsToRemove.Add(corpseItem);
                 }
