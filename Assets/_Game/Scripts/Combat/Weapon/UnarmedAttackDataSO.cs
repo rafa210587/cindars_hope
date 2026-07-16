@@ -1,5 +1,6 @@
-using CindarsHope.Core.Data;
+﻿using CindarsHope.Core.Data;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Weapon
 {

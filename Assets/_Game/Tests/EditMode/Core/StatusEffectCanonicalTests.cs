@@ -1,5 +1,5 @@
 using CindarsHope.Combat.StatusEffect;
-using DamageType = CindarsHope.Combat.DamageType;
+using DamageType = CindarsHope.Foundation.DamageType;
 using NUnit.Framework;
 using UnityEngine;
 

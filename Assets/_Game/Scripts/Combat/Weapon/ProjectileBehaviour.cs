@@ -1,6 +1,7 @@
-using CindarsHope.Core;
+﻿using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Weapon
 {
@@ -21,7 +22,7 @@ namespace CindarsHope.Combat.Weapon
 
         [SerializeField] private int _maxHits = 1;
 
-        // fable_48 (aditivo): tags de material/elemento da munição (ex.: "Silver"/"Fire"). Anexadas
+        // fable_48 (aditivo): tags de material/elemento da muniÃ§Ã£o (ex.: "Silver"/"Fire"). Anexadas
         // ao DamageRequest no impacto para o matching de vulnerabilidade F06. Null => sem tags.
         private string[] _appliedTags;
 
@@ -194,9 +195,9 @@ namespace CindarsHope.Combat.Weapon
         }
 
         /// <summary>
-        /// fable_48 — anexa tags de material/elemento da munição (ex.: flecha "Silver"/"Fire"),
+        /// fable_48 â€” anexa tags de material/elemento da muniÃ§Ã£o (ex.: flecha "Silver"/"Fire"),
         /// propagadas ao DamageRequest no impacto para o matching de vulnerabilidade F06. Aditivo;
-        /// chamado pelo ProjectileSpawnService. Null/vazio mantém o comportamento sem tags.
+        /// chamado pelo ProjectileSpawnService. Null/vazio mantÃ©m o comportamento sem tags.
         /// </summary>
         public void SetAppliedTags(string[] appliedTags)
         {
@@ -210,8 +211,8 @@ namespace CindarsHope.Combat.Weapon
                 DamageType = _damageType,
                 SourcePosition = transform.position,
                 KnockbackForce = _knockbackForce,
-                // fable_48: tags da flecha viajam até o matching F06 (bônus só com vulnerabilidade
-                // declarada). Null/vazio para magias/projéteis sem tags (comportamento inalterado).
+                // fable_48: tags da flecha viajam atÃ© o matching F06 (bÃ´nus sÃ³ com vulnerabilidade
+                // declarada). Null/vazio para magias/projÃ©teis sem tags (comportamento inalterado).
                 WeaponMaterialTags = _appliedTags
             };
 
@@ -226,8 +227,8 @@ namespace CindarsHope.Combat.Weapon
 
         public void Initialize(Vector2 direction, float speed, float range, int baseDamage, DamageType damageType, float knockbackForce, float speedDecayToFraction = 1f, float homingRange = 0f)
         {
-            // Start() só roda no próximo frame; caminhos procedurais chamam Initialize no mesmo frame
-            // do AddComponent — cacheia aqui para garantir que velocity e collider estejam disponíveis.
+            // Start() sÃ³ roda no prÃ³ximo frame; caminhos procedurais chamam Initialize no mesmo frame
+            // do AddComponent â€” cacheia aqui para garantir que velocity e collider estejam disponÃ­veis.
             if (_rigidbody == null)
                 _rigidbody = GetComponent<Rigidbody2D>();
             if (_collider == null)

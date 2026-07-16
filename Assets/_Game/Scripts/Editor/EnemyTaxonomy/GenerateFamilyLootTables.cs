@@ -1,22 +1,23 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Loot;
 using UnityEditor;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Editor.EnemyTaxonomy
 {
     /// <summary>
-    /// fable_06 — Gera as TABELAS DE LOOT por família (EMENDA 2026-06-12: 9 famílias do catálogo) +
+    /// fable_06 â€” Gera as TABELAS DE LOOT por famÃ­lia (EMENDA 2026-06-12: 9 famÃ­lias do catÃ¡logo) +
     /// o <see cref="LootTableDatabaseSO"/>, e atribui <c>lootTableId</c> + <c>VulnerabilityMatrixProfileId</c>
-    /// a cada inimigo do roster. Também autora os perfis de MATRIZ de vulnerabilidade por família
-    /// (Element/Material/Status) seguindo as fichas do bestiário (Undead fraco Fire/Silver/Radiant e
+    /// a cada inimigo do roster. TambÃ©m autora os perfis de MATRIZ de vulnerabilidade por famÃ­lia
+    /// (Element/Material/Status) seguindo as fichas do bestiÃ¡rio (Undead fraco Fire/Silver/Radiant e
     /// imune Poison/Bleed; Construct fraco Hammer/Lightning, etc.).
     ///
-    /// Itens de drop: nomes nominais do ITEM_CATALOG §11 / E2.8 (item_material_*, item_essence_*).
-    /// Essências: 8% comum / +25% elite / 100% miniboss-boss (ITEM_CATALOG §10).
-    /// Não cria um segundo sistema de loot — usa LootTableSO/LootTableDatabaseSO existentes.
+    /// Itens de drop: nomes nominais do ITEM_CATALOG Â§11 / E2.8 (item_material_*, item_essence_*).
+    /// EssÃªncias: 8% comum / +25% elite / 100% miniboss-boss (ITEM_CATALOG Â§10).
+    /// NÃ£o cria um segundo sistema de loot â€” usa LootTableSO/LootTableDatabaseSO existentes.
     ///
     /// Run via: CindarsHope > Generate > Loot > Generate Family Loot Tables
     /// Batchmode: -executeMethod CindarsHope.Editor.EnemyTaxonomy.GenerateFamilyLootTables.Execute
@@ -29,7 +30,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string LootDatabasePath = "Assets/_Game/Data/Loot/LootTableDatabase.asset";
         private const string VulnDatabasePath = "Assets/_Game/Data/Combat/EnemyVulnerabilityProfileDatabase.asset";
 
-        // ── Família canônica (EMENDA: 9 famílias do catálogo) ────────────────────────────────
+        // â”€â”€ FamÃ­lia canÃ´nica (EMENDA: 9 famÃ­lias do catÃ¡logo) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         public enum Family { Insect, Plant, Humanoid, Beast, Undead, Construct, Elemental, Dragon, Aberration }
 
         public static void Execute() => Generate();
@@ -38,18 +39,18 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         {
             EnsureFolder(LootFolder);
 
-            // 1) Perfis de matriz de vulnerabilidade por família (Element/Material/Status).
+            // 1) Perfis de matriz de vulnerabilidade por famÃ­lia (Element/Material/Status).
             var matrixByFamily = CreateFamilyVulnerabilityMatrices();
 
-            // 2) Tabelas de loot por família.
+            // 2) Tabelas de loot por famÃ­lia.
             var tableByFamily = CreateFamilyLootTables();
 
-            // 2b) Tabelas de loot DEDICADAS de boss (lootTableId explícito no EnemyDataSO do boss,
-            //     ex.: enemy_meteor_ooze_king → loot_boss_meteor_ooze_king). Sem isto, o boss referencia
-            //     uma LootTableSO inexistente (erro de validação). Reusa item ids canônicos do §11.
+            // 2b) Tabelas de loot DEDICADAS de boss (lootTableId explÃ­cito no EnemyDataSO do boss,
+            //     ex.: enemy_meteor_ooze_king â†’ loot_boss_meteor_ooze_king). Sem isto, o boss referencia
+            //     uma LootTableSO inexistente (erro de validaÃ§Ã£o). Reusa item ids canÃ´nicos do Â§11.
             var bossTables = CreateBossLootTables();
 
-            // 3) Bancos (registries) — popula com as 9 tabelas de família + as tabelas de boss + os 9 perfis.
+            // 3) Bancos (registries) â€” popula com as 9 tabelas de famÃ­lia + as tabelas de boss + os 9 perfis.
             var allTables = tableByFamily.Values.Concat(bossTables.Values).ToArray();
             var lootDb = EnsureLootDatabase(allTables);
             AddMatrixProfilesToVulnerabilityDatabase(matrixByFamily.Values.ToArray());
@@ -65,9 +66,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                       $"EnemiesAssigned={assigned}, LootDatabase='{lootDb.name}'.");
         }
 
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Family resolution from FactionId (roster uses faction_* ids)
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         public static Family ResolveFamily(string factionId, string enemyId)
         {
             string f = (factionId ?? string.Empty).ToLowerInvariant();
@@ -89,13 +90,13 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 }
                 return Family.Beast;
             }
-            // Goblin/kobold/orc/duergar/drow/gnome → Humanoid.
+            // Goblin/kobold/orc/duergar/drow/gnome â†’ Humanoid.
             return Family.Humanoid;
         }
 
-        // ──────────────────────────────────────────────────────────────────────────────────
-        // Loot tables (ITEM_CATALOG §11 / E2.8 nominal ids)
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Loot tables (ITEM_CATALOG Â§11 / E2.8 nominal ids)
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         private static Dictionary<Family, LootTableSO> CreateFamilyLootTables()
         {
             var map = new Dictionary<Family, LootTableSO>();
@@ -148,17 +149,17 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             return map;
         }
 
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Boss loot tables (lootTableId dedicado no EnemyDataSO do boss)
-        // ──────────────────────────────────────────────────────────────────────────────────
-        // Bosses cujo EnemyDataSO referencia um lootTableId próprio (não-família). Drop garantido de
-        // essência elemental + materiais raros (recompensa de boss). Item ids canônicos do §11 já usados
-        // nas tabelas de família — nenhum item novo inventado.
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Bosses cujo EnemyDataSO referencia um lootTableId prÃ³prio (nÃ£o-famÃ­lia). Drop garantido de
+        // essÃªncia elemental + materiais raros (recompensa de boss). Item ids canÃ´nicos do Â§11 jÃ¡ usados
+        // nas tabelas de famÃ­lia â€” nenhum item novo inventado.
         private static Dictionary<string, LootTableSO> CreateBossLootTables()
         {
             var map = new Dictionary<string, LootTableSO>();
 
-            // enemy_meteor_ooze_king (boss elemental/ígneo de meteoro). lootTableId: loot_boss_meteor_ooze_king.
+            // enemy_meteor_ooze_king (boss elemental/Ã­gneo de meteoro). lootTableId: loot_boss_meteor_ooze_king.
             map["loot_boss_meteor_ooze_king"] = BuildTable("loot_boss_meteor_ooze_king", "boss",
                 guaranteed: new[]
                 {
@@ -210,15 +211,15 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             DropChance = rare ? 0.5f : 1f, IsRare = rare
         };
 
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Family vulnerability matrices (per CAVE_BESTIARY fichas)
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         private static Dictionary<Family, EnemyVulnerabilityProfileSO> CreateFamilyVulnerabilityMatrices()
         {
             var map = new Dictionary<Family, EnemyVulnerabilityProfileSO>();
             EnsureFolder(VulnFolder);
 
-            // Undead: fraco Fire/Silver/Radiant(→arcane proxy); imune Poison/Bleed(→Toxic).
+            // Undead: fraco Fire/Silver/Radiant(â†’arcane proxy); imune Poison/Bleed(â†’Toxic).
             map[Family.Undead] = BuildMatrix("vulnmatrix_undead",
                 elements: new[] { Elem(DamageType.Fire, 1.5f), Elem(DamageType.Arcane, 1.4f), Elem(DamageType.Toxic, 0f) },
                 materials: new[] { Mat("silver", 1.5f), Mat("radiant", 1.5f) },
@@ -230,7 +231,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 materials: new[] { Mat("hammer", 1.5f) },
                 statuses: new[] { Stat("status_poison", 0f), Stat("status_bleed", 0f), Stat("status_chill", 0.5f) });
 
-            // Elemental: temático — fogo fraco a gelo e vice-versa (cobertura genérica via gelo).
+            // Elemental: temÃ¡tico â€” fogo fraco a gelo e vice-versa (cobertura genÃ©rica via gelo).
             map[Family.Elemental] = BuildMatrix("vulnmatrix_elemental",
                 elements: new[] { Elem(DamageType.Ice, 1.4f), Elem(DamageType.Physical, 0.85f) },
                 materials: new MaterialMultiplier[0],
@@ -266,7 +267,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 materials: new MaterialMultiplier[0],
                 statuses: new[] { Stat("status_fear", 0f) });
 
-            // Aberration/Void: fraco a radiante (→arcane proxy); imune a fear/charm.
+            // Aberration/Void: fraco a radiante (â†’arcane proxy); imune a fear/charm.
             map[Family.Aberration] = BuildMatrix("vulnmatrix_aberration",
                 elements: new[] { Elem(DamageType.Arcane, 1.3f) },
                 materials: new[] { Mat("radiant", 1.5f) },
@@ -287,7 +288,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             }
 
             so.VulnerabilityProfileId = id;
-            so.TriggerMode = VulnerabilityTriggerMode.AlwaysForTest; // matriz é sempre-ativa (não janela).
+            so.TriggerMode = VulnerabilityTriggerMode.AlwaysForTest; // matriz Ã© sempre-ativa (nÃ£o janela).
             so.ElementMultipliers = elements ?? new ElementMultiplier[0];
             so.MaterialMultipliers = materials ?? new MaterialMultiplier[0];
             so.StatusVulnerabilities = statuses ?? new StatusVulnerability[0];
@@ -299,9 +300,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private static MaterialMultiplier Mat(string tag, float m) => new MaterialMultiplier { MaterialTag = tag, Multiplier = m };
         private static StatusVulnerability Stat(string id, float m) => new StatusVulnerability { StatusId = id, DurationMultiplier = m };
 
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Roster assignment
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         private static int AssignToRoster(
             Dictionary<Family, LootTableSO> tables, Dictionary<Family, EnemyVulnerabilityProfileSO> matrices)
         {
@@ -322,9 +323,9 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             return assigned;
         }
 
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Registries
-        // ──────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         private static LootTableDatabaseSO EnsureLootDatabase(LootTableSO[] tables)
         {
             EnsureFolder("Assets/_Game/Data/Loot");

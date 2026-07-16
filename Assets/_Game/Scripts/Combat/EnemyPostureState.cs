@@ -2,6 +2,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
 using CindarsHope.Enemy;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Combat

@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -58,6 +59,12 @@ namespace CindarsHope.Combat
 
         private void Awake()
         {
+            // arch: quebra do par mutuo Combat|Player (2026-07-16) — registra a porta neutra
+            // Foundation.CombatStateProvider assim que o tracker existe (Install() roda no Start()
+            // da composition root, antes de qualquer Update()). PlayerSprintController le a porta
+            // em vez de nomear CindarsHope.Combat.CombatStateTracker diretamente.
+            CombatStateProvider.IsInCombat = () => ActiveInstance != null && ActiveInstance.IsInCombat;
+
             if (!RegisterAsActive())
             {
                 Destroy(this);

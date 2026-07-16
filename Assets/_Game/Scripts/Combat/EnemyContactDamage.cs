@@ -1,9 +1,10 @@
-using CindarsHope.Core;
+﻿using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
 using CindarsHope.Player;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {
@@ -68,7 +69,7 @@ namespace CindarsHope.Combat
             {
                 if (Time.time >= _lastDamageTime + _enemyData.contactDamageCooldownSeconds)
                 {
-                    // F03/F27: redução central; atacante = este inimigo (perfect block reflete).
+                    // F03/F27: reduÃ§Ã£o central; atacante = este inimigo (perfect block reflete).
                     var finalDamage = PlayerDamageReceiver.ApplyDamage(_playerManager, _enemyData.contactDamage, _enemyData.enemyId, DamageType.Physical, gameObject);
                     CombatLog.Log($"CombatLog: EnemyContactDamage. SourceName={_enemyData.DisplayName}, SourceEnemyId={_enemyData.enemyId}, Target=Player, Damage={finalDamage}.");
                     GameEventBus.Publish(new PlayerDamagedEvent(finalDamage, collision.transform.position, _enemyData.enemyId, _enemyData.DisplayName));

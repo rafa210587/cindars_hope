@@ -1,5 +1,6 @@
-using CindarsHope.Core.Data;
+﻿using CindarsHope.Core.Data;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {
@@ -61,7 +62,7 @@ namespace CindarsHope.Combat
         // DebuffStrike: ID do status a aplicar no hit (reusa StatusEffect database)
         public string DebuffStatusId = string.Empty;
 
-        [Header("Rise-Once (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        [Header("Rise-Once (spec_enemy_attack_kits_v1 â€” primitiva P2)")]
         // Habilita o comportamento de reerguer 1x apos "morrer" (cracked_bone, undead_shambler, etc.).
         public bool RiseOnceEnabled = false;
         // Fracao de HP maximo restaurada ao reerguer (0-1).
@@ -71,7 +72,7 @@ namespace CindarsHope.Combat
         // Duracao do colapso antes de reerguer (janela de punicao para o player destruir os ossos).
         public float RiseOnceCollapseSeconds = 2f;
 
-        [Header("Ally Heal/Buff (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        [Header("Ally Heal/Buff (spec_enemy_attack_kits_v1 â€” primitiva P2)")]
         // Raio de busca por alvo-aliado (mais ferido, senao mais proximo).
         public float AllyTargetRadius = 4f;
         // Fracao de HP curada no aliado-alvo (0 = nao cura, so buffa).
@@ -79,7 +80,7 @@ namespace CindarsHope.Combat
         // StatusId de buff aplicado ao aliado-alvo (reusa StatusEffect database; vazio = nenhum).
         public string AllyBuffStatusId = string.Empty;
 
-        [Header("Hazard Zone (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        [Header("Hazard Zone (spec_enemy_attack_kits_v1 â€” primitiva P2)")]
         // Raio da zona de hazard deixada no chao.
         public float HazardRadius = 1.5f;
         // Duracao total da zona antes de expirar.
@@ -93,13 +94,13 @@ namespace CindarsHope.Combat
         // Quando true, a TelegraphedAoE desta acao deixa a zona persistir apos o dano inicial.
         public bool LeavesHazard = false;
 
-        [Header("Pull (spec_enemy_attack_kits_v1 — primitiva P2)")]
+        [Header("Pull (spec_enemy_attack_kits_v1 â€” primitiva P2)")]
         // Distancia (em tiles) que o player e deslocado na direcao configurada.
         public float PullDistanceTiles = 1.5f;
         // True = puxa na direcao do atacante (agarrao); false = puxa na direcao do hazard/origem configurada pelo consumidor.
         public bool PullFromAttackerOrigin = true;
 
-        [Header("Salvo Multiplo (spec_enemy_attack_kits_v1 — follow-up salvas)")]
+        [Header("Salvo Multiplo (spec_enemy_attack_kits_v1 â€” follow-up salvas)")]
         // Quantidade de projeteis disparados em leque por uso (1 = comportamento atual, sem leque).
         public int ProjectileCount = 1;
         // Angulo total (graus) do leque, distribuido simetricamente em torno da direcao base.
@@ -146,7 +147,7 @@ namespace CindarsHope.Combat
         BurrowStrike,
         LeapStrike,
         BlinkStrike,
-        // fable_83 — ataques-assinatura por arquetipo (aditivos no fim; save-safe)
+        // fable_83 â€” ataques-assinatura por arquetipo (aditivos no fim; save-safe)
         ComboStrike,
         TelegraphedAoE,
         SummonAdds,

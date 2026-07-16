@@ -1,4 +1,5 @@
 using CindarsHope.Core.Data;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -128,17 +129,6 @@ namespace CindarsHope.Combat
         Burrower,
         Swarm,
         Tank,
-        Elite,
-        MiniBoss,
-        Boss
-    }
-
-    public enum EnemyDifficulty
-    {
-        VeryEasy,
-        Easy,
-        Normal,
-        Hard,
         Elite,
         MiniBoss,
         Boss

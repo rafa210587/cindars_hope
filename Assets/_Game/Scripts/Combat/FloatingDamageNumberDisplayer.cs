@@ -1,7 +1,8 @@
-using CindarsHope.Core;
+﻿using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
 using TMPro;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {

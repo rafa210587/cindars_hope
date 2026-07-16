@@ -11,6 +11,7 @@ using CindarsHope.Core.Time;
 using CindarsHope.Economy;
 using CindarsHope.Equipment;
 using CindarsHope.Enemy;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Interaction;

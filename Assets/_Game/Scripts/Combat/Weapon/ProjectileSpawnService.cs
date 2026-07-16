@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Weapon
 {
@@ -52,7 +53,7 @@ namespace CindarsHope.Combat.Weapon
             }
 
             projectileBehaviour.SetMaxHits(request.MaxHits);
-            // fable_48: tags de material/elemento da munição (flecha) anexadas ANTES do Initialize;
+            // fable_48: tags de material/elemento da muniÃ§Ã£o (flecha) anexadas ANTES do Initialize;
             // viajam ao DamageRequest no impacto (matching de vulnerabilidade F06). Null = sem tags.
             projectileBehaviour.SetAppliedTags(request.AppliedTags);
 

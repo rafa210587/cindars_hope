@@ -1,6 +1,7 @@
-using CindarsHope.Combat;
+﻿using CindarsHope.Combat;
 using CindarsHope.Core.Data;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Skills
 {

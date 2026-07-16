@@ -1,4 +1,5 @@
 ﻿using System;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {

@@ -1,6 +1,7 @@
-using CindarsHope.Combat.StatusEffect;
+﻿using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core.Data;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Magic
 {
@@ -28,31 +29,31 @@ namespace CindarsHope.Combat.Magic
         public GameObject ProjectilePrefab;
         public int CastRangeMeters = 10;
 
-        // fable_08 — forma da magia + parâmetros por shape. Defaults NEUTROS: Shape=Bolt e
-        // CastTimeSeconds=0 (já existente) garantem que toda spell autorada antes desta spec
-        // continue castando como o projétil linear instantâneo de hoje (caracterização nos testes).
+        // fable_08 â€” forma da magia + parÃ¢metros por shape. Defaults NEUTROS: Shape=Bolt e
+        // CastTimeSeconds=0 (jÃ¡ existente) garantem que toda spell autorada antes desta spec
+        // continue castando como o projÃ©til linear instantÃ¢neo de hoje (caracterizaÃ§Ã£o nos testes).
         [Header("Shape & Targeting (fable_08)")]
         public SpellShape Shape = SpellShape.Bolt;
 
-        /// <summary>Auto-target (EMENDA 6.6-A): mira no inimigo elegível mais próximo/na mira. Bolt apenas.</summary>
+        /// <summary>Auto-target (EMENDA 6.6-A): mira no inimigo elegÃ­vel mais prÃ³ximo/na mira. Bolt apenas.</summary>
         public bool AutoTarget = false;
 
-        /// <summary>Cone: meia-abertura do leque em graus (e nº de projéteis via ConeProjectileCount).</summary>
+        /// <summary>Cone: meia-abertura do leque em graus (e nÂº de projÃ©teis via ConeProjectileCount).</summary>
         [Range(5f, 170f)] public float ConeHalfAngleDegrees = 35f;
 
-        /// <summary>Cone: quantidade de projéteis disparados no leque.</summary>
+        /// <summary>Cone: quantidade de projÃ©teis disparados no leque.</summary>
         [Range(1, 9)] public int ConeProjectileCount = 3;
 
-        /// <summary>Nova: raio da explosão radial 360° (OverlapCircleAll).</summary>
+        /// <summary>Nova: raio da explosÃ£o radial 360Â° (OverlapCircleAll).</summary>
         public float NovaRadius = 3f;
 
-        // SelfRestore — quantidades restauradas no próprio caster (0 = não restaura aquele recurso).
+        // SelfRestore â€” quantidades restauradas no prÃ³prio caster (0 = nÃ£o restaura aquele recurso).
         [Header("Self Restore (fable_08)")]
         public int RestoreHp = 0;
         public int RestoreStamina = 0;
         public int RestoreMana = 0;
 
-        // Barrier — absorção temporária antes da defesa/resistência (PlayerBarrierState).
+        // Barrier â€” absorÃ§Ã£o temporÃ¡ria antes da defesa/resistÃªncia (PlayerBarrierState).
         [Header("Barrier (fable_08)")]
         public int BarrierAbsorb = 0;
         public float BarrierSeconds = 0f;
@@ -68,7 +69,7 @@ namespace CindarsHope.Combat.Magic
             RequiredWillpower = Mathf.Max(1, RequiredWillpower);
             CastRangeMeters = Mathf.Max(1, CastRangeMeters);
 
-            // fable_08 — clamps neutros (não mexem em assets Bolt: campos ficam em 0/defaults).
+            // fable_08 â€” clamps neutros (nÃ£o mexem em assets Bolt: campos ficam em 0/defaults).
             CastTimeSeconds = Mathf.Max(0f, CastTimeSeconds);
             ConeProjectileCount = Mathf.Max(1, ConeProjectileCount);
             NovaRadius = Mathf.Max(0f, NovaRadius);

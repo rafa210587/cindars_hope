@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Core.Events
 {

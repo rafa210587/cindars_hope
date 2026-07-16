@@ -1,6 +1,7 @@
-using CindarsHope.Core.Data;
+﻿using CindarsHope.Core.Data;
 using CindarsHope.Equipment;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Weapon
 {
@@ -31,16 +32,16 @@ namespace CindarsHope.Combat.Weapon
         public GameObject ProjectilePrefab;
         public float ProjectileSpeed = 10f;
 
-        // F03 (emenda): campos canônicos EQUIPMENT_MECHANICAL_BASELINES §2.
-        // Defaults NEUTROS — assets antigos se comportam igual até o gerador rodar.
+        // F03 (emenda): campos canÃ´nicos EQUIPMENT_MECHANICAL_BASELINES Â§2.
+        // Defaults NEUTROS â€” assets antigos se comportam igual atÃ© o gerador rodar.
         [Header("Canonical Baselines (F03)")]
-        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) —
+        // arch: quebra do ciclo Core|Player (spec_arch_core_player_cycle_reduction_v37) â€”
         // PlayerAttributeType agora vive em CindarsHope.Foundation.
         public CindarsHope.Foundation.PlayerAttributeType PrimaryAttribute = CindarsHope.Foundation.PlayerAttributeType.Strength;
         [Range(0f, 2f)] public float PrimaryAttributeWeight = 0f;
         public CindarsHope.Foundation.PlayerAttributeType SecondaryAttribute = CindarsHope.Foundation.PlayerAttributeType.Dexterity;
         [Range(0f, 2f)] public float SecondaryAttributeWeight = 0f;
-        public float BaseLightStaminaCost = 0f;   // 0 = usar StaminaCost × razões globais (F02)
+        public float BaseLightStaminaCost = 0f;   // 0 = usar StaminaCost Ã— razÃµes globais (F02)
         public float BaseHeavyStaminaCost = 0f;
         public float BaseChargedStaminaCost = 0f;
         [Range(0f, 3f)] public float PostureDamageModifier = 1f;
@@ -86,7 +87,7 @@ namespace CindarsHope.Combat.Weapon
         Tool = 102
     }
 
-    // F03: classe de peso canônica (afeta feel/knockback futuro).
+    // F03: classe de peso canÃ´nica (afeta feel/knockback futuro).
     public enum WeaponWeightClass
     {
         Light = 0,

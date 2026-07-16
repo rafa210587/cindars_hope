@@ -1,9 +1,10 @@
-using CindarsHope.Combat.Weapon;
+﻿using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Player;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {
@@ -98,7 +99,7 @@ namespace CindarsHope.Combat
             var playerManager = GameBootstrap.Instance?.PlayerManager as CindarsHope.Player.PlayerManager;
             if (playerManager != null)
             {
-                // F03/F18: redução central por Defense + resistência do tipo de dano.
+                // F03/F18: reduÃ§Ã£o central por Defense + resistÃªncia do tipo de dano.
                 var finalDamage = PlayerDamageReceiver.ApplyDamage(playerManager, _damage, _sourceEnemyId, _damageType);
                 GameEventBus.Publish(new PlayerDamagedEvent(finalDamage, transform.position, _sourceEnemyId, _sourceEnemyName));
                 FloatingDamageNumberDisplayer.ShowAtTarget(playerController.gameObject, finalDamage, _damageType, false, true);

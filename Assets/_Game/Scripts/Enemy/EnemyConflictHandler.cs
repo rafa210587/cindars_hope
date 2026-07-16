@@ -1,17 +1,18 @@
-using CindarsHope.Combat;
+﻿using CindarsHope.Combat;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Enemy
 {
     /// <summary>
-    /// fable_78 (SLICE 4) — Lida com o ecossistema de conflito inter-monstro.
-    /// Isolado por design: o caminho player-only do EnemyBrain não é tocado quando
-    /// nenhum CaveConflictCombatant está presente neste inimigo.
-    /// Não é MonoBehaviour; instanciado e possuído pelo EnemyBrain.
+    /// fable_78 (SLICE 4) â€” Lida com o ecossistema de conflito inter-monstro.
+    /// Isolado por design: o caminho player-only do EnemyBrain nÃ£o Ã© tocado quando
+    /// nenhum CaveConflictCombatant estÃ¡ presente neste inimigo.
+    /// NÃ£o Ã© MonoBehaviour; instanciado e possuÃ­do pelo EnemyBrain.
     /// </summary>
     internal sealed class EnemyConflictHandler
     {
-        // ─── Referências injetadas ────────────────────────────────────────────
+        // â”€â”€â”€ ReferÃªncias injetadas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private Transform _transform;
         private EnemyDataSO _enemyData;
@@ -22,25 +23,25 @@ namespace CindarsHope.Enemy
         private System.Func<float> _getPhaseDamageMultiplier;
         private System.Func<EnemyActionSO> _getPendingAction;
 
-        // ─── Estado de conflito ───────────────────────────────────────────────
+        // â”€â”€â”€ Estado de conflito â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // fable_78 (SLICE 4): conflito inter-monstro. _conflictCombatant != null SOMENTE na visita em que
-        // este inimigo é marcado como rival (injetado pelo materializer). Quando null, o caminho de
-        // targeting/dano é EXATAMENTE o player-only existente (byte-for-byte). Quando presente, o alvo
-        // hostil válido é {player} ∪ {rivais vivos}; o ramo de rival é totalmente isolado por este guard.
+        // este inimigo Ã© marcado como rival (injetado pelo materializer). Quando null, o caminho de
+        // targeting/dano Ã© EXATAMENTE o player-only existente (byte-for-byte). Quando presente, o alvo
+        // hostil vÃ¡lido Ã© {player} âˆª {rivais vivos}; o ramo de rival Ã© totalmente isolado por este guard.
         private CindarsHope.Cave.Ecosystem.CaveConflictCombatant _conflictCombatant;
         private CindarsHope.Cave.Data.CaveEcosystemBalanceSO _ecosystemBalance;
 
-        // Alvo rival corrente desta decisão (null = mirando o player). Quando não-null, _playerTarget é
-        // apontado para o GameObject do rival para REUSAR o locomotor/estado existente; só a resolução de
+        // Alvo rival corrente desta decisÃ£o (null = mirando o player). Quando nÃ£o-null, _playerTarget Ã©
+        // apontado para o GameObject do rival para REUSAR o locomotor/estado existente; sÃ³ a resoluÃ§Ã£o de
         // dano diverge (TakeDamageFromEnemy em vez de PlayerDamageReceiver).
         private CindarsHope.Combat.EnemyHealth _rivalHealthTarget;
 
-        // ─── Init ────────────────────────────────────────────────────────────
+        // â”€â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// Inicializa o handler com referências do EnemyBrain.
-        /// Deve ser chamado em Awake e re-chamado quando necessário.
+        /// Inicializa o handler com referÃªncias do EnemyBrain.
+        /// Deve ser chamado em Awake e re-chamado quando necessÃ¡rio.
         /// </summary>
         internal void Init(
             Transform transform,
@@ -58,18 +59,18 @@ namespace CindarsHope.Enemy
             _getPendingAction = getPendingAction;
         }
 
-        /// <summary>Atualiza referências de dados após ConfigureRuntime do EnemyBrain.</summary>
+        /// <summary>Atualiza referÃªncias de dados apÃ³s ConfigureRuntime do EnemyBrain.</summary>
         internal void UpdateRefs(EnemyDataSO enemyData, CindarsHope.Combat.EnemyHealth health)
         {
             _enemyData = enemyData;
             _health = health;
         }
 
-        // ─── API pública de configuração ──────────────────────────────────────
+        // â”€â”€â”€ API pÃºblica de configuraÃ§Ã£o â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// fable_78 (SLICE 4) — liga este handler ao conflito inter-monstro. Chamado pelo materializer
-        /// logo após anexar o CaveConflictCombatant ao inimigo (injeção explícita; sem scene search).
+        /// fable_78 (SLICE 4) â€” liga este handler ao conflito inter-monstro. Chamado pelo materializer
+        /// logo apÃ³s anexar o CaveConflictCombatant ao inimigo (injeÃ§Ã£o explÃ­cita; sem scene search).
         /// </summary>
         internal void ConfigureConflict(
             CindarsHope.Cave.Ecosystem.CaveConflictCombatant combatant,
@@ -95,19 +96,19 @@ namespace CindarsHope.Enemy
             _conflictCombatant = combatant;
         }
 
-        // ─── Targeting ────────────────────────────────────────────────────────
+        // â”€â”€â”€ Targeting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// fable_78 (SLICE 4): escolhe o alvo hostil corrente entre {player} ∪ {rivais vivos}, ponderado
+        /// fable_78 (SLICE 4): escolhe o alvo hostil corrente entre {player} âˆª {rivais vivos}, ponderado
         /// por PlayerAggroWeight/RivalAggroWeight. Quando um rival vence, retorna o GameObject do rival
         /// para que EnemyBrain aponte _playerTarget e registre _rivalHealthTarget. Quando o player vence
-        /// (ou não há rival vivo), retorna null (= usar caminho player-only).
-        /// Ramo isolado: no-op se este inimigo não é conflict-combatant.
+        /// (ou nÃ£o hÃ¡ rival vivo), retorna null (= usar caminho player-only).
+        /// Ramo isolado: no-op se este inimigo nÃ£o Ã© conflict-combatant.
         /// </summary>
-        /// <param name="playerGo">GameObject do player visível (pode ser null).</param>
+        /// <param name="playerGo">GameObject do player visÃ­vel (pode ser null).</param>
         /// <param name="currentPlayerTarget">_playerTarget atual do EnemyBrain.</param>
-        /// <param name="rivalTarget">Saída: EnemyHealth do rival (null = mirando player).</param>
-        /// <returns>O GameObject que deve ser o _playerTarget; null = sem mudança.</returns>
+        /// <param name="rivalTarget">SaÃ­da: EnemyHealth do rival (null = mirando player).</param>
+        /// <returns>O GameObject que deve ser o _playerTarget; null = sem mudanÃ§a.</returns>
         internal GameObject RefreshConflictTarget(
             GameObject playerGo,
             GameObject currentPlayerTarget,
@@ -125,8 +126,8 @@ namespace CindarsHope.Enemy
             var rival = _conflictCombatant.FindNearestLivingRival(_transform.position, detection);
             if (rival == null)
             {
-                // Sem rival vivo no raio → mira o player como sempre.
-                return playerGo; // restaura playerGo (pode ser o mesmo já)
+                // Sem rival vivo no raio â†’ mira o player como sempre.
+                return playerGo; // restaura playerGo (pode ser o mesmo jÃ¡)
             }
 
             float playerWeighted = ResolveWeightedDistance(playerGo, _ecosystemBalance?.PlayerAggroWeight ?? 1f);
@@ -137,7 +138,7 @@ namespace CindarsHope.Enemy
             {
                 _rivalHealthTarget = rival;
                 rivalTarget = rival;
-                return rival.gameObject; // reusa movimento/distância/estado existentes
+                return rival.gameObject; // reusa movimento/distÃ¢ncia/estado existentes
             }
             else if (playerGo != null)
             {
@@ -147,13 +148,13 @@ namespace CindarsHope.Enemy
             return null;
         }
 
-        // ─── Dano inter-monstro ───────────────────────────────────────────────
+        // â”€â”€â”€ Dano inter-monstro â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
         /// fable_78 (SLICE 4): resolve um ataque contra o rival corrente. Re-checa alcance (o rival pode ter
         /// se movido durante o windup, igual ao caminho do player) e roteia o dano base do action pelo
-        /// caminho de origem-inimigo do EnemyHealth (×InterMonsterDamageMultiplier + "Ferido" + kill-by-enemy).
-        /// Reusa o mesmo locomotor/estado: não cria projétil/pathfinding novo (área/ranged tratam como hit direto).
+        /// caminho de origem-inimigo do EnemyHealth (Ã—InterMonsterDamageMultiplier + "Ferido" + kill-by-enemy).
+        /// Reusa o mesmo locomotor/estado: nÃ£o cria projÃ©til/pathfinding novo (Ã¡rea/ranged tratam como hit direto).
         /// </summary>
         internal void ResolveInterMonsterAction(DamageType dmgType)
         {
@@ -185,10 +186,10 @@ namespace CindarsHope.Enemy
             rival.TakeDamageFromEnemy(rawDamage, dmgType, killerInstanceId, caveLevel, _ecosystemBalance);
         }
 
-        // ─── Propriedades de consulta ─────────────────────────────────────────
+        // â”€â”€â”€ Propriedades de consulta â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// fable_78: true quando o alvo corrente é um rival (conflito), não o player.
+        /// fable_78: true quando o alvo corrente Ã© um rival (conflito), nÃ£o o player.
         /// Byte-for-byte preservado: _rivalHealthTarget != null && !_rivalHealthTarget.IsDead.
         /// </summary>
         internal bool IsTargetingRival => _rivalHealthTarget != null && !_rivalHealthTarget.IsDead;
@@ -196,10 +197,10 @@ namespace CindarsHope.Enemy
         /// <summary>True quando este inimigo tem um combatant de conflito registrado.</summary>
         internal bool HasConflictCombatant => _conflictCombatant != null;
 
-        // ─── Helpers ─────────────────────────────────────────────────────────
+        // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-        // Distância "ponderada" por peso de aggro: peso menor torna o alvo mais atraente (divide a distância).
-        // Peso <= 0 desliga o alvo (distância infinita). Peso 1 = distância crua (default empate = mais próximo).
+        // DistÃ¢ncia "ponderada" por peso de aggro: peso menor torna o alvo mais atraente (divide a distÃ¢ncia).
+        // Peso <= 0 desliga o alvo (distÃ¢ncia infinita). Peso 1 = distÃ¢ncia crua (default empate = mais prÃ³ximo).
         private float ResolveWeightedDistance(GameObject target, float weight)
         {
             if (target == null)

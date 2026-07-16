@@ -282,7 +282,21 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "IStatusEffectRuntime.cs",
                 "IHungerRuntime.cs",
                 "IStaminaRuntime.cs",
-                "IManaRuntime.cs"
+                "IManaRuntime.cs",
+                // arch: quebra do par mutuo Combat|Player (2026-07-16) — enums puros DamageType
+                // (de CindarsHope.Combat) e EnemyDifficulty (extraido de Combat/EnemyDataSO.cs)
+                // movidos para Foundation (molde ModalType/SkillModifierType), mais 4 hooks
+                // reversos no molde de RepairEfficiencyProvider: ResistanceProvider (resistencia
+                // por tipo de dano, F18), SpawnGraceProvider (graca de spawn concedida pelo
+                // PlayerDeathController), CombatStateProvider (estado "em combate" do
+                // CombatStateTracker) e ActionBlockProvider (Stun via PlayerStatusReceiver).
+                // Player para de nomear CindarsHope.Combat; Combat registra as Sources/Actions.
+                "DamageType.cs",
+                "EnemyDifficulty.cs",
+                "ResistanceProvider.cs",
+                "SpawnGraceProvider.cs",
+                "CombatStateProvider.cs",
+                "ActionBlockProvider.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

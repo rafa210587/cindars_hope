@@ -1,28 +1,29 @@
-using System;
+﻿using System;
 using CindarsHope.Combat.Bestiary;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Telemetry
 {
     /// <summary>
-    /// fable_59 — serviço de telemetria de combate. Host bootstrap, OFF por default, ligado por um
-    /// TOGGLE DEBUG estático (<see cref="DebugEnabled"/>, seguindo o estilo de toggle do projeto).
-    /// Coleta 100% PASSIVA via GameEventBus — não toca NENHUM sistema de combate. Toda a matemática
-    /// é delegada a <see cref="CombatTelemetrySession"/> (pura/testável). Flush por nível em
-    /// CaveLevelEnteredEvent (fecha o nível anterior) e CaveExitedEvent; grava JSON local fora do save.
+    /// fable_59 â€” serviÃ§o de telemetria de combate. Host bootstrap, OFF por default, ligado por um
+    /// TOGGLE DEBUG estÃ¡tico (<see cref="DebugEnabled"/>, seguindo o estilo de toggle do projeto).
+    /// Coleta 100% PASSIVA via GameEventBus â€” nÃ£o toca NENHUM sistema de combate. Toda a matemÃ¡tica
+    /// Ã© delegada a <see cref="CombatTelemetrySession"/> (pura/testÃ¡vel). Flush por nÃ­vel em
+    /// CaveLevelEnteredEvent (fecha o nÃ­vel anterior) e CaveExitedEvent; grava JSON local fora do save.
     ///
-    /// Padrão de bootstrap idêntico ao CombatStateTracker (fable_69): instância única auto-registrada
-    /// via RuntimeInitializeOnLoadMethod, sem global search. Assinaturas só existem quando o toggle
-    /// está ON (CA-1): desligar remove TODAS as assinaturas e descarta o estado.
+    /// PadrÃ£o de bootstrap idÃªntico ao CombatStateTracker (fable_69): instÃ¢ncia Ãºnica auto-registrada
+    /// via RuntimeInitializeOnLoadMethod, sem global search. Assinaturas sÃ³ existem quando o toggle
+    /// estÃ¡ ON (CA-1): desligar remove TODAS as assinaturas e descarta o estado.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CombatTelemetryService : MonoBehaviour
     {
         private static CombatTelemetryService _activeInstance;
 
-        // OFF por default (CA-1). Toggle debug estático: nada coleta até alguém ligar.
+        // OFF por default (CA-1). Toggle debug estÃ¡tico: nada coleta atÃ© alguÃ©m ligar.
         private static bool _debugEnabled;
 
         public static CombatTelemetryService ActiveInstance => _activeInstance;
@@ -108,7 +109,7 @@ namespace CindarsHope.Combat.Telemetry
             }
             else
             {
-                // Desligar descarta a sessão em andamento (telemetria é descartável).
+                // Desligar descarta a sessÃ£o em andamento (telemetria Ã© descartÃ¡vel).
                 Unsubscribe();
                 _session = null;
             }
@@ -175,11 +176,11 @@ namespace CindarsHope.Combat.Telemetry
             Debug.Log("[CombatTelemetryService] Telemetria de combate DESLIGADA (assinaturas removidas).");
         }
 
-        // ── Handlers (delegam para a sessão pura) ────────────────────────────────────────────────
+        // â”€â”€ Handlers (delegam para a sessÃ£o pura) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private void OnCaveLevelEntered(CaveLevelEnteredEvent evt)
         {
-            // Fecha o nível anterior (se havia um trecho aberto com dados) e abre o novo.
+            // Fecha o nÃ­vel anterior (se havia um trecho aberto com dados) e abre o novo.
             FlushIfMeaningful();
             var band = ResolveBandForLevel(evt.CaveLevel);
             _session = new CombatTelemetrySession(_classLookup);
@@ -188,7 +189,7 @@ namespace CindarsHope.Combat.Telemetry
 
         private void OnCaveExited(CaveExitedEvent evt)
         {
-            // Sair da caverna fecha o nível corrente.
+            // Sair da caverna fecha o nÃ­vel corrente.
             FlushIfMeaningful();
             _session = new CombatTelemetrySession(_classLookup);
         }
@@ -198,17 +199,17 @@ namespace CindarsHope.Combat.Telemetry
 
         private void OnDamageApplied(DamageAppliedEvent evt)
         {
-            // DamageAppliedEvent traz o DamageResult completo; usamos para iniciar o cronômetro de TTK
-            // quando o alvo é um inimigo (TargetId preenchido) sem dupla contagem de dano dado: o
-            // somatório de dano dado já vem de EnemyDamagedEvent. Aqui só registramos o primeiro dano
-            // por TargetId, caso EnemyDamagedEvent não seja publicado para aquele golpe.
+            // DamageAppliedEvent traz o DamageResult completo; usamos para iniciar o cronÃ´metro de TTK
+            // quando o alvo Ã© um inimigo (TargetId preenchido) sem dupla contagem de dano dado: o
+            // somatÃ³rio de dano dado jÃ¡ vem de EnemyDamagedEvent. Aqui sÃ³ registramos o primeiro dano
+            // por TargetId, caso EnemyDamagedEvent nÃ£o seja publicado para aquele golpe.
             var result = evt.DamageResult;
             if (result == null || string.IsNullOrEmpty(result.TargetId))
             {
                 return;
             }
 
-            // Marca primeiro-dano sem somar dano (evita dupla contagem); o somatório fica em EnemyDamaged.
+            // Marca primeiro-dano sem somar dano (evita dupla contagem); o somatÃ³rio fica em EnemyDamaged.
             _session?.RecordEnemyDamaged(result.TargetId, 0, result.DamageType.ToString(), Now);
         }
 
@@ -245,7 +246,7 @@ namespace CindarsHope.Combat.Telemetry
         private void OnPlayerDied(PlayerDiedEvent evt) =>
             _session?.RecordDeath(Now);
 
-        // ── Flush ────────────────────────────────────────────────────────────────────────────────
+        // â”€â”€ Flush â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private void FlushIfMeaningful()
         {
@@ -254,7 +255,7 @@ namespace CindarsHope.Combat.Telemetry
                 return;
             }
 
-            // Só grava se houve alguma atividade de combate no trecho (evita lixo vazio por transição).
+            // SÃ³ grava se houve alguma atividade de combate no trecho (evita lixo vazio por transiÃ§Ã£o).
             var hasActivity = _session.KillEntryCount > 0
                               || _session.DamageDealtTotal > 0
                               || _session.DamageTakenTotal > 0;
@@ -268,16 +269,16 @@ namespace CindarsHope.Combat.Telemetry
         }
 
         /// <summary>
-        /// Gaps §53 nominais — métricas que a direction pede mas que NÃO têm evento disponível hoje
-        /// (esta spec não altera eventos de gameplay). Documentadas no relatório para follow-up.
+        /// Gaps Â§53 nominais â€” mÃ©tricas que a direction pede mas que NÃƒO tÃªm evento disponÃ­vel hoje
+        /// (esta spec nÃ£o altera eventos de gameplay). Documentadas no relatÃ³rio para follow-up.
         /// </summary>
         private static string[] BuildNominalGaps()
         {
             return new[]
             {
                 "no block-held-time event: time spent blocking unavailable",
-                "no event for dash distance / average movement speed (COMBAT_CORE §53)",
-                "no event for consumables used in combat (COMBAT_CORE §53)",
+                "no event for dash distance / average movement speed (COMBAT_CORE Â§53)",
+                "no event for consumables used in combat (COMBAT_CORE Â§53)",
             };
         }
 
@@ -294,7 +295,7 @@ namespace CindarsHope.Combat.Telemetry
             return 0;
         }
 
-        /// <summary>Garante a instância na cena (instalada pelo composition root, sem global search recorrente).</summary>
+        /// <summary>Garante a instÃ¢ncia na cena (instalada pelo composition root, sem global search recorrente).</summary>
         public static class Bootstrap
         {
             public static void Install(Transform owner)

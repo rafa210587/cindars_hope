@@ -1,18 +1,19 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Combat.Bestiary;
 using UnityEditor;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Editor.EnemyTaxonomy
 {
     /// <summary>
-    /// spec_enemy_attack_kits_v1 — gera/realinha EnemyActionSO/EnemyActionSetSO para o universo
+    /// spec_enemy_attack_kits_v1 â€” gera/realinha EnemyActionSO/EnemyActionSetSO para o universo
     /// completo de ~121 donos de kit (113 fichas canonicas das 7 bands + 7 NOVAS do Roster +
     /// enemy_meteor_ooze_king), conforme ENEMY_ATTACK_CATALOG_DIRECTION_v1.0 (v1.1) e
     /// ENEMY_ATTACK_IMPLEMENTATION_DIRECTION_v1.0. NAO recria CreateEnemyActionsAndSets (que ja
-    /// cobre os 60 IDs do Roster) — REALINHA in-place os assets ja existentes desses 60 (mesmos
+    /// cobre os 60 IDs do Roster) â€” REALINHA in-place os assets ja existentes desses 60 (mesmos
     /// ActionId/ActionSetId, campos atualizados para o kit final do catalogo v1.1) e CRIA os
     /// assets que faltam para as 113 canonicas + 7 novas + meteor_ooze_king, usando o naming
     /// padrao `action_{enemyId sem prefixo}_{melee|ranged|special[_n]}` / `actionset_{enemyId}`.
@@ -28,15 +29,15 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string ActionsFolder = "Assets/_Game/Data/Enemies/Actions";
         private const string ActionSetsFolder = "Assets/_Game/Data/Enemies/ActionSets";
 
-        // ── Multiplicadores nomeados por arquetipo (no-magic-balance-values) ───────────────────
-        // Derivados de ENEMY_ATTACK_IMPLEMENTATION_DIRECTION_v1.0 §3 (range/windup por arquetipo)
-        // e do catalogo §1b (melee de fallback ~60% do dano do ranged, sem status).
+        // â”€â”€ Multiplicadores nomeados por arquetipo (no-magic-balance-values) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Derivados de ENEMY_ATTACK_IMPLEMENTATION_DIRECTION_v1.0 Â§3 (range/windup por arquetipo)
+        // e do catalogo Â§1b (melee de fallback ~60% do dano do ranged, sem status).
 
         private const float FallbackMeleeDamageMultiplier = 0.6f;
         private const float SpecialDamageMultiplier = 1.15f;
         private const float NormalDamageMultiplier = 1.0f;
 
-        /// <summary>Um arquetipo mecanico compartilhado (§2 do catalogo): EnemyActionType + perfil de
+        /// <summary>Um arquetipo mecanico compartilhado (Â§2 do catalogo): EnemyActionType + perfil de
         /// timing/range/telegraph. Os numeros de dano vem de BestiaryCreatureDef.Damage (por-criatura);
         /// aqui so o multiplicador e os campos nao-dano (range/windup/telegraph) sao fixos por arquetipo.</summary>
         private readonly struct Archetype
@@ -66,7 +67,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             }
         }
 
-        // Slugs `atk_*` -> perfil mecanico (ENEMY_ATTACK_CATALOG_DIRECTION_v1.0 §2 + IMPLEMENTATION §3).
+        // Slugs `atk_*` -> perfil mecanico (ENEMY_ATTACK_CATALOG_DIRECTION_v1.0 Â§2 + IMPLEMENTATION Â§3).
         private static readonly Dictionary<string, Archetype> Archetypes = new Dictionary<string, Archetype>
         {
             ["atk_slash"] = new Archetype(EnemyActionType.MeleeAttack, 1.2f, 0.4f, 0.35f, 2.0f, telegraphId: "telegraph_fast_melee"),
@@ -91,8 +92,8 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             ["atk_summon"] = new Archetype(EnemyActionType.SummonAdds, 3.0f, 0.7f, 0.6f, 6.0f, telegraphId: "telegraph_caster_spell"),
             ["atk_buff"] = new Archetype(EnemyActionType.SelfBuff, 0f, 0.5f, 0.5f, 8.0f, telegraphId: "telegraph_caster_spell"),
             ["atk_flurry"] = new Archetype(EnemyActionType.ComboStrike, 1.1f, 0.3f, 0.35f, 3.0f, telegraphId: "telegraph_fast_melee"),
-            // Pseudo-arquetipo atk_debuff: reusa a folha do golpe base — aqui mapeado como DebuffStrike
-            // de perfil melee curto (dano do golpe base + status garantido), conforme IMPLEMENTATION §3.
+            // Pseudo-arquetipo atk_debuff: reusa a folha do golpe base â€” aqui mapeado como DebuffStrike
+            // de perfil melee curto (dano do golpe base + status garantido), conforme IMPLEMENTATION Â§3.
             ["atk_debuff"] = new Archetype(EnemyActionType.DebuffStrike, 1.0f, 0.3f, 0.35f, 2.5f, telegraphId: "telegraph_fast_melee"),
         };
 
@@ -109,7 +110,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public System.Action<EnemyActionSO> ConfigureSpecial;
         }
 
-        // Plano de corpo -> arquetipo de melee fallback (catalogo §1b). Chave = Family (BestiaryCreatureDef).
+        // Plano de corpo -> arquetipo de melee fallback (catalogo Â§1b). Chave = Family (BestiaryCreatureDef).
         private static string FallbackMeleeArchetypeForFamily(string family)
         {
             switch ((family ?? string.Empty).ToLowerInvariant())
@@ -152,7 +153,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 if (!enemyDataById.TryGetValue(kit.EnemyId, out var enemyData))
                 {
                     skippedNoAsset++;
-                    Debug.LogWarning($"[GenerateEnemyAttackKits] EnemyDataSO nao materializado para '{kit.EnemyId}' — kit pulado (fora de escopo criar o asset).");
+                    Debug.LogWarning($"[GenerateEnemyAttackKits] EnemyDataSO nao materializado para '{kit.EnemyId}' â€” kit pulado (fora de escopo criar o asset).");
                     continue;
                 }
 
@@ -207,14 +208,14 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 string motherId = "enemy_" + pair.Value;
                 if (!enemyDataById.TryGetValue(rosterId, out var rosterData))
                 {
-                    Debug.LogWarning($"[GenerateEnemyAttackKits] Variancia '{rosterId}' sem EnemyDataSO — pulada.");
+                    Debug.LogWarning($"[GenerateEnemyAttackKits] Variancia '{rosterId}' sem EnemyDataSO â€” pulada.");
                     continue;
                 }
 
                 string motherSetId = $"actionset_{motherId}";
                 if (AssetDatabase.LoadAssetAtPath<EnemyActionSetSO>($"{ActionSetsFolder}/{motherSetId}.asset") == null)
                 {
-                    Debug.LogWarning($"[GenerateEnemyAttackKits] Mae '{motherId}' de '{rosterId}' nao tem actionset gerado ainda — variancia pulada nesta rodada.");
+                    Debug.LogWarning($"[GenerateEnemyAttackKits] Mae '{motherId}' de '{rosterId}' nao tem actionset gerado ainda â€” variancia pulada nesta rodada.");
                     continue;
                 }
 
@@ -230,7 +231,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                       $"Fichas sem EnemyDataSO (puladas)={skippedNoAsset}.");
         }
 
-        // ── Upsert helpers (idempotentes — carregam por path antes de criar) ───────────────────
+        // â”€â”€ Upsert helpers (idempotentes â€” carregam por path antes de criar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private static void UpsertAction(string actionId, string label, string archetypeSlug, int baseDamage, string damageTypeId,
             KitEntry? specialConfig, ref int created, ref int realigned)

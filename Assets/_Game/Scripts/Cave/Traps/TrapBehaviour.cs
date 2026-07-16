@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using CindarsHope.Combat;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
@@ -8,26 +8,27 @@ using CindarsHope.Interaction;
 using CindarsHope.Player;
 using CindarsHope.Tools;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Cave.Traps
 {
     /// <summary>
-    /// fable_60 — armadilha materializada na caverna. Máquina de estados telegrafada (CA-2):
-    /// Armed → (proximidade/pisada) → Telegraphing (telegraphSeconds) → Triggered (efeito). O efeito
-    /// usa os caminhos EXISTENTES — dano via <see cref="PlayerDamageReceiver"/>, status via
-    /// <see cref="PlayerStatusReceiver"/> (F01) — nunca um pipeline novo. Desarme via
+    /// fable_60 â€” armadilha materializada na caverna. MÃ¡quina de estados telegrafada (CA-2):
+    /// Armed â†’ (proximidade/pisada) â†’ Telegraphing (telegraphSeconds) â†’ Triggered (efeito). O efeito
+    /// usa os caminhos EXISTENTES â€” dano via <see cref="PlayerDamageReceiver"/>, status via
+    /// <see cref="PlayerStatusReceiver"/> (F01) â€” nunca um pipeline novo. Desarme via
     /// <see cref="IInteractable"/> com chance por tier de ferramenta (<see cref="TrapDisarmResolver"/>).
-    /// Detecção do amuleto de Nyx (F23) revela o telegraph à distância.
+    /// DetecÃ§Ã£o do amuleto de Nyx (F23) revela o telegraph Ã  distÃ¢ncia.
     ///
-    /// Sem busca global de cena (mesmo padrão do <c>CaveHazardTile</c>): o player é resolvido pelo
+    /// Sem busca global de cena (mesmo padrÃ£o do <c>CaveHazardTile</c>): o player Ã© resolvido pelo
     /// trigger; o <c>PlayerManager</c> pelo <c>GameBootstrap</c> ou pelo collider. Determinismo de
-    /// posição/tipo/quantidade é do <see cref="CaveTrapPlanner"/>; o desfecho do desarme é
-    /// determinístico por seed da tentativa. O estado final é persistido pelo callback de snapshot.
+    /// posiÃ§Ã£o/tipo/quantidade Ã© do <see cref="CaveTrapPlanner"/>; o desfecho do desarme Ã©
+    /// determinÃ­stico por seed da tentativa. O estado final Ã© persistido pelo callback de snapshot.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class TrapBehaviour : MonoBehaviour, IInteractable
     {
-        private const int FallbackStatusDamage = 4; // dano simbólico quando o status F01 não aplica
+        private const int FallbackStatusDamage = 4; // dano simbÃ³lico quando o status F01 nÃ£o aplica
 
         private TrapDefinition _definition;
         private string _trapInstanceId = string.Empty;
@@ -42,8 +43,8 @@ namespace CindarsHope.Cave.Traps
         private PlayerManager _playerManager;
         private Action<string, TrapState> _onStateChanged;
         // spec_cave_biome_art_profiles_runtime (CV01): sprite opcional do bioma; null = placeholder
-        // atual (retângulo colorido). Quando presente, o tint de estado continua aplicado por cima
-        // (telegraph precisa continuar legível — CAVE_BIOME_VISUAL_REFERENCE §2).
+        // atual (retÃ¢ngulo colorido). Quando presente, o tint de estado continua aplicado por cima
+        // (telegraph precisa continuar legÃ­vel â€” CAVE_BIOME_VISUAL_REFERENCE Â§2).
         private Sprite _biomeSprite;
 
         public string TrapInstanceId => _trapInstanceId;
@@ -88,9 +89,9 @@ namespace CindarsHope.Cave.Traps
         }
 
         /// <summary>
-        /// fable_60 — o efeito de detecção da F23 revelou esta armadilha (CA-6). Idempotente; só faz
+        /// fable_60 â€” o efeito de detecÃ§Ã£o da F23 revelou esta armadilha (CA-6). Idempotente; sÃ³ faz
         /// sentido enquanto armada. Publica <c>TrapDetectedEvent</c> uma vez e troca o visual para o
-        /// aviso. Sem o efeito (raio 0), nunca é chamada — a flag permanece inerte.
+        /// aviso. Sem o efeito (raio 0), nunca Ã© chamada â€” a flag permanece inerte.
         /// </summary>
         public void RevealByDetection()
         {
@@ -124,7 +125,7 @@ namespace CindarsHope.Cave.Traps
             }
             else
             {
-                // Falha = ativação imediata (risco/recompensa §22).
+                // Falha = ativaÃ§Ã£o imediata (risco/recompensa Â§22).
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("Desarme falhou!"));
                 BeginTelegraph();
             }
@@ -181,7 +182,7 @@ namespace CindarsHope.Cave.Traps
 
             if (_state == TrapState.Telegraphing)
             {
-                return; // já contando o windup
+                return; // jÃ¡ contando o windup
             }
 
             _state = TrapState.Telegraphing;
@@ -233,7 +234,7 @@ namespace CindarsHope.Cave.Traps
                     ApplyStatus(primaryOnly: false, allowFallbackDamage: false);
                     break;
                 case TrapEffectCategory.SpawnEnemy:
-                    // Baú falso materializa como FalseChestTrap, não como TrapBehaviour — sem efeito aqui.
+                    // BaÃº falso materializa como FalseChestTrap, nÃ£o como TrapBehaviour â€” sem efeito aqui.
                     break;
             }
         }
@@ -280,7 +281,7 @@ namespace CindarsHope.Cave.Traps
                 return;
             }
 
-            // Fallback sem F01 (receiver/database ausente): dano simbólico para a armadilha não ser inerte.
+            // Fallback sem F01 (receiver/database ausente): dano simbÃ³lico para a armadilha nÃ£o ser inerte.
             if (allowFallbackDamage && _playerManager != null)
             {
                 var dealt = PlayerDamageReceiver.ApplyDamage(_playerManager, FallbackStatusDamage, _trapInstanceId, ResolveDamageType());
@@ -291,7 +292,7 @@ namespace CindarsHope.Cave.Traps
 
         private ToolTier ResolveToolTier()
         {
-            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — EquipmentManager
+            // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) â€” EquipmentManager
             // resolvido via EquipmentManager.Instance (self-registro, molde Craft/Economy/Skills).
             var equipmentManager = CindarsHope.Equipment.EquipmentManager.Instance;
             if (equipmentManager != null)
@@ -300,7 +301,7 @@ namespace CindarsHope.Cave.Traps
                 return tier > ToolTier.None ? tier : ToolTier.Basic;
             }
 
-            return ToolTier.Basic; // mãos/ferramenta básica sempre disponível
+            return ToolTier.Basic; // mÃ£os/ferramenta bÃ¡sica sempre disponÃ­vel
         }
 
         private DamageType ResolveDamageType()
@@ -326,7 +327,7 @@ namespace CindarsHope.Cave.Traps
                 return;
             }
 
-            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager agora
+            // arch: quebra do par mutuo Core|Player (2026-07-15) â€” bootstrap.PlayerManager agora
             // retorna MonoBehaviour; cast local para o tipo concreto.
             if (GameBootstrap.Instance != null && GameBootstrap.Instance.PlayerManager as PlayerManager != null)
             {
@@ -346,7 +347,7 @@ namespace CindarsHope.Cave.Traps
             return _definition != null ? _definition.TrapKey : TrapId.ToString().ToLowerInvariant();
         }
 
-        /// <summary>Cor placeholder por estado/tipo (telegraph de cena — CA-2). Substituível por arte.</summary>
+        /// <summary>Cor placeholder por estado/tipo (telegraph de cena â€” CA-2). SubstituÃ­vel por arte.</summary>
         public static Color ResolveTelegraphColor(TrapState state, bool detected, TrapId trapId)
         {
             switch (state)
@@ -354,11 +355,11 @@ namespace CindarsHope.Cave.Traps
                 case TrapState.Disarmed:
                     return new Color(0.4f, 0.45f, 0.4f, 0.45f);   // neutralizada
                 case TrapState.Triggered:
-                    return new Color(0.5f, 0.2f, 0.2f, 0.5f);     // já disparada
+                    return new Color(0.5f, 0.2f, 0.2f, 0.5f);     // jÃ¡ disparada
                 case TrapState.Telegraphing:
                     return new Color(1f, 0.35f, 0.1f, 0.9f);      // aviso ativo (windup)
                 default:
-                    // Armed: oculta a menos que detectada (F23) — então mostra aviso suave.
+                    // Armed: oculta a menos que detectada (F23) â€” entÃ£o mostra aviso suave.
                     return detected
                         ? new Color(1f, 0.85f, 0.25f, 0.7f)
                         : new Color(0.5f, 0.45f, 0.4f, 0.15f);
@@ -372,11 +373,11 @@ namespace CindarsHope.Cave.Traps
                 return;
             }
 
-            // spec_cave_biome_art_profiles_runtime (CV01): com sprite do bioma, o estado padrão
-            // (Armed, não detectado) fica OPACO — a própria arte já "camufla" a armadilha no cenário
-            // (ex.: espinhos discretos no chão), sem precisar da alpha baixa do placeholder. Os
+            // spec_cave_biome_art_profiles_runtime (CV01): com sprite do bioma, o estado padrÃ£o
+            // (Armed, nÃ£o detectado) fica OPACO â€” a prÃ³pria arte jÃ¡ "camufla" a armadilha no cenÃ¡rio
+            // (ex.: espinhos discretos no chÃ£o), sem precisar da alpha baixa do placeholder. Os
             // demais estados (Telegraphing/Triggered/Disarmed/detectado) continuam aplicando o tint
-            // de aviso por cima — o telegraph (CA-2) precisa continuar legível mesmo com arte real.
+            // de aviso por cima â€” o telegraph (CA-2) precisa continuar legÃ­vel mesmo com arte real.
             if (_biomeSprite != null && _state == TrapState.Armed && !_detected)
             {
                 _spriteRenderer.color = Color.white;

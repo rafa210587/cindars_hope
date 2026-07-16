@@ -1,4 +1,4 @@
-using CindarsHope.Cave.Data;
+﻿using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat.StatusEffect;
@@ -8,6 +8,7 @@ using CindarsHope.DebugTools;
 using CindarsHope.Enemy;
 using CindarsHope.Player.Progression;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {
@@ -15,7 +16,7 @@ namespace CindarsHope.Combat
     public class EnemyHealth : MonoBehaviour
     {
         // spec_enemy_attack_kits_v1 (AllyHeal/AllyBuff): registro estatico de instancias ativas,
-        // mesmo padrao de CraftingRuntime.ActiveInstances (FIX-001) — evita FindObjectsOfType.
+        // mesmo padrao de CraftingRuntime.ActiveInstances (FIX-001) â€” evita FindObjectsOfType.
         // Populado via OnEnable/OnDisable. EnemyActionRunner le esta lista para enumerar aliados
         // vivos candidatos a cura/buff (posicao + HP), sem scene search.
         public static readonly System.Collections.Generic.List<EnemyHealth> ActiveInstances = new System.Collections.Generic.List<EnemyHealth>();
@@ -29,43 +30,43 @@ namespace CindarsHope.Combat
         private bool _hpRestoredFromSnapshot;
         private CindarsHope.Combat.StatusEffect.StatusEffectManager _statusEffects = new CindarsHope.Combat.StatusEffect.StatusEffectManager();
 
-        // fable_06: contexto de loot determinístico (ADR-0005). Setado pelo materializer da caverna
-        // APÓS Configure. Vazio => caminho legado (dropItemId fixo) no EnemyDropSpawner.
+        // fable_06: contexto de loot determinÃ­stico (ADR-0005). Setado pelo materializer da caverna
+        // APÃ“S Configure. Vazio => caminho legado (dropItemId fixo) no EnemyDropSpawner.
         private string _enemyInstanceId = string.Empty;
         private string _caveRunSeed = string.Empty;
 
         // fable_06: perfil de vulnerabilidade (matriz Element/Material/Status). Null => neutro.
         private EnemyVulnerabilityProfileSO _vulnerabilityProfile;
 
-        // fable_78 (SLICE 4): estado runtime "Ferido" do conflito inter-monstro. Timestamp até quando o
-        // alvo apanhou de um rival; enquanto ativo a defesa efetiva é reduzida (gancho tático). Estado
-        // transitório/aditivo (mesmo idioma do _stunUntil do EnemyBrain e da janela de vulnerabilidade);
-        // não persiste no save (comportamento por visita, fora do LayoutHash).
+        // fable_78 (SLICE 4): estado runtime "Ferido" do conflito inter-monstro. Timestamp atÃ© quando o
+        // alvo apanhou de um rival; enquanto ativo a defesa efetiva Ã© reduzida (gancho tÃ¡tico). Estado
+        // transitÃ³rio/aditivo (mesmo idioma do _stunUntil do EnemyBrain e da janela de vulnerabilidade);
+        // nÃ£o persiste no save (comportamento por visita, fora do LayoutHash).
         private float _woundedUntil;
         private float _woundedDefenseMultiplier = 1f;
         // fable_78 (SLICE 4): setado por TakeDamageFromEnemy logo antes de aplicar o golpe; consumido por
         // Die() para escolher a rota de corpo reduzido (EnemyKilledByEnemyEvent) em vez da rota de loot
-        // do jogador (EnemyKilledEvent). Null = kill normal (pelo jogador) — comportamento inalterado.
+        // do jogador (EnemyKilledEvent). Null = kill normal (pelo jogador) â€” comportamento inalterado.
         private string _pendingEnemyKillerInstanceId;
         private float _pendingKillLootMultiplier = 1f;
         private int _pendingKillCaveLevel;
 
         // spec_enemy_attack_kits_v1 (Rise-once, primitiva P2): DamageType do ultimo golpe recebido
         // (setado em TakeDamage antes de checar morte) + flag idempotente de consumo. Estado runtime
-        // transitorio (mesmo idioma do _woundedUntil acima) — nao persiste no save.
+        // transitorio (mesmo idioma do _woundedUntil acima) â€” nao persiste no save.
         private DamageType _lastDamageType = DamageType.Physical;
         private bool _riseOnceConsumed;
         private bool _isCollapsedPendingRise;
 
         public int CurrentHp => _currentHp;
-        /// <summary>HP máximo desta instância. Usa valor escalado quando disponível (ConfigureWithScaling),
-        /// senão retorna o valor do asset (Configure legado).</summary>
+        /// <summary>HP mÃ¡ximo desta instÃ¢ncia. Usa valor escalado quando disponÃ­vel (ConfigureWithScaling),
+        /// senÃ£o retorna o valor do asset (Configure legado).</summary>
         public int MaxHp => _scaledMaxHp > 0 ? _scaledMaxHp : (_enemyData != null ? _enemyData.maxHp : 0);
         public string EnemyId => _enemyData != null ? _enemyData.enemyId : string.Empty;
-        // fable_78: id de instância estável (setado por ConfigureLootContext). Usado como killer/victim
+        // fable_78: id de instÃ¢ncia estÃ¡vel (setado por ConfigureLootContext). Usado como killer/victim
         // id nos eventos de conflito inter-monstro. Vazio fora de uma run de caverna.
         public string EnemyInstanceId => _enemyInstanceId;
-        // fable_78 (SLICE 4): true enquanto o alvo está "Ferido" (apanhou de um rival recentemente).
+        // fable_78 (SLICE 4): true enquanto o alvo estÃ¡ "Ferido" (apanhou de um rival recentemente).
         public bool IsWounded => Time.time < _woundedUntil;
         public string DisplayName => _enemyData != null && !string.IsNullOrWhiteSpace(_enemyData.DisplayName) ? _enemyData.DisplayName : name;
         public CindarsHope.Combat.StatusEffect.StatusEffectManager StatusEffects => _statusEffects;
@@ -76,7 +77,7 @@ namespace CindarsHope.Combat
 
         public void Configure(EnemyDataSO enemyData)
         {
-            _scaledMaxHp = 0; // reset sentinel — MaxHp volta a usar asset value
+            _scaledMaxHp = 0; // reset sentinel â€” MaxHp volta a usar asset value
             _enemyData = enemyData;
             if (_enemyData != null)
             {
@@ -89,11 +90,11 @@ namespace CindarsHope.Combat
         }
 
         /// <summary>
-        /// Configura HP com scaling por nível de caverna e multiplicador global de balance.
-        /// Aplica CaveBandScaling.ScaleHp para crescimento intra-banda (+12%/nível),
-        /// depois aplica hpBaseMultiplier (do CaveEcosystemBalanceSO) para corrigir desproporção
+        /// Configura HP com scaling por nÃ­vel de caverna e multiplicador global de balance.
+        /// Aplica CaveBandScaling.ScaleHp para crescimento intra-banda (+12%/nÃ­vel),
+        /// depois aplica hpBaseMultiplier (do CaveEcosystemBalanceSO) para corrigir desproporÃ§Ã£o
         /// vs. dano do player. Chame este overload em vez de Configure(enemyData) em spawners
-        /// de caverna que conhecem o nível real. caveLevel=0 ou hpBaseMultiplier=1 degenera ao
+        /// de caverna que conhecem o nÃ­vel real. caveLevel=0 ou hpBaseMultiplier=1 degenera ao
         /// comportamento original.
         /// </summary>
         public void ConfigureWithScaling(EnemyDataSO enemyData, int caveLevel, float hpBaseMultiplier = 1f)
@@ -117,8 +118,8 @@ namespace CindarsHope.Combat
                 gameObject.AddComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>();
         }
 
-        // fable_06: liga o contexto de loot estável (instance id + run seed da caverna). Aditivo;
-        // chamado pelo CaveRuntimeMaterializer após Configure. Sem isto, o drop usa o caminho legado.
+        // fable_06: liga o contexto de loot estÃ¡vel (instance id + run seed da caverna). Aditivo;
+        // chamado pelo CaveRuntimeMaterializer apÃ³s Configure. Sem isto, o drop usa o caminho legado.
         public void ConfigureLootContext(string enemyInstanceId, string caveRunSeed)
         {
             _enemyInstanceId = enemyInstanceId ?? string.Empty;
@@ -159,8 +160,8 @@ namespace CindarsHope.Combat
             ActiveInstances.Remove(this);
         }
 
-        // F13: restaura HP salvo do snapshot da run (chamado APÓS Configure, antes do Start).
-        // O guard impede o Start de resetar o valor restaurado para o máximo.
+        // F13: restaura HP salvo do snapshot da run (chamado APÃ“S Configure, antes do Start).
+        // O guard impede o Start de resetar o valor restaurado para o mÃ¡ximo.
         public void RestoreHp(int savedHp)
         {
             if (_enemyData == null)
@@ -185,7 +186,7 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            // Preserva HP escalado se ConfigureWithScaling já setou _currentHp corretamente.
+            // Preserva HP escalado se ConfigureWithScaling jÃ¡ setou _currentHp corretamente.
             if (_scaledMaxHp <= 0)
             {
                 _currentHp = _enemyData.maxHp;
@@ -213,12 +214,12 @@ namespace CindarsHope.Combat
             TakeDamage(request);
         }
 
-        // fable_78 (SLICE 4): caminho de dano com ORIGEM-INIMIGO (conflito inter-monstro, seção 14.6).
-        // - aplica InterMonsterDamageMultiplier (default 0.10) ao dano base — dano monstro↔jogador NÃO
-        //   passa por aqui, então permanece inalterado;
+        // fable_78 (SLICE 4): caminho de dano com ORIGEM-INIMIGO (conflito inter-monstro, seÃ§Ã£o 14.6).
+        // - aplica InterMonsterDamageMultiplier (default 0.10) ao dano base â€” dano monstroâ†”jogador NÃƒO
+        //   passa por aqui, entÃ£o permanece inalterado;
         // - aplica o status leve "Ferido" ao alvo (defesa reduzida por uma janela curta);
-        // - se for kill, marca a morte como "by enemy" → corpo dropa loot×InterMonsterKillLootMultiplier
-        //   e publica EnemyKilledByEnemyEvent (NUNCA EnemyKilledEvent → sem XP/quest/bestiário ao jogador).
+        // - se for kill, marca a morte como "by enemy" â†’ corpo dropa lootÃ—InterMonsterKillLootMultiplier
+        //   e publica EnemyKilledByEnemyEvent (NUNCA EnemyKilledEvent â†’ sem XP/quest/bestiÃ¡rio ao jogador).
         // killerInstanceId identifica o atacante para o evento; balance carrega todos os multiplicadores.
         public void TakeDamageFromEnemy(int rawDamage, DamageType damageType, string killerInstanceId, int caveLevel, CaveEcosystemBalanceSO balance)
         {
@@ -227,8 +228,8 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            // Aplica o status "Ferido" ANTES de calcular o dano: a defesa reduzida já vale para este golpe
-            // e para os próximos da janela, dando vantagem real a quem intervém no conflito.
+            // Aplica o status "Ferido" ANTES de calcular o dano: a defesa reduzida jÃ¡ vale para este golpe
+            // e para os prÃ³ximos da janela, dando vantagem real a quem intervÃ©m no conflito.
             ApplyWounded(balance.WoundedDefenseMultiplier, balance.WoundedDurationSeconds);
 
             int scaledDamage = InterMonsterCombatMath.ScaleInterMonsterDamage(rawDamage, balance.InterMonsterDamageMultiplier);
@@ -244,7 +245,7 @@ namespace CindarsHope.Combat
                 CanTriggerVulnerability = false
             };
 
-            // Roteia pelo caminho de dano padrão (defesa "Ferido" + mitigação) marcando o killer-inimigo,
+            // Roteia pelo caminho de dano padrÃ£o (defesa "Ferido" + mitigaÃ§Ã£o) marcando o killer-inimigo,
             // para que Die() escolha a rota de corpo reduzido em vez da rota normal de loot do jogador.
             _pendingEnemyKillerInstanceId = killerInstanceId ?? string.Empty;
             _pendingKillLootMultiplier = balance.InterMonsterKillLootMultiplier;
@@ -254,9 +255,9 @@ namespace CindarsHope.Combat
         }
 
         // fable_78 (SLICE 4): aplica/renova o status leve "Ferido" (defesa reduzida por uma janela curta).
-        // Reusa a janela transitória runtime (mesmo idioma de _stunUntil/janela de vulnerabilidade) em vez
-        // de um StatusEffectSO porque o asset/database de "Ferido" é DEFERRED_UNITY (slice 6) — sem criar
-        // sistema paralelo; a semântica de defesa reduzida vive no DamageCalculator existente.
+        // Reusa a janela transitÃ³ria runtime (mesmo idioma de _stunUntil/janela de vulnerabilidade) em vez
+        // de um StatusEffectSO porque o asset/database de "Ferido" Ã© DEFERRED_UNITY (slice 6) â€” sem criar
+        // sistema paralelo; a semÃ¢ntica de defesa reduzida vive no DamageCalculator existente.
         public void ApplyWounded(float defenseMultiplier, float durationSeconds)
         {
             if (durationSeconds <= 0f)
@@ -295,14 +296,14 @@ namespace CindarsHope.Combat
                 ? vulnerabilityState.Multiplier
                 : 1f;
 
-            // fable_06: multiplicador de elemento/material da família (matriz do perfil do inimigo).
-            // 1.0 quando não há perfil ou tags casadas (neutro). Ordem aplicada no DamageCalculator:
-            // resistance → vulnerability window → element/material → status.
+            // fable_06: multiplicador de elemento/material da famÃ­lia (matriz do perfil do inimigo).
+            // 1.0 quando nÃ£o hÃ¡ perfil ou tags casadas (neutro). Ordem aplicada no DamageCalculator:
+            // resistance â†’ vulnerability window â†’ element/material â†’ status.
             float elementMaterialMultiplier = VulnerabilityMatcher.GetDamageMultiplier(
                 _vulnerabilityProfile, request.DamageType, request.WeaponMaterialTags);
 
-            // fable_78 (SLICE 4): alvo "Ferido" tem defesa reduzida (gancho tático do conflito). Aplica-se
-            // a TODO dano recebido enquanto a janela do status está ativa, inclusive do jogador que intervém.
+            // fable_78 (SLICE 4): alvo "Ferido" tem defesa reduzida (gancho tÃ¡tico do conflito). Aplica-se
+            // a TODO dano recebido enquanto a janela do status estÃ¡ ativa, inclusive do jogador que intervÃ©m.
             int effectiveDefense = IsWounded
                 ? InterMonsterCombatMath.ApplyWoundedDefense(_enemyData.defense, _woundedDefenseMultiplier)
                 : _enemyData.defense;
@@ -317,7 +318,7 @@ namespace CindarsHope.Combat
             var hpBefore = _currentHp;
             _currentHp -= damageResult.FinalDamage;
             _currentHp = Mathf.Max(0, _currentHp);
-            // spec_enemy_attack_kits_v1: registra o DamageType deste golpe ANTES de checar morte —
+            // spec_enemy_attack_kits_v1: registra o DamageType deste golpe ANTES de checar morte â€”
             // Die() consulta este valor para decidir se o Rise-once e bloqueado (ex.: fire/radiant).
             _lastDamageType = damageResult.DamageType;
             CombatLog.Log($"CombatLog: Hit enemy. {BuildEnemyLogPrefix()}, Damage={damageResult.FinalDamage}, HP={hpBefore}->{_currentHp}/{MaxHp}.", this);
@@ -355,7 +356,7 @@ namespace CindarsHope.Combat
         private void Die()
         {
             // spec_enemy_attack_kits_v1 (Rise-once, primitiva P2): intercepta a morte ANTES de
-            // publicar qualquer evento. So se aplica ao caminho de kill NORMAL (pelo player) —
+            // publicar qualquer evento. So se aplica ao caminho de kill NORMAL (pelo player) â€”
             // kill inter-monstro (_pendingEnemyKillerInstanceId setado) sempre segue o fluxo padrao,
             // preservando o loot reduzido do ecossistema (fable_78) intacto.
             if (string.IsNullOrEmpty(_pendingEnemyKillerInstanceId)
@@ -381,16 +382,16 @@ namespace CindarsHope.Combat
                 bossReporter.ReportDefeatedFromOwner(transform.position);
             }
 
-            // fable_06: seed de loot estável por run/instância (ADR-0005). Vazio quando não há
+            // fable_06: seed de loot estÃ¡vel por run/instÃ¢ncia (ADR-0005). Vazio quando nÃ£o hÃ¡
             // contexto de caverna (ex.: inimigo de smoke test fora de run) => loot resolver usa o
-            // seed 0 mas o spawner cai no caminho legado se não houver lootTableId.
+            // seed 0 mas o spawner cai no caminho legado se nÃ£o houver lootTableId.
             int lootSeed = CindarsHope.Loot.EnemyLootResolver.BuildLootSeed(_caveRunSeed, _enemyInstanceId);
             bool isMinibossOrBoss = _enemyData.IsMiniBoss || _enemyData.IsBoss;
 
-            // fable_78 (SLICE 4): kill monstro-vs-monstro NÃO dispara a rota normal de loot do jogador
-            // (sem XP/quest/bestiário ao player). Em vez disso publica EnemyKilledByEnemyEvent com o
-            // payload do corpo REDUZIDO (× InterMonsterKillLootMultiplier), que o EnemyDropSpawner
-            // existente concede como único caminho de drop. Estado de morte persiste via F13 (HP=0).
+            // fable_78 (SLICE 4): kill monstro-vs-monstro NÃƒO dispara a rota normal de loot do jogador
+            // (sem XP/quest/bestiÃ¡rio ao player). Em vez disso publica EnemyKilledByEnemyEvent com o
+            // payload do corpo REDUZIDO (Ã— InterMonsterKillLootMultiplier), que o EnemyDropSpawner
+            // existente concede como Ãºnico caminho de drop. Estado de morte persiste via F13 (HP=0).
             if (!string.IsNullOrEmpty(_pendingEnemyKillerInstanceId))
             {
                 int reducedDrop = InterMonsterCombatMath.ScaleReducedLoot(_enemyData.dropAmount, _pendingKillLootMultiplier);
@@ -431,7 +432,7 @@ namespace CindarsHope.Combat
 
         // spec_enemy_attack_kits_v1 (Rise-once): chamado via Invoke() apos o colapso. Reergue com o
         // % HP configurado; se o GameObject foi desativado/destruido nesse meio tempo (ex.: cena
-        // trocou), Invoke nao dispara em objeto destruido — no-op seguro.
+        // trocou), Invoke nao dispara em objeto destruido â€” no-op seguro.
         private void ResolveRise()
         {
             if (!_isCollapsedPendingRise) return;

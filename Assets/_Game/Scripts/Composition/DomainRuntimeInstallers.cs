@@ -2,6 +2,7 @@ using CindarsHope.Audio;
 using CindarsHope.Cave.Death;
 using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Runtime;
+using CindarsHope.Combat;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Combat.Telemetry;
 using CindarsHope.Crafting;
@@ -148,6 +149,11 @@ namespace CindarsHope.Composition
         {
             PlayerStatusReceiverBootstrap.Install(owner);
             AnyaFountainRespawnFlow.Install(owner);
+            // arch: quebra do par mutuo Combat|Player (2026-07-16) — registra a porta neutra
+            // Foundation.SpawnGraceProvider ANTES do death controller (cujo OnEnable ja invoca a
+            // graca de spawn de forma sincrona no proprio Install()). PlayerDeathController le a
+            // porta em vez de nomear CindarsHope.Combat.PlayerDamageReceiver diretamente.
+            CindarsHope.Foundation.SpawnGraceProvider.GrantSpawnGrace = PlayerDamageReceiver.GrantSpawnGrace;
             PlayerDeathController.Install(owner);
             PlayerMovementActionRuntimeBootstrap.Install(owner);
             PlayerSprintControllerBootstrap.Install(owner);

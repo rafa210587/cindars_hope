@@ -1,8 +1,9 @@
-using CindarsHope.Combat;
+﻿using CindarsHope.Combat;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Player;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Skills.Runtime.Effects
 {

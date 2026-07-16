@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Player.Movement;
 using UnityEngine;
 
@@ -78,6 +79,12 @@ namespace CindarsHope.Combat.StatusEffect
 
         private void Awake()
         {
+            // arch: quebra do par mutuo Combat|Player (2026-07-16) — registra a porta neutra
+            // Foundation.ActionBlockProvider assim que o receiver existe (Install() roda no Start()
+            // da composition root, antes de qualquer Update()). PlayerSprintController le a porta
+            // em vez de nomear CindarsHope.Combat.StatusEffect.PlayerStatusReceiver diretamente.
+            ActionBlockProvider.IsActionBlocked = () => Instance != null && Instance.IsActionBlocked;
+
             if (_instance != null && _instance != this)
             {
                 Destroy(this);
@@ -160,7 +167,7 @@ namespace CindarsHope.Combat.StatusEffect
         /// <summary>Resistência atual do player no eixo do status, via fonte única F18.</summary>
         private static int ResistanceForStatus(StatusEffectType type)
         {
-            var source = CindarsHope.Combat.PlayerDamageReceiver.ResistanceSource;
+            var source = ResistanceProvider.Source;
             if (source == null)
             {
                 return 0;

@@ -1,5 +1,6 @@
 using CindarsHope.Combat;
 using CindarsHope.Combat.StatusEffect;
+using CindarsHope.Foundation;
 using CindarsHope.Player;
 using NUnit.Framework;
 

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using CindarsHope.Combat;
+using CindarsHope.Foundation;
 using UnityEditor;
 using UnityEngine;
 

@@ -1,4 +1,5 @@
-using CindarsHope.Combat;
+﻿using CindarsHope.Combat;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Skills.Runtime.Effects
 {
@@ -51,9 +52,9 @@ namespace CindarsHope.Skills.Runtime.Effects
             registry.Register(new FeedbackOnlySkillEffectExecutor("combat.ranged.marked_prey", "Presa Marcada. (Sistema de marcacao pendente.)", SkillEffectCategory.Combat));
             registry.Register(new FeedbackOnlySkillEffectExecutor("combat.magic.elemental_ward", "Barreira Elemental ativada. (Sistema de ward pendente.)", SkillEffectCategory.Combat));
             registry.Register(new FeedbackOnlySkillEffectExecutor("survival.sinal_retirada", "Sinal de Retirada ativado. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
-            registry.Register(new FeedbackOnlySkillEffectExecutor("survival.isca_improvisada", "Isca Improvisada lançada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            registry.Register(new FeedbackOnlySkillEffectExecutor("survival.isca_improvisada", "Isca Improvisada lanÃ§ada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
             registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.field_patch", "Reparo de Campo aplicado. (Efeito de reparo pendente.)", SkillEffectCategory.Utility));
-            registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.marca_eficiencia", "Marca de Eficiência aplicada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
+            registry.Register(new FeedbackOnlySkillEffectExecutor("crafting.marca_eficiencia", "Marca de EficiÃªncia aplicada. (Efeito de utilidade pendente.)", SkillEffectCategory.Utility));
         }
     }
 }

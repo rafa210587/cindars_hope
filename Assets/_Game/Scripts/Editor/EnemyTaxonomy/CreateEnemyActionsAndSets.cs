@@ -1,12 +1,13 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CindarsHope.Combat;
 using UnityEditor;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Editor.EnemyTaxonomy
 {
     /// <summary>
-    /// SPEC 13C — Creates EnemyTelegraphProfileSO, EnemyActionSO and EnemyActionSetSO assets
+    /// SPEC 13C â€” Creates EnemyTelegraphProfileSO, EnemyActionSO and EnemyActionSetSO assets
     /// for the 40-enemy canonical roster.
     /// Run via: CindarsHope > SPEC 13 > Create Enemy Actions and Sets
     /// Idempotent: skips assets that already exist at the target path.
@@ -17,7 +18,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
         private const string ActionsFolder    = "Assets/_Game/Data/Enemies/Actions";
         private const string ActionSetsFolder = "Assets/_Game/Data/Enemies/ActionSets";
 
-        // ── Data structures ──────────────────────────────────────────────────────
+        // â”€â”€ Data structures â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private struct TelegraphEntry
         {
@@ -54,7 +55,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             public string   Notes;
         }
 
-        // ── Entry point ──────────────────────────────────────────────────────────
+        // â”€â”€ Entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         public static void CreateAll()
         {
@@ -129,7 +130,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             Debug.Log($"[SPEC 13C] Actions/ActionSets creation done. Created: {created}, Skipped (existing): {skipped}.");
         }
 
-        // ── Telegraph profiles ───────────────────────────────────────────────────
+        // â”€â”€ Telegraph profiles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private static List<TelegraphEntry> BuildTelegraphProfiles() => new List<TelegraphEntry>
         {
@@ -143,7 +144,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             new TelegraphEntry { Id = "telegraph_phase",            BlinkColor = new Color(0.5f, 0.8f, 1f),  BlinkFrequency = 0.06f, WindupSeconds = 0.3f  },
         };
 
-        // ── Actions ──────────────────────────────────────────────────────────────
+        // â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private static List<ActionEntry> BuildActions()
         {
@@ -176,7 +177,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
 
             return new List<ActionEntry>
             {
-                // ── BAND 1 ─────────────────────────────────────────────────────────
+                // â”€â”€ BAND 1 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
                 // 1. enemy_cave_mite
                 new ActionEntry { Id="action_cave_mite_bite", DisplayName="Bite",
@@ -241,7 +242,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TRP, TriggersVuln=true, VulnTrigger=APV, IsInterruptible=true, MaxTargets=1 },
 
-                // ── BAND 2 ─────────────────────────────────────────────────────────
+                // â”€â”€ BAND 2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
                 // 9. enemy_spore_imp
                 new ActionEntry { Id="action_spore_imp_toxic_cloud", DisplayName="Toxic Cloud",
@@ -320,7 +321,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     StatusIds=new[]{"status_slow"}, StatusChance=0.7f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=true, MaxTargets=1 },
 
-                // ── BAND 3 ─────────────────────────────────────────────────────────
+                // â”€â”€ BAND 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
                 // 17. enemy_frost_gnawer
                 new ActionEntry { Id="action_frost_gnawer_cold_bite", DisplayName="Cold Bite",
@@ -395,7 +396,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     StatusIds=new[]{"status_chill"}, StatusChance=0.75f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=true, MaxTargets=1 },
 
-                // ── BAND 4 ─────────────────────────────────────────────────────────
+                // â”€â”€ BAND 4 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
                 // 25. enemy_ember_tick
                 new ActionEntry { Id="action_ember_tick_burning_bite", DisplayName="Burning Bite",
@@ -482,7 +483,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     Range=1.2f, Cooldown=3.0f, Windup=0.7f, Recover=0.6f,
                     TelegraphId=THM, TriggersVuln=true, VulnTrigger=ASD, IsInterruptible=false, MaxTargets=1 },
 
-                // ── BAND 5 ─────────────────────────────────────────────────────────
+                // â”€â”€ BAND 5 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
                 // 33. enemy_rune_shard
                 new ActionEntry { Id="action_rune_shard_arcane_splinter", DisplayName="Arcane Splinter",
@@ -563,7 +564,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     StatusIds=new[]{"status_slow"}, StatusChance=0.8f,
                     TelegraphId=TAP, TriggersVuln=true, VulnTrigger=AC, IsInterruptible=false, MaxTargets=5 },
 
-                // ── BAND 6 – DEEP (71-85) ──────────────────────────────────────────
+                // â”€â”€ BAND 6 â€“ DEEP (71-85) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
                 // 41. enemy_drow_shadowblade
                 new ActionEntry { Id="action_drow_shadowblade_shadow_strike", DisplayName="Shadow Strike",
@@ -642,7 +643,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                     Range=4.0f, Cooldown=2.5f, Windup=0.5f, Recover=0.45f, ProjectileSpeed=5.0f,
                     TelegraphId=TCS, TriggersVuln=true, VulnTrigger=ABA, IsInterruptible=false, MaxTargets=1 },
 
-                // ── BAND 7 – VOID (86-99) ──────────────────────────────────────────
+                // â”€â”€ BAND 7 â€“ VOID (86-99) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
                 // 51. enemy_ninrorin_void_knight
                 new ActionEntry { Id="action_ninrorin_void_knight_void_slash", DisplayName="Void Slash",
@@ -751,7 +752,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
             };
         }
 
-        // ── Action sets ──────────────────────────────────────────────────────────
+        // â”€â”€ Action sets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private static List<ActionSetEntry> BuildActionSets() => new List<ActionSetEntry>
         {
@@ -998,7 +999,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 RoleTags=new[]{"Caster"},
                 Notes="action_oathless_shade_shadow_step: BlinkStrike (teleports 1.5 tiles from player then hits)" },
 
-            // ── BAND 6 – DEEP (71-85) ────────────────────────────────────────────
+            // â”€â”€ BAND 6 â€“ DEEP (71-85) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
             new ActionSetEntry { Id="actionset_enemy_drow_shadowblade",
                 DisplayName="Drow Shadowblade Actions",
@@ -1060,7 +1061,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 FallbackId="action_ninrorin_echo_shade_echo_dart",
                 RoleTags=new[]{"Caster"} },
 
-            // ── BAND 7 – VOID (86-99) ────────────────────────────────────────────
+            // â”€â”€ BAND 7 â€“ VOID (86-99) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
             new ActionSetEntry { Id="actionset_enemy_ninrorin_void_knight",
                 DisplayName="Ninrorin Void Knight Actions",
@@ -1123,7 +1124,7 @@ namespace CindarsHope.Editor.EnemyTaxonomy
                 RoleTags=new[]{"Ranged","Chaser"} },
         };
 
-        // ── Helpers ──────────────────────────────────────────────────────────────
+        // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private static void EnsureFolder(string path)
         {

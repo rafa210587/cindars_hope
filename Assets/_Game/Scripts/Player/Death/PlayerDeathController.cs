@@ -1,6 +1,6 @@
-using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -64,7 +64,7 @@ namespace CindarsHope.Player.Death
             GameEventBus.Subscribe<PlayerRespawnedEvent>(OnPlayerRespawned);
             SceneManager.sceneLoaded += OnSceneLoaded;
             // O player ja esta nesta cena no primeiro enable; concede graça inicial.
-            PlayerDamageReceiver.GrantSpawnGrace(SpawnGraceSeconds);
+            SpawnGraceProvider.GrantSpawnGrace?.Invoke(SpawnGraceSeconds);
         }
 
         private void OnDisable()
@@ -78,14 +78,14 @@ namespace CindarsHope.Player.Death
         // inimigo restaurado do snapshot encostado no spawn mate o player antes de ele reagir.
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            PlayerDamageReceiver.GrantSpawnGrace(SpawnGraceSeconds);
+            SpawnGraceProvider.GrantSpawnGrace?.Invoke(SpawnGraceSeconds);
         }
 
         // Reviver (Lagrima da Deusa no lugar, ou respawn na Fonte) tambem ganha graça — o player pode
         // reviver perto do inimigo que o matou.
         private void OnPlayerRespawned(PlayerRespawnedEvent evt)
         {
-            PlayerDamageReceiver.GrantSpawnGrace(SpawnGraceSeconds);
+            SpawnGraceProvider.GrantSpawnGrace?.Invoke(SpawnGraceSeconds);
         }
 
         private void OnHPChanged(HPChangedEvent evt)

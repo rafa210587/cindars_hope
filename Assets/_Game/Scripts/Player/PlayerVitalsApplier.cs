@@ -46,8 +46,8 @@ namespace CindarsHope.Player
             return Mathf.Max(1, Mathf.RoundToInt(newMax * ratio));
         }
 
-        /// <summary>Resistência por tipo de dano (consumida pelo PlayerDamageReceiver).</summary>
-        public static int ResistanceFor(DerivedStatsCalculator.DerivedStats stats, CindarsHope.Combat.DamageType type)
+        /// <summary>Resistência por tipo de dano (consumida via ResistanceProvider pelo Combat).</summary>
+        public static int ResistanceFor(DerivedStatsCalculator.DerivedStats stats, DamageType type)
         {
             if (stats == null)
             {
@@ -56,9 +56,9 @@ namespace CindarsHope.Player
 
             switch (type)
             {
-                case CindarsHope.Combat.DamageType.Toxic: return stats.ToxicResistance;
-                case CindarsHope.Combat.DamageType.Ice: return stats.ColdResistance;
-                case CindarsHope.Combat.DamageType.Fire: return stats.HeatResistance;
+                case DamageType.Toxic: return stats.ToxicResistance;
+                case DamageType.Ice: return stats.ColdResistance;
+                case DamageType.Fire: return stats.HeatResistance;
                 default: return 0;
             }
         }
@@ -100,8 +100,9 @@ namespace CindarsHope.Player
                 _hungerManager.DrainMultiplier = Mathf.Clamp(1f - _lastStats.HungerDrainReduction, 0.25f, 1f);
             }
 
-            // F18: resistências alimentam o redutor central (F03).
-            CindarsHope.Combat.PlayerDamageReceiver.ResistanceSource = type => ResistanceFor(_lastStats, type);
+            // F18: resistências alimentam o redutor central (F03), via porta neutra (arch: quebra
+            // do par mutuo Combat|Player, 2026-07-16) — Player deixa de nomear PlayerDamageReceiver.
+            ResistanceProvider.Source = type => ResistanceFor(_lastStats, type);
 
             // fable_47 (follow-up 2): expõe craft/repair derivados como fontes únicas (padrão F18).
             CraftTimeReductionSource = () => PlayerVitalsApplier.Instance?._lastStats?.CraftTimeReduction ?? 0f;

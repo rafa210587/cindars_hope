@@ -1,5 +1,6 @@
-using CindarsHope.Core.Data;
+﻿using CindarsHope.Core.Data;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.StatusEffect
 {
@@ -14,7 +15,7 @@ namespace CindarsHope.Combat.StatusEffect
         public int DamagePerTurn;
         public Color VisualColor = Color.white;
 
-        // F01: campos canônicos com defaults NEUTROS (assets antigos intactos).
+        // F01: campos canÃ´nicos com defaults NEUTROS (assets antigos intactos).
         [Header("Canonical Semantics (F01)")]
         [Range(0f, 2f)] public float MoveSpeedMultiplier = 1f;
         public float BehaviorOverrideSeconds = 0f;
@@ -38,8 +39,8 @@ namespace CindarsHope.Combat.StatusEffect
         Stun,
         Weakness,
         Vulnerable,
-        // F01: conjunto canônico completo (COMBAT_CORE §31 / STATUS_EFFECTS_DIRECTION).
-        // Hunger/Fatigue ficam nos sistemas próprios (HungerManager/F16) — fora do ticker.
+        // F01: conjunto canÃ´nico completo (COMBAT_CORE Â§31 / STATUS_EFFECTS_DIRECTION).
+        // Hunger/Fatigue ficam nos sistemas prÃ³prios (HungerManager/F16) â€” fora do ticker.
         Chill,
         Root,
         Fear,
@@ -51,7 +52,7 @@ namespace CindarsHope.Combat.StatusEffect
         ColdStress
     }
 
-    /// <summary>Semântica central por tipo (F01) — pura e testável.</summary>
+    /// <summary>SemÃ¢ntica central por tipo (F01) â€” pura e testÃ¡vel.</summary>
     public static class StatusEffectSemantics
     {
         public static bool IsDamageOverTime(StatusEffectType type)

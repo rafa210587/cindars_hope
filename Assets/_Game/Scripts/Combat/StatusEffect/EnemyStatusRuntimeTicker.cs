@@ -1,20 +1,21 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Enemy;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.StatusEffect
 {
     // Ticks active status effects on the host enemy every 1 real second.
     // DurationTurns is treated as tick count (1 tick = 1 second) in the MVP runtime.
-    // F01: semântica genérica por tipo via StatusEffectSemantics (substitui o caso especial
-    // de burn hardcoded) — DoT, slow/chill, root, fear, confusão e corrupção.
+    // F01: semÃ¢ntica genÃ©rica por tipo via StatusEffectSemantics (substitui o caso especial
+    // de burn hardcoded) â€” DoT, slow/chill, root, fear, confusÃ£o e corrupÃ§Ã£o.
     [DisallowMultipleComponent]
     public class EnemyStatusRuntimeTicker : MonoBehaviour
     {
-        private const float TickWindowSeconds = 1.1f; // cobre o intervalo até o próximo tick
+        private const float TickWindowSeconds = 1.1f; // cobre o intervalo atÃ© o prÃ³ximo tick
 
         private EnemyHealth _enemyHealth;
         private EnemyBrain _enemyBrain;
@@ -99,7 +100,7 @@ namespace CindarsHope.Combat.StatusEffect
 
             statusEffects.TickStatusEffects();
 
-            // Limpa anúncios de efeitos que expiraram (permite re-anunciar reaplicações).
+            // Limpa anÃºncios de efeitos que expiraram (permite re-anunciar reaplicaÃ§Ãµes).
             _announcedEffects.RemoveWhere(id => !statusEffects.HasStatusEffect(id));
         }
     }

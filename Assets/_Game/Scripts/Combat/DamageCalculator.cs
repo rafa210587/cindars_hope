@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {
@@ -21,7 +22,7 @@ namespace CindarsHope.Combat
             result.VulnerabilityMultiplier = Mathf.Max(0f, vulnerabilityMultiplier);
             result.StatusReceivedDamageMultiplier = Mathf.Max(0f, statusReceivedDamageMultiplier);
 
-            // fable_06: multiplicador de elemento/material da família (perfil de vulnerabilidade
+            // fable_06: multiplicador de elemento/material da famÃ­lia (perfil de vulnerabilidade
             // do inimigo). Default 1.0 = neutro (assets antigos / chamadores legados inalterados).
             float elementMaterialMult = Mathf.Max(0f, elementMaterialMultiplier);
 
@@ -82,11 +83,11 @@ namespace CindarsHope.Combat
                 result.WasVulnerable = true;
             }
 
-            // fable_06: ordem canônica documentada =
-            //   resistance → vulnerability window → element/material → status.
+            // fable_06: ordem canÃ´nica documentada =
+            //   resistance â†’ vulnerability window â†’ element/material â†’ status.
             // Element/material vem do EnemyVulnerabilityProfileSO (eixos ElementMultipliers /
-            // MaterialMultipliers). Aplicado APÓS a janela e ANTES do status para não inflar a
-            // janela temporária com o bônus permanente da família.
+            // MaterialMultipliers). Aplicado APÃ“S a janela e ANTES do status para nÃ£o inflar a
+            // janela temporÃ¡ria com o bÃ´nus permanente da famÃ­lia.
             float elementMaterialAdjustedDamage = vulnerabilityAdjustedDamage * elementMaterialMult;
             if (Mathf.Approximately(elementMaterialMult, 0f) && result.DamageType != DamageType.True)
             {

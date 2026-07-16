@@ -1,5 +1,6 @@
-using CindarsHope.Combat.StatusEffect;
+﻿using CindarsHope.Combat.StatusEffect;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Weapon
 {
@@ -24,9 +25,9 @@ namespace CindarsHope.Combat.Weapon
         public float StatusApplyChance { get; set; }
 
         /// <summary>
-        /// fable_48 (aditivo): tags de material/elemento carregadas pelo projétil (ex.: flecha
+        /// fable_48 (aditivo): tags de material/elemento carregadas pelo projÃ©til (ex.: flecha
         /// "Silver"/"Fire"). Propagadas ao <see cref="DamageRequest.WeaponMaterialTags"/> no impacto,
-        /// onde o matching de vulnerabilidade da F06 concede bônus SÓ contra vulnerabilidade
+        /// onde o matching de vulnerabilidade da F06 concede bÃ´nus SÃ“ contra vulnerabilidade
         /// declarada. Default null/vazio => sem tags (melee/magia legados inalterados).
         /// </summary>
         public string[] AppliedTags { get; set; }

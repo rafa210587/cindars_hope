@@ -1,21 +1,22 @@
-using CindarsHope.Combat;
+﻿using CindarsHope.Combat;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Enemy
 {
     /// <summary>
-    /// spec_enemy_attack_kits_v1 — runner destacado para uma zona de hazard persistente no chao
+    /// spec_enemy_attack_kits_v1 â€” runner destacado para uma zona de hazard persistente no chao
     /// (lava_bulwark/magma_slug/fungal_spreader/veilkin_pyromancer/cave_burrower_elite etc.), no
     /// mesmo padrao de sobrevivencia do <see cref="EnemyVolatileExplosionRunner"/> (elite affix
     /// Volatile): GameObject destacado, independente do inimigo que a criou (que pode morrer/ser
     /// desativado logo em seguida sem derrubar a zona). Tick por intervalo (nao por-frame arbitrario)
     /// via <see cref="EnemyActionExecution.ResolveHazardTickCount"/>; deteccao de overlap por
-    /// distancia via <see cref="EnemyActionExecution.IsInsideHazard"/> (sem física/collider novo).
+    /// distancia via <see cref="EnemyActionExecution.IsInsideHazard"/> (sem fÃ­sica/collider novo).
     /// Visual procedural minimo (LineRenderer circular colorido pelo elemento), sem asset de arte novo.
     /// </summary>
     [DisallowMultipleComponent]
@@ -104,7 +105,7 @@ namespace CindarsHope.Enemy
             }
         }
 
-        // Visual procedural minimo — circulo no chao (sem asset de arte novo), mesmo idioma do
+        // Visual procedural minimo â€” circulo no chao (sem asset de arte novo), mesmo idioma do
         // RuntimeProjectileFactory/EnemyVolatileExplosionRunner de gerar visual em runtime.
         private void BuildVisual()
         {
@@ -127,7 +128,7 @@ namespace CindarsHope.Enemy
         private Color HazardVisualColor()
         {
             // Cor por elemento (heuristica de StatusId), coerente com a convencao de telegraph/VFX
-            // por elemento do ENEMY_ATTACK_IMPLEMENTATION_DIRECTION §2. Fallback laranja (fogo/lava —
+            // por elemento do ENEMY_ATTACK_IMPLEMENTATION_DIRECTION Â§2. Fallback laranja (fogo/lava â€”
             // maioria dos usuarios atuais de HazardZone).
             if (!string.IsNullOrWhiteSpace(_statusId))
             {

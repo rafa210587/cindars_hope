@@ -1,8 +1,7 @@
-using CindarsHope.Combat;
-using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player.Movement
@@ -132,8 +131,9 @@ namespace CindarsHope.Player.Movement
 
         private void Update()
         {
-            var tracker = CombatStateTracker.ActiveInstance;
-            var inCombat = tracker != null && tracker.IsInCombat;
+            // arch: quebra do par mutuo Combat|Player (2026-07-16) — le via porta neutra em vez de
+            // nomear CindarsHope.Combat.CombatStateTracker.
+            var inCombat = CombatStateProvider.IsInCombat != null && CombatStateProvider.IsInCombat();
 
             // Fora de combate: sprint é no-op silencioso e o fator de mobilidade não contribui.
             if (!inCombat)
@@ -148,7 +148,9 @@ namespace CindarsHope.Player.Movement
             }
 
             var modalOpen = GameBootstrap.Instance?.ModalManager?.HasActiveModal == true;
-            var stunned = PlayerStatusReceiver.Instance != null && PlayerStatusReceiver.Instance.IsActionBlocked;
+            // arch: quebra do par mutuo Combat|Player (2026-07-16) — le via porta neutra em vez de
+            // nomear CindarsHope.Combat.StatusEffect.PlayerStatusReceiver.
+            var stunned = ActionBlockProvider.IsActionBlocked != null && ActionBlockProvider.IsActionBlocked();
             var sprintHeld = PlayerMovementActionInput.IsSprintHeld();
             var hasStamina = _staminaManager == null || _staminaManager.CurrentStamina > 0;
 

@@ -1,23 +1,24 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CindarsHope.Combat;
 using CindarsHope.Combat.Bestiary;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Enemy
 {
     [DisallowMultipleComponent]
     public class BestiaryManager : MonoBehaviour
     {
-        // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — self-registro estatico,
+        // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) â€” self-registro estatico,
         // molde Audio/AudioManager.cs; GameBootstrap nao segura mais [SerializeField] deste manager.
         private static BestiaryManager _instance;
         public static BestiaryManager Instance => _instance;
 
         private readonly Dictionary<string, BestiaryEntry> _entries = new Dictionary<string, BestiaryEntry>();
 
-        // fable_21 — discovery-knowledge layer hosted here (no new manager on the bootstrap).
+        // fable_21 â€” discovery-knowledge layer hosted here (no new manager on the bootstrap).
         private readonly EnemyKnowledgeService _knowledge = new EnemyKnowledgeService();
 
         // SpoilerTier / boss lookups built once from the canonical catalog (read-only consumption;
@@ -27,7 +28,7 @@ namespace CindarsHope.Enemy
 
         public int EntryCount => _entries.Count;
 
-        /// <summary>fable_21 — the discovery-knowledge service hosted by this manager (F14/F22/F25 consume it).</summary>
+        /// <summary>fable_21 â€” the discovery-knowledge service hosted by this manager (F14/F22/F25 consume it).</summary>
         public EnemyKnowledgeService Knowledge => _knowledge;
 
         private void Awake()
@@ -129,7 +130,7 @@ namespace CindarsHope.Enemy
                 }
             }
 
-            // fable_21 — persist the discovery-knowledge layer in the same section.
+            // fable_21 â€” persist the discovery-knowledge layer in the same section.
             data.Knowledge = _knowledge.CaptureKnowledge();
             data.KnowledgeMilestonesGranted = _knowledge.CaptureMilestonesGranted();
 
@@ -140,7 +141,7 @@ namespace CindarsHope.Enemy
         {
             _entries.Clear();
 
-            // fable_21 — legacy saves (no Knowledge field) restore to an empty codex with no error.
+            // fable_21 â€” legacy saves (no Knowledge field) restore to an empty codex with no error.
             _knowledge.RestoreKnowledge(saveData?.Knowledge, saveData?.KnowledgeMilestonesGranted ?? 0);
 
             if (saveData?.Entries == null)
@@ -259,7 +260,7 @@ namespace CindarsHope.Enemy
                 changed = true;
             }
 
-            // fable_21 — feed the discovery-knowledge counters (axis = canonical damage-type string).
+            // fable_21 â€” feed the discovery-knowledge counters (axis = canonical damage-type string).
             var axis = ElementAxis(result.DamageType);
             if (resisted)
             {

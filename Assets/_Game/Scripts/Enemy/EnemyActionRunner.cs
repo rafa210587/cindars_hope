@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat;
 using CindarsHope.Core;
@@ -6,16 +6,17 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Enemy
 {
     /// <summary>
-    /// Executa ações de combate do inimigo (windup, resolve, dano, status), delegado pelo EnemyBrain.
-    /// Recebe referências via Init(); não é MonoBehaviour.
+    /// Executa aÃ§Ãµes de combate do inimigo (windup, resolve, dano, status), delegado pelo EnemyBrain.
+    /// Recebe referÃªncias via Init(); nÃ£o Ã© MonoBehaviour.
     /// </summary>
     internal sealed class EnemyActionRunner : IEnemyActionExecutionContext
     {
-        // ─── Referências injetadas ────────────────────────────────────────────
+        // â”€â”€â”€ ReferÃªncias injetadas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private Transform _transform;
         private EnemyDataSO _enemyData;
@@ -40,19 +41,19 @@ namespace CindarsHope.Enemy
         private System.Action<DamageType> _resolveInterMonsterAction;
         private System.Func<float> _getDetectionRange;
 
-        // ─── Estado de ação (antes em EnemyBrain) ────────────────────────────
+        // â”€â”€â”€ Estado de aÃ§Ã£o (antes em EnemyBrain) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-        /// <summary>Set de ações ativo neste inimigo.</summary>
+        /// <summary>Set de aÃ§Ãµes ativo neste inimigo.</summary>
         internal EnemyActionSetSO ActiveActionSet;
-        /// <summary>Cooldowns de ações individuais.</summary>
+        /// <summary>Cooldowns de aÃ§Ãµes individuais.</summary>
         internal readonly Dictionary<string, EnemyActionRuntime> ActionCooldowns = new Dictionary<string, EnemyActionRuntime>();
-        /// <summary>Ação aguardando resolução (em windup ou recover).</summary>
+        /// <summary>AÃ§Ã£o aguardando resoluÃ§Ã£o (em windup ou recover).</summary>
         internal EnemyActionSO PendingAction;
-        /// <summary>Timer genérico de windup/recover.</summary>
+        /// <summary>Timer genÃ©rico de windup/recover.</summary>
         internal float ActionTimer;
-        /// <summary>True após o windup ter sido resolvido (evita double-fire).</summary>
+        /// <summary>True apÃ³s o windup ter sido resolvido (evita double-fire).</summary>
         internal bool ActionResolved;
-        /// <summary>SPEC 13D: idempotency guard — death-trigger fires exactly once per lifetime.</summary>
+        /// <summary>SPEC 13D: idempotency guard â€” death-trigger fires exactly once per lifetime.</summary>
         internal bool DeathtriggerFired;
 
         // fable_83: ComboStrike state
@@ -65,10 +66,10 @@ namespace CindarsHope.Enemy
         private EnemyActionSO _comboAction;
         private const float ComboHitIntervalSeconds = 0.15f;
 
-        // ─── Init ────────────────────────────────────────────────────────────
+        // â”€â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// Inicializa o runner com referências do EnemyBrain.
+        /// Inicializa o runner com referÃªncias do EnemyBrain.
         /// Deve ser chamado em Awake e re-chamado em ConfigureRuntime.
         /// </summary>
         internal void Init(
@@ -107,7 +108,7 @@ namespace CindarsHope.Enemy
             _getDetectionRange = getDetectionRange;
         }
 
-        /// <summary>Atualiza referências de dados após ConfigureRuntime do EnemyBrain.</summary>
+        /// <summary>Atualiza referÃªncias de dados apÃ³s ConfigureRuntime do EnemyBrain.</summary>
         internal void UpdateRefs(
             EnemyDataSO enemyData,
             EnemyActionSetDatabaseSO actionSetDatabase,
@@ -128,10 +129,10 @@ namespace CindarsHope.Enemy
             _health = health;
         }
 
-        // ─── Action Cooldown Init ─────────────────────────────────────────────
+        // â”€â”€â”€ Action Cooldown Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// Inicializa o set de ações e os cooldowns. Equivalente ao InitActionSet() do EnemyBrain.
+        /// Inicializa o set de aÃ§Ãµes e os cooldowns. Equivalente ao InitActionSet() do EnemyBrain.
         /// </summary>
         internal void InitActionSet()
         {
@@ -167,10 +168,10 @@ namespace CindarsHope.Enemy
             }
         }
 
-        // ─── Action Selection ─────────────────────────────────────────────────
+        // â”€â”€â”€ Action Selection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// Seleciona a melhor ação disponível para a distância atual.
+        /// Seleciona a melhor aÃ§Ã£o disponÃ­vel para a distÃ¢ncia atual.
         /// TODO: mover para EnemyDecisionCore quando Time wrapper for adicionado.
         /// </summary>
         internal EnemyActionSO SelectBestAction(float dist)
@@ -191,13 +192,13 @@ namespace CindarsHope.Enemy
             _selectionStrategy = strategy ?? new OrderedReadyEnemyActionSelectionStrategy();
         }
 
-        // ─── Action Execution ─────────────────────────────────────────────────
+        // â”€â”€â”€ Action Execution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-        /// <summary>Inicia o windup de uma ação: define estado, publica eventos, inicia telegraph.</summary>
+        /// <summary>Inicia o windup de uma aÃ§Ã£o: define estado, publica eventos, inicia telegraph.</summary>
         internal void BeginAction(EnemyActionSO action, float attackCadenceFactor, ref EnemyBrainState currentState)
         {
             PendingAction = action;
-            // fable_24: Frenzied elites attack 30% faster — scale the windup (cadence factor <1).
+            // fable_24: Frenzied elites attack 30% faster â€” scale the windup (cadence factor <1).
             ActionTimer = action.WindupSeconds * attackCadenceFactor;
             ActionResolved = false;
             currentState = EnemyBrainState.AttackWindup;
@@ -209,8 +210,8 @@ namespace CindarsHope.Enemy
 
         /// <summary>
         /// Processa timers de windup/recover e hits pendentes de ComboStrike.
-        /// Chamado a cada frame enquanto o inimigo não estiver morto/stunned.
-        /// Retorna o novo estado de máquina de estados (pode mudar de AttackWindup → AttackRecover → Chase).
+        /// Chamado a cada frame enquanto o inimigo nÃ£o estiver morto/stunned.
+        /// Retorna o novo estado de mÃ¡quina de estados (pode mudar de AttackWindup â†’ AttackRecover â†’ Chase).
         /// </summary>
         internal void TickActionTimers(ref EnemyBrainState currentState, float attackCadenceFactor)
         {
@@ -264,7 +265,7 @@ namespace CindarsHope.Enemy
             }
         }
 
-        /// <summary>Resolve o dano/efeito da ação após o windup. Ponto central de damage dispatch.</summary>
+        /// <summary>Resolve o dano/efeito da aÃ§Ã£o apÃ³s o windup. Ponto central de damage dispatch.</summary>
         private void ResolveAction()
         {
             if (PendingAction == null) return;
@@ -276,9 +277,9 @@ namespace CindarsHope.Enemy
             if (!System.Enum.TryParse<DamageType>(PendingAction.DamageType, true, out var dmgType))
                 dmgType = DamageType.Physical;
 
-            // fable_78 (SLICE 4): quando o alvo é um rival (conflito inter-monstro), o dano vai para o
-            // EnemyHealth do rival via o caminho de origem-inimigo (×0.10 + "Ferido" + kill-by-enemy).
-            // Não toca o pipeline de dano ao jogador. Ramo isolado por IsTargetingRival.
+            // fable_78 (SLICE 4): quando o alvo Ã© um rival (conflito inter-monstro), o dano vai para o
+            // EnemyHealth do rival via o caminho de origem-inimigo (Ã—0.10 + "Ferido" + kill-by-enemy).
+            // NÃ£o toca o pipeline de dano ao jogador. Ramo isolado por IsTargetingRival.
             if (_isTargetingRival())
             {
                 _resolveInterMonsterAction(dmgType);
@@ -293,7 +294,7 @@ namespace CindarsHope.Enemy
             }
 
             // Ranged and cast actions fire a real dodgeable projectile instead of
-            // instant damage — the player can outplay them with movement.
+            // instant damage â€” the player can outplay them with movement.
             bool isProjectileAction = PendingAction.ActionType == EnemyActionType.RangedProjectile
                 || PendingAction.ActionType == EnemyActionType.CastProjectile;
             if (isProjectileAction)
@@ -304,7 +305,7 @@ namespace CindarsHope.Enemy
 
                 // spec_enemy_attack_kits_v1 (follow-up salvas): ProjectileCount<=1 mantem o caminho
                 // single-projectile identico ao anterior (nenhuma mudanca de comportamento). Acima
-                // disso, dispara N projeteis em leque (mesmo dano por projetil — cada um e um hit
+                // disso, dispara N projeteis em leque (mesmo dano por projetil â€” cada um e um hit
                 // independente esquivavel, o catalogo nao divide dano entre eles).
                 if (PendingAction.ProjectileCount <= 1)
                 {
@@ -383,9 +384,9 @@ namespace CindarsHope.Enemy
             }
         }
 
-        // ─── Telegraph ────────────────────────────────────────────────────────
+        // â”€â”€â”€ Telegraph â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-        /// <summary>Inicia o telegraph de uma ação usando o EnemyTelegraphController.</summary>
+        /// <summary>Inicia o telegraph de uma aÃ§Ã£o usando o EnemyTelegraphController.</summary>
         private void StartTelegraph(EnemyActionSO action)
         {
             if (_telegraph == null || string.IsNullOrEmpty(action.TelegraphProfileId)) return;
@@ -401,7 +402,7 @@ namespace CindarsHope.Enemy
             }
         }
 
-        // ─── fable_83: Ataques-assinatura ─────────────────────────────────────────
+        // â”€â”€â”€ fable_83: Ataques-assinatura â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
         /// ComboStrike: aplica o primeiro hit imediatamente; agenda os hits restantes via
@@ -451,8 +452,8 @@ namespace CindarsHope.Enemy
         }
 
         /// <summary>
-        /// TelegraphedAoE: aplica dano em área (usando AreaRadius do action) centrada no player.
-        /// Telegraph já correu no BeginAction (WindupSeconds = aoeDelay); aqui é o dano.
+        /// TelegraphedAoE: aplica dano em Ã¡rea (usando AreaRadius do action) centrada no player.
+        /// Telegraph jÃ¡ correu no BeginAction (WindupSeconds = aoeDelay); aqui Ã© o dano.
         /// </summary>
         private void ExecuteTelegraphedAoE(EnemyActionSO action)
         {
@@ -465,8 +466,8 @@ namespace CindarsHope.Enemy
             float dist = Vector2.Distance(_transform.position, aoeCenter);
 
             // spec_enemy_attack_kits_v1 (HazardZone, primitiva P2): quando a acao deixa uma zona
-            // persistente (LeavesHazard), a zona nasce na origem do atacante (rastro de movimento —
-            // lava_bulwark/magma_slug) INDEPENDENTE do player estar no raio agora — ela existe para
+            // persistente (LeavesHazard), a zona nasce na origem do atacante (rastro de movimento â€”
+            // lava_bulwark/magma_slug) INDEPENDENTE do player estar no raio agora â€” ela existe para
             // ser pisada depois. Spawn destacado (mesmo padrao de EnemyVolatileExplosionRunner);
             // nao duplica fisica (deteccao por distancia via EnemyActionExecution.IsInsideHazard).
             if (action.LeavesHazard)
@@ -492,7 +493,7 @@ namespace CindarsHope.Enemy
         /// <summary>
         /// spec_enemy_attack_kits_v1 (AllyHeal/AllyBuff, primitiva P2): seleciona o aliado-alvo
         /// (mais ferido, senao mais proximo) dentro de AllyTargetRadius via
-        /// EnemyHealth.ActiveInstances (registro estatico — sem FindObjectsOfType, mesmo padrao de
+        /// EnemyHealth.ActiveInstances (registro estatico â€” sem FindObjectsOfType, mesmo padrao de
         /// CraftingRuntime.ActiveInstances) e cura/buffa. Exclui o proprio invocador da busca.
         /// </summary>
         private void ExecuteAllyHealBuff(EnemyActionSO action)
@@ -542,7 +543,7 @@ namespace CindarsHope.Enemy
         }
 
         /// <summary>
-        /// SummonAdds: invoca fodder em posições deterministas (seed por contexto).
+        /// SummonAdds: invoca fodder em posiÃ§Ãµes deterministas (seed por contexto).
         /// Respeita cap por sala (MaxAddsPerRoom). Sem GUID/timestamp (ADR-0005).
         /// </summary>
         private void ExecuteSummonAdds(EnemyActionSO action)
@@ -555,7 +556,7 @@ namespace CindarsHope.Enemy
             int caveLevel = CaveRunManager.Instance?.CurrentCaveLevel ?? 0;
 
             int seed = EnemyActionExecution.DeriveSummonSeed(runSeed, caveLevel, _enemyData?.enemyId ?? "summon");
-            int roomAdds = 0; // sem scene search: trust design para cap; validação em PlayMode
+            int roomAdds = 0; // sem scene search: trust design para cap; validaÃ§Ã£o em PlayMode
             int count = EnemyActionExecution.ResolveSummonCount(action.SummonCount, roomAdds);
             if (count <= 0) return;
 
@@ -574,9 +575,9 @@ namespace CindarsHope.Enemy
         }
 
         /// <summary>
-        /// MultiHitCharge: acerta todos os alvos ao longo da linha de charge até o player.
-        /// Como EnemyBrain tem apenas o player como alvo explícito, aplica dano ao player
-        /// se ele está na trajetória; em PlayMode o charge visual cobre a linha.
+        /// MultiHitCharge: acerta todos os alvos ao longo da linha de charge atÃ© o player.
+        /// Como EnemyBrain tem apenas o player como alvo explÃ­cito, aplica dano ao player
+        /// se ele estÃ¡ na trajetÃ³ria; em PlayMode o charge visual cobre a linha.
         /// </summary>
         private void ExecuteMultiHitCharge(EnemyActionSO action)
         {
@@ -597,8 +598,8 @@ namespace CindarsHope.Enemy
         }
 
         /// <summary>
-        /// DebuffStrike: ataque de dano normal que garante aplicação do status (DebuffStatusId).
-        /// Reusar StatusApplicationIds se DebuffStatusId não estiver preenchido.
+        /// DebuffStrike: ataque de dano normal que garante aplicaÃ§Ã£o do status (DebuffStatusId).
+        /// Reusar StatusApplicationIds se DebuffStatusId nÃ£o estiver preenchido.
         /// </summary>
         private void ExecuteDebuffStrike(EnemyActionSO action)
         {
@@ -618,17 +619,17 @@ namespace CindarsHope.Enemy
             }
 
             // Aplicar o debuff com chance garantida (DebuffStrike ignora StatusApplyChance parcial:
-            // garante pelo menos 1 aplicação por uso para identidade de arquétipo).
+            // garante pelo menos 1 aplicaÃ§Ã£o por uso para identidade de arquÃ©tipo).
             string statusId = EnemyActionExecution.ResolveDebuffStatusId(action.DebuffStatusId, action.StatusApplicationIds);
             if (!string.IsNullOrWhiteSpace(statusId))
             {
                 var receiver = CindarsHope.Combat.StatusEffect.PlayerStatusReceiver.Instance;
                 if (receiver != null)
-                    receiver.TryApplyFromEnemyAction(statusId, 1f); // chance=1 garante aplicação
+                    receiver.TryApplyFromEnemyAction(statusId, 1f); // chance=1 garante aplicaÃ§Ã£o
             }
 
             // spec_enemy_attack_kits_v1 (Pull, primitiva P2): desloca o player N tiles na direcao do
-            // atacante (agarrao) ou do hazard/origem configurada — reusa DebuffStrike (dano+status ja
+            // atacante (agarrao) ou do hazard/origem configurada â€” reusa DebuffStrike (dano+status ja
             // resolvidos acima), aditivo. Clamp contra paredes/obstaculos fica a cargo do proprio
             // Rigidbody2D/colisao do player (nao duplicamos deteccao de colisao aqui).
             if (action.PullDistanceTiles > 0f)
@@ -648,7 +649,7 @@ namespace CindarsHope.Enemy
         }
 
         // SPEC 13D: Teleports to player then deals melee damage + applies status effects.
-        // Destination uses BlinkFlankSide (set at spawn, alternating) — no UnityEngine.Random.
+        // Destination uses BlinkFlankSide (set at spawn, alternating) â€” no UnityEngine.Random.
         private void ExecuteBlinkStrike(EnemyActionSO action, DamageType dmgType)
         {
             var playerTarget = _getPlayerTarget();
@@ -707,16 +708,16 @@ namespace CindarsHope.Enemy
         /// <summary>Atualiza o flankside do blink (chamado pelo EnemyBrain em OnEnable).</summary>
         internal void SetBlinkFlankSide(float side) => _blinkFlankSide = side;
 
-        /// <summary>Define o callback para mover o Rigidbody2D (necessário para BlinkStrike).</summary>
+        /// <summary>Define o callback para mover o Rigidbody2D (necessÃ¡rio para BlinkStrike).</summary>
         internal void SetRbPositionCallback(System.Action<Vector2> setPosition) => _setRbPosition = setPosition;
 
         /// <summary>Define o GameObject dono (EnemyBrain) para passar como atacante no ApplyDamage.</summary>
         internal void SetOwnerGameObject(GameObject owner) => _ownerGameObject = owner;
 
-        // ─── SPEC 13D: FireDeathTrigger ────────────────────────────────────────────
+        // â”€â”€â”€ SPEC 13D: FireDeathTrigger â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
-        /// SPEC 13D: dispara a ação de death-trigger (IsDeathtrigger=true) exatamente uma vez.
+        /// SPEC 13D: dispara a aÃ§Ã£o de death-trigger (IsDeathtrigger=true) exatamente uma vez.
         /// Guard: only inside cave (CaveRunManager present) to avoid out-of-cave effects.
         /// </summary>
         internal void FireDeathTrigger()
@@ -736,7 +737,7 @@ namespace CindarsHope.Enemy
             }
         }
 
-        /// <summary>Aplica AoE damage da ação de death-trigger ao player se estiver no alcance.</summary>
+        /// <summary>Aplica AoE damage da aÃ§Ã£o de death-trigger ao player se estiver no alcance.</summary>
         private void ExecuteDeathTrigger(EnemyActionSO action)
         {
             if (action.BaseDamage <= 0) return;
@@ -777,7 +778,7 @@ namespace CindarsHope.Enemy
             Debug.Log($"[EnemyBrain] DeathTrigger fired. EnemyId={_enemyData?.enemyId}, ActionId={action.ActionId}, Damage={damage}, PlayerDist={dist:F2}");
         }
 
-        // ─── Helpers ─────────────────────────────────────────────────────────
+        // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         /// <summary>
         /// Helper compartilhado: aplica um hit de dano ao player com knockback e eventos.
@@ -874,11 +875,11 @@ namespace CindarsHope.Enemy
 
         private System.Func<EliteAffix> _getEliteAffix;
 
-        /// <summary>Define o callback para ler o affix elite atual (necessário para Vampiric lifesteal).</summary>
+        /// <summary>Define o callback para ler o affix elite atual (necessÃ¡rio para Vampiric lifesteal).</summary>
         internal void SetEliteAffixCallback(System.Func<EliteAffix> getAffix) => _getEliteAffix = getAffix;
 
         /// <summary>
-        /// Reseta o estado de ação ao (re)spawn. Chamado pelo EnemyBrain em OnEnable.
+        /// Reseta o estado de aÃ§Ã£o ao (re)spawn. Chamado pelo EnemyBrain em OnEnable.
         /// </summary>
         internal void ResetOnSpawn()
         {

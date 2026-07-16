@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat
 {

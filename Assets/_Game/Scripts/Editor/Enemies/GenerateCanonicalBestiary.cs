@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using CindarsHope.Combat.Bestiary;
+using CindarsHope.Foundation;
 using UnityEditor;
 using UnityEngine;
 

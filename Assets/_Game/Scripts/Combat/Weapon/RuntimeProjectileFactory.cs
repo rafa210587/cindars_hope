@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Weapon
 {
@@ -6,7 +7,7 @@ namespace CindarsHope.Combat.Weapon
     /// Builds fully functional projectile GameObjects at runtime when no authored prefab is
     /// available (pre-art phase). Generates cached procedural sprites (circle + shaft) so the
     /// factory works in player builds, adds trail + procedural animation, and wires the same
-    /// ProjectileBehaviour used by authored prefabs — gameplay path is identical either way.
+    /// ProjectileBehaviour used by authored prefabs â€” gameplay path is identical either way.
     /// </summary>
     public static class RuntimeProjectileFactory
     {
@@ -14,7 +15,7 @@ namespace CindarsHope.Combat.Weapon
         private static Sprite s_shaftSprite;
         private static Material s_trailMaterial;
 
-        // Escala visual da flecha (pequena, formato de dardo — nao um feixe de laser longo).
+        // Escala visual da flecha (pequena, formato de dardo â€” nao um feixe de laser longo).
         private static readonly Vector3 ArrowScale = new Vector3(0.32f, 0.1f, 1f);
 
         public static GameObject Create(ProjectileVisualStyle style, DamageType damageType)
@@ -61,7 +62,7 @@ namespace CindarsHope.Combat.Weapon
         /// <summary>
         /// Garante que um projetil tenha um SpriteRenderer com sprite VISIVEL. Prefabs autorados de
         /// projetil (ex.: Projectile_Arrow) podem referenciar um sprite built-in que nao resolve em
-        /// runtime (m_WasSpriteAssigned: 0) — a flecha voa invisivel. Neste caso aplica o sprite
+        /// runtime (m_WasSpriteAssigned: 0) â€” a flecha voa invisivel. Neste caso aplica o sprite
         /// procedural (shaft p/ Arrow, circulo p/ magia), preservando o gameplay e a tint do prefab.
         /// No-op se ja houver um sprite valido.
         /// </summary>
@@ -86,7 +87,7 @@ namespace CindarsHope.Combat.Weapon
             bool isArrow = resolvedStyle == ProjectileVisualStyle.Arrow;
             renderer.sprite = isArrow ? GetShaftSprite() : GetCircleSprite();
 
-            // Material valido (Sprites-Default) — built-in placeholder pode nao ter material renderavel.
+            // Material valido (Sprites-Default) â€” built-in placeholder pode nao ter material renderavel.
             if (renderer.sharedMaterial == null)
             {
                 renderer.sharedMaterial = GetTrailMaterial();

@@ -20,13 +20,11 @@ namespace CindarsHope.Combat
         /// <summary>Fonte de Defense (injetável p/ testes; default = passivas via bootstrap).</summary>
         public static System.Func<int> DefenseSource;
 
-        /// <summary>F18: fonte de resistência por tipo de dano (setada pelo PlayerVitalsApplier).</summary>
-        public static System.Func<DamageType, int> ResistanceSource;
-
         // Graça de spawn: janela curta de invulnerabilidade logo após (re)entrar numa cena ou reviver.
         // Sem ela o player pode spawnar colado num inimigo restaurado do snapshot da caverna e morrer
         // de dano de contato antes de reagir (bug reportado: caverna->fazenda->caverna virava tela de
-        // morte). Armada pelo PlayerDeathController em sceneLoaded e PlayerRespawnedEvent.
+        // morte). Armada pelo PlayerDeathController em sceneLoaded e PlayerRespawnedEvent (via
+        // SpawnGraceProvider).
         private static float s_spawnGraceUntil;
 
         /// <summary>Concede invulnerabilidade por <paramref name="seconds"/> a partir de agora.</summary>
@@ -97,7 +95,8 @@ namespace CindarsHope.Combat
             }
 
             var defense = ResolveDefense();
-            var resistance = ResistanceSource != null ? ResistanceSource(damageType) : 0;
+            var resistanceSource = ResistanceProvider.Source;
+            var resistance = resistanceSource != null ? resistanceSource(damageType) : 0;
             var finalDamage = CalculateReducedDamage(rawDamage, defense, resistance);
             // Flash antes do DamageHP: DamageHP pode disparar morte sincronamente, ocultando
             // o flash se acionado depois. playerObject = GO da cena (nao o Bootstrap GO).

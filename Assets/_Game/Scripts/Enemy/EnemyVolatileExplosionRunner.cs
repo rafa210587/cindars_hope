@@ -1,20 +1,21 @@
-using CindarsHope.Combat;
+﻿using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Player;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Enemy
 {
     /// <summary>
-    /// fable_24 — detached runner for a Volatile elite's death explosion.
+    /// fable_24 â€” detached runner for a Volatile elite's death explosion.
     ///
     /// A Volatile elite is deactivated synchronously by <c>EnemyHealth.Die()</c> the instant it dies,
     /// which would kill any coroutine on the enemy itself. So the blast is delegated to this tiny,
     /// independent GameObject (same survival pattern as <c>EnemyProjectileBehaviour</c>): it shows the
     /// telegraph window, then deals the (already capped) damage only if the player is still inside the
-    /// blast radius — the player can dodge by leaving the area during the telegraph. Damage is capped
+    /// blast radius â€” the player can dodge by leaving the area during the telegraph. Damage is capped
     /// at 25% of player maxHP by the caller via <see cref="EliteAffixRules.ResolveVolatileExplosionDamage"/>.
     /// </summary>
     [DisallowMultipleComponent]

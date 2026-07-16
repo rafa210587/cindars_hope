@@ -1,13 +1,14 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Combat;
 using UnityEditor;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Editor.Validation
 {
     /// <summary>
-    /// SPEC 13C validator — Enemy actions and action sets.
+    /// SPEC 13C validator â€” Enemy actions and action sets.
     /// Run via: CindarsHope > Validation > Validate SPEC 13C - Enemy Actions
     /// </summary>
     public static class ValidateSpec13EnemyActions
@@ -79,7 +80,7 @@ namespace CindarsHope.Editor.Validation
             var warnings = new List<string>();
             var passed   = new List<string>();
 
-            // ── 1. Telegraph profiles ─────────────────────────────────────────────
+            // â”€â”€ 1. Telegraph profiles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             var tpGuids = AssetDatabase.FindAssets("t:EnemyTelegraphProfileSO");
             var tpIds = tpGuids
                 .Select(g => AssetDatabase.LoadAssetAtPath<EnemyTelegraphProfileSO>(AssetDatabase.GUIDToAssetPath(g)))
@@ -92,10 +93,10 @@ namespace CindarsHope.Editor.Validation
                 if (tpIds.Contains(id))
                     passed.Add($"TelegraphProfile '{id}' found.");
                 else
-                    errors.Add($"TelegraphProfile '{id}' not found — run CindarsHope > SPEC 13 > Create Enemy Actions and Sets.");
+                    errors.Add($"TelegraphProfile '{id}' not found â€” run CindarsHope > SPEC 13 > Create Enemy Actions and Sets.");
             }
 
-            // ── 2. Load all EnemyActionSO ─────────────────────────────────────────
+            // â”€â”€ 2. Load all EnemyActionSO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             var actionGuids = AssetDatabase.FindAssets("t:EnemyActionSO");
             var allActions = actionGuids
                 .Select(g => AssetDatabase.LoadAssetAtPath<EnemyActionSO>(AssetDatabase.GUIDToAssetPath(g)))
@@ -105,7 +106,7 @@ namespace CindarsHope.Editor.Validation
             var actionIdMap = allActions.ToDictionary(a => a.ActionId, a => a);
             passed.Add($"EnemyActionSO total: {allActions.Count}.");
 
-            // ── 3. Load all EnemyActionSetSO ──────────────────────────────────────
+            // â”€â”€ 3. Load all EnemyActionSetSO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             var setGuids = AssetDatabase.FindAssets("t:EnemyActionSetSO");
             var allSets = setGuids
                 .Select(g => AssetDatabase.LoadAssetAtPath<EnemyActionSetSO>(AssetDatabase.GUIDToAssetPath(g)))
@@ -115,21 +116,21 @@ namespace CindarsHope.Editor.Validation
             var setIdMap = allSets.ToDictionary(s => s.ActionSetId, s => s);
             passed.Add($"EnemyActionSetSO total: {allSets.Count}.");
 
-            // ── 4. Required action sets exist ─────────────────────────────────────
+            // â”€â”€ 4. Required action sets exist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             foreach (var id in RequiredActionSetIds)
             {
                 if (setIdMap.ContainsKey(id))
                     passed.Add($"ActionSet '{id}' found.");
                 else
-                    errors.Add($"ActionSet '{id}' not found — run CindarsHope > SPEC 13 > Create Enemy Actions and Sets.");
+                    errors.Add($"ActionSet '{id}' not found â€” run CindarsHope > SPEC 13 > Create Enemy Actions and Sets.");
             }
 
             if (allSets.Count >= 40)
-                passed.Add($"Action set count: {allSets.Count} (≥40 OK).");
+                passed.Add($"Action set count: {allSets.Count} (â‰¥40 OK).");
             else
-                errors.Add($"Action set count: {allSets.Count} — expected at least 40.");
+                errors.Add($"Action set count: {allSets.Count} â€” expected at least 40.");
 
-            // ── 5. Each action set has ≥1 action ──────────────────────────────────
+            // â”€â”€ 5. Each action set has â‰¥1 action â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             foreach (var s in allSets.Where(s => RequiredActionSetIds.Contains(s.ActionSetId)))
             {
                 if (s.ActionIds == null || s.ActionIds.Length == 0)
@@ -147,7 +148,7 @@ namespace CindarsHope.Editor.Validation
                 }
             }
 
-            // ── 6. Per-action validation ───────────────────────────────────────────
+            // â”€â”€ 6. Per-action validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             foreach (var a in allActions)
             {
                 if (string.IsNullOrEmpty(a.ActionId))
@@ -170,15 +171,15 @@ namespace CindarsHope.Editor.Validation
                         errors.Add($"Action '{a.ActionId}': CooldownSeconds must be > 0.");
 
                     if (a.WindupSeconds < 0f)
-                        errors.Add($"Action '{a.ActionId}': WindupSeconds must be ≥ 0.");
+                        errors.Add($"Action '{a.ActionId}': WindupSeconds must be â‰¥ 0.");
 
                     if (a.RecoverSeconds < 0f)
-                        errors.Add($"Action '{a.ActionId}': RecoverSeconds must be ≥ 0.");
+                        errors.Add($"Action '{a.ActionId}': RecoverSeconds must be â‰¥ 0.");
                 }
 
                 // DamageType must not contain a status ID
                 if (a.DamageType != null && a.DamageType.StartsWith("status_"))
-                    errors.Add($"Action '{a.ActionId}': DamageType contains a status ID — must be separate fields.");
+                    errors.Add($"Action '{a.ActionId}': DamageType contains a status ID â€” must be separate fields.");
 
                 // StatusApplicationIds must not contain DamageType values
                 if (a.StatusApplicationIds != null)
@@ -186,12 +187,12 @@ namespace CindarsHope.Editor.Validation
                     foreach (var sid in a.StatusApplicationIds)
                     {
                         if (ValidDamageTypes.Contains(sid))
-                            errors.Add($"Action '{a.ActionId}': StatusApplicationId '{sid}' looks like a DamageType — must be separate.");
+                            errors.Add($"Action '{a.ActionId}': StatusApplicationId '{sid}' looks like a DamageType â€” must be separate.");
                     }
                 }
             }
 
-            // ── 7. EnemyDataSO cross-check (informational) ────────────────────────
+            // â”€â”€ 7. EnemyDataSO cross-check (informational) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             var enemyGuids = AssetDatabase.FindAssets("t:EnemyDataSO");
             var allEnemies = enemyGuids
                 .Select(g => AssetDatabase.LoadAssetAtPath<EnemyDataSO>(AssetDatabase.GUIDToAssetPath(g)))
@@ -214,16 +215,16 @@ namespace CindarsHope.Editor.Validation
             int canonicalFound = allEnemies.Count(e => canonicalIds.Contains(e.enemyId));
 
             if (canonicalFound < 40)
-                warnings.Add($"Only {canonicalFound}/40 canonical EnemyDataSO assets found. EnemyDataSO for the 13C roster must be created separately (SPEC 13B roster mismatch — see validation doc).");
+                warnings.Add($"Only {canonicalFound}/40 canonical EnemyDataSO assets found. EnemyDataSO for the 13C roster must be created separately (SPEC 13B roster mismatch â€” see validation doc).");
             else
                 passed.Add($"All 40 canonical EnemyDataSO assets found ({canonicalFound}).");
 
             passed.Add($"EnemyDataSO with valid ActionSetId wired: {wiredCount}/{allEnemies.Count}.");
 
-            // ── 8. SPEC 13D not yet implemented ───────────────────────────────────
-            passed.Add("SPEC 13D (EnemyBrain runtime) not yet implemented — correct for 13C.");
+            // â”€â”€ 8. SPEC 13D not yet implemented â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            passed.Add("SPEC 13D (EnemyBrain runtime) not yet implemented â€” correct for 13C.");
 
-            // ── Print results ──────────────────────────────────────────────────────
+            // â”€â”€ Print results â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             Debug.Log($"[SPEC 13C Validation] PASSED: {passed.Count} | WARNINGS: {warnings.Count} | ERRORS: {errors.Count}");
             foreach (var p in passed)   Debug.Log($"  [OK]   {p}");
             foreach (var w in warnings) Debug.LogWarning($"  [WARN] {w}");

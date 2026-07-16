@@ -1,4 +1,4 @@
-using CindarsHope.Cave.Generation;
+﻿using CindarsHope.Cave.Generation;
 using CindarsHope.Combat;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
@@ -7,19 +7,20 @@ using CindarsHope.Core.Events;
 using CindarsHope.Player;
 using CindarsHope.Player.Movement;
 using UnityEngine;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Cave.Runtime
 {
     /// <summary>
-    /// fable_09 — hazard de tile materializado na caverna. Telegrafado por cor própria por tipo
-    /// (CA-2). Detecta o player por trigger (mesmo padrão do EnemyContactDamage — sem busca global):
+    /// fable_09 â€” hazard de tile materializado na caverna. Telegrafado por cor prÃ³pria por tipo
+    /// (CA-2). Detecta o player por trigger (mesmo padrÃ£o do EnemyContactDamage â€” sem busca global):
     ///
     /// - ToxicPool: aplica Poison (F01) ao pisar via PlayerStatusReceiver; fallback = dano direto
-    ///   pequeno se não houver receiver/status na cena;
+    ///   pequeno se nÃ£o houver receiver/status na cena;
     /// - IceSlick: reduz o controle do player (fator de velocidade) por ~1.5s ao pisar;
-    /// - FallingRock: dano único TELEGRAFADO ao entrar no tile (uma vez por entrada).
+    /// - FallingRock: dano Ãºnico TELEGRAFADO ao entrar no tile (uma vez por entrada).
     ///
-    /// Determinismo é responsabilidade do CaveHazardPlanner (posição/tipo). O componente só executa.
+    /// Determinismo Ã© responsabilidade do CaveHazardPlanner (posiÃ§Ã£o/tipo). O componente sÃ³ executa.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class CaveHazardTile : MonoBehaviour
@@ -44,8 +45,8 @@ namespace CindarsHope.Cave.Runtime
         public string HazardId => _hazardId;
         public CaveHazardKind Kind => _kind;
 
-        // spec_cave_biome_art_profiles_runtime (CV01): quando o profile de arte já forneceu um
-        // sprite dedicado, mantém a cor branca (não aplica o tint placeholder por cima da arte real).
+        // spec_cave_biome_art_profiles_runtime (CV01): quando o profile de arte jÃ¡ forneceu um
+        // sprite dedicado, mantÃ©m a cor branca (nÃ£o aplica o tint placeholder por cima da arte real).
         private bool _hasCustomSprite;
 
         public void Configure(string hazardId, CaveHazardKind kind, SpriteRenderer spriteRenderer, bool hasCustomSprite = false)
@@ -57,17 +58,17 @@ namespace CindarsHope.Cave.Runtime
             ApplyTelegraphColor();
         }
 
-        /// <summary>Cor placeholder por tipo (telegraph de tile — CA-2). Substituível por arte futura.</summary>
+        /// <summary>Cor placeholder por tipo (telegraph de tile â€” CA-2). SubstituÃ­vel por arte futura.</summary>
         public static Color ResolveTelegraphColor(CaveHazardKind kind)
         {
             switch (kind)
             {
                 case CaveHazardKind.ToxicPool:
-                    return new Color(0.35f, 0.85f, 0.25f, 0.65f); // verde tóxico
+                    return new Color(0.35f, 0.85f, 0.25f, 0.65f); // verde tÃ³xico
                 case CaveHazardKind.IceSlick:
                     return new Color(0.55f, 0.85f, 1f, 0.6f);     // azul gelo
                 case CaveHazardKind.FallingRock:
-                    return new Color(0.75f, 0.55f, 0.3f, 0.7f);   // âmbar/rocha
+                    return new Color(0.75f, 0.55f, 0.3f, 0.7f);   // Ã¢mbar/rocha
                 default:
                     return new Color(1f, 0f, 1f, 0.6f);
             }
@@ -85,7 +86,7 @@ namespace CindarsHope.Cave.Runtime
 
         private void Update()
         {
-            // IceSlick: limpa o fator quando expira (mesmo padrão SetFactor/ClearFactor do projeto).
+            // IceSlick: limpa o fator quando expira (mesmo padrÃ£o SetFactor/ClearFactor do projeto).
             if (_iceSlickExpireTime > 0f && Time.time >= _iceSlickExpireTime)
             {
                 _activePlayerController?.SpeedComposer.ClearFactor(SpeedFactorKind.Status);
@@ -100,7 +101,7 @@ namespace CindarsHope.Cave.Runtime
 
         private void OnTriggerStay2D(Collider2D collision)
         {
-            // ToxicPool/IceSlick reaplicam ao permanecer (com cooldown de reentrada); FallingRock não.
+            // ToxicPool/IceSlick reaplicam ao permanecer (com cooldown de reentrada); FallingRock nÃ£o.
             if (_kind == CaveHazardKind.FallingRock)
             {
                 return;
@@ -159,7 +160,7 @@ namespace CindarsHope.Cave.Runtime
             if (_playerManager != null)
             {
                 PlayerDamageReceiver.ApplyDamage(_playerManager, ToxicFallbackDamage, _hazardId, DamageType.Toxic);
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Poça tóxica!"));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("PoÃ§a tÃ³xica!"));
             }
         }
 
@@ -204,7 +205,7 @@ namespace CindarsHope.Cave.Runtime
 
         private void OnDestroy()
         {
-            // Garante que o fator de gelo não fique preso se o tile for destruído com o player dentro.
+            // Garante que o fator de gelo nÃ£o fique preso se o tile for destruÃ­do com o player dentro.
             if (_iceSlickExpireTime > 0f)
             {
                 _activePlayerController?.SpeedComposer.ClearFactor(SpeedFactorKind.Status);

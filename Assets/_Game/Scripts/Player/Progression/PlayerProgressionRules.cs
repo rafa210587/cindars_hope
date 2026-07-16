@@ -1,4 +1,4 @@
-using CindarsHope.Combat;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player.Progression
