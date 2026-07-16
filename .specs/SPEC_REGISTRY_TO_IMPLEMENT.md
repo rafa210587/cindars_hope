@@ -532,19 +532,18 @@ CV04 e Parallelizable: NO (lock Cave/**). Aguarda autorizacao humana.
 Specs geradas a partir do handoff do Codex `docs/architecture/CLAUDE_SPEC_AUTHORING_REMAINING_WORK_20260713.md`,
 transformando os 25 pares mutuos restantes (`Get-ModularizationDependencySnapshot.ps1`:
 `RuntimeModuleEdges=241`, `MutualModulePairs=25`) em specs por familia de risco, mais a rede de
-smoke humano. NAO codar a partir desta geracao — sao contratos de execucao futura. Regra dura de
-todas: nenhuma pode declarar "modularizacao concluida" enquanto `MutualModulePairs > 0`.
+smoke humano.
+
+**Atualizacao 2026-07-16:** as 7 specs de corte (AR-A a AR-G, exceto AR-H) foram implementadas e
+movidas para `.specs/implementados/` — `Get-ModularizationDependencySnapshot.ps1` confirma
+`MutualModulePairs=0` (HEAD `a4203461`). Ver `docs/architecture/CLAUDE_MODULARIZATION_REMAINING_PLAN.md`
+e `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md` para o estado final por par. Apenas AR-H
+(`spec_validation_human_playmode_smoke_v1.md` — validacao humana de Play Mode) permanece pendente
+nesta fila.
 
 | # | Spec | Fecha |
 |---|---|---|
 | AR-H | `spec_validation_human_playmode_smoke_v1.md` | Rede de validacao humana final: checklist unico de smoke (Town/Farm/Cave, inventario, crafting, loja, NPC, quest offer/turn-in, combate, morte/respawn, save/load) + path de relatorio `docs/validation/playmode/`. Docs-only, Parallelizable: YES. |
-| AR-A | `spec_arch_core_boundary_residual_v1.md` | Corte residual `Core|Inventory/Player/Save/Skills/UI` via ports em Foundation + DomainManagerRegistry, um par por commit. CONDITIONAL (lock GameBootstrap/CompositionRoot). |
-| AR-B | `spec_arch_save_ownership_residual_v1.md` | Ownership de secao de save p/ `Farm|Save` e `Quests|Save` via ISaveSectionProvider, sem logica de dominio no SaveManager, com roundtrip tests. CONDITIONAL (lock SaveManager). |
-| AR-C | `spec_arch_ui_boundary_residual_v1.md` | Corte `NPC|UI`, `Player|UI`, `UI|World` (+ `Core|UI` residual) via adapter MonoBehaviour + interface (precedente ICraftingStationModal). Exige smoke humano. CONDITIONAL. |
-| AR-G | `spec_arch_npc_quest_boundary_residual_v1.md` | Corte `NPC|Quests` com caracterizacao previa; preserva papeis/rotinas/lojas/dialogos/IDs de quest; extrai bridge de quest interaction. CONDITIONAL. |
-| AR-D | `spec_arch_player_gameplay_boundary_residual_v1.md` | Reduz/documenta `Equipment|Player`, `Inventory|Player`, `Player|Skills`, `Player|World`; testes de caracterizacao antes de refatorar; sub-slices por par. Risco alto. CONDITIONAL. |
-| AR-E | `spec_arch_combat_boundary_residual_v1.md` | Planeja reducao segura de `Combat|Core/Enemy/Inventory/Player/Skills`; mapa por direcao + cobertura antes de refactor; PlayMode obrigatorio. CONDITIONAL. |
-| AR-F | `spec_arch_cave_integration_boundary_residual_v1.md` | Trata `Cave|Combat/Core/Enemy/SceneManagement/UI` sem desfazer o polimento visual, sem novo Resources.Load, sem regredir ArchitectureRatchetTests; respeita cave-stable-run. Parallelizable: NO (lock Cave/**). |
 
 Ordem recomendada de execucao (do handoff, secao 6): AR-H → AR-A → AR-B → AR-C → AR-G → AR-D → AR-E → AR-F.
-Nenhuma promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorizacao humana explicita para execucao.
+AR-A a AR-G ja implementadas (ver `.specs/implementados/`); AR-H segue aguardando execucao/autorizacao humana.

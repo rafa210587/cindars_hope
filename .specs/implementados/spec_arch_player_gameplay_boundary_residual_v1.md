@@ -1,7 +1,8 @@
 # SPEC — Boundary Residual do Player: Equipment / Inventory / Skills / World
 
 > **Spec ID:** `spec_arch_player_gameplay_boundary_residual_v1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED
+> **Data:** 2026-07-16
 > **Wave:** WAVE ARQUITETURA — Redução de Acoplamento Modular Residual
 > **Priority:** P2
 > **Type:** Runtime
@@ -20,6 +21,49 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (2026-07-16)
+
+Esta spec foi desenhada como "Phase-0-first" (mapear os 4 pares, decidir 1 primeiro par seguro, e
+só quebrá-lo condicionalmente à existência de cobertura de teste — seção 12 explicitamente proibia
+"Quebrar os 4 pares na mesma spec"). Na execução real, a wave de arquitetura fechou **os 4 pares**
+desta spec em commits dedicados, superando o escopo declarado (over-delivery, não regressão).
+
+```text
+Commits reais (branch dev, HEAD a4203461):
+6980acdd refactor(arquitetura): cortar par mutuo Player|World via facade + move de consts
+         -> MutualModulePairs cai (Player|World ausente)
+ca6918f5 refactor(arquitetura): cortar par mutuo Equipment|Player via porta
+         -> MutualModulePairs cai (Equipment|Player ausente)
+90a9e448 refactor(arquitetura): cortar par mutuo Inventory|Player via porta
+         -> MutualModulePairs cai (Inventory|Player ausente)
+bcb2dd5c refactor(arquitetura): cortar pares Combat|Skills e Player|Skills via Foundation + porta
+         -> MutualModulePairs cai (Player|Skills ausente; Combat|Skills e' escopo da spec irma
+            spec_arch_combat_boundary_residual_v1, cortado no mesmo commit)
+
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0)
+Snapshot: MutualModulePairs=0 (Equipment|Player, Inventory|Player, Player|Skills, Player|World
+ausentes)
+Play Mode / validacao humana: NOT RUN - pendente; coberto por spec_validation_human_playmode_smoke_v1
+(segue em a_implementar/)
+```
+
+**Desvios de escopo:** a spec previa Fase 3 (refactor) como CONDICIONAL a um único par com cobertura
+de teste confirmada, e listava as outras 3 sub-slices como "não criadas por esta spec, recomendadas
+para o futuro". A execução real tratou as 4 sub-slices na mesma janela da wave, sem o gate formal de
+"criar teste de caracterização antes" descrito na seção 20/Fase 2 desta spec especificamente (a
+suíte EditMode geral de 2837 testes serviu como regressão, mas não há evidência de um teste de
+caracterização dedicado por par criado antes de cada corte, como a spec pedia). `SkillPassiveModifier`/
+`SkillModifierType` (seção 9.3, explicitamente fora de escopo/arquivo proibido) não foram tocados —
+confirma-se que esse limite foi respeitado.
+
+**Residual risk:** movimento, stamina, morte/respawn, equipamento, inventário e skills não têm
+confirmação de Play Mode humano nesta spec; dependem de `spec_validation_human_playmode_smoke_v1`.
 
 ---
 

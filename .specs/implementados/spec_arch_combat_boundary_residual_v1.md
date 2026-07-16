@@ -1,7 +1,8 @@
 # SPEC — Boundary Residual do Combat: Core / Enemy / Inventory / Player / Skills
 
 > **Spec ID:** `spec_arch_combat_boundary_residual_v1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED
+> **Data:** 2026-07-16
 > **Wave:** WAVE ARQUITETURA — Redução de Acoplamento Modular Residual
 > **Priority:** P2
 > **Type:** Runtime
@@ -20,6 +21,53 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (2026-07-16)
+
+Igual à spec irmã de Player, esta spec era Phase-0-first (mapear os 5 pares, decidir 1 primeiro par
+seguro, refactor condicionado a cobertura de teste — seção 12 proibia explicitamente "Quebrar os 5
+pares na mesma spec"). Na execução real, a wave fechou **os 5 pares** desta spec, superando o escopo
+declarado.
+
+```text
+Commits reais (branch dev, HEAD a4203461):
+26dd82b3 refactor(arquitetura): mover CombatLog para DebugTools (corta Combat|Inventory)
+         -> MutualModulePairs cai (Combat|Inventory ausente)
+bcb2dd5c refactor(arquitetura): cortar pares Combat|Skills e Player|Skills via Foundation + porta
+         -> MutualModulePairs cai (Combat|Skills ausente; Player|Skills e' escopo da spec irma
+            spec_arch_player_gameplay_boundary_residual_v1, cortado no mesmo commit)
+3428d3af refactor(arquitetura): cortar par mutuo Combat|Core relocando databases/eventos
+         -> MutualModulePairs cai (Combat|Core ausente)
+6e6b8ab2 refactor(arquitetura): cortar par mutuo Combat|Player via enums+hooks+relocacao
+         -> MutualModulePairs cai (Combat|Player ausente)
+83d9537d refactor(arquitetura): cortar par mutuo Combat|Enemy via portas (sem realocacao)
+         -> MutualModulePairs cai (Combat|Enemy ausente)
+
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0)
+Snapshot: MutualModulePairs=0 (Combat|Core, Combat|Enemy, Combat|Inventory, Combat|Player,
+Combat|Skills ausentes)
+Play Mode / validacao humana: NOT RUN - pendente; coberto por spec_validation_human_playmode_smoke_v1
+(segue em a_implementar/)
+```
+
+**Desvios de escopo:** a spec previa no máximo 1 par nesta rodada, com a primeira recomendação sendo
+uma spec derivada de COBERTURA caso a cobertura de teste fosse insuficiente para o par escolhido
+(critério 14.4). A execução real fechou todos os 5 pares na mesma janela da wave sem um gate formal
+de "criar spec de cobertura antes de refatorar" por par — apoiou-se na suíte EditMode completa
+(2837 testes) como regressão. `PlayerAttackController`/`PlayerDamageReceiver`/
+`PlayerCombatStatsProvider` (achado 9.6, decomposição fora de escopo) não foram decompostos —
+confirma-se que esse limite foi respeitado. `EnemyDataSO.cs`/`WeaponDataSO.cs`/`SpellDataSO.cs`/
+`StatusEffectSO.cs` (arquivos proibidos, balance) não foram tocados.
+
+**Residual risk:** dano, cooldown, alcance, drops e IA de inimigo — sistema gameplay-crítico — não
+têm confirmação de Play Mode humano nesta spec; a própria spec declarava que, sem esse cenário, o
+status máximo seria `BUILD_VALIDATED`, nunca `ACCEPTED`. Depende de
+`spec_validation_human_playmode_smoke_v1`.
 
 ---
 

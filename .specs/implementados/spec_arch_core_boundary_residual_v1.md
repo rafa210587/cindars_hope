@@ -1,7 +1,8 @@
 # SPEC — Corte Residual dos Pares Mútuos `Core|*` (Inventory/Player/Save/Skills/UI)
 
 > **Spec ID:** `spec_arch_core_boundary_residual_v1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED
+> **Data:** 2026-07-16
 > **Wave:** WAVE ARCH — Modularização Residual (continuação do plano `CLAUDE_MODULARIZATION_REMAINING_PLAN.md`)
 > **Priority:** P1
 > **Type:** Runtime
@@ -20,6 +21,50 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (2026-07-16)
+
+Os 5 sublotes desta spec foram fechados sob a métrica completa (`MutualModulePairs`), todos via
+porta mínima em `CindarsHope.Foundation` + `DomainManagerRegistry.Get<TInterface>()`, exatamente a
+técnica prescrita nesta spec (molde `IEquipmentRuntime`/`IModalStateProvider`). Nenhum desvio de
+técnica identificado.
+
+```text
+Commits reais (branch dev, HEAD a4203461):
+ee45510e refactor(arquitetura): cortar par mutuo Core|Skills via porta
+         -> ISkillTreeRuntime (Foundation); MutualModulePairs 25 -> 24
+a208bba7 refactor(arquitetura): cortar par mutuo Core|UI via ModalType->Foundation + porta
+         -> ModalType movido a Foundation, IModalRuntime; MutualModulePairs 12 -> 11
+9dc84efa refactor(arquitetura): cortar par mutuo Core|Save via self-resolve + porta
+         -> ISaveRuntime (Foundation); MutualModulePairs 10 -> 9
+ca4ec23e refactor(arquitetura): cortar par mutuo Core|Inventory via portas + self-resolve
+         -> IInventoryRuntime (Foundation); MutualModulePairs 7 -> 6
+4435b0f0 refactor(arquitetura): cortar par mutuo Core|Player via portas + self-resolve
+         -> IPlayerRuntime/IHungerRuntime/IStaminaRuntime/IManaRuntime/IStatusEffectRuntime/
+            IPlayerProgressionRuntime (Foundation); MutualModulePairs 6 -> 5
+
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0)
+Snapshot: MutualModulePairs=0 (Core|Inventory, Core|Player, Core|Save, Core|Skills, Core|UI ausentes)
+Play Mode / validacao humana: NOT RUN - pendente; coberto por spec_validation_human_playmode_smoke_v1
+(segue em a_implementar/)
+```
+
+**Desvios de técnica:** nenhum. `Core|Save` foi resolvido com uma porta (`ISaveRuntime`), não com a
+alternativa mais simples sugerida na seção 9 ("reavaliar Core|Save primeiro sob essa lente antes de
+criar uma porta grande") — mas a porta ficou mínima (3 membros: SaveGame/LoadGame/HotbarState),
+dentro do espírito de minimalismo pedido; não é um desvio material.
+
+**Residual risk:** rewiring de init do `GameBootstrap` (ordem de `Awake`/registro no
+`DomainManagerRegistry` entre managers e o bootstrap) não é garantido pelo Unity sem Script
+Execution Order explícito — mesmo risco já documentado nas specs-irmãs v34/v36-v39. Validado apenas
+por EditMode; comportamento runtime completo (as 3 cenas MVP carregando sem
+missing-script/NullReferenceException, save/load real) depende do playtest humano
+(`spec_validation_human_playmode_smoke_v1`).
 
 ---
 

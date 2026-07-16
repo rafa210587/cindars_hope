@@ -638,83 +638,6 @@
         "path":  ".specs/a_implementar/features_futuras/24_spec_festival_minigames_event_framework_future_runtime.md"
     },
     {
-        "id":  "spec_arch_cave_integration_boundary_residual_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE ARCH — Redução de Acoplamento Modular Residual (pós CV04)",
-        "priority":  "P3",
-        "type":  "Runtime / Integration",
-        "domain":  "Cave",
-        "title":  "SPEC — Fronteira de Integração Cave: Resíduo de Acoplamento Modular (Combat/Core/Enemy/SceneManagement/UI)",
-        "path":  ".specs/a_implementar/spec_arch_cave_integration_boundary_residual_v1.md"
-    },
-    {
-        "id":  "spec_arch_combat_boundary_residual_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE ARQUITETURA — Redução de Acoplamento Modular Residual",
-        "priority":  "P2",
-        "type":  "Runtime",
-        "domain":  "Combat / Core / Enemy / Inventory / Player / Skills",
-        "title":  "SPEC — Boundary Residual do Combat: Core / Enemy / Inventory / Player / Skills",
-        "path":  ".specs/a_implementar/spec_arch_combat_boundary_residual_v1.md"
-    },
-    {
-        "id":  "spec_arch_core_boundary_residual_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md)",
-        "priority":  "P1",
-        "type":  "Runtime",
-        "domain":  "Core",
-        "title":  "SPEC — Corte Residual dos Pares Mútuos `Core|*` (Inventory/Player/Save/Skills/UI)",
-        "path":  ".specs/a_implementar/spec_arch_core_boundary_residual_v1.md"
-    },
-    {
-        "id":  "spec_arch_npc_quest_boundary_residual_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE ARCH — Redução Residual de Acoplamento Modular",
-        "priority":  "P2",
-        "type":  "Runtime",
-        "domain":  "NPC",
-        "title":  "SPEC — Redução Residual de Acoplamento NPC|Quests",
-        "path":  ".specs/a_implementar/spec_arch_npc_quest_boundary_residual_v1.md"
-    },
-    {
-        "id":  "spec_arch_player_gameplay_boundary_residual_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE ARQUITETURA — Redução de Acoplamento Modular Residual",
-        "priority":  "P2",
-        "type":  "Runtime",
-        "domain":  "Player / Equipment / Inventory / Skills / World",
-        "title":  "SPEC — Boundary Residual do Player: Equipment / Inventory / Skills / World",
-        "path":  ".specs/a_implementar/spec_arch_player_gameplay_boundary_residual_v1.md"
-    },
-    {
-        "id":  "spec_arch_save_ownership_residual_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md, Fase A — Save Boundary)",
-        "priority":  "P1",
-        "type":  "Save",
-        "domain":  "Save / Farm / Quests",
-        "title":  "SPEC — Ownership Residual de Save: `Farm|Save` e `Quests|Save`",
-        "path":  ".specs/a_implementar/spec_arch_save_ownership_residual_v1.md"
-    },
-    {
-        "id":  "spec_arch_ui_boundary_residual_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE ARCH — Redução Residual de Acoplamento Modular",
-        "priority":  "P2",
-        "type":  "Integration",
-        "domain":  "UI",
-        "title":  "SPEC — Redução Residual de Acoplamento UI (NPC|UI, Player|UI, UI|World)",
-        "path":  ".specs/a_implementar/spec_arch_ui_boundary_residual_v1.md"
-    },
-    {
         "id":  "spec_cave_biome_art_profiles_runtime",
         "bucket":  "Fila",
         "status":  "A implementar",
@@ -3014,6 +2937,17 @@
         "path":  ".specs/implementados/spec_02_weather_generation_forecast_runtime.md"
     },
     {
+        "id":  "spec_arch_cave_integration_boundary_residual_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED",
+        "wave":  "WAVE ARCH — Redução de Acoplamento Modular Residual (pós CV04)",
+        "priority":  "P3",
+        "type":  "Runtime / Integration",
+        "domain":  "Cave",
+        "title":  "SPEC — Fronteira de Integração Cave: Resíduo de Acoplamento Modular (Combat/Core/Enemy/SceneManagement/UI)",
+        "path":  ".specs/implementados/spec_arch_cave_integration_boundary_residual_v1.md"
+    },
+    {
         "id":  "spec_arch_cave_save_cycle_reduction_v28",
         "bucket":  "Implementado",
         "status":  "Implementado e BUILD_VALIDATED",
@@ -3023,6 +2957,28 @@
         "domain":  "",
         "title":  "spec_arch_cave_save_cycle_reduction_v28",
         "path":  ".specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md"
+    },
+    {
+        "id":  "spec_arch_combat_boundary_residual_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED",
+        "wave":  "WAVE ARQUITETURA — Redução de Acoplamento Modular Residual",
+        "priority":  "P2",
+        "type":  "Runtime",
+        "domain":  "Combat / Core / Enemy / Inventory / Player / Skills",
+        "title":  "SPEC — Boundary Residual do Combat: Core / Enemy / Inventory / Player / Skills",
+        "path":  ".specs/implementados/spec_arch_combat_boundary_residual_v1.md"
+    },
+    {
+        "id":  "spec_arch_core_boundary_residual_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED",
+        "wave":  "WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md)",
+        "priority":  "P1",
+        "type":  "Runtime",
+        "domain":  "Core",
+        "title":  "SPEC — Corte Residual dos Pares Mútuos `Core|*` (Inventory/Player/Save/Skills/UI)",
+        "path":  ".specs/implementados/spec_arch_core_boundary_residual_v1.md"
     },
     {
         "id":  "spec_arch_core_craft_cycle_reduction_v32",
@@ -3300,6 +3256,17 @@
         "path":  ".specs/implementados/spec_arch_npc_debug_expression_policy_v18.md"
     },
     {
+        "id":  "spec_arch_npc_quest_boundary_residual_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED",
+        "wave":  "WAVE ARCH — Redução Residual de Acoplamento Modular",
+        "priority":  "P2",
+        "type":  "Runtime",
+        "domain":  "NPC",
+        "title":  "SPEC — Redução Residual de Acoplamento NPC|Quests",
+        "path":  ".specs/implementados/spec_arch_npc_quest_boundary_residual_v1.md"
+    },
+    {
         "id":  "spec_arch_npc_save_cycle_reduction_v23",
         "bucket":  "Implementado",
         "status":  "Implementado e BUILD_VALIDATED",
@@ -3366,6 +3333,17 @@
         "path":  ".specs/implementados/spec_arch_npcshop_special_identity_policy_v16.md"
     },
     {
+        "id":  "spec_arch_player_gameplay_boundary_residual_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED",
+        "wave":  "WAVE ARQUITETURA — Redução de Acoplamento Modular Residual",
+        "priority":  "P2",
+        "type":  "Runtime",
+        "domain":  "Player / Equipment / Inventory / Skills / World",
+        "title":  "SPEC — Boundary Residual do Player: Equipment / Inventory / Skills / World",
+        "path":  ".specs/implementados/spec_arch_player_gameplay_boundary_residual_v1.md"
+    },
+    {
         "id":  "spec_arch_player_save_cycle_reduction_v20",
         "bucket":  "Implementado",
         "status":  "Implementado e BUILD_VALIDATED",
@@ -3399,6 +3377,17 @@
         "path":  ".specs/implementados/spec_arch_runtime_maintainability_rework_v2.md"
     },
     {
+        "id":  "spec_arch_save_ownership_residual_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED",
+        "wave":  "WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md, Fase A — Save Boundary)",
+        "priority":  "P1",
+        "type":  "Save",
+        "domain":  "Save / Farm / Quests",
+        "title":  "SPEC — Ownership Residual de Save: `Farm|Save` e `Quests|Save`",
+        "path":  ".specs/implementados/spec_arch_save_ownership_residual_v1.md"
+    },
+    {
         "id":  "spec_arch_save_ui_cycle_reduction_v26",
         "bucket":  "Implementado",
         "status":  "Implementado e BUILD_VALIDATED",
@@ -3430,6 +3419,17 @@
         "domain":  "",
         "title":  "spec_arch_scene_world_cycle_reduction_v9",
         "path":  ".specs/implementados/spec_arch_scene_world_cycle_reduction_v9.md"
+    },
+    {
+        "id":  "spec_arch_ui_boundary_residual_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED",
+        "wave":  "WAVE ARCH — Redução Residual de Acoplamento Modular",
+        "priority":  "P2",
+        "type":  "Integration",
+        "domain":  "UI",
+        "title":  "SPEC — Redução Residual de Acoplamento UI (NPC|UI, Player|UI, UI|World)",
+        "path":  ".specs/implementados/spec_arch_ui_boundary_residual_v1.md"
     },
     {
         "id":  "spec_bugfix_ui_input_shop_sell_bundle",

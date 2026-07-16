@@ -1,7 +1,8 @@
 # SPEC — Fronteira de Integração Cave: Resíduo de Acoplamento Modular (Combat/Core/Enemy/SceneManagement/UI)
 
 > **Spec ID:** `spec_arch_cave_integration_boundary_residual_v1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED
+> **Data:** 2026-07-16
 > **Wave:** WAVE ARCH — Redução de Acoplamento Modular Residual (pós CV04)
 > **Priority:** P3
 > **Type:** Runtime / Integration
@@ -23,6 +24,65 @@
 
 required_adrs: []
 required_game_rules: [cave_rules.md]
+
+---
+
+## Evidência de implementação (2026-07-16)
+
+Os 5 pares-alvo (`Cave|Combat`, `Cave|Core`, `Cave|Enemy`, `Cave|SceneManagement`, `Cave|UI`) saíram
+de `MutualModulePairs` — este era o **último** lote de pares mútuos do projeto; após o commit final
+o snapshot reporta `MutualModulePairs=0`. O microcorte anteriormente rejeitado
+(`CaveSceneRuntimeReferenceInstaller` → `Cave.Runtime`) NÃO foi repetido; o corte de
+`Cave|SceneManagement` usou uma técnica diferente (mover a lógica de rebind para `Save`/`UI`, que já
+tinham arestas não-mútuas para `Cave`), evitando a causa raiz documentada na spec.
+
+```text
+Commits reais (branch dev, HEAD a4203461):
+3a37af8b refactor(arquitetura): cortar par mutuo Cave|UI (redirect de shim)
+         -> CaveCheckpointSelectionUI chama Core.MenuGuiStyle direto (shim UI.MenuGuiStyle
+            era so um redirect esquecido); MutualModulePairs 16 -> 15
+001d2dc1 refactor(arquitetura): cortar par mutuo Cave|Core via relocacao + holder de cache
+         -> CaveRuntimeMaterializationCompleteEvent movido Core/Events -> Cave/Events (git mv,
+            namespace preservado); cache de cave-run-state saiu do GameBootstrap para
+            CaveRunStateCache (Cave-side); MutualModulePairs 8 -> 7
+2d18f96f refactor(arquitetura): cortar par mutuo Cave|Combat portando uso de Cave do EnemyHealth
+         -> InterMonsterCombatMath movido Cave -> Foundation (git mv); EnemyHealth recebe
+            scaledBaseHp/floats primitivos em vez de CaveBandScaling/CaveEcosystemBalanceSO;
+            ICaveBossReporter (Foundation) substitui CaveBossDeathReporter direto;
+            MutualModulePairs 4 -> 3
+d921b83a refactor(arquitetura): cortar par mutuo Cave|SceneManagement movendo wiring p/ Save/UI
+         -> logica cave-especifica do installer migrada para SaveManager.RebindCaveRuntime/
+            RebindCaveMaterializerCombatDatabases e DebugHud.RebindCaveRuntime (nao repete o
+            microcorte rejeitado); MutualModulePairs 2 -> 1
+a4203461 refactor(arquitetura): cortar par mutuo Cave|Enemy via inversao + portas (zero pares)
+         -> StableHash32/ICaveRunContext/InterMonsterConflictParams (Foundation); inversao de
+            dependencia fable_78 (CaveConflictCombatant empurra delegates para EnemyBrain em
+            OnEnable, em vez de EnemyBrain puxar via GetComponent); MutualModulePairs 1 -> 0
+            (ULTIMO par mutuo do projeto)
+
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0)
+Snapshot: MutualModulePairs=0 (Cave|Combat, Cave|Core, Cave|Enemy, Cave|SceneManagement, Cave|UI
+ausentes)
+Play Mode / validacao humana: NOT RUN - pendente; coberto por spec_validation_human_playmode_smoke_v1
+(segue em a_implementar/)
+```
+
+**Desvios de técnica:** nenhum material. Confirmado por diff dos 5 commits nesta sessão de closeout:
+nenhum arquivo do lock scope de `spec_cave_visual_polish_runtime` (`CaveTileMaterializer`,
+`CaveEnvironmentElementPlanner/Materializer`, `CaveBiomeArtProfileSO`, `CaveVignetteController`) foi
+tocado — `spec_cave_visual_polish_runtime` continua em `.specs/a_implementar/`, confirmando que a
+restrição "não tocar o lock scope dela enquanto não estiver em implementados/" foi respeitada.
+`Resources.Load` não foi elevado (o commit `a4203461` adiciona 3 novos arquivos Foundation na
+allowlist do ratchet, não eleva a contagem por arquivo já existente).
+
+**Residual risk (citado explicitamente no commit `a4203461`):** "o sistema inter-monstro fable_78 e
+o targeting/summon/elite de cave são runtime; EditMode cobre as fórmulas mas não o comportamento
+espacial ao vivo." Recomenda-se playtest de cave dedicado (conflito inter-monstro, spawn de elites,
+summon, save/load numa run ativa) além do smoke visual genérico — ambos cobertos por
+`spec_validation_human_playmode_smoke_v1`.
 
 ---
 

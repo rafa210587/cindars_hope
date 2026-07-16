@@ -8,6 +8,39 @@
 > Fonte oficial de specs: `.specs/`.
 > A pasta raiz `specs/` foi removida e nao deve ser recriada.
 
+## 0.0.0 Modularização residual — 25 pares mútuos → 0 (2026-07-16)
+
+**Status:** `BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE`
+
+- As 7 specs de corte residual do lote ARCH_RESIDUAL (`spec_arch_core_boundary_residual_v1`,
+  `spec_arch_save_ownership_residual_v1`, `spec_arch_ui_boundary_residual_v1`,
+  `spec_arch_npc_quest_boundary_residual_v1`, `spec_arch_player_gameplay_boundary_residual_v1`,
+  `spec_arch_combat_boundary_residual_v1`, `spec_arch_cave_integration_boundary_residual_v1`)
+  foram implementadas em 25 commits (`ee45510e`..`a4203461`, branch `dev`), um por par mútuo.
+- `tools/architecture/Get-ModularizationDependencySnapshot.ps1` reporta `MutualModulePairs=0` no
+  HEAD `a4203461` — zero pares mútuos remanescentes no runtime (antes: 25).
+- Build: `Invoke-UnityGeneratedProjectsBuild.ps1` PASS (exit 0, 7/7 projetos).
+- EditMode: `RunUnityEditModeTests.ps1` PASS 2837/2837 (exit 0) nos 25 cortes; 2845/2845 (exit 0)
+  após os 8 testes de caracterização que fecharam o critério 14.1 da spec de NPC|Quests.
+- Técnica dominante: portas mínimas em `CindarsHope.Foundation` + `DomainManagerRegistry`, e o
+  adapter `[SerializeField] MonoBehaviour` + `is IInterface` (molde `CraftingPoint`), preservando
+  100% das referências de cena sem regen.
+- Desvio detectado no closeout e FECHADO na mesma sessão: `spec_arch_npc_quest_boundary_residual_v1`
+  cortou o par `NPC|Quests` apenas pela direção `Quests → NPC` (`1b92c6eb`), deixando em aberto os
+  critérios 14.1 (testes de caracterização, bloqueantes) e 14.2 (consumir contrato em vez do
+  `QuestRuntimeBootstrap.QuestService` concreto). Ambos fechados em seguida: contrato mínimo
+  `IQuestInteractionQuery` em `CindarsHope.Quests.Runtime`, decisão extraída para a policy pura
+  `NpcQuestInteractionPolicy` e 8 testes de caracterização (ver header de evidência da spec). A
+  aresta unidirecional `NPC → Quests` permanece por design — não é ciclo e não afeta
+  `MutualModulePairs=0`.
+- Play Mode humano **NOT RUN** — pendente, coberto por `spec_validation_human_playmode_smoke_v1`
+  (segue em `.specs/a_implementar/`).
+
+Evidence: headers de evidência das 7 specs em `.specs/implementados/spec_arch_*_boundary_residual_v1.md`
+e `.specs/implementados/spec_arch_save_ownership_residual_v1.md`.
+
+---
+
 ## 0.0.1 TownScene preservation-first relayout (2026-07-01)
 
 **Status:** `BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE`

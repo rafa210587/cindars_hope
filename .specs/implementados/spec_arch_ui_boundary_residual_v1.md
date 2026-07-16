@@ -1,7 +1,8 @@
 # SPEC — Redução Residual de Acoplamento UI (NPC|UI, Player|UI, UI|World)
 
 > **Spec ID:** `spec_arch_ui_boundary_residual_v1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED
+> **Data:** 2026-07-16
 > **Wave:** WAVE ARCH — Redução Residual de Acoplamento Modular
 > **Priority:** P2
 > **Type:** Integration
@@ -21,6 +22,43 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (2026-07-16)
+
+Os 3 pares-alvo (`NPC|UI`, `Player|UI`, `UI|World`) saíram de `MutualModulePairs`, usando exatamente
+o padrão adapter prescrito (`[SerializeField] MonoBehaviour` + `is IInterface`, molde
+`CraftingPoint`/`ICraftingStationModal`) — confirmado por leitura direta dos 3 commits. Sem desvio de
+técnica.
+
+```text
+Commits reais (branch dev, HEAD a4203461):
+2014a11b refactor(arquitetura): cortar par mutuo Player|UI via porta
+         -> ManaManager consome IModalStateProvider; MutualModulePairs 24 -> 23
+5cc9f6bd refactor(arquitetura): cortar par mutuo UI|World via porta
+         -> CorpseInteractable consome ICorpseRecoveryPresenter (World, nao Foundation,
+            por depender de UnityEngine); MutualModulePairs 23 -> 22
+692af532 refactor(arquitetura): cortar par mutuo NPC|UI via presenter ports
+         -> NpcController/NpcShopController consomem INpcDialoguePresenter/INpcShopMenuPresenter/
+            INpcBuyPanel/INpcSellPanel/IModalRuntime; MutualModulePairs 11 -> 10
+
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0)
+Snapshot: MutualModulePairs=0 (NPC|UI, Player|UI, UI|World ausentes)
+Play Mode / validacao humana: NOT RUN - pendente; coberto por spec_validation_human_playmode_smoke_v1
+(segue em a_implementar/); o commit 692af532 documenta explicitamente "PlayMode/smoke de
+dialogo+loja diferido ao playtest final"
+```
+
+**Desvios de técnica:** nenhum — os 3 cortes seguem o precedente `CraftingPoint` exatamente como
+prescrito (campo serializado vira `MonoBehaviour`, cast para interface no ponto de uso, referência
+de cena preservada sem regen).
+
+**Residual risk:** smoke humano obrigatório desta spec (seção 30 — abrir inventário/skills, crafting,
+diálogo, corpse, shop) não foi executado; fica coberto por `spec_validation_human_playmode_smoke_v1`.
 
 ---
 

@@ -464,27 +464,7 @@ namespace CindarsHope.NPC
         }
 
         private static QuestGiverInteractionMode ResolveQuestInteractionMode(string questId)
-        {
-            if (string.IsNullOrWhiteSpace(questId))
-            {
-                return QuestGiverInteractionMode.NoQuest;
-            }
-
-            var service = QuestRuntimeBootstrap.QuestService;
-            if (service == null)
-            {
-                return QuestGiverInteractionMode.Offer;
-            }
-
-            if (service.CanTurnIn(questId))
-            {
-                return QuestGiverInteractionMode.TurnIn;
-            }
-
-            return service.GetQuestState(questId) == null
-                ? QuestGiverInteractionMode.Offer
-                : QuestGiverInteractionMode.NoQuest;
-        }
+            => NpcQuestInteractionPolicy.ResolveMode(questId, QuestRuntimeBootstrap.QuestService);
 
         private void ShowClosingLine()
         {

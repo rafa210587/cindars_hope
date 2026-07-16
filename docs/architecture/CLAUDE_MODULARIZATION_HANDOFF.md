@@ -1,5 +1,13 @@
 # Prompt de Continuação para Claude — Rework Modular
 
+## 2026-07-16 — Estado final: MutualModulePairs=0
+
+Os 25 pares mútuos remanescentes deste handoff foram fechados pelo lote ARCH_RESIDUAL (7 specs em
+`.specs/implementados/`, commits `ee45510e`..`a4203461`, branch `dev`). Snapshot confirmado:
+`MutualModulePairs=0`. Build 7/7 exit 0; EditMode 2837/2837 exit 0. Play Mode humano `NOT RUN`
+(`spec_validation_human_playmode_smoke_v1`, `.specs/a_implementar/`). O restante deste documento é
+histórico de decisões técnicas por corte — mantido como registro, não como estado atual.
+
 ## 2026-07-10 — Cortes reais pós-snapshot corrigido: `Core|Craft` e `Inventory|Magic`
 
 - Objetivo: continuar a reduzir pares reais após o snapshot passar a contar fully-qualified

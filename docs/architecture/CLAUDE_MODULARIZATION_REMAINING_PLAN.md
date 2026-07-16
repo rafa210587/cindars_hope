@@ -4,6 +4,24 @@
 > Branch esperada: `dev`  
 > Objetivo: continuar a modularização/eficiência sem quebrar o jogo, sem regressão de saves, cenas, prefabs, IDs, balanceamento ou fluxos de gameplay.
 
+## Estado final (2026-07-16) — MutualModulePairs=0
+
+`tools/architecture/Get-ModularizationDependencySnapshot.ps1` confirma `MutualModulePairs=0` no
+HEAD `a4203461` (branch `dev`) — os 25 pares mútuos restantes deste plano foram fechados pelas 7
+specs do lote ARCH_RESIDUAL (`.specs/implementados/spec_arch_core_boundary_residual_v1.md` e
+irmãs). Build 7/7 exit 0; EditMode 2845/2845 exit 0. O critério deste documento ("Não declarar
+modularização ampla concluída enquanto existirem pares mútuos") está agora satisfeito sob a métrica
+completa — **com a ressalva de que a validação humana de Play Mode segue pendente**
+(`spec_validation_human_playmode_smoke_v1`, ainda em `.specs/a_implementar/`). Ver header de
+evidência de cada spec em `.specs/implementados/` para os commits reais e eventuais desvios
+(`spec_arch_npc_quest_boundary_residual_v1` cortou o par só pela direção Quests→NPC e teve os
+critérios 14.1/14.2 fechados em seguida, na mesma sessão — ver seu header). O restante deste
+documento é histórico/planejamento e não reflete mais o estado atual.
+
+> Nota de escopo: `MutualModulePairs=0` significa ZERO CICLOS entre módulos. Arestas
+> unidirecionais (ex.: `NPC → Quests`) continuam existindo e são acoplamento em camadas normal —
+> não são débito por si só.
+
 ## Atualizacao 2026-07-12 - estado real antes de continuar
 
 Verificacao atual no disco/git:

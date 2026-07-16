@@ -4,6 +4,90 @@
 
 ---
 
+## Sessao 2026-07-16 — Modularizacao residual: 25 pares mutuos → 0
+
+**Foco:** fechar os 25 pares mutuos remanescentes reportados por
+`tools/architecture/Get-ModularizationDependencySnapshot.ps1` (baseline `MutualModulePairs=25`,
+`RuntimeModuleEdges=241`), via as 7 specs de corte do lote ARCH_RESIDUAL, um par por commit.
+
+### Deliverables (pares fechados por spec)
+
+- `spec_arch_core_boundary_residual_v1` — `Core|Inventory`, `Core|Player`, `Core|Save`, `Core|Skills`,
+  `Core|UI` (portas em `CindarsHope.Foundation` + `DomainManagerRegistry`).
+- `spec_arch_save_ownership_residual_v1` — `Farm|Save` (ownership do `FarmTileGrid` movido para o
+  dominio Farm), `Quests|Save` (porta no ponto de construcao do `QuestSectionProvider`).
+- `spec_arch_ui_boundary_residual_v1` — `NPC|UI`, `Player|UI`, `UI|World` (adapter
+  `[SerializeField] MonoBehaviour` + `is IInterface`, molde `CraftingPoint`/`ICraftingStationModal`).
+- `spec_arch_npc_quest_boundary_residual_v1` — `NPC|Quests` (par fechado pela direcao Quests→NPC via
+  `INpcIdentity` + evento; criterios 14.1/14.2 fechados em seguida — ver abaixo).
+- `spec_arch_player_gameplay_boundary_residual_v1` — `Equipment|Player`, `Inventory|Player`,
+  `Player|Skills`, `Player|World`.
+- `spec_arch_combat_boundary_residual_v1` — `Combat|Core`, `Combat|Enemy`, `Combat|Inventory`,
+  `Combat|Player`, `Combat|Skills`.
+- `spec_arch_cave_integration_boundary_residual_v1` — `Cave|Combat`, `Cave|Core`, `Cave|Enemy`,
+  `Cave|SceneManagement`, `Cave|UI` (ultimo lote; commit `a4203461` zera `MutualModulePairs`). O
+  microcorte anteriormente rejeitado (`CaveSceneRuntimeReferenceInstaller` → `Cave.Runtime`) NAO foi
+  repetido — usada uma tecnica diferente (rebind via Save/UI).
+
+### Desvio detectado no closeout e FECHADO na mesma sessao (`validation-truth`/`subagent-results-not-evidence`)
+
+`spec_arch_npc_quest_boundary_residual_v1`: o commit `1b92c6eb` tirou o par de `MutualModulePairs`
+cortando so a direcao `Quests → NPC` (via `INpcIdentity`); os criterios nomeados 14.1 (testes de
+caracterizacao, declarados bloqueantes pela spec) e 14.2 (consumir contrato em vez do
+`QuestRuntimeBootstrap.QuestService` concreto) ficaram em aberto. Detectado por LEITURA DIRETA DO
+CODIGO no closeout — invisivel ao snapshot e a mensagem do commit. Fechado em seguida, na mesma
+sessao:
+
+- 14.2: contrato minimo `IQuestInteractionQuery` (`CanTurnIn`/`HasQuestState`) em
+  `CindarsHope.Quests.Runtime`, implementado por `QuestService`; decisao extraida para a policy pura
+  `NpcQuestInteractionPolicy` (mesmo precedente das demais policies puras de NPC);
+  `NpcController.ResolveQuestInteractionMode` delega, preservando assinatura e a MESMA fonte de
+  resolucao (sem bootstrap novo, sem mudanca de timing).
+- 14.1: `NpcQuestInteractionPolicyTests` — 8 testes de caracterizacao (EditMode 2837 → 2845).
+
+Contrato mantido em `Quests` (nao em `Foundation`) por decisao explicita: a aresta `NPC → Quests` nao
+e ciclica e persiste de qualquer forma via `NpcShopController`/`RomanceService`; por a rule
+`code-minimalism-ladder`, poluir a allowlist do ratchet de Foundation com um port que nao corta ciclo
+nao se justifica. Dependencia unidirecional NPC → Quests e acoplamento em camadas normal e NAO afeta
+`MutualModulePairs=0`.
+
+### Validacoes
+
+```text
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0) nos 25 cortes; 2845/2845 (exit 0) apos os 8 testes de
+caracterizacao de 14.1
+Snapshot antes: MutualModulePairs=25, RuntimeModuleEdges=241
+Snapshot depois (HEAD a4203461): MutualModulePairs=0, RuntimeModuleEdges=234
+Snapshot apos o fechamento de 14.1/14.2: MutualModulePairs=0 (inalterado, nenhum par novo)
+Play Mode / validacao humana: NOT RUN — pendente; coberto por spec_validation_human_playmode_smoke_v1
+(permanece em .specs/a_implementar/, nao criada/movida por esta sessao)
+```
+
+### Commits
+
+```text
+ee45510e a208bba7 9dc84efa ca4ec23e 4435b0f0   (spec_arch_core_boundary_residual_v1)
+55ed3e34 07c53d76                              (spec_arch_save_ownership_residual_v1)
+2014a11b 5cc9f6bd 692af532                     (spec_arch_ui_boundary_residual_v1)
+1b92c6eb                                       (spec_arch_npc_quest_boundary_residual_v1)
+6980acdd ca6918f5 90a9e448 bcb2dd5c             (spec_arch_player_gameplay_boundary_residual_v1)
+26dd82b3 bcb2dd5c 3428d3af 6e6b8ab2 83d9537d    (spec_arch_combat_boundary_residual_v1)
+3a37af8b 001d2dc1 2d18f96f d921b83a a4203461    (spec_arch_cave_integration_boundary_residual_v1)
+```
+
+Push para `origin/dev` (HEAD `a4203461`) feito com autorizacao humana explicita nesta sessao.
+
+### Proxima etapa
+
+- `spec_validation_human_playmode_smoke_v1` (AR-H) — validacao humana de Play Mode (Town/Farm/Cave,
+  inventario, crafting, loja, NPC, quest offer/turn-in, combate, morte/respawn, save/load); unica spec
+  do lote ARCH_RESIDUAL ainda em `.specs/a_implementar/`.
+
+---
+
 ## Sessao 2026-07-01 — TownScene preservation-first relayout
 
 **Foco:** reorganizar a cidade sem reduzir conteúdo ou substituir sistemas existentes.

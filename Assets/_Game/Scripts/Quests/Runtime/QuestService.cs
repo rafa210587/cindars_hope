@@ -29,7 +29,7 @@ namespace CindarsHope.Quests.Runtime
     /// - Reward applied at most once per rewardId (GrantedRewardIds guard)
     /// - No Unity refs in QuestStateRecord (save-dto-simple-types-only rule)
     /// </summary>
-    public class QuestService
+    public class QuestService : IQuestInteractionQuery
     {
         private readonly QuestRegistry _registry;
         private readonly QuestStateSection _saveSection;
@@ -153,6 +153,9 @@ namespace CindarsHope.Quests.Runtime
             var state = (QuestStateStatus)record.State;
             return state == QuestStateStatus.ReadyToComplete || state == QuestStateStatus.Active && AllObjectivesComplete(record);
         }
+
+        /// <inheritdoc />
+        public bool HasQuestState(string questId) => GetQuestState(questId) != null;
 
         /// <summary>
         /// Re-evaluates progress for CollectItem objectives for a specific quest.

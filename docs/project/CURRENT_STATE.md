@@ -1,5 +1,26 @@
 ﻿# Current State — Cindar's Hope
 
+## Modularização residual — CONCLUÍDA (2026-07-16)
+
+- `tools/architecture/Get-ModularizationDependencySnapshot.ps1` reporta `MutualModulePairs=0` no
+  HEAD `a4203461` (branch `dev`) — os 25 pares mútuos remanescentes foram fechados pelas 7 specs
+  do lote ARCH_RESIDUAL (`spec_arch_core_boundary_residual_v1`, `spec_arch_save_ownership_residual_v1`,
+  `spec_arch_ui_boundary_residual_v1`, `spec_arch_npc_quest_boundary_residual_v1`,
+  `spec_arch_player_gameplay_boundary_residual_v1`, `spec_arch_combat_boundary_residual_v1`,
+  `spec_arch_cave_integration_boundary_residual_v1`), agora todas em `.specs/implementados/`.
+- Build 7/7 exit 0; EditMode 2845/2845 exit 0.
+- `spec_arch_npc_quest_boundary_residual_v1`: o corte do par (`1b92c6eb`) fechou só a direção
+  `Quests → NPC` e deixou em aberto os critérios 14.1/14.2 — detectado no closeout por leitura do
+  código e **fechado na mesma sessão** (contrato `IQuestInteractionQuery` + policy pura
+  `NpcQuestInteractionPolicy` + 8 testes de caracterização; EditMode 2837 → 2845). A aresta
+  unidirecional `NPC → Quests` persiste por design (não é ciclo; ver header de evidência da spec).
+- **Play Mode / validação humana: NOT RUN.** Próximo item ativo da fila:
+  `spec_validation_human_playmode_smoke_v1` (única spec do lote ARCH_RESIDUAL ainda em
+  `.specs/a_implementar/`) — smoke de Town/Farm/Cave, inventário, crafting, loja, NPC, quest
+  offer/turn-in, combate, morte/respawn, save/load.
+
+---
+
 ## Canonical runtime snapshot — 2026-07-05
 
 - Runtime/assets, não specs históricas, foram usados para reconciliar o estado implementado.

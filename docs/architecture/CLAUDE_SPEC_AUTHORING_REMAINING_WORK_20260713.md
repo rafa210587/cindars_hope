@@ -4,6 +4,17 @@ Data de referência: 2026-07-13
 Branch esperada: `dev`  
 Objetivo deste documento: orientar o Claude a escrever specs detalhadas, fechadas e executáveis para o que ainda falta fazer no projeto antes de codar novas mudanças.
 
+## Estado final (2026-07-16) — as 7 specs geradas por este handoff foram implementadas
+
+As 7 specs de corte (`spec_arch_core_boundary_residual_v1`, `spec_arch_save_ownership_residual_v1`,
+`spec_arch_ui_boundary_residual_v1`, `spec_arch_npc_quest_boundary_residual_v1`,
+`spec_arch_player_gameplay_boundary_residual_v1`, `spec_arch_combat_boundary_residual_v1`,
+`spec_arch_cave_integration_boundary_residual_v1`) geradas a partir deste handoff foram implementadas
+e movidas para `.specs/implementados/`. Snapshot confirmado: `MutualModulePairs=0` (HEAD `a4203461`,
+branch `dev`). Build 7/7 exit 0; EditMode 2837/2837 exit 0. Apenas
+`spec_validation_human_playmode_smoke_v1` (Play Mode humano) segue pendente em
+`.specs/a_implementar/`. O restante deste documento é o plano original, preservado como registro.
+
 Este documento não é uma spec executável. Ele é um prompt/plano para transformar débitos conhecidos em specs pequenas, verificáveis e seguras.
 
 ## 1. Estado atual que deve ser validado no disco

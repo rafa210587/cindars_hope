@@ -1,7 +1,8 @@
 # SPEC — Ownership Residual de Save: `Farm|Save` e `Quests|Save`
 
 > **Spec ID:** `spec_arch_save_ownership_residual_v1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED
+> **Data:** 2026-07-16
 > **Wave:** WAVE ARCH — Modularização Residual (continuação do plano `CLAUDE_MODULARIZATION_REMAINING_PLAN.md`, Fase A — Save Boundary)
 > **Priority:** P1
 > **Type:** Save
@@ -27,6 +28,37 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (2026-07-16)
+
+Os 2 pares-alvo (`Farm|Save`, `Quests|Save`) saíram de `MutualModulePairs`.
+
+```text
+Commits reais (branch dev, HEAD a4203461):
+55ed3e34 refactor(arquitetura): cortar par mutuo Farm|Save via move de DTO + ownership
+         -> ownership do FarmTileGrid movido do SaveManager para o domínio Farm
+07c53d76 refactor(arquitetura): cortar par mutuo Quests|Save via porta
+         -> ponto de construção fully-qualified do QuestSectionProvider em SaveManager.cs
+            substituído por porta (não por using local, que reintroduziria o par)
+
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0)
+Snapshot: MutualModulePairs=0 (Farm|Save, Quests|Save ausentes)
+Play Mode / validacao humana: NOT RUN - pendente; coberto por spec_validation_human_playmode_smoke_v1
+(segue em a_implementar/)
+```
+
+**Desvios de técnica:** `Quests|Save` foi resolvido via porta (não a "correção mínima" mais simples
+citada como hipótese na seção 11/14.3 da spec, que previa possivelmente aceitar
+`BLOCKED_BY_SCOPE`). O resultado supera o piso do DoD (que exigia só `Farm|Save`), sem regressão.
+
+**Residual risk:** round-trip de `farm_tiles` e `quests` cobertos por EditMode (suíte Save completa
+verde), mas o fluxo real de plantio/tilling/harvest e quest turn-in em Play Mode depende do playtest
+humano (`spec_validation_human_playmode_smoke_v1`).
 
 ---
 

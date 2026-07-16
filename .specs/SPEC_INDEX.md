@@ -5,10 +5,10 @@
 
 Total: **418** specs
 - Fila-FABLE: 5
-- Fila: 86
+- Fila: 79
 - Closeout-MVP: 12
 - Build-Validated: 16
-- Implementado: 279
+- Implementado: 286
 - Automatica: 1
 - Outro: 19
 
@@ -72,13 +72,6 @@ Total: **418** specs
 | 24_spec_cave_weather_lunar_deep_modifiers_future_runtime | Fila | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Cave Weather Lunar Deep Modifiers / Alihana Senya Nyx / Storm Fog Snow Cold Heat | .specs/a_implementar/features_futuras/24_spec_cave_weather_lunar_deep_modifiers_future_runtime.md |
 | 24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime | Fila | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Companions Advanced / Party / Equipment / Skill Tree / Tactical Commands / AI Squad | .specs/a_implementar/features_futuras/24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime.md |
 | 24_spec_festival_minigames_event_framework_future_runtime | Fila | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Festival Minigames / Calendar Events / City Farm Social Hooks / Rewards | .specs/a_implementar/features_futuras/24_spec_festival_minigames_event_framework_future_runtime.md |
-| spec_arch_cave_integration_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Redução de Acoplamento Modular Residual (pós CV04) | Cave | .specs/a_implementar/spec_arch_cave_integration_boundary_residual_v1.md |
-| spec_arch_combat_boundary_residual_v1 | Fila | A implementar | WAVE ARQUITETURA — Redução de Acoplamento Modular Residual | Combat / Core / Enemy / Inventory / Player / Skills | .specs/a_implementar/spec_arch_combat_boundary_residual_v1.md |
-| spec_arch_core_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md) | Core | .specs/a_implementar/spec_arch_core_boundary_residual_v1.md |
-| spec_arch_npc_quest_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Redução Residual de Acoplamento Modular | NPC | .specs/a_implementar/spec_arch_npc_quest_boundary_residual_v1.md |
-| spec_arch_player_gameplay_boundary_residual_v1 | Fila | A implementar | WAVE ARQUITETURA — Redução de Acoplamento Modular Residual | Player / Equipment / Inventory / Skills / World | .specs/a_implementar/spec_arch_player_gameplay_boundary_residual_v1.md |
-| spec_arch_save_ownership_residual_v1 | Fila | A implementar | WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md, Fase A — Save Boundary) | Save / Farm / Quests | .specs/a_implementar/spec_arch_save_ownership_residual_v1.md |
-| spec_arch_ui_boundary_residual_v1 | Fila | A implementar | WAVE ARCH — Redução Residual de Acoplamento Modular | UI | .specs/a_implementar/spec_arch_ui_boundary_residual_v1.md |
 | spec_cave_biome_art_profiles_runtime | Fila | A implementar | CAVE_VISUALS — camada de apresentação por bioma | Cave | .specs/a_implementar/spec_cave_biome_art_profiles_runtime.md |
 | spec_cave_decor_placement_runtime | Fila | A implementar | CAVE_VISUALS — art pass do decor | Cave | .specs/a_implementar/spec_cave_decor_placement_runtime.md |
 | spec_cave_visual_polish_runtime | Fila | A implementar | CAVE_VISUALS — polimento p/ aproximar da keyart | Cave | .specs/a_implementar/spec_cave_visual_polish_runtime.md |
@@ -288,7 +281,10 @@ Total: **418** specs
 | spec_02_lunar_cycle_event_runtime | Implementado | - | - | - | .specs/implementados/spec_02_lunar_cycle_event_runtime.md |
 | spec_02_rain_irrigation_crop_integration | Implementado | - | - | - | .specs/implementados/spec_02_rain_irrigation_crop_integration.md |
 | spec_02_weather_generation_forecast_runtime | Implementado | - | - | - | .specs/implementados/spec_02_weather_generation_forecast_runtime.md |
+| spec_arch_cave_integration_boundary_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARCH — Redução de Acoplamento Modular Residual (pós CV04) | Cave | .specs/implementados/spec_arch_cave_integration_boundary_residual_v1.md |
 | spec_arch_cave_save_cycle_reduction_v28 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_cave_save_cycle_reduction_v28.md |
+| spec_arch_combat_boundary_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARQUITETURA — Redução de Acoplamento Modular Residual | Combat / Core / Enemy / Inventory / Player / Skills | .specs/implementados/spec_arch_combat_boundary_residual_v1.md |
+| spec_arch_core_boundary_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md) | Core | .specs/implementados/spec_arch_core_boundary_residual_v1.md |
 | spec_arch_core_craft_cycle_reduction_v32 | Implementado | Implementado e BUILD_VALIDATED (Fase 1 do plano de desacoplamento static Instance) | - | - | .specs/implementados/spec_arch_core_craft_cycle_reduction_v32.md |
 | spec_arch_core_economy_cycle_reduction_v33 | Implementado | Implementado e BUILD_VALIDATED (Fase 1 do plano de desacoplamento static Instance) | - | - | .specs/implementados/spec_arch_core_economy_cycle_reduction_v33.md |
 | spec_arch_core_enemy_cycle_reduction_v31 | Implementado | Implementado e BUILD_VALIDATED (piloto Fase 1 do plano de desacoplamento | - | - | .specs/implementados/spec_arch_core_enemy_cycle_reduction_v31.md |
@@ -314,18 +310,22 @@ Total: **418** specs
 | spec_arch_modularization_residual_v5 | Implementado | - | - | - | .specs/implementados/spec_arch_modularization_residual_v5.md |
 | spec_arch_narrative_quest_cycle_reduction_v4 | Implementado | - | - | - | .specs/implementados/spec_arch_narrative_quest_cycle_reduction_v4.md |
 | spec_arch_npc_debug_expression_policy_v18 | Implementado | - | - | - | .specs/implementados/spec_arch_npc_debug_expression_policy_v18.md |
+| spec_arch_npc_quest_boundary_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARCH — Redução Residual de Acoplamento Modular | NPC | .specs/implementados/spec_arch_npc_quest_boundary_residual_v1.md |
 | spec_arch_npc_save_cycle_reduction_v23 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npc_save_cycle_reduction_v23.md |
 | spec_arch_npcshop_choice_ui_adapter_v15 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_choice_ui_adapter_v15.md |
 | spec_arch_npcshop_city_service_policy_v17 | Implementado | - | - | - | .specs/implementados/spec_arch_npcshop_city_service_policy_v17.md |
 | spec_arch_npcshop_initialization_guard_v13 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_initialization_guard_v13.md |
 | spec_arch_npcshop_service_choice_builder_v14 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_service_choice_builder_v14.md |
 | spec_arch_npcshop_special_identity_policy_v16 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_npcshop_special_identity_policy_v16.md |
+| spec_arch_player_gameplay_boundary_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARQUITETURA — Redução de Acoplamento Modular Residual | Player / Equipment / Inventory / Skills / World | .specs/implementados/spec_arch_player_gameplay_boundary_residual_v1.md |
 | spec_arch_player_save_cycle_reduction_v20 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_player_save_cycle_reduction_v20.md |
 | spec_arch_quests_save_cycle_reduction_v24 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_quests_save_cycle_reduction_v24.md |
 | spec_arch_runtime_maintainability_rework_v2 | Implementado | - | - | - | .specs/implementados/spec_arch_runtime_maintainability_rework_v2.md |
+| spec_arch_save_ownership_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARCH — Modularização Residual (continuação do plano CLAUDE_MODULARIZATION_REMAINING_PLAN.md, Fase A — Save Boundary) | Save / Farm / Quests | .specs/implementados/spec_arch_save_ownership_residual_v1.md |
 | spec_arch_save_ui_cycle_reduction_v26 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_save_ui_cycle_reduction_v26.md |
 | spec_arch_save_world_cycle_reduction_v21 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_save_world_cycle_reduction_v21.md |
 | spec_arch_scene_world_cycle_reduction_v9 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_scene_world_cycle_reduction_v9.md |
+| spec_arch_ui_boundary_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARCH — Redução Residual de Acoplamento Modular | UI | .specs/implementados/spec_arch_ui_boundary_residual_v1.md |
 | spec_bugfix_ui_input_shop_sell_bundle | Implementado | - | - | - | .specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md |
 | spec_cave_001_cave_scene_portal_e_runtime_basico | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md |
 | spec_cave_002_procedural_contracts_resources_parcial | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md |

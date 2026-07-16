@@ -1,7 +1,8 @@
 # SPEC — Redução Residual de Acoplamento NPC|Quests
 
 > **Spec ID:** `spec_arch_npc_quest_boundary_residual_v1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED
+> **Data:** 2026-07-16
 > **Wave:** WAVE ARCH — Redução Residual de Acoplamento Modular
 > **Priority:** P2
 > **Type:** Runtime
@@ -22,6 +23,69 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (2026-07-16)
+
+O par `NPC|Quests` saiu de `MutualModulePairs`, mas **apenas via um lado** do corte prescrito —
+verificado por leitura direta do código nesta sessão de closeout, não só pelo texto do commit.
+
+```text
+Commit real (branch dev, HEAD a4203461):
+1b92c6eb refactor(arquitetura): cortar par mutuo NPC|Quests via porta + evento
+         -> Quests->NPC: QuestGiverInteractable.ResolveNpcId() troca GetComponent<NpcController>()
+            por INpcIdentity (Foundation); FestivalQuestService troca CindarsHope.NPC.Events/
+            Friendship por um evento irmao minimo NpcGiftAcceptedEvent (Core.Events).
+         -> MutualModulePairs 18 -> 17 (par sai da lista porque so uma direcao restava mutua)
+
+Validation method: Invoke-UnityGeneratedProjectsBuild.ps1 + RunUnityEditModeTests.ps1 +
+Get-ModularizationDependencySnapshot.ps1
+Build (7 projects): PASS (exit 0)
+EditMode: PASS 2837/2837 (exit 0)
+Snapshot: MutualModulePairs=0 (NPC|Quests ausente)
+Play Mode / validacao humana: NOT RUN - pendente; coberto por spec_validation_human_playmode_smoke_v1
+(segue em a_implementar/)
+```
+
+**Histórico de execução em duas etapas (registrado para honestidade):**
+
+O commit `1b92c6eb` cortou o par mútuo mas cumpriu apenas o lado `Quests -> NPC`; os critérios
+nomeados 14.1 e 14.2 ficaram em aberto. Isso foi detectado no closeout por LEITURA DO CÓDIGO — não
+teria sido visível pelo snapshot nem pela mensagem do commit — e fechado em seguida:
+
+```text
+Commit de fechamento de 14.1/14.2 (mesma sessao, 2026-07-16):
+  -> 14.2 CUMPRIDO: contrato minimo IQuestInteractionQuery (CanTurnIn/HasQuestState) em
+     CindarsHope.Quests.Runtime; QuestService o implementa (HasQuestState => GetQuestState(id) != null).
+     A decisao foi extraida para a policy pura NpcQuestInteractionPolicy.ResolveMode(questId, query)
+     — mesmo precedente das outras policies puras de NPC ja testadas em EditMode.
+     NpcController.ResolveQuestInteractionMode delega a policy, preservando assinatura, visibilidade
+     e a MESMA fonte de resolucao (QuestRuntimeBootstrap.QuestService): sem bootstrap novo, sem
+     mudanca de timing.
+  -> 14.1 CUMPRIDO: NpcQuestInteractionPolicyTests (8 testes de caracterizacao) cobrindo questId
+     vazio/null/whitespace -> NoQuest; query ausente -> Offer; CanTurnIn -> TurnIn; sem estado ->
+     Offer; com estado -> NoQuest; e a precedencia CanTurnIn > HasQuestState.
+     EditMode 2837 -> 2845 (Passed 2845, Failed 0, exit 0). Build 7/7 exit 0.
+     Snapshot permanece MutualModulePairs=0 (nenhum par novo).
+```
+
+Equivalência verificada linha a linha: `service == null -> Offer` ≡ `query == null -> Offer`;
+`GetQuestState(id) == null ? Offer : NoQuest` ≡ `!HasQuestState(id) ? Offer : NoQuest`.
+
+**Desvio remanescente (honesto, fora do escopo desta spec):** o lado `NPC -> Quests` da ARESTA (não
+do par mútuo, que está cortado) persiste — `NpcController` ainda importa `CindarsHope.Quests.Runtime`
+para o tipo do contrato, e `NpcShopController` (2 sites) e `Friendship/RomanceService` também nomeiam
+`CindarsHope.Quests`. Isso NÃO é um ciclo e não afeta `MutualModulePairs=0`: uma dependência
+unidirecional NPC -> Quests é acoplamento em camadas normal. Fechá-la por completo seria trabalho
+novo, não previsto por esta spec.
+
+**Resultado líquido:** critério central (par fora de `MutualModulePairs`) satisfeito; 14.1 e 14.2
+cumpridos; build/EditMode verdes.
+
+**Residual risk:** validação humana de Play Mode não rodada (coberta por
+`spec_validation_human_playmode_smoke_v1`, que segue em `a_implementar/`) — o fluxo de oferta/turn-in
+de quest via diálogo de NPC deve ser exercitado no playtest.
 
 ---
 
