@@ -1,12 +1,15 @@
-using UnityEngine;
+using System;
 
-namespace CindarsHope.Cave.Ecosystem
+namespace CindarsHope.Foundation
 {
     /// <summary>
     /// fable_78 (SLICE 4) — matemática PURA e testável do combate inter-monstro (seção 14.6).
-    /// Sem dependência de cena/MonoBehaviour: dano reduzido entre monstros, defesa do alvo "Ferido"
-    /// e quantidade de loot reduzida no corpo de uma kill monstro-vs-monstro. Todos os multiplicadores
-    /// vêm do <see cref="CindarsHope.Cave.Data.CaveEcosystemBalanceSO"/> (rule no-magic-balance-values).
+    /// Sem dependência de cena/MonoBehaviour/engine: dano reduzido entre monstros, defesa do alvo
+    /// "Ferido" e quantidade de loot reduzida no corpo de uma kill monstro-vs-monstro. Todos os
+    /// multiplicadores vêm do balance de ecossistema da caverna (rule no-magic-balance-values), lido
+    /// pelo caller e passado como float primitivo — porta pura em Foundation (arch: quebra do par
+    /// mútuo Cave|Combat) para que EnemyHealth (Combat) e os callers de conflito inter-monstro (Cave)
+    /// compartilhem a mesma fórmula sem que Combat precise nomear o módulo Cave.
     /// </summary>
     public static class InterMonsterCombatMath
     {
@@ -22,8 +25,8 @@ namespace CindarsHope.Cave.Ecosystem
                 return 0;
             }
 
-            var scaled = Mathf.RoundToInt(baseDamage * Mathf.Max(0f, damageMultiplier));
-            return Mathf.Max(1, scaled);
+            var scaled = (int)Math.Round(baseDamage * Math.Max(0f, damageMultiplier));
+            return Math.Max(1, scaled);
         }
 
         /// <summary>
@@ -38,8 +41,9 @@ namespace CindarsHope.Cave.Ecosystem
                 return 0;
             }
 
-            var scaled = Mathf.FloorToInt(baseDefense * Mathf.Clamp(woundedDefenseMultiplier, 0f, 1f));
-            return Mathf.Max(0, scaled);
+            var clampedMultiplier = Math.Min(1f, Math.Max(0f, woundedDefenseMultiplier));
+            var scaled = (int)Math.Floor(baseDefense * clampedMultiplier);
+            return Math.Max(0, scaled);
         }
 
         /// <summary>
@@ -54,8 +58,8 @@ namespace CindarsHope.Cave.Ecosystem
                 return 0;
             }
 
-            var scaled = Mathf.RoundToInt(baseAmount * Mathf.Max(0f, lootMultiplier));
-            return Mathf.Max(1, scaled);
+            var scaled = (int)Math.Round(baseAmount * Math.Max(0f, lootMultiplier));
+            return Math.Max(1, scaled);
         }
     }
 }

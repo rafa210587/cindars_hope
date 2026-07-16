@@ -296,7 +296,14 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 "ResistanceProvider.cs",
                 "SpawnGraceProvider.cs",
                 "CombatStateProvider.cs",
-                "ActionBlockProvider.cs"
+                "ActionBlockProvider.cs",
+                // arch: quebra do par mutuo Cave|Combat — InterMonsterCombatMath (matematica pura,
+                // sem engine) movido de CindarsHope.Cave.Ecosystem para Foundation; e a porta
+                // ICaveBossReporter (component-level, resolvida via GetComponent) que permite a
+                // EnemyHealth (Combat) consultar/reportar a morte de boss de caverna sem nomear
+                // CindarsHope.Cave.Runtime.CaveBossDeathReporter (que passa a implementa-la).
+                "InterMonsterCombatMath.cs",
+                "ICaveBossReporter.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

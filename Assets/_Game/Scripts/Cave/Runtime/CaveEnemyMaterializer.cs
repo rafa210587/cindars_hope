@@ -412,7 +412,14 @@ namespace CindarsHope.Cave.Runtime
                 enemyHealth = enemyObject.AddComponent<CindarsHope.Combat.EnemyHealth>();
             }
             var hpMult = _ecosystemBalance != null ? _ecosystemBalance.EnemyHpBaseMultiplier : 1f;
-            enemyHealth.ConfigureWithScaling(enemyData, caveLevel, hpMult);
+            // arch: CaveBandScaling e computado aqui (Cave), nao em EnemyHealth (Combat) — corte do
+            // par mutuo Cave|Combat. Mesma formula do antigo ConfigureWithScaling interno.
+            var bandMinLevelForScaling = CaveBandScaling.BandMinLevel(
+                CaveBandScaling.BandForLevel(caveLevel > 0 ? caveLevel : enemyData.enemyLevel));
+            var scaledBaseHpForScaling = caveLevel > 0
+                ? CaveBandScaling.ScaleHp(enemyData.maxHp, caveLevel, bandMinLevelForScaling)
+                : enemyData.maxHp;
+            enemyHealth.ConfigureWithScaling(enemyData, caveLevel, hpMult, scaledBaseHpForScaling, bandMinLevelForScaling);
 
             enemyHealth.ConfigureLootContext(
                 entry != null ? entry.EnemyInstanceId : string.Empty,

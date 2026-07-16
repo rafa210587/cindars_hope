@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Ecosystem;
+using CindarsHope.Foundation;
 using NUnit.Framework;
 using UnityEngine;
 

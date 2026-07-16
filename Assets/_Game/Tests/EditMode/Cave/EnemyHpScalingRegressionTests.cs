@@ -40,6 +40,20 @@ namespace CindarsHope.Tests.EditMode.Cave
             if (_enemyData != null) Object.DestroyImmediate(_enemyData);
         }
 
+        // arch: quebra do par mutuo Cave|Combat — ConfigureWithScaling agora recebe scaledBaseHp/
+        // bandMinLevel PRE-COMPUTADOS pelo caller (spawners de Cave), em vez de calcular
+        // CaveBandScaling internamente. Este helper replica a mesma formula do caller de producao
+        // para manter os testes de regressao equivalentes byte-for-byte.
+        private void ConfigureWithScalingHelper(EnemyDataSO enemyData, int caveLevel, float hpBaseMultiplier)
+        {
+            var bandMinLevel = CaveBandScaling.BandMinLevel(
+                CaveBandScaling.BandForLevel(caveLevel > 0 ? caveLevel : enemyData.enemyLevel));
+            var scaledBaseHp = caveLevel > 0
+                ? CaveBandScaling.ScaleHp(enemyData.maxHp, caveLevel, bandMinLevel)
+                : enemyData.maxHp;
+            _health.ConfigureWithScaling(enemyData, caveLevel, hpBaseMultiplier, scaledBaseHp, bandMinLevel);
+        }
+
         // --- Regression: Configure legado nao muda comportamento ---
 
         [Test]
@@ -63,7 +77,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void ConfigureWithScaling_HpMultiplier_ElevaMaxHp()
         {
-            _health.ConfigureWithScaling(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
+            ConfigureWithScalingHelper(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
             // Base 16, caveLevel=2, bandMin=1 (band Stone), steps=1, scaledHp = round(16 * 1.12) = 18.
             // multipliedHp = round(18 * 3.5) = 63
             Assert.Greater(_health.MaxHp, _enemyData.maxHp,
@@ -73,7 +87,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void ConfigureWithScaling_CurrentHp_EqualsMaxHp_AfterConfigure()
         {
-            _health.ConfigureWithScaling(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
+            ConfigureWithScalingHelper(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
             Assert.AreEqual(_health.MaxHp, _health.CurrentHp,
                 "Apos ConfigureWithScaling, CurrentHp deve igualar MaxHp (HP cheio no spawn).");
         }
@@ -86,7 +100,7 @@ namespace CindarsHope.Tests.EditMode.Cave
             // caveLevel=1, bandMin=1, steps=0: ScaleHp retorna baseHp sem crescimento.
             _enemyData.maxHp = 8; // Verdant Mite
             _enemyData.enemyLevel = 1;
-            _health.ConfigureWithScaling(_enemyData, caveLevel: 1, hpBaseMultiplier: 3.5f);
+            ConfigureWithScalingHelper(_enemyData, caveLevel: 1, hpBaseMultiplier: 3.5f);
             int expected = Mathf.Max(1, Mathf.RoundToInt(8 * 3.5f)); // 28
             Assert.AreEqual(expected, _health.MaxHp,
                 "No nivel minimo da banda (steps=0) so o multiplicador deve ser aplicado.");
@@ -97,7 +111,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         {
             // hpMult=1 -> apenas ScaleHp (sem multiplicador extra).
             // base 16, caveLevel=5, bandMin=1, steps=4, ScaleHp = round(16 * 1.12^4) = round(25.18) = 25
-            _health.ConfigureWithScaling(_enemyData, caveLevel: 5, hpBaseMultiplier: 1f);
+            ConfigureWithScalingHelper(_enemyData, caveLevel: 5, hpBaseMultiplier: 1f);
             int expectedScaled = CaveBandScaling.ScaleHp(16, 5, 1); // 25
             Assert.AreEqual(expectedScaled, _health.MaxHp,
                 "Com hpMult=1.0 apenas ScaleHp deve ser aplicado.");
@@ -112,7 +126,7 @@ namespace CindarsHope.Tests.EditMode.Cave
             // Regra: common Stone sobrevive 3-5 hits de ataque basico.
             _enemyData.maxHp = 16; // Goblin Scrounger base
             _enemyData.enemyLevel = 2;
-            _health.ConfigureWithScaling(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
+            ConfigureWithScalingHelper(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
 
             const int basicAttackEffectiveDamage = 22; // baseDamage(15) + scaling(8) - defense(1)
             int hitsToKill = Mathf.CeilToInt(_health.MaxHp / (float)basicAttackEffectiveDamage);
@@ -126,7 +140,7 @@ namespace CindarsHope.Tests.EditMode.Cave
         [Test]
         public void RestoreHp_UsesScaledMaxHp_NotAssetValue()
         {
-            _health.ConfigureWithScaling(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
+            ConfigureWithScalingHelper(_enemyData, caveLevel: 2, hpBaseMultiplier: 3.5f);
             int scaledMax = _health.MaxHp;
 
             // Tenta restaurar um HP maior que o asset original mas <= scaledMax

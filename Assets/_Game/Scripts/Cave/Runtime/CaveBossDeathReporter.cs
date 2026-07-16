@@ -1,12 +1,13 @@
 using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Cave.Runtime
 {
     [DisallowMultipleComponent]
-    public sealed class CaveBossDeathReporter : MonoBehaviour
+    public sealed class CaveBossDeathReporter : MonoBehaviour, ICaveBossReporter
     {
         private CaveRunManager _caveRunManager;
         private string _bossGateId;
@@ -48,6 +49,14 @@ namespace CindarsHope.Cave.Runtime
         public void ReportDefeatedFromOwner(Vector3 deathPosition)
         {
             ReportDefeated(deathPosition, requireSpawnDistanceCheck: false, source: "owner");
+        }
+
+        // arch: implementação da porta ICaveBossReporter (Foundation) para que EnemyHealth (Combat)
+        // resolva a morte do boss via GetComponent<ICaveBossReporter> sem nomear
+        // CindarsHope.Cave.Runtime.CaveBossDeathReporter (corte do par mútuo Cave|Combat).
+        void ICaveBossReporter.ReportDefeatedFromOwner(float deathPositionX, float deathPositionY, float deathPositionZ)
+        {
+            ReportDefeatedFromOwner(new Vector3(deathPositionX, deathPositionY, deathPositionZ));
         }
 
         private void OnEnemyKilled(EnemyKilledEvent e)

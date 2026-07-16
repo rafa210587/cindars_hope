@@ -183,7 +183,13 @@ namespace CindarsHope.Enemy
             int caveLevel = _conflictCombatant != null ? _conflictCombatant.CaveLevel : 0;
             string killerInstanceId = _health != null ? _health.EnemyInstanceId : (_transform != null ? _transform.gameObject.name : "unknown");
 
-            rival.TakeDamageFromEnemy(rawDamage, dmgType, killerInstanceId, caveLevel, _ecosystemBalance);
+            // arch: TakeDamageFromEnemy recebe os multiplicadores como float primitivo (nao mais o
+            // CaveEcosystemBalanceSO inteiro) — corte do par mutuo Cave|Combat; este caller (Enemy)
+            // ja nomeia CindarsHope.Cave.Data diretamente, entao le os campos aqui sem custo extra.
+            rival.TakeDamageFromEnemy(
+                rawDamage, dmgType, killerInstanceId, caveLevel,
+                _ecosystemBalance.WoundedDefenseMultiplier, _ecosystemBalance.WoundedDurationSeconds,
+                _ecosystemBalance.InterMonsterDamageMultiplier, _ecosystemBalance.InterMonsterKillLootMultiplier);
         }
 
         // â”€â”€â”€ Propriedades de consulta â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

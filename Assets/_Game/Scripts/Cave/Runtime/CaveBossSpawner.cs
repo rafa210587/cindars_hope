@@ -101,7 +101,15 @@ namespace CindarsHope.Cave.Runtime
             _currentBossCaveLevel = generatedLevel.CaveLevel;
             var enemyHealth = _spawnedBoss.AddComponent<EnemyHealth>();
             var hpMult = _ecosystemBalance != null ? _ecosystemBalance.EnemyHpBaseMultiplier : 1f;
-            enemyHealth.ConfigureWithScaling(bossEnemyData, generatedLevel.CaveLevel, hpMult);
+            // arch: CaveBandScaling e computado aqui (Cave), nao em EnemyHealth (Combat) — corte do
+            // par mutuo Cave|Combat. Mesma formula do antigo ConfigureWithScaling interno.
+            var caveLevelForScaling = generatedLevel.CaveLevel;
+            var bandMinLevelForScaling = CaveBandScaling.BandMinLevel(
+                CaveBandScaling.BandForLevel(caveLevelForScaling > 0 ? caveLevelForScaling : bossEnemyData.enemyLevel));
+            var scaledBaseHpForScaling = caveLevelForScaling > 0
+                ? CaveBandScaling.ScaleHp(bossEnemyData.maxHp, caveLevelForScaling, bandMinLevelForScaling)
+                : bossEnemyData.maxHp;
+            enemyHealth.ConfigureWithScaling(bossEnemyData, caveLevelForScaling, hpMult, scaledBaseHpForScaling, bandMinLevelForScaling);
 
             _spawnedBoss.AddComponent<KnockbackController>();
             _spawnedBoss.AddComponent<HitFlashController>();
@@ -472,7 +480,14 @@ namespace CindarsHope.Cave.Runtime
 
             var enemyHealth = add.AddComponent<EnemyHealth>();
             var hpMult = _ecosystemBalance != null ? _ecosystemBalance.EnemyHpBaseMultiplier : 1f;
-            enemyHealth.ConfigureWithScaling(addData, _currentBossCaveLevel, hpMult);
+            // arch: CaveBandScaling e computado aqui (Cave), nao em EnemyHealth (Combat) — corte do
+            // par mutuo Cave|Combat. Mesma formula do antigo ConfigureWithScaling interno.
+            var bandMinLevelForScaling = CaveBandScaling.BandMinLevel(
+                CaveBandScaling.BandForLevel(_currentBossCaveLevel > 0 ? _currentBossCaveLevel : addData.enemyLevel));
+            var scaledBaseHpForScaling = _currentBossCaveLevel > 0
+                ? CaveBandScaling.ScaleHp(addData.maxHp, _currentBossCaveLevel, bandMinLevelForScaling)
+                : addData.maxHp;
+            enemyHealth.ConfigureWithScaling(addData, _currentBossCaveLevel, hpMult, scaledBaseHpForScaling, bandMinLevelForScaling);
 
             add.AddComponent<KnockbackController>();
             add.AddComponent<HitFlashController>();

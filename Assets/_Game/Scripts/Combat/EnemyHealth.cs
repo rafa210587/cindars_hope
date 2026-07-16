@@ -1,7 +1,4 @@
-﻿using CindarsHope.Cave.Data;
-using CindarsHope.Cave.Ecosystem;
-using CindarsHope.Cave.Runtime;
-using CindarsHope.Combat.StatusEffect;
+﻿using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
@@ -91,27 +88,24 @@ namespace CindarsHope.Combat
 
         /// <summary>
         /// Configura HP com scaling por nÃ­vel de caverna e multiplicador global de balance.
-        /// Aplica CaveBandScaling.ScaleHp para crescimento intra-banda (+12%/nÃ­vel),
-        /// depois aplica hpBaseMultiplier (do CaveEcosystemBalanceSO) para corrigir desproporÃ§Ã£o
-        /// vs. dano do player. Chame este overload em vez de Configure(enemyData) em spawners
-        /// de caverna que conhecem o nÃ­vel real. caveLevel=0 ou hpBaseMultiplier=1 degenera ao
-        /// comportamento original.
+        /// arch: quebra do par mÃºtuo Cave|Combat — o scaling por banda (antes CaveBandScaling.ScaleHp
+        /// calculado aqui dentro) agora Ã© calculado pelo CALLER (spawners/materializers de caverna, que
+        /// jÃ¡ nomeiam o mÃ³dulo Cave) e chega prÃ©-computado em scaledBaseHp/bandMinLevel; este mÃ©todo sÃ³
+        /// aplica hpBaseMultiplier e loga, mesma fÃ³rmula/comportamento de antes. Chame este overload em
+        /// vez de Configure(enemyData) em spawners de caverna que conhecem o nÃ­vel real. caveLevel=0 ou
+        /// hpBaseMultiplier=1 degenera ao comportamento original.
         /// </summary>
-        public void ConfigureWithScaling(EnemyDataSO enemyData, int caveLevel, float hpBaseMultiplier = 1f)
+        public void ConfigureWithScaling(EnemyDataSO enemyData, int caveLevel, float hpBaseMultiplier, int scaledBaseHp, int bandMinLevel)
         {
             _enemyData = enemyData;
             if (_enemyData != null)
             {
-                var bandMinLevel = CaveBandScaling.BandMinLevel(CaveBandScaling.BandForLevel(caveLevel > 0 ? caveLevel : _enemyData.enemyLevel));
                 var baseHp = _enemyData.maxHp;
-                var scaledHp = caveLevel > 0
-                    ? CaveBandScaling.ScaleHp(baseHp, caveLevel, bandMinLevel)
-                    : baseHp;
-                var multipliedHp = Mathf.Max(1, Mathf.RoundToInt(scaledHp * Mathf.Max(1f, hpBaseMultiplier)));
+                var multipliedHp = Mathf.Max(1, Mathf.RoundToInt(scaledBaseHp * Mathf.Max(1f, hpBaseMultiplier)));
                 _currentHp = multipliedHp;
                 // Override MaxHp for this instance via a private backing field to reflect scaled value.
                 _scaledMaxHp = multipliedHp;
-                CombatLog.Log($"CombatLog: Enemy configured (scaled). {BuildEnemyLogPrefix()}, BaseHP={baseHp}, ScaledHP={scaledHp}, FinalHP={_currentHp}/{multipliedHp}, CaveLevel={caveLevel}, HpMult={hpBaseMultiplier:F2}, BandMin={bandMinLevel}.", this);
+                CombatLog.Log($"CombatLog: Enemy configured (scaled). {BuildEnemyLogPrefix()}, BaseHP={baseHp}, ScaledHP={scaledBaseHp}, FinalHP={_currentHp}/{multipliedHp}, CaveLevel={caveLevel}, HpMult={hpBaseMultiplier:F2}, BandMin={bandMinLevel}.", this);
             }
 
             if (GetComponent<CindarsHope.Combat.StatusEffect.EnemyStatusRuntimeTicker>() == null)
@@ -215,24 +209,34 @@ namespace CindarsHope.Combat
         }
 
         // fable_78 (SLICE 4): caminho de dano com ORIGEM-INIMIGO (conflito inter-monstro, seÃ§Ã£o 14.6).
-        // - aplica InterMonsterDamageMultiplier (default 0.10) ao dano base â€” dano monstroâ†”jogador NÃƒO
+        // - aplica interMonsterDamageMultiplier (default 0.10) ao dano base â€” dano monstroâ†”jogador NÃƒO
         //   passa por aqui, entÃ£o permanece inalterado;
         // - aplica o status leve "Ferido" ao alvo (defesa reduzida por uma janela curta);
-        // - se for kill, marca a morte como "by enemy" â†’ corpo dropa lootÃ—InterMonsterKillLootMultiplier
+        // - se for kill, marca a morte como "by enemy" â†’ corpo dropa lootÃ—interMonsterKillLootMultiplier
         //   e publica EnemyKilledByEnemyEvent (NUNCA EnemyKilledEvent â†’ sem XP/quest/bestiÃ¡rio ao jogador).
-        // killerInstanceId identifica o atacante para o evento; balance carrega todos os multiplicadores.
-        public void TakeDamageFromEnemy(int rawDamage, DamageType damageType, string killerInstanceId, int caveLevel, CaveEcosystemBalanceSO balance)
+        // killerInstanceId identifica o atacante para o evento. arch: quebra do par mÃºtuo Cave|Combat —
+        // os multiplicadores chegam como float primitivo (o caller, em Enemy/, jÃ¡ nomeia
+        // CaveEcosystemBalanceSO e os lÃª de lÃ¡) em vez do ScriptableObject inteiro.
+        public void TakeDamageFromEnemy(
+            int rawDamage,
+            DamageType damageType,
+            string killerInstanceId,
+            int caveLevel,
+            float woundedDefenseMultiplier,
+            float woundedDurationSeconds,
+            float interMonsterDamageMultiplier,
+            float interMonsterKillLootMultiplier)
         {
-            if (_enemyData == null || balance == null || _currentHp <= 0 || rawDamage <= 0)
+            if (_enemyData == null || _currentHp <= 0 || rawDamage <= 0)
             {
                 return;
             }
 
             // Aplica o status "Ferido" ANTES de calcular o dano: a defesa reduzida jÃ¡ vale para este golpe
             // e para os prÃ³ximos da janela, dando vantagem real a quem intervÃ©m no conflito.
-            ApplyWounded(balance.WoundedDefenseMultiplier, balance.WoundedDurationSeconds);
+            ApplyWounded(woundedDefenseMultiplier, woundedDurationSeconds);
 
-            int scaledDamage = InterMonsterCombatMath.ScaleInterMonsterDamage(rawDamage, balance.InterMonsterDamageMultiplier);
+            int scaledDamage = InterMonsterCombatMath.ScaleInterMonsterDamage(rawDamage, interMonsterDamageMultiplier);
             if (scaledDamage <= 0)
             {
                 return;
@@ -248,7 +252,7 @@ namespace CindarsHope.Combat
             // Roteia pelo caminho de dano padrÃ£o (defesa "Ferido" + mitigaÃ§Ã£o) marcando o killer-inimigo,
             // para que Die() escolha a rota de corpo reduzido em vez da rota normal de loot do jogador.
             _pendingEnemyKillerInstanceId = killerInstanceId ?? string.Empty;
-            _pendingKillLootMultiplier = balance.InterMonsterKillLootMultiplier;
+            _pendingKillLootMultiplier = interMonsterKillLootMultiplier;
             _pendingKillCaveLevel = caveLevel;
             TakeDamage(request);
             _pendingEnemyKillerInstanceId = null;
@@ -376,10 +380,13 @@ namespace CindarsHope.Combat
 
             CombatLog.Log($"CombatLog: Enemy defeated. {BuildEnemyLogPrefix()}, HP=0/{MaxHp}, Drop={_enemyData.dropItemId} x{_enemyData.dropAmount}, XP={xpReward}.", this);
 
-            var bossReporter = GetComponent<CaveBossDeathReporter>();
+            // arch: quebra do par mÃºtuo Cave|Combat — GetComponent via porta ICaveBossReporter
+            // (Foundation) em vez do tipo concreto CaveBossDeathReporter (Cave.Runtime).
+            var bossReporter = GetComponent<ICaveBossReporter>();
             if (bossReporter != null)
             {
-                bossReporter.ReportDefeatedFromOwner(transform.position);
+                var deathPos = transform.position;
+                bossReporter.ReportDefeatedFromOwner(deathPos.x, deathPos.y, deathPos.z);
             }
 
             // fable_06: seed de loot estÃ¡vel por run/instÃ¢ncia (ADR-0005). Vazio quando nÃ£o hÃ¡
@@ -444,7 +451,9 @@ namespace CindarsHope.Combat
 
         private string BuildEnemyLogPrefix()
         {
-            var bossReporter = GetComponent<CaveBossDeathReporter>();
+            // arch: quebra do par mÃºtuo Cave|Combat — porta ICaveBossReporter (Foundation) em vez do
+            // tipo concreto CaveBossDeathReporter (Cave.Runtime).
+            var bossReporter = GetComponent<ICaveBossReporter>();
             if (bossReporter == null)
             {
                 return $"Name={DisplayName}, EnemyId={EnemyId}, IsBoss=false";
