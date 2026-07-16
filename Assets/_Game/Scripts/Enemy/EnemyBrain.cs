@@ -193,9 +193,10 @@ namespace CindarsHope.Enemy
             _health = GetComponent<EnemyHealth>();
             _vulnerabilityState = GetComponent<EnemyVulnerabilityState>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
-            // fable_78: resolvido no mesmo GameObject (sem scene search). Presente só quando o materializer
-            // anexou o combatant de conflito a este inimigo nesta visita.
-            _conflict.SetCombatant(GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>());
+            // fable_78 / arch (corte do par mutuo Cave|Enemy): a fonte de conflito nao e mais resolvida
+            // aqui via GetComponent<CaveConflictCombatant> (Enemy nao nomeia CindarsHope.Cave). O bind
+            // acontece de fora para dentro: CaveConflictCombatant.OnEnable empurra os delegates via
+            // BindConflictSource quando o materializer anexa o componente a este inimigo.
 
             InitCollaborators();
         }
@@ -311,9 +312,9 @@ namespace CindarsHope.Enemy
 
             _targeting.RefreshPlayerTarget();
 
-            // fable_78: re-resolve o combatant caso ele tenha sido anexado após o Awake do brain
-            // (o materializer adiciona o brain e depois, condicionalmente, o combatant).
-            _conflict.TryResolveCombatant(() => GetComponent<CindarsHope.Cave.Ecosystem.CaveConflictCombatant>());
+            // fable_78 / arch (corte do par mutuo Cave|Enemy): nada a re-resolver aqui — o bind da fonte
+            // de conflito é empurrado pelo CaveConflictCombatant.OnEnable (que também refaz o bind em
+            // qualquer re-enable, cobrindo o caso do "materializer anexa depois do Awake do brain").
 
             if (_vulnerabilityState != null)
                 _vulnerabilityState.Initialize(_enemyData?.enemyId);
@@ -615,12 +616,24 @@ namespace CindarsHope.Enemy
         /// após anexar o CaveConflictCombatant a este inimigo (injeção explícita; sem scene search). Com o
         /// combatant presente, o targeting passa a considerar rivais; sem ele, o caminho player-only segue
         /// intacto. balance carrega os pesos de aggro e os multiplicadores de dano/Ferido/loot.
+        /// arch (corte do par mutuo Cave|Enemy): dividido em duas portas neutras (sem nomear
+        /// CindarsHope.Cave) — BindConflictSource é chamado pelo CaveConflictCombatant.OnEnable;
+        /// BindConflictParams é chamado pelo materializer com os escalares do balance SO.
         /// </summary>
-        public void ConfigureConflict(
-            CindarsHope.Cave.Ecosystem.CaveConflictCombatant combatant,
-            CindarsHope.Cave.Data.CaveEcosystemBalanceSO balance)
+        public void BindConflictSource(
+            System.Func<Vector2, float, CindarsHope.Combat.EnemyHealth> findNearestRival,
+            System.Func<int> caveLevelProvider)
         {
-            _conflict.ConfigureConflict(combatant, balance);
+            _conflict.BindConflictSource(findNearestRival, caveLevelProvider);
+        }
+
+        /// <summary>
+        /// fable_78 (SLICE 4) — registra os parâmetros escalares do conflito inter-monstro (pesos de
+        /// aggro, multiplicadores de dano/Ferido/loot) sem tocar na fonte de conflito já ligada.
+        /// </summary>
+        public void BindConflictParams(CindarsHope.Foundation.InterMonsterConflictParams conflictParams)
+        {
+            _conflict.SetConflictParams(conflictParams);
         }
 
         /// <summary>

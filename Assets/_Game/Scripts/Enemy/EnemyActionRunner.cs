@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CindarsHope.Cave.Runtime;
 using CindarsHope.Combat;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
@@ -550,10 +549,9 @@ namespace CindarsHope.Enemy
         {
             if (string.IsNullOrWhiteSpace(action.SummonEnemyId)) return;
 
-            string runSeed = CaveRunManager.Instance != null
-                ? CaveRunManager.Instance.CaveRunSeed
-                : "default";
-            int caveLevel = CaveRunManager.Instance?.CurrentCaveLevel ?? 0;
+            var caveCtx = DomainManagerRegistry.Get<ICaveRunContext>();
+            string runSeed = caveCtx != null ? caveCtx.CaveRunSeed : "default";
+            int caveLevel = caveCtx?.CurrentCaveLevel ?? 0;
 
             int seed = EnemyActionExecution.DeriveSummonSeed(runSeed, caveLevel, _enemyData?.enemyId ?? "summon");
             int roomAdds = 0; // sem scene search: trust design para cap; validaÃ§Ã£o em PlayMode
@@ -724,7 +722,7 @@ namespace CindarsHope.Enemy
         {
             if (DeathtriggerFired) return;
             if (ActiveActionSet == null || _actionDatabase == null) return;
-            if (CaveRunManager.Instance == null) return;
+            if (DomainManagerRegistry.Get<ICaveRunContext>() == null) return;
 
             foreach (var actionId in ActiveActionSet.ActionIds)
             {

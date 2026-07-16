@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
@@ -195,25 +194,30 @@ namespace CindarsHope.Enemy
         /// positions of every entry sharing <paramref name="packId"/>. Mirrors the runtime
         /// <see cref="GetAnchor"/> so the same plan always yields the same anchor (ADR-0005).
         /// Returns false when the pack has no entries in the plan.
+        /// Takes a neutral (PackId, WorldPosition) list instead of naming a Cave spawn-plan type
+        /// — corte do par mutuo Cave|Enemy; the Cave-side caller projects its plan into this shape.
         /// </summary>
-        public static bool ComputeAnchorFromPlan(CaveEnemySpawnPlan plan, string packId, out Vector2 anchor)
+        public static bool ComputeAnchorFromPlan(
+            IReadOnlyList<(string PackId, Vector2 WorldPosition)> entries,
+            string packId,
+            out Vector2 anchor)
         {
             anchor = Vector2.zero;
-            if (plan == null || plan.Entries == null || string.IsNullOrWhiteSpace(packId))
+            if (entries == null || string.IsNullOrWhiteSpace(packId))
             {
                 return false;
             }
 
             Vector2 sum = Vector2.zero;
             int count = 0;
-            foreach (var entry in plan.Entries)
+            foreach (var entry in entries)
             {
-                if (entry == null || entry.PackId != packId)
+                if (entry.PackId != packId)
                 {
                     continue;
                 }
 
-                sum += new Vector2(entry.WorldPosition.x, entry.WorldPosition.y);
+                sum += entry.WorldPosition;
                 count++;
             }
 

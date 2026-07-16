@@ -1,4 +1,4 @@
-using CindarsHope.Cave.Runtime;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Enemy
 {
@@ -79,7 +79,7 @@ namespace CindarsHope.Enemy
         /// <summary>
         /// Deterministic per-slot elite decision. Returns true when the slot should spawn an elite,
         /// with the chosen <paramref name="affix"/>. Below <see cref="MinEliteCaveLevel"/> it is always
-        /// false. Uses the same FNV-1a <see cref="CaveEnemySpawnPlanner.StableHash"/> as the rest of
+        /// false. Uses the same FNV-1a <see cref="StableHash32.Compute"/> as the rest of
         /// the cave so the result is identical on every revisit of the same run (ADR-0005).
         /// </summary>
         /// <param name="caveWorldSeed">Stable world seed for the cave.</param>
@@ -105,7 +105,7 @@ namespace CindarsHope.Enemy
             // Salted seed source — the "|elite" salt keeps the elite roll independent of the spawn
             // plan / position rolls that use the same seed components elsewhere.
             var seedSource = $"{caveWorldSeed}|{caveRunSeed}|{caveLevel}|{slotIndex}|{enemyId}|elite";
-            int hash = CaveEnemySpawnPlanner.StableHash(seedSource);
+            int hash = StableHash32.Compute(seedSource);
             uint roll = unchecked((uint)hash);
 
             // Map the hash into [0,10000) and compare against the 8% threshold.

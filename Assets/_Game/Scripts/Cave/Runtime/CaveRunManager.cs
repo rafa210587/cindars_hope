@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CindarsHope.Cave.Data;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.SceneManagement;
 using UnityEngine;
 
@@ -11,7 +12,10 @@ using CavePlayerDefeatedEvent = CindarsHope.Core.Events.CavePlayerDefeatedEvent;
 namespace CindarsHope.Cave.Runtime
 {
     [DisallowMultipleComponent]
-    public sealed class CaveRunManager : MonoBehaviour
+    // arch: corte do par mutuo Cave|Enemy — implementa a porta neutra ICaveRunContext (Foundation)
+    // e se registra no DomainManagerRegistry para que o modulo Enemy leia CaveRunSeed/CurrentCaveLevel
+    // sem nomear CindarsHope.Cave.Runtime.CaveRunManager diretamente.
+    public sealed class CaveRunManager : MonoBehaviour, ICaveRunContext
     {
         /// <summary>
         /// Static singleton for CaveRunManager.
@@ -45,11 +49,13 @@ namespace CindarsHope.Cave.Runtime
             Instance = this;
             RestoreCachedStateIfNeeded();
             InitializeIfNeeded();
+            DomainManagerRegistry.Register<ICaveRunContext>(this);
         }
 
         private void OnDestroy()
         {
             if (Instance == this) Instance = null;
+            DomainManagerRegistry.Unregister<ICaveRunContext>(this);
         }
 
         private void OnEnable()

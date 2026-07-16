@@ -312,7 +312,15 @@ namespace CindarsHope.Tests.EditMode.Architecture
                 // CindarsHope.Enemy.EnemyActionExecution (mesmo comportamento/assinaturas).
                 "IEnemyBrainController.cs",
                 "IEnemyVulnerabilityWindow.cs",
-                "EnemyRiseOnceRules.cs"
+                "EnemyRiseOnceRules.cs",
+                // arch: quebra do par mutuo Cave|Enemy (2026-07-16) — hash estavel FNV-1a puro
+                // (copia byte-identica de CaveEnemySpawnPlanner.StableHash/CaveLayoutStableHash.Compute),
+                // porta ICaveRunContext (CaveRunManager registra no DomainManagerRegistry) e struct
+                // de parametros escalares do conflito inter-monstro (em vez do CaveEcosystemBalanceSO
+                // inteiro), para que Enemy nao nomeie CindarsHope.Cave.
+                "StableHash32.cs",
+                "ICaveRunContext.cs",
+                "InterMonsterConflictParams.cs"
             };
             Assert.That(
                 sourceFiles.Select(Path.GetFileName),

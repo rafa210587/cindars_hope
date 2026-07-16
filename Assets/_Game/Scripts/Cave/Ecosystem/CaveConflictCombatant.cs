@@ -18,6 +18,21 @@ namespace CindarsHope.Cave.Ecosystem
     {
         private readonly List<EnemyHealth> _rivals = new List<EnemyHealth>();
 
+        // arch: corte do par mutuo Cave|Enemy — em vez de EnemyBrain resolver este componente via
+        // GetComponent (o que exigiria nomear CindarsHope.Cave), este componente EMPURRA os delegates
+        // para o EnemyBrain irmao a cada (re)enable. Cobre tanto o bind inicial (materializer faz
+        // AddComponent no GameObject ja ativo do inimigo, o que dispara OnEnable imediatamente) quanto
+        // qualquer re-enable futuro (pooling). FindNearestLivingRival resolve a lista _rivals no
+        // momento da chamada (nao um snapshot), entao o bind funciona mesmo chamado antes de AddRival.
+        private void OnEnable()
+        {
+            var brain = GetComponent<CindarsHope.Enemy.EnemyBrain>();
+            if (brain != null)
+            {
+                brain.BindConflictSource(FindNearestLivingRival, () => CaveLevel);
+            }
+        }
+
         /// <summary>enemyId do próprio lado (Faction A ou B). Rivais têm enemyId DIFERENTE (garantido pelo planner).</summary>
         public string OwnEnemyId { get; private set; } = string.Empty;
 

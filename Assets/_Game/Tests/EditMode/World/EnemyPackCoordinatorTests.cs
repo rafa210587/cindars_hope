@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using CindarsHope.Cave.Runtime;
 using CindarsHope.Enemy;
 
 namespace CindarsHope.Tests.EditMode.World
@@ -13,21 +13,15 @@ namespace CindarsHope.Tests.EditMode.World
     [TestFixture]
     public class EnemyPackCoordinatorTests
     {
-        private static CaveEnemySpawnPlanEntry Entry(string packId, float x, float y)
+        private static (string PackId, Vector2 WorldPosition) Entry(string packId, float x, float y)
         {
-            return new CaveEnemySpawnPlanEntry
-            {
-                PackId = packId,
-                WorldPosition = new Vector3(x, y, 0f)
-            };
+            return (packId, new Vector2(x, y));
         }
 
-        private static CaveEnemySpawnPlan PlanWith(params CaveEnemySpawnPlanEntry[] entries)
+        private static List<(string PackId, Vector2 WorldPosition)> PlanWith(
+            params (string PackId, Vector2 WorldPosition)[] entries)
         {
-            var plan = new CaveEnemySpawnPlan { CaveLevel = 3 };
-            plan.Entries.Clear();
-            plan.Entries.AddRange(entries);
-            return plan;
+            return new List<(string PackId, Vector2 WorldPosition)>(entries);
         }
 
         [Test]
@@ -98,7 +92,6 @@ namespace CindarsHope.Tests.EditMode.World
         {
             var plan = PlanWith(
                 Entry("pack_a", 0f, 0f),
-                null,
                 Entry("pack_a", 4f, 4f));
 
             bool found = EnemyPackCoordinator.ComputeAnchorFromPlan(plan, "pack_a", out var anchor);

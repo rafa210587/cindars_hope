@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CindarsHope.Cave.Generation;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Enemy
@@ -138,9 +138,9 @@ namespace CindarsHope.Enemy
         public static int DeriveSummonSeed(string caveRunSeed, int caveLevel, string summonerId)
         {
             int h = 17;
-            h = h * 31 + CaveLayoutStableHash.Compute(caveRunSeed ?? string.Empty);
+            h = h * 31 + StableHash32.Compute(caveRunSeed ?? string.Empty);
             h = h * 31 + caveLevel;
-            h = h * 31 + CaveLayoutStableHash.Compute(summonerId ?? string.Empty);
+            h = h * 31 + StableHash32.Compute(summonerId ?? string.Empty);
             return h;
         }
 

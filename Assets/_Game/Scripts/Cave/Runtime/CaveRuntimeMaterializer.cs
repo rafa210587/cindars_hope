@@ -244,10 +244,19 @@ namespace CindarsHope.Cave.Runtime
                     combatant.AddRival(rival);
                 }
 
+                // arch: corte do par mutuo Cave|Enemy — o bind da fonte de conflito (delegates) e
+                // empurrado pelo CaveConflictCombatant.OnEnable (disparado pelo AddComponent acima);
+                // aqui so precisamos entregar os escalares do balance SO via porta neutra.
                 var brain = health.GetComponent<EnemyBrain>();
-                if (brain != null)
+                if (brain != null && _resolvedEcosystemBalance != null)
                 {
-                    brain.ConfigureConflict(combatant, _resolvedEcosystemBalance);
+                    brain.BindConflictParams(new CindarsHope.Foundation.InterMonsterConflictParams(
+                        _resolvedEcosystemBalance.PlayerAggroWeight,
+                        _resolvedEcosystemBalance.RivalAggroWeight,
+                        _resolvedEcosystemBalance.WoundedDefenseMultiplier,
+                        _resolvedEcosystemBalance.WoundedDurationSeconds,
+                        _resolvedEcosystemBalance.InterMonsterDamageMultiplier,
+                        _resolvedEcosystemBalance.InterMonsterKillLootMultiplier));
                 }
             }
         }
