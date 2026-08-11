@@ -16,14 +16,38 @@ namespace CindarsHope.Player
         // GameBootstrap parar de segurar referencia serializada direta a este tipo. Registrado tanto
         // sob o tipo concreto (compat) quanto sob a porta IPlayerRuntime (Foundation), que
         // GameBootstrap usa para resolver/operar sem nomear CindarsHope.Player.
+        // arch/bugfix (2026-08-11): guarda de duplicata no self-registro do DomainManagerRegistry.
+        // Cada cena (Farm/Town/Cave) traz seu proprio GameBootstrap+PlayerManager; o GameBootstrap e
+        // singleton (DontDestroyOnLoad + destroi a duplicata em Awake). Sem esta guarda, o PlayerManager
+        // da cena recem-carregada (na duplicata) sobrescrevia em Awake o registro do PlayerManager
+        // persistente e, ao ser destruido junto com a duplicata, removia a si mesmo do registry
+        // (Unregister e identity-checked), deixando IPlayerRuntime nulo — e o NpcShopController._playerManager
+        // falhava no Interact ("required reference is null"). Mesma protecao que os managers de Instance
+        // estatica ja tem (molde CraftingManager/ShopManager): a duplicata nao registra nem desregistra
+        // o sobrevivente.
+        private bool _ownsRegistration;
+
         private void Awake()
         {
+            var existing = DomainManagerRegistry.Get<IPlayerRuntime>();
+            if (existing is UnityEngine.Object existingObject && existingObject != null && !ReferenceEquals(existing, this))
+            {
+                _ownsRegistration = false;
+                return;
+            }
+
             DomainManagerRegistry.Register(this);
             DomainManagerRegistry.Register<IPlayerRuntime>(this);
+            _ownsRegistration = true;
         }
 
         private void OnDestroy()
         {
+            if (!_ownsRegistration)
+            {
+                return;
+            }
+
             DomainManagerRegistry.Unregister(this);
             DomainManagerRegistry.Unregister<IPlayerRuntime>(this);
         }

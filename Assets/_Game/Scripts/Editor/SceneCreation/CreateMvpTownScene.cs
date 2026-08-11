@@ -3832,7 +3832,9 @@ namespace CindarsHope.Editor.SceneCreation
             var serializedController = new SerializedObject(controller);
             SetReference(serializedController, "_npcData", npcData);
             SetReference(serializedController, "_dialogueModal", dialogueModal);
-            SetReference(serializedController, "_modalManager", modalManager);
+            // arch/cleanup (2026-08-11): NpcController nao tem mais o campo '_modalManager' — ele foi
+            // removido no corte do par NPC|UI (o controller nunca lia/escrevia esse campo). O SetReference
+            // aqui so gerava o warning "Serialized field '_modalManager' was not found on 'NPC_...'".
             SetReference(serializedController, "_collider", collider);
             SetReference(serializedController, "_spriteRenderer", renderer);
 

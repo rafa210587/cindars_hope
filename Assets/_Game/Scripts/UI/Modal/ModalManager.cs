@@ -18,13 +18,33 @@ namespace CindarsHope.UI.Modal
         // arch: quebra do ciclo Core|UI (spec_arch_core_ui_cycle_reduction_v38) — self-registro no
         // DomainManagerRegistry como IModalStateProvider (molde Core|Inventory/Core|Player) para que
         // Core.GameTimeManager consulte HasActiveModal sem referenciar CindarsHope.UI.Modal.
+        // arch/bugfix (2026-08-11): guarda de duplicata no self-registro — ver PlayerManager para o
+        // racional completo. O ModalManager da cena recem-carregada (destruida pelo singleton do
+        // GameBootstrap) nao pode sobrescrever e depois remover o registro do ModalManager persistente,
+        // sob pena de IModalStateProvider ficar nulo e o GameTimeManager parar de pausar o tick durante
+        // modais abertos.
+        private bool _ownsRegistration;
+
         private void Awake()
         {
+            var existing = DomainManagerRegistry.Get<IModalStateProvider>();
+            if (existing is UnityEngine.Object existingObject && existingObject != null && !ReferenceEquals(existing, this))
+            {
+                _ownsRegistration = false;
+                return;
+            }
+
             DomainManagerRegistry.Register<IModalStateProvider>(this);
+            _ownsRegistration = true;
         }
 
         private void OnDestroy()
         {
+            if (!_ownsRegistration)
+            {
+                return;
+            }
+
             DomainManagerRegistry.Unregister<IModalStateProvider>(this);
         }
 

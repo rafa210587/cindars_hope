@@ -38,13 +38,33 @@ namespace CindarsHope.Inventory
         // DomainManagerRegistry sob a porta IInventoryRuntime (nao um static Instance/Active proprio,
         // proibido pela regra de ratchet GlobalInventoryAccess) para o GameBootstrap parar de segurar
         // referencia serializada direta a este tipo ou nomear CindarsHope.Inventory.
+        // arch/bugfix (2026-08-11): guarda de duplicata no self-registro — ver PlayerManager para o
+        // racional completo. Cada cena traz um GameBootstrap+InventoryManager; o InventoryManager da
+        // duplicata (destruida pelo singleton do GameBootstrap) nao pode sobrescrever e depois remover
+        // o registro do InventoryManager persistente, sob pena de IInventoryRuntime ficar nulo e o
+        // NpcShopController._inventoryManager falhar no Interact.
+        private bool _ownsRegistration;
+
         private void Awake()
         {
+            var existing = DomainManagerRegistry.Get<IInventoryRuntime>();
+            if (existing is UnityEngine.Object existingObject && existingObject != null && !ReferenceEquals(existing, this))
+            {
+                _ownsRegistration = false;
+                return;
+            }
+
             DomainManagerRegistry.Register<IInventoryRuntime>(this);
+            _ownsRegistration = true;
         }
 
         private void OnDestroy()
         {
+            if (!_ownsRegistration)
+            {
+                return;
+            }
+
             DomainManagerRegistry.Unregister<IInventoryRuntime>(this);
         }
 
