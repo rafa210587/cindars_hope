@@ -110,6 +110,7 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 
 | Skill | When |
 |-------|------|
+| `spec-authoring` | Gerar/refinar spec PROFUNDA (blueprint executável) — assinaturas, classes criar/modificar, plano por arquivo/fase, pattern nomeado, critério binário com comando; gate de profundidade. Antes de escrever qualquer spec de `.specs/a_implementar/` |
 | `spec-execution` | Implementing any spec |
 | `gameplay-test-scenario` | Creating human test plan for runtime/gameplay specs |
 | `editmode-test-authoring` | EditMode unit tests para lógica determinística (save DTOs, fórmulas, quests, economy, catálogos) |

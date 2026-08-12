@@ -5,6 +5,7 @@
 > **Tipo:** guia/template, não é spec implementável.  
 > **Função:** padronizar como novas specs em `.specs/a_implementar/` devem ser escritas para execução futura por Codex ou Claude Code.  
 > **Regra:** este arquivo deve ser lido antes de gerar qualquer nova spec. Não deve ser executado como tarefa de implementação.
+> **Profundidade obrigatória:** este é o skeleton. Para o nível "blueprint executável" (assinaturas, classes criar/modificar, plano por arquivo/fase, pattern nomeado, critério binário com comando), use a skill `spec-authoring` + o superset `.specs/_templates/SPEC_DEEP_TEMPLATE.md` e o exemplo `.specs/_templates/EXAMPLE_spec_content_enemy_status_kit_ids_v1.md`. Rode o Gate de Profundidade da skill antes de salvar em `a_implementar/`.
 
 ---
 

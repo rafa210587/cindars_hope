@@ -44,7 +44,7 @@ function Get-Field([string]$text, [string]$name) {
 
 $rows = @()
 $files = Get-ChildItem -Path $specsRoot -Recurse -Filter *.md -File |
-         Where-Object { $_.Name -notmatch '^(README|SPEC_.*TEMPLATE|SPEC_EXECUTION_REPORT).*' }
+         Where-Object { $_.Name -notmatch '^(README|EXAMPLE|SPEC_.*TEMPLATE|SPEC_EXECUTION_REPORT).*' }
 
 foreach ($f in $files) {
     $rel = $f.FullName.Substring($repo.Length + 1)
