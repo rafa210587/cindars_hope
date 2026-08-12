@@ -3,9 +3,9 @@
 > Gerado por `tools/generate_spec_index.ps1`. NAO editar a mao -- rode o script.
 > Indice compacto para descoberta barata de specs (status por pasta + cabecalho).
 
-Total: **418** specs
+Total: **421** specs
 - Fila-FABLE: 5
-- Fila: 79
+- Fila: 82
 - Closeout-MVP: 12
 - Build-Validated: 16
 - Implementado: 286
@@ -77,6 +77,7 @@ Total: **418** specs
 | spec_cave_visual_polish_runtime | Fila | A implementar | CAVE_VISUALS — polimento p/ aproximar da keyart | Cave | .specs/a_implementar/spec_cave_visual_polish_runtime.md |
 | spec_city_artisan_stations | Fila | A implementar | WAVE VILLAGE ECONOMY — slice 1 (estações) | City | .specs/a_implementar/spec_city_artisan_stations.md |
 | spec_city_preservation_first_coherent_relayout | Fila | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | WAVE CITY — Preservation-First TownScene | City / TownScene / NPC movement / World art | .specs/a_implementar/spec_city_preservation_first_coherent_relayout.md |
+| spec_cleanup_uac_serialization_6000_5_v1 | Fila | A implementar | WAVE CLEANUP — Higiene pós-upgrade 6000.5 | Core / NPC / Save / World | .specs/a_implementar/spec_cleanup_uac_serialization_6000_5_v1.md |
 | spec_codex_01_validator_not_configured | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Editor / Validation | .specs/a_implementar/spec_codex_01_validator_not_configured.md |
 | spec_codex_02_quest_condition_honesty | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Quests | .specs/a_implementar/spec_codex_02_quest_condition_honesty.md |
 | spec_codex_03_farm_tilling_real_params | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Farm / Player | .specs/a_implementar/spec_codex_03_farm_tilling_real_params.md |
@@ -90,6 +91,8 @@ Total: **418** specs
 | spec_codex_11_debug_build_guards | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | DebugTools / Cave / Build | .specs/a_implementar/spec_codex_11_debug_build_guards.md |
 | spec_codex_12_dead_code_removal_batch2 | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cross-cutting (Farm, Quests, UI, World, City, Loot, Core, Save, Cave) | .specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md |
 | spec_codex_13_physics_layers_contact_filter | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Physics / Combat / Enemy | .specs/a_implementar/spec_codex_13_physics_layers_contact_filter.md |
+| spec_content_city_schedule_colliders_facades_v1 | Fila | A implementar | WAVE CONTENT — Integridade da TownScene | City | .specs/a_implementar/spec_content_city_schedule_colliders_facades_v1.md |
+| spec_content_enemy_status_kit_ids_v1 | Fila | A implementar | WAVE CONTENT — Integridade de dados de combate | Combat | .specs/a_implementar/spec_content_enemy_status_kit_ids_v1.md |
 | spec_enemy_attack_kits_v1 | Fila | A implementar | Lote ENEMY_ATTACK_KITS (design-first, gerado 2026-07-03) | Combat / Cave / Enemy AI / Bestiary | .specs/a_implementar/spec_enemy_attack_kits_v1.md |
 | spec_farm_scene_relayout_v4 | Fila | A implementar | WAVE FARM — Coerência da FarmScene (pós WAVE 05/07 + fable_15/17) | Farm | .specs/a_implementar/spec_farm_scene_relayout_v4.md |
 | spec_farm_till_anywhere_tilemap | Fila | A implementar | WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4) | Farm | .specs/a_implementar/spec_farm_till_anywhere_tilemap.md |

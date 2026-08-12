@@ -124,6 +124,13 @@ Inclui:
   4. Inventário (abrir, mover item, empilhar, fechar sem travar input).
   5. Crafting (abrir estação, craftar item com ingredientes disponíveis, receber o item).
   6. Loja (abrir shop de um NPC, comprar item, vender item, saldo de ouro atualiza).
+     6b. **Loja do Pip via transição de cena (caso de regressão — obrigatório):** iniciar em outra
+         cena (FarmScene), **transicionar para a TownScene**, então falar com **NPC_Pip_TownEntrance**
+         e abrir a loja. Resultado esperado: menu abre e compra/venda funcionam **sem** o erro
+         `NpcShopController ... field '_playerManager' - required reference is null` no Console. A
+         transição de cena é essencial — é onde a duplicata de GameBootstrap era destruída e esvaziava
+         o registro de Player/Inventory/Modal no `DomainManagerRegistry` (bug corrigido em `eaf42f1c`,
+         guarda de duplicata). Testar também que o **tempo pausa** com o modal da loja aberto (ModalManager).
   7. Conversa com NPC (iniciar diálogo, avançar linhas, fechar diálogo).
   8. Quest offer/turn-in (aceitar quest de um NPC, completar objetivo, retornar e entregar).
   9. Combate básico (atacar um inimigo, receber dano, inimigo morre e dropa loot).
@@ -402,3 +409,14 @@ Specs de arquitetura sensível (ex.: spec_arch_cave_integration_boundary_residua
 checklist master como evidência de smoke final quando aplicável, complementando (não substituindo) seu
 próprio cenário específico via skill gameplay-test-scenario.
 ```
+
+## 35. Edge cases / falhas (rede de validação)
+
+Numa spec de Validation/Docs, "profundo" = o entregável não pode ter ambiguidade. Falhas a evitar:
+
+- **Passo com resultado ambíguo** → cada passo tem UMA condição de PASS observável. Ex.: 6b não é "loja do Pip funciona", é "Console **sem** a string `field '_playerManager' - required reference is null`".
+- **Regressão testada errado** → 6b DEVE exigir a **transição FarmScene→TownScene** antes de falar com o Pip; testar direto na Town (boot na Town) NÃO reproduz o cenário do bug (a duplicata de GameBootstrap não é destruída) e daria falso-PASS.
+- **Passos genéricos que driftam do jogo real** → ancorar por ID/nome real (`NPC_Pip_TownEntrance`, cenas por path), não "um NPC qualquer".
+- **Relatório não preenchido = não-PASS** → o master exige o path `PLAYMODE_SMOKE_REPORT_<data>.md` preenchido com build/commit testado; checklist em branco não conta como smoke (rule validation-truth: sem claim sem evidência).
+- **Checklist vira gargalo por-spec** → é a REDE final de lote/wave (§34), citada por specs sensíveis; não deve ser rodado a cada micro-spec (§2 do template).
+- **DoD do entregável:** `validate_docs.ps1` exit 0 e o master contém exatamente as 11 seções + a sub-checklist 6b, cada passo com resultado esperado.

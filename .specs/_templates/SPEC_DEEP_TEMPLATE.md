@@ -3,7 +3,9 @@
 > **Superset anotado** do `.specs/SPEC_IMPLEMENTABLE_TEMPLATE.md`. Use este para escrever specs no nível "blueprint": prescritivas no O QUÊ, com pattern nomeado por skill. Governado pela skill `spec-authoring` (rode o Gate de Profundidade antes de salvar).
 > **Como usar:** copie o bloco abaixo da linha `=====`, apague as anotações `» (…)` e preencha. Nenhum campo com `<…>` pode sobrar. Nenhum `TODO`.
 
-Princípio: **prescrever** (assinaturas, classes criar/modificar, edição por arquivo, critério com comando) e **delegar** o "como" genérico do pattern à skill (`use <skill>, molde <classe existente>`). Critérios são por resultado (binários) e a Fase 0 reconfirma a realidade antes de codar.
+Princípio: **prescrever** (assinaturas, classes criar/modificar, edição por MÉTODO/bloco, pseudo-código quando não-trivial, critério com DoD literal) e **delegar** o "como" genérico do pattern à skill (`use <skill>, molde <classe existente>`). Critérios são por resultado (binários) e a Fase 0 reconfirma a realidade antes de codar.
+
+**Profundidade por TIPO** (ver a matriz na skill `spec-authoring`): Runtime/Data/UI → §16 com assinatura + classes + testes; Validation/Docs → estrutura EXATA do entregável + paths de evidência (§16 = N/A justificado); Tooling → interface do script + exit codes; Governance → decisão + onde registra. Preencha só o que o tipo pede, mas no nível fundo.
 
 =====================================================================
 
@@ -92,7 +94,8 @@ docs/validation/**
 ```
 ## 19. Arquivos proibidos  » sempre inclui .unity/.prefab (salvo autorização), Packages/, ProjectSettings/, docs_old/
 
-## 20. Estratégia de implementação — por fase, por arquivo, pattern nomeado
+## 20. Estratégia de implementação — por fase, por EDIÇÃO (método/bloco), pattern nomeado
+» Cada passo diz a edição concreta: "em `Classe.Metodo()`, após `<bloco>`, `<a mudança exata>`". Onde o algoritmo é não-trivial (fórmula, ordem, condição), incluir pseudo-código. Não basta "editar X".
 ```md
 ### Fase 0 — Auditoria: re-rodar <comandos §9>; confirmar cada ID ausente e o gerador dono do database.
 ### Fase 1 — Contratos/dados: adicionar consts §16.1 em <Catalog.cs>; (se gerar assets) estender <Generator.cs> — pattern: (skill: data-catalog-authoring).
@@ -104,14 +107,18 @@ docs/validation/**
 ## 21. Ordem segura de execução
 » Sequência exata numerada (Fase 0 → contratos → runtime → testes → validação → relatório).
 
-## 14. Critérios de aceite — BINÁRIOS, cada um com evidência/comando
-» Cada critério: resultado observável + comando/teste que o prova. Zero prosa.
+## 14. Critérios de aceite — BINÁRIOS, cada um com Definition of Done
+» Cada critério: resultado observável + **DoD** = comando exato + **saída literal** esperada + número antes→depois quando aplicável. Zero prosa.
 ```md
 ### 14.1 <Critério>
 - Resultado: <observável e binário>.
-- Evidência: `<comando/validador/teste + resultado esperado (ex.: exit 0, 0 erros, N testes verdes)>`.
+- DoD: `<comando>` imprime literalmente `<saída esperada>` (ex.: `ValidateEnemyAttackKits` → `0 error(s)`, era `43 error(s)`).
+- Teste: `<NomeDoTest>` asserta `<X>` == `<valor esperado>`.
 ```
 Proibido: "sistema bom", "UX agradável", "funciona melhor", "polido".
+
+## 23. Edge cases / falhas (obrigatório, não-vazio)
+» O que pode dar errado e como a spec trata. Ex.: ID colide com existente → usar `AddOrUpdate` idempotente; variante "minor" sem parent → magnitude fixa mínima; regen de cena destrutiva → registrar evidência (rule unity-assets); mudança de forma pública de um tipo → atualizar todos os call sites listados. Liste 3–6 casos reais desta spec, cada um com a mitigação.
 
 ## 22. Validação e gates
 » Nível-alvo (§header) + comandos de gate. Runtime exige por `testing-quality-gate`: EditMode test, Play Mode scenario, OU residual risk documentado. Declarar Play Mode humano como `DEFERRED_TO_FINAL_VALIDATION` quando adiado — nunca como PASS sem evidência.
