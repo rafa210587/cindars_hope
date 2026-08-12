@@ -1,7 +1,7 @@
 ﻿# SPEC â€” Corrigir Mapeamento Legado de Skill + Ledger de DÃ©bito das Skills Feedback-Only
 
 > **Spec ID:** `spec_codex_05_skill_placeholder_debt`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o
 > **Priority:** P1
 > **Type:** Runtime / Data / Docs
@@ -24,6 +24,26 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED
+Execution report: docs/validation/spec_codex_05_skill_placeholder_debt_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Grep/Read no disco):
+  - Assets/_Game/Scripts/Gameplay/SkillActionEffectCatalog.cs (mapeamento foi refatorado para este
+    arquivo após o execution report original, mas a correção persiste):
+    `{ "skill_crafting_field_patch", "crafting.field_patch" }` e
+    `{ "skill_crafting_irrigador_portatil", "farm.crop.water_skill" }` confirmados — mapeamento
+    legado corrigido.
+  - docs/validation/WAVE_INTEGRATION_11_SKILL_EFFECT_CATALOG.md contém "Skill Effect Debt Ledger".
+  - Assets/_Game/Tests/EditMode/Skills/ActiveSkillExecutionControllerMappingTests.cs existe no disco.
+Build: dotnet build PASS (ambos assemblies).
+Play Mode: DEFERRED_TO_FINAL_VALIDATION (spec seção 25) — evidência automatizada suficiente para
+  esta baixa; cenário humano documentado no execution report.
+```
 
 ---
 

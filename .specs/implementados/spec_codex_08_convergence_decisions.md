@@ -1,7 +1,7 @@
 ﻿# SPEC â€” Drafts de ADR para DÃ©bitos Estruturais Pesados (DOC-ONLY)
 
 > **Spec ID:** `spec_codex_08_convergence_decisions`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o
 > **Priority:** P2
 > **Type:** Governance / Docs
@@ -24,6 +24,20 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (DOC-ONLY spec)
+Execution report: docs/validation/spec_codex_08_convergence_decisions_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Bash ls no disco): confirmado que docs/decisions/ADR-0020 até
+  ADR-0030 (11 arquivos) existem no disco.
+Build: N/A (doc-only, nenhum .cs tocado).
+Play Mode: NOT REQUIRED — spec doc-only, ADRs marcados "proposed", nenhuma decisão aceita
+  automaticamente por esta spec.
+```
 
 ---
 

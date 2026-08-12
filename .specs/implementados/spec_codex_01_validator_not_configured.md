@@ -1,7 +1,7 @@
 ﻿# SPEC â€” Validator Runner Honesto (NOT_CONFIGURED) + Registro dos Validators Existentes
 
 > **Spec ID:** `spec_codex_01_validator_not_configured`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o
 > **Priority:** P1
 > **Type:** Validation / Tooling
@@ -24,6 +24,27 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED
+Execution report: docs/validation/spec_codex_01_validator_not_configured_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Grep/Read no disco, não apenas o report):
+  - ValidationReport.cs: `public bool IsConfigured { get; set; } = true;` confirmado.
+  - ProjectValidationRunner.cs: caminho vazio/nulo seta `IsConfigured = false` e loga
+    `Debug.LogError("... NOT_CONFIGURED: ...")` — confirmado.
+  - ArchitectureValidationMenu.cs: registra os 4 validators reais
+    (ValidateFarmLevel1LayoutContract, CombatDatabaseValidator, ValidateFarmScaleContract,
+    ProjectilePrefabValidator) — confirmado.
+  - Assets/_Game/Tests/EditMode/Editor/ProjectValidationRunnerTests.cs existe no disco.
+Build: dotnet build Assembly-CSharp + Assembly-CSharp-Editor PASS (relatado no execution report).
+Play Mode: NOT REQUIRED (spec seção 25/30) — evidência automatizada é suficiente para esta spec.
+Unity Test Runner (EditMode real): NOT RUN na sessão de implementação original; não bloqueia
+  o closeout desta spec (Human validation timing: NOT REQUIRED).
+```
 
 ---
 

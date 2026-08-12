@@ -1,7 +1,7 @@
 # SPEC — Escrita Atômica de Save (WriteTextSafely sem Janela de Perda)
 
 > **Spec ID:** `spec_codex_10_save_atomic_write`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)
 > **Priority:** P0
 > **Type:** Runtime
@@ -20,6 +20,23 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (Phase 2-3 DEFERRED_TO_FINAL_HUMAN_VALIDATION)
+Execution report: docs/validation/spec_codex_10_save_atomic_write_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Grep no disco):
+  - SaveManager.Migration.cs: `File.Replace(tempPath, path, backupPath, true)` e
+    `TryRecoverFromBackupIfNeeded(string path)` confirmados.
+  - SaveManager.cs: `LoadGame()` chama `TryRecoverFromBackupIfNeeded(savePath)` no início — confirmado.
+  - Assets/_Game/Tests/EditMode/Save/SaveAtomicWriteTests.cs existe no disco.
+Build: dotnet build PASS (ambos assemblies).
+Play Mode: DEFERRED — cenário humano (delete manual do save principal + recuperação via .backup)
+  não executado nesta sessão; evidência automatizada suficiente para esta baixa.
+```
 
 ---
 

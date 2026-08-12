@@ -1,7 +1,7 @@
 # SPEC — Physics Layers + ContactFilter2D para Queries de Combate
 
 > **Spec ID:** `spec_codex_13_physics_layers_contact_filter`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)
 > **Priority:** P2
 > **Type:** Runtime / Editor / Data
@@ -20,6 +20,28 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (código) — PENDING_HUMAN_UNITY_ACTION_AND_PLAYMODE
+  (materialização dos physics layers + Play Mode)
+Execution report: docs/validation/spec_codex_13_physics_layers_contact_filter_execution_report.md (2026-07-03)
+Human test scenario: docs/validation/playmode/spec_codex_13_physics_layers_contact_filter_human_test_scenario.md
+Re-verificação nesta sessão (Grep/Bash no disco):
+  - Assets/_Game/Scripts/Core/Physics/GameplayLayerNames.cs existe.
+  - Assets/_Game/Scripts/Editor/Physics/GenerateGameplayPhysicsLayers.cs existe.
+  - Assets/_Game/Tests/EditMode/Physics/GameplayPhysicsLayersTests.cs existe.
+  - EnemyBrain.cs: `SetObstacleLayerMask(LayerMask)` público confirmado; chamado por
+    CaveEnemyMaterializer.cs.
+Build: dotnet build PASS (ambos assemblies).
+Play Mode / materialização humana (`CindarsHope/Inicializar Projeto`): PENDENTE — comportamento
+  runtime é idêntico ao anterior até essa ação humana (fallback seguro, sem regressão); evidência
+  automatizada de código é considerada suficiente para esta baixa de docs-migration, com o passo
+  humano documentado como follow-up explícito no execution report.
+```
 
 ---
 

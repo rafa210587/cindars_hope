@@ -5,10 +5,10 @@
 
 Total: **421** specs
 - Fila-FABLE: 5
-- Fila: 82
+- Fila: 69
 - Closeout-MVP: 12
 - Build-Validated: 16
-- Implementado: 286
+- Implementado: 299
 - Automatica: 1
 - Outro: 19
 
@@ -78,25 +78,12 @@ Total: **421** specs
 | spec_city_artisan_stations | Fila | A implementar | WAVE VILLAGE ECONOMY — slice 1 (estações) | City | .specs/a_implementar/spec_city_artisan_stations.md |
 | spec_city_preservation_first_coherent_relayout | Fila | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | WAVE CITY — Preservation-First TownScene | City / TownScene / NPC movement / World art | .specs/a_implementar/spec_city_preservation_first_coherent_relayout.md |
 | spec_cleanup_uac_serialization_6000_5_v1 | Fila | A implementar | WAVE CLEANUP — Higiene pós-upgrade 6000.5 | Core / NPC / Save / World | .specs/a_implementar/spec_cleanup_uac_serialization_6000_5_v1.md |
-| spec_codex_01_validator_not_configured | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Editor / Validation | .specs/a_implementar/spec_codex_01_validator_not_configured.md |
-| spec_codex_02_quest_condition_honesty | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Quests | .specs/a_implementar/spec_codex_02_quest_condition_honesty.md |
-| spec_codex_03_farm_tilling_real_params | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Farm / Player | .specs/a_implementar/spec_codex_03_farm_tilling_real_params.md |
-| spec_codex_04_locked_ore_delivery | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | World / Inventory | .specs/a_implementar/spec_codex_04_locked_ore_delivery.md |
-| spec_codex_05_skill_placeholder_debt | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Skills / Combat | .specs/a_implementar/spec_codex_05_skill_placeholder_debt.md |
-| spec_codex_06_dead_code_removal_batch1 | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Cave / Combat / Player / UI | .specs/a_implementar/spec_codex_06_dead_code_removal_batch1.md |
-| spec_codex_07_boot_smoke_editmode | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Core / Bootstrap | .specs/a_implementar/spec_codex_07_boot_smoke_editmode.md |
-| spec_codex_08_convergence_decisions | Fila | A implementar | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Architecture / Docs | .specs/a_implementar/spec_codex_08_convergence_decisions.md |
-| spec_codex_09_cave_stable_hash | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cave / Enemy / Determinism | .specs/a_implementar/spec_codex_09_cave_stable_hash.md |
-| spec_codex_10_save_atomic_write | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Save / Reliability | .specs/a_implementar/spec_codex_10_save_atomic_write.md |
-| spec_codex_11_debug_build_guards | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | DebugTools / Cave / Build | .specs/a_implementar/spec_codex_11_debug_build_guards.md |
 | spec_codex_12_dead_code_removal_batch2 | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cross-cutting (Farm, Quests, UI, World, City, Loot, Core, Save, Cave) | .specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md |
-| spec_codex_13_physics_layers_contact_filter | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Physics / Combat / Enemy | .specs/a_implementar/spec_codex_13_physics_layers_contact_filter.md |
 | spec_content_city_schedule_colliders_facades_v1 | Fila | A implementar | WAVE CONTENT — Integridade da TownScene | City | .specs/a_implementar/spec_content_city_schedule_colliders_facades_v1.md |
 | spec_content_enemy_status_kit_ids_v1 | Fila | A implementar | WAVE CONTENT — Integridade de dados de combate | Combat | .specs/a_implementar/spec_content_enemy_status_kit_ids_v1.md |
 | spec_enemy_attack_kits_v1 | Fila | A implementar | Lote ENEMY_ATTACK_KITS (design-first, gerado 2026-07-03) | Combat / Cave / Enemy AI / Bestiary | .specs/a_implementar/spec_enemy_attack_kits_v1.md |
 | spec_farm_scene_relayout_v4 | Fila | A implementar | WAVE FARM — Coerência da FarmScene (pós WAVE 05/07 + fable_15/17) | Farm | .specs/a_implementar/spec_farm_scene_relayout_v4.md |
 | spec_farm_till_anywhere_tilemap | Fila | A implementar | WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4) | Farm | .specs/a_implementar/spec_farm_till_anywhere_tilemap.md |
-| spec_npc_physics_cat_companion | Fila | - | - | - | .specs/a_implementar/spec_npc_physics_cat_companion.md |
 | spec_town_building_visuals | Fila | - | - | - | .specs/a_implementar/spec_town_building_visuals.md |
 | spec_town_layout_v9_organic | Fila | - | - | - | .specs/a_implementar/spec_town_layout_v9_organic.md |
 | spec_validation_human_playmode_smoke_v1 | Fila | A implementar | WAVE VALIDATION — Rede de Validação Humana Final | Core / Validation | .specs/a_implementar/spec_validation_human_playmode_smoke_v1.md |
@@ -341,6 +328,18 @@ Total: **421** specs
 | spec_cave_decor_composition_runtime | Implementado | Implementado e BUILD_VALIDATED (Play Mode humano pendente) | CAVE_VISUALS — composição de decor | Cave | .specs/implementados/spec_cave_decor_composition_runtime.md |
 | spec_cave_entry_death_anya_corpse_recovery | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_entry_death_anya_corpse_recovery.md |
 | spec_cave_runtime_generation_checkpoints_boss_gates | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_runtime_generation_checkpoints_boss_gates.md |
+| spec_codex_01_validator_not_configured | Implementado | Implementado e BUILD_VALIDATED (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Editor / Validation | .specs/implementados/spec_codex_01_validator_not_configured.md |
+| spec_codex_02_quest_condition_honesty | Implementado | Implementado e BUILD_VALIDATED (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Quests | .specs/implementados/spec_codex_02_quest_condition_honesty.md |
+| spec_codex_03_farm_tilling_real_params | Implementado | Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Farm / Player | .specs/implementados/spec_codex_03_farm_tilling_real_params.md |
+| spec_codex_04_locked_ore_delivery | Implementado | Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | World / Inventory | .specs/implementados/spec_codex_04_locked_ore_delivery.md |
+| spec_codex_05_skill_placeholder_debt | Implementado | Implementado e BUILD_VALIDATED (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Skills / Combat | .specs/implementados/spec_codex_05_skill_placeholder_debt.md |
+| spec_codex_06_dead_code_removal_batch1 | Implementado | Implementado e BUILD_VALIDATED (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Cave / Combat / Player / UI | .specs/implementados/spec_codex_06_dead_code_removal_batch1.md |
+| spec_codex_07_boot_smoke_editmode | Implementado | Implementado e BUILD_VALIDATED (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Core / Bootstrap | .specs/implementados/spec_codex_07_boot_smoke_editmode.md |
+| spec_codex_08_convergence_decisions | Implementado | Implementado e BUILD_VALIDATED (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o | Architecture / Docs | .specs/implementados/spec_codex_08_convergence_decisions.md |
+| spec_codex_09_cave_stable_hash | Implementado | Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cave / Enemy / Determinism | .specs/implementados/spec_codex_09_cave_stable_hash.md |
+| spec_codex_10_save_atomic_write | Implementado | Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Save / Reliability | .specs/implementados/spec_codex_10_save_atomic_write.md |
+| spec_codex_11_debug_build_guards | Implementado | Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | DebugTools / Cave / Build | .specs/implementados/spec_codex_11_debug_build_guards.md |
+| spec_codex_13_physics_layers_contact_filter | Implementado | Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Physics / Combat / Enemy | .specs/implementados/spec_codex_13_physics_layers_contact_filter.md |
 | spec_combat_001_slime_melee_contact_damage_drops | Implementado | Implementado parcial | - | - | .specs/implementados/spec_combat_001_slime_melee_contact_damage_drops.md |
 | spec_combat_002_enemy_data_driven_stats | Implementado | Implementado parcial | - | - | .specs/implementados/spec_combat_002_enemy_data_driven_stats.md |
 | spec_core_001_event_bus_e_eventos_base | Implementado | Implementado | - | - | .specs/implementados/spec_core_001_event_bus_e_eventos_base.md |
@@ -375,6 +374,7 @@ Total: **421** specs
 | spec_hunger_stamina_status_balance | Implementado | Implementado completo | - | - | .specs/implementados/spec_hunger_stamina_status_balance.md |
 | spec_inventory_001_inventario_itens_gold_e_stacks | Implementado | Implementado parcial parcial | - | - | .specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md |
 | spec_inventory_slots_capacity_ui_final | Implementado | Implementado parcial | - | - | .specs/implementados/spec_inventory_002_slots_capacity_ui_final.md |
+| spec_npc_physics_cat_companion | Implementado | - | - | - | .specs/implementados/spec_npc_physics_cat_companion.md |
 | spec_player_combat_weapons_spells_skill_actions_runtime | Implementado | - | - | - | .specs/implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md |
 | spec_progression_001_xp_level_atributos_parcial | Implementado | Implementado parcial | - | - | .specs/implementados/spec_progression_001_xp_level_atributos_parcial.md |
 | spec_repo_001_pr099_reconciliation_audit | Implementado | Implementado | - | - | .specs/implementados/spec_repo_001_pr099_reconciliation_audit.md |

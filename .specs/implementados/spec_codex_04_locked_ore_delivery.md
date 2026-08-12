@@ -1,7 +1,7 @@
 ﻿# SPEC â€” LockedOreNodeInteractable Entrega MinÃ©rio Real ao Desbloquear
 
 > **Spec ID:** `spec_codex_04_locked_ore_delivery`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o
 > **Priority:** P1
 > **Type:** Runtime
@@ -24,6 +24,22 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (Phase 2-3 DEFERRED_TO_FINAL_HUMAN_VALIDATION)
+Execution report: docs/validation/spec_codex_04_locked_ore_delivery_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Grep/Read no disco):
+  - LockedOreNodeInteractable.cs: `OreItemId = "item_material_copper_ore"`, `_depleted` guard,
+    `RebindInventoryManager`, `ResolveDelivery(bool,bool,bool)` (lógica pura testável) confirmados.
+  - Assets/_Game/Tests/EditMode/World/LockedOreNodeInteractableTests.cs existe no disco.
+Build: dotnet build PASS (ambos assemblies).
+Play Mode: DEFERRED — sem gate de progressão real que exponha _unlocked=true ao jogador (fora de
+  escopo desta spec, citado como spec futura); evidência automatizada suficiente para esta baixa.
+```
 
 ---
 

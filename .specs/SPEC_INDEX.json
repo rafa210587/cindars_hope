@@ -704,127 +704,6 @@
         "path":  ".specs/a_implementar/spec_cleanup_uac_serialization_6000_5_v1.md"
     },
     {
-        "id":  "spec_codex_01_validator_not_configured",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P1",
-        "type":  "Validation / Tooling",
-        "domain":  "Editor / Validation",
-        "title":  "SPEC â€” Validator Runner Honesto (NOT_CONFIGURED) + Registro dos Validators Existentes",
-        "path":  ".specs/a_implementar/spec_codex_01_validator_not_configured.md"
-    },
-    {
-        "id":  "spec_codex_02_quest_condition_honesty",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P1",
-        "type":  "Runtime / Quest",
-        "domain":  "Quests",
-        "title":  "SPEC â€” Honestidade de Quest Conditions (CombatCondition real + IsFutureCondition auditÃ¡vel)",
-        "path":  ".specs/a_implementar/spec_codex_02_quest_condition_honesty.md"
-    },
-    {
-        "id":  "spec_codex_03_farm_tilling_real_params",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P1",
-        "type":  "Runtime",
-        "domain":  "Farm / Player",
-        "title":  "SPEC â€” FarmTillingInputController com Stamina e Dia Reais",
-        "path":  ".specs/a_implementar/spec_codex_03_farm_tilling_real_params.md"
-    },
-    {
-        "id":  "spec_codex_04_locked_ore_delivery",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P1",
-        "type":  "Runtime",
-        "domain":  "World / Inventory",
-        "title":  "SPEC â€” LockedOreNodeInteractable Entrega MinÃ©rio Real ao Desbloquear",
-        "path":  ".specs/a_implementar/spec_codex_04_locked_ore_delivery.md"
-    },
-    {
-        "id":  "spec_codex_05_skill_placeholder_debt",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P1",
-        "type":  "Runtime / Data / Docs",
-        "domain":  "Skills / Combat",
-        "title":  "SPEC â€” Corrigir Mapeamento Legado de Skill + Ledger de DÃ©bito das Skills Feedback-Only",
-        "path":  ".specs/a_implementar/spec_codex_05_skill_placeholder_debt.md"
-    },
-    {
-        "id":  "spec_codex_06_dead_code_removal_batch1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P2",
-        "type":  "Governance / Runtime cleanup",
-        "domain":  "Cave / Combat / Player / UI",
-        "title":  "SPEC â€” RemoÃ§Ã£o de CÃ³digo Morto Confirmado (Lote 1)",
-        "path":  ".specs/a_implementar/spec_codex_06_dead_code_removal_batch1.md"
-    },
-    {
-        "id":  "spec_codex_07_boot_smoke_editmode",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P2",
-        "type":  "Validation / Testing",
-        "domain":  "Core / Bootstrap",
-        "title":  "SPEC â€” Smoke de IntegraÃ§Ã£o de Boot (EditMode, sem Play Mode)",
-        "path":  ".specs/a_implementar/spec_codex_07_boot_smoke_editmode.md"
-    },
-    {
-        "id":  "spec_codex_08_convergence_decisions",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
-        "priority":  "P2",
-        "type":  "Governance / Docs",
-        "domain":  "Architecture / Docs",
-        "title":  "SPEC â€” Drafts de ADR para DÃ©bitos Estruturais Pesados (DOC-ONLY)",
-        "path":  ".specs/a_implementar/spec_codex_08_convergence_decisions.md"
-    },
-    {
-        "id":  "spec_codex_09_cave_stable_hash",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
-        "priority":  "P0",
-        "type":  "Runtime",
-        "domain":  "Cave / Enemy / Determinism",
-        "title":  "SPEC — Hash Estável FNV-1a para Seeds Determinísticos da Cave",
-        "path":  ".specs/a_implementar/spec_codex_09_cave_stable_hash.md"
-    },
-    {
-        "id":  "spec_codex_10_save_atomic_write",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
-        "priority":  "P0",
-        "type":  "Runtime",
-        "domain":  "Save / Reliability",
-        "title":  "SPEC — Escrita Atômica de Save (WriteTextSafely sem Janela de Perda)",
-        "path":  ".specs/a_implementar/spec_codex_10_save_atomic_write.md"
-    },
-    {
-        "id":  "spec_codex_11_debug_build_guards",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
-        "priority":  "P1",
-        "type":  "Runtime",
-        "domain":  "DebugTools / Cave / Build",
-        "title":  "SPEC — Guards de Debug Tooling em Build de Produção",
-        "path":  ".specs/a_implementar/spec_codex_11_debug_build_guards.md"
-    },
-    {
         "id":  "spec_codex_12_dead_code_removal_batch2",
         "bucket":  "Fila",
         "status":  "A implementar",
@@ -834,17 +713,6 @@
         "domain":  "Cross-cutting (Farm, Quests, UI, World, City, Loot, Core, Save, Cave)",
         "title":  "SPEC — Remoção de Código Morto (Lote 2: 15 arquivos + 4 eventos)",
         "path":  ".specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md"
-    },
-    {
-        "id":  "spec_codex_13_physics_layers_contact_filter",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
-        "priority":  "P2",
-        "type":  "Runtime / Editor / Data",
-        "domain":  "Physics / Combat / Enemy",
-        "title":  "SPEC — Physics Layers + ContactFilter2D para Queries de Combate",
-        "path":  ".specs/a_implementar/spec_codex_13_physics_layers_contact_filter.md"
     },
     {
         "id":  "spec_content_city_schedule_colliders_facades_v1",
@@ -900,17 +768,6 @@
         "domain":  "Farm",
         "title":  "SPEC — Arar Qualquer Terra: Solo Arável por Tile (substitui canteiros fixos)",
         "path":  ".specs/a_implementar/spec_farm_till_anywhere_tilemap.md"
-    },
-    {
-        "id":  "spec_npc_physics_cat_companion",
-        "bucket":  "Fila",
-        "status":  "",
-        "wave":  "",
-        "priority":  "",
-        "type":  "",
-        "domain":  "",
-        "title":  "SPEC — Física de Colisão de NPCs + Gato Companheiro + Escala Dragonborn",
-        "path":  ".specs/a_implementar/spec_npc_physics_cat_companion.md"
     },
     {
         "id":  "spec_town_building_visuals",
@@ -3597,6 +3454,138 @@
         "path":  ".specs/implementados/spec_cave_runtime_generation_checkpoints_boss_gates.md"
     },
     {
+        "id":  "spec_codex_01_validator_not_configured",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P1",
+        "type":  "Validation / Tooling",
+        "domain":  "Editor / Validation",
+        "title":  "SPEC â€” Validator Runner Honesto (NOT_CONFIGURED) + Registro dos Validators Existentes",
+        "path":  ".specs/implementados/spec_codex_01_validator_not_configured.md"
+    },
+    {
+        "id":  "spec_codex_02_quest_condition_honesty",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P1",
+        "type":  "Runtime / Quest",
+        "domain":  "Quests",
+        "title":  "SPEC â€” Honestidade de Quest Conditions (CombatCondition real + IsFutureCondition auditÃ¡vel)",
+        "path":  ".specs/implementados/spec_codex_02_quest_condition_honesty.md"
+    },
+    {
+        "id":  "spec_codex_03_farm_tilling_real_params",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P1",
+        "type":  "Runtime",
+        "domain":  "Farm / Player",
+        "title":  "SPEC â€” FarmTillingInputController com Stamina e Dia Reais",
+        "path":  ".specs/implementados/spec_codex_03_farm_tilling_real_params.md"
+    },
+    {
+        "id":  "spec_codex_04_locked_ore_delivery",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P1",
+        "type":  "Runtime",
+        "domain":  "World / Inventory",
+        "title":  "SPEC â€” LockedOreNodeInteractable Entrega MinÃ©rio Real ao Desbloquear",
+        "path":  ".specs/implementados/spec_codex_04_locked_ore_delivery.md"
+    },
+    {
+        "id":  "spec_codex_05_skill_placeholder_debt",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P1",
+        "type":  "Runtime / Data / Docs",
+        "domain":  "Skills / Combat",
+        "title":  "SPEC â€” Corrigir Mapeamento Legado de Skill + Ledger de DÃ©bito das Skills Feedback-Only",
+        "path":  ".specs/implementados/spec_codex_05_skill_placeholder_debt.md"
+    },
+    {
+        "id":  "spec_codex_06_dead_code_removal_batch1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P2",
+        "type":  "Governance / Runtime cleanup",
+        "domain":  "Cave / Combat / Player / UI",
+        "title":  "SPEC â€” RemoÃ§Ã£o de CÃ³digo Morto Confirmado (Lote 1)",
+        "path":  ".specs/implementados/spec_codex_06_dead_code_removal_batch1.md"
+    },
+    {
+        "id":  "spec_codex_07_boot_smoke_editmode",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P2",
+        "type":  "Validation / Testing",
+        "domain":  "Core / Bootstrap",
+        "title":  "SPEC â€” Smoke de IntegraÃ§Ã£o de Boot (EditMode, sem Play Mode)",
+        "path":  ".specs/implementados/spec_codex_07_boot_smoke_editmode.md"
+    },
+    {
+        "id":  "spec_codex_08_convergence_decisions",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o",
+        "priority":  "P2",
+        "type":  "Governance / Docs",
+        "domain":  "Architecture / Docs",
+        "title":  "SPEC â€” Drafts de ADR para DÃ©bitos Estruturais Pesados (DOC-ONLY)",
+        "path":  ".specs/implementados/spec_codex_08_convergence_decisions.md"
+    },
+    {
+        "id":  "spec_codex_09_cave_stable_hash",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
+        "priority":  "P0",
+        "type":  "Runtime",
+        "domain":  "Cave / Enemy / Determinism",
+        "title":  "SPEC — Hash Estável FNV-1a para Seeds Determinísticos da Cave",
+        "path":  ".specs/implementados/spec_codex_09_cave_stable_hash.md"
+    },
+    {
+        "id":  "spec_codex_10_save_atomic_write",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
+        "priority":  "P0",
+        "type":  "Runtime",
+        "domain":  "Save / Reliability",
+        "title":  "SPEC — Escrita Atômica de Save (WriteTextSafely sem Janela de Perda)",
+        "path":  ".specs/implementados/spec_codex_10_save_atomic_write.md"
+    },
+    {
+        "id":  "spec_codex_11_debug_build_guards",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
+        "priority":  "P1",
+        "type":  "Runtime",
+        "domain":  "DebugTools / Cave / Build",
+        "title":  "SPEC — Guards de Debug Tooling em Build de Produção",
+        "path":  ".specs/implementados/spec_codex_11_debug_build_guards.md"
+    },
+    {
+        "id":  "spec_codex_13_physics_layers_contact_filter",
+        "bucket":  "Implementado",
+        "status":  "Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)",
+        "wave":  "WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)",
+        "priority":  "P2",
+        "type":  "Runtime / Editor / Data",
+        "domain":  "Physics / Combat / Enemy",
+        "title":  "SPEC — Physics Layers + ContactFilter2D para Queries de Combate",
+        "path":  ".specs/implementados/spec_codex_13_physics_layers_contact_filter.md"
+    },
+    {
         "id":  "spec_combat_001_slime_melee_contact_damage_drops",
         "bucket":  "Implementado",
         "status":  "Implementado parcial",
@@ -3969,6 +3958,17 @@
         "domain":  "",
         "title":  "SPEC - Inventory slots, capacidade e painel de itens",
         "path":  ".specs/implementados/spec_inventory_002_slots_capacity_ui_final.md"
+    },
+    {
+        "id":  "spec_npc_physics_cat_companion",
+        "bucket":  "Implementado",
+        "status":  "",
+        "wave":  "",
+        "priority":  "",
+        "type":  "",
+        "domain":  "",
+        "title":  "SPEC — Física de Colisão de NPCs + Gato Companheiro + Escala Dragonborn",
+        "path":  ".specs/implementados/spec_npc_physics_cat_companion.md"
     },
     {
         "id":  "spec_player_combat_weapons_spells_skill_actions_runtime",

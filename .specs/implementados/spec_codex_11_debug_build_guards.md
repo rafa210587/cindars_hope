@@ -1,7 +1,7 @@
 # SPEC — Guards de Debug Tooling em Build de Produção
 
 > **Spec ID:** `spec_codex_11_debug_build_guards`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)
 > **Priority:** P1
 > **Type:** Runtime
@@ -20,6 +20,23 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (Phase 2-3 DEFERRED_TO_FINAL_HUMAN_VALIDATION)
+Execution report: docs/validation/spec_codex_11_debug_build_guards_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Grep no disco):
+  - CollisionDebugOverlayBootstrap.cs: `#if UNITY_EDITOR || DEVELOPMENT_BUILD` confirmado envolvendo
+    o corpo de Init().
+  - CaveDebugLevelSkipController.cs: `#if UNITY_EDITOR || DEVELOPMENT_BUILD` confirmado em Update()/
+    OnGUI(); `_enableDebugLevelSkip = false` (default seguro) confirmado.
+Build: dotnet build PASS (ambos assemblies, 0 erros/0 avisos).
+Play Mode: DEFERRED — confirmação em build Standalone real (ausência do overlay/skip fora de
+  Editor/Dev Build) não executada nesta sessão; guards de compilação lidos e confirmados corretos.
+```
 
 ---
 

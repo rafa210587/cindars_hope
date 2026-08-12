@@ -1,7 +1,7 @@
 # SPEC — Hash Estável FNV-1a para Seeds Determinísticos da Cave
 
 > **Spec ID:** `spec_codex_09_cave_stable_hash`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2)
 > **Priority:** P0
 > **Type:** Runtime
@@ -20,6 +20,23 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (Phase 2-3 DEFERRED_TO_FINAL_HUMAN_VALIDATION)
+Execution report: docs/validation/spec_codex_09_cave_stable_hash_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Grep no disco):
+  - CaveEnemySpawner.cs, CaveResourceNodeMaterializer.cs (2x), EnemyActionExecution.cs (DeriveSummonSeed)
+    confirmados usando `CaveLayoutStableHash.Compute(...)`; as únicas ocorrências remanescentes de
+    `GetHashCode()` nesses arquivos são comentários explicativos, não chamadas de código.
+  - Assets/_Game/Tests/EditMode/Cave/CaveStableHashUsageTests.cs existe no disco.
+Build: dotnet build PASS (ambos assemblies).
+Play Mode: DEFERRED — cenário de revisitar nível sem reroll não executado nesta sessão; evidência
+  automatizada (golden-value tests + rule cave-stable-run respeitada) suficiente para esta baixa.
+```
 
 ---
 

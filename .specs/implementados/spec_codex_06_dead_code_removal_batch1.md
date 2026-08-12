@@ -1,7 +1,7 @@
 ﻿# SPEC â€” RemoÃ§Ã£o de CÃ³digo Morto Confirmado (Lote 1)
 
 > **Spec ID:** `spec_codex_06_dead_code_removal_batch1`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o
 > **Priority:** P2
 > **Type:** Governance / Runtime cleanup
@@ -24,6 +24,22 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED
+Execution report: docs/validation/spec_codex_06_dead_code_removal_batch1_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Bash test -f no disco): confirmado que os 11 arquivos-alvo (CaveDebugVisualizer,
+  EnemyPatrolController, TargetVulnerabilityState, EnvironmentalExposureManager, PlayerWeaponController,
+  EquipmentHUD, ManaHUD, PlayerNeedsHUD, PlayerStatusHUD, Player/PlayerDodgeController órfão,
+  UI/Death/DeathScreenController) estão AUSENTES do disco (deletados); o canônico
+  Player/Movement/PlayerDodgeController.cs permanece presente.
+Build: dotnet build PASS (ambos assemblies).
+Play Mode: NOT REQUIRED (remoção pura de código morto sem consumidor em cena).
+```
 
 ---
 

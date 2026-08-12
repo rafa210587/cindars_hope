@@ -1,7 +1,7 @@
 ﻿# SPEC â€” Honestidade de Quest Conditions (CombatCondition real + IsFutureCondition auditÃ¡vel)
 
 > **Spec ID:** `spec_codex_02_quest_condition_honesty`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o
 > **Priority:** P1
 > **Type:** Runtime / Quest
@@ -24,6 +24,24 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED
+Execution report: docs/validation/spec_codex_02_quest_condition_honesty_execution_report.md (2026-07-03)
+Re-verificação nesta sessão (Grep/Read no disco):
+  - QuestConditionContext.cs: `public int? PlayerCurrentHp { get; set; }` / `PlayerMaxHp` confirmados.
+  - QuestConditionResolver.cs: `EvaluateCombat()` real (compara HP% contra ExpectedValue/Operator,
+    falha explícita quando snapshot ausente) confirmado; `CombatCondition => true` hardcoded removido.
+  - `s_loggedFutureConditionTypes` (HashSet, log one-shot por ConditionType) confirmado em Evaluate().
+  - Assets/_Game/Tests/EditMode/Quests/QuestConditionResolverCombatTests.cs existe no disco.
+  - docs/game_rules/quest_rules.md contém "Rule 4.1: CombatCondition Is Real, Not Future...".
+Build: dotnet build PASS (ambos assemblies, relatado no execution report).
+Play Mode: NOT REQUIRED (spec seção 25) — lógica pura C#, evidência automatizada suficiente.
+```
 
 ---
 

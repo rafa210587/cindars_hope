@@ -432,28 +432,9 @@ spec: tamanho escala com profundidade; elementos temáticos por bioma; uma spec 
 
 ### Lote CODEX_CONVERGENCE — Honestidade de Validação (gerado 2026-07-03)
 
-Auditoria de convergência arquitetural (achados verificados por Grep/leitura direta) revelou 8 gaps de
-honestidade de validação/execução: validator runner que reporta PASS com lista vazia, quest condition de
-combate hardcoded, farm tilling com stamina/dia fake, nó de minério que não entrega item, mapeamento de
-skill legado/errado + 6 skills feedback-only sem ledger, código morto não re-verificado, ausência de smoke
-de boot-wiring, e débito estrutural pesado sem ADR. Todas as 8 specs re-auditaram Phase-0 nesta sessão —
-2 achados do prompt original foram corrigidos (`Combat/StatusEffect/StatusEffectManager.cs` está em uso real
-via `EnemyHealth`; `City/Schedule/SchedulePeriod.cs` é vocabulário ativo, só `NpcScheduleResolver`/
-`NpcScheduleDefinition` são obsoletos-mas-testados) — ver `spec_codex_06` seção 9 para o detalhe completo.
-
-| # | Spec | Fecha |
-|---|---|---|
-| CX01 | `spec_codex_01_validator_not_configured.md` | ProjectValidationRunner honesto (NOT_CONFIGURED) + registra os 4 validators reais existentes |
-| CX02 | `spec_codex_02_quest_condition_honesty.md` | CombatCondition deixa de ser `true` hardcoded; IsFutureCondition ganha log one-shot + doc de débito |
-| CX03 | `spec_codex_03_farm_tilling_real_params.md` | FarmTillingInputController usa StaminaManager/TimeManager reais em vez de staminaOk/currentDay fixos |
-| CX04 | `spec_codex_04_locked_ore_delivery.md` | LockedOreNodeInteractable entrega `item_material_copper_ore` real via InventoryManager.AddItem |
-| CX05 | `spec_codex_05_skill_placeholder_debt.md` | Corrige mapeamento legado `field_patch→water_skill`; ledger de débito das 6 skills feedback-only |
-| CX06 | `spec_codex_06_dead_code_removal_batch1.md` | Remove 11 arquivos de código morto re-verificados; exclui 2 falsos-positivos do pedido original |
-| CX07 | `spec_codex_07_boot_smoke_editmode.md` | Smoke EditMode estático de boot-wiring (GameBootstrap), sem Play Mode |
-| CX08 | `spec_codex_08_convergence_decisions.md` | DOC-ONLY: 6 ADR drafts para débito estrutural pesado (asmdef, LFS, bootstrap composition root, floresta/Tilemap, IMGUI→Canvas, Resources→Addressables) |
-
-Todas as 8 são `Parallelizable: YES` entre si (arquivos não se sobrepõem), sem dependência entre elas.
-Nenhuma promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana explícita para execução.
+CX01-CX08 (8 specs) foram implementadas, re-verificadas em disco e baixadas para
+`.specs/implementados/` em 2026-08-12 (docs-migration) — ver
+`.specs/SPEC_REGISTRY_IMPLEMENTED.md`. Nenhuma pendente neste lote.
 
 ### Lote CODEX_CONVERGENCE — Lote 2 (gerado 2026-07-03)
 
@@ -464,18 +445,16 @@ de colisão + skip de nível da cave), 15 arquivos + 4 eventos de código morto 
 re-verificados nesta sessão, e ausência de physics layers/ContactFilter2D em queries de combate
 (mask 0 no obstacle avoidance de inimigo, alocação por ataque).
 
+CX09, CX10, CX11 e CX13 foram implementadas, re-verificadas em disco e baixadas para
+`.specs/implementados/` em 2026-08-12 (docs-migration) — ver `.specs/SPEC_REGISTRY_IMPLEMENTED.md`.
+
 | # | Spec | Fecha |
 |---|---|---|
-| CX09 | `spec_codex_09_cave_stable_hash.md` | Hash FNV-1a estável (reusa CaveLayoutStableHash) em CaveEnemySpawner, CaveResourceNodeMaterializer e EnemyActionExecution.DeriveSummonSeed, em vez de string.GetHashCode() |
-| CX10 | `spec_codex_10_save_atomic_write.md` | WriteTextSafely atômico (File.Replace ou backup-antes-de-delete via SaveBackupService) + recuperação de .backup no load |
-| CX11 | `spec_codex_11_debug_build_guards.md` | Guard #if UNITY_EDITOR \|\| DEVELOPMENT_BUILD no CollisionDebugOverlayBootstrap e no CaveDebugLevelSkipController (default false); DebugHud explicitamente não tocado |
-| CX12 | `spec_codex_12_dead_code_removal_batch2.md` | Remove 15 arquivos + 4 eventos mortos (lote 2, re-verificados); ajusta ValidateSpec11Damage.cs (StatusTickedEvent) |
-| CX13 | `spec_codex_13_physics_layers_contact_filter.md` | 7 physics layers via RunStep idempotente em CindarsHopeMenu; ContactFilter2D + buffers nas 3 queries de combate; wire de EnemyBrain._obstacleLayerMask para WorldSolid (NO-parallel, maior risco do lote) |
+| CX12 | `spec_codex_12_dead_code_removal_batch2.md` | Remove 15 arquivos + 4 eventos mortos (lote 2, re-verificados); ajusta ValidateSpec11Damage.cs (StatusTickedEvent). **PARTIAL**: 14/15 arquivos ja deletados em sessao anterior; `RewardTableDefinition.cs` NAO pode ser deletado (arquivo tambem define `RewardGrantResult`, em uso real por `LootTableContractTests.cs`) — re-confirmado em 2026-08-12 (docs-migration), permanece na fila. |
 
-CX09-CX12 são `Parallelizable: YES` entre si (arquivos não se sobrepõem). CX13 é
-`Parallelizable: NO` (lock central em ProjectSettings/TagManager.asset e nos arquivos de combate;
-maior risco de regressão do lote, recomenda-se validação isolada). Nenhuma spec deste lote 2 foi
-promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana explícita para execução.
+CX12 permanece `Parallelizable: YES` (arquivo remanescente não se sobrepõe a outras specs).
+Nenhuma spec deste lote 2 foi promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana
+explícita para execução.
 
 ### Lote CAVE_VISUALS (gerado 2026-07-03)
 

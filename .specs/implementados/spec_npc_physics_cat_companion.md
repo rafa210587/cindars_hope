@@ -1,11 +1,37 @@
 # SPEC — Física de Colisão de NPCs + Gato Companheiro + Escala Dragonborn
 
 - **ID:** spec_npc_physics_cat_companion
-- **Status:** A_IMPLEMENTAR
+- **Status:** Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)
 - **Origem:** pedido humano (2026-06-30) durante o overhaul de sprites de NPC via GPT
 - **Tipo:** runtime/code + scene wiring (Town)
 
 ---
+
+## 0. Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (código) — Play Mode humano DEFERRED_TO_FINAL_VALIDATION
+Execution report dedicado: nao existe (implementado em sessão anterior sem gerar execution report
+  próprio); evidência desta baixa é re-verificação direta do código no disco nesta sessão.
+Re-verificação nesta sessão (Grep/Read no disco):
+  - CreateMvpTownScene.cs: `ConfigureNpcMovement` adiciona Rigidbody2D (Dynamic, FreezeRotation,
+    massa 50) + BoxCollider2D sólido ("SolidBody", filho, contra-escala) a cada NPC — collider de
+    resistência física confirmado.
+  - NpcWanderer.cs: movimento via `FixedUpdate()` + `Rigidbody2D` serializado (não
+    `transform.position` direto) — confirmado respeita colisão.
+  - Assets/_Game/Scripts/NPC/CompanionFollow.cs existe; `SpawnCatCompanion(...)` em
+    CreateMvpTownScene.cs cria o gato como entidade separada (SpriteRenderer próprio, Rigidbody2D
+    Kinematic, CircleCollider2D trigger) e o liga ao Transform do eiran via CompanionFollow.
+  - CreateDefaultScaleAssets.cs: `CreateProfile(EntityScaleCategory.NpcDragonborn, ..., 1.07f, ...)`
+    confirmado; CreateMvpTownScene.cs atribui `EntityScaleCategory.NpcDragonborn` a npc_savra e
+    npc_hess (e npc_zrix, mesma spec de lista `TownNpcSpec`).
+Build: dotnet build Assembly-CSharp + Assembly-CSharp-Editor — não re-executado nesta sessão de
+  docs-migration; nenhuma edição de código foi feita aqui (apenas leitura de verificação).
+Play Mode: DEFERRED_TO_FINAL_VALIDATION — cenário descrito na seção 7 desta spec (andar contra
+  NPC/parede, ver gato seguindo, conferir escala dos dragonborn) não executado nesta sessão de
+  docs-migration; evidência automatizada de código (wiring de collider/rigidbody/CompanionFollow/
+  escala confirmado por leitura direta) é considerada suficiente para esta baixa.
+```
 
 ## 1. Objetivo
 

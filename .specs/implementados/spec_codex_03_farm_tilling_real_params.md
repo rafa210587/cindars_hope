@@ -1,7 +1,7 @@
 ﻿# SPEC â€” FarmTillingInputController com Stamina e Dia Reais
 
 > **Spec ID:** `spec_codex_03_farm_tilling_real_params`
-> **Status:** A implementar
+> **Status:** Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12)
 > **Wave:** WAVE CODEX CONVERGENCE â€” Honestidade de ValidaÃ§Ã£o
 > **Priority:** P1
 > **Type:** Runtime
@@ -24,6 +24,26 @@
 
 required_adrs: []
 required_game_rules: []
+
+---
+
+## Evidência de implementação (docs-migration 2026-08-12)
+
+```text
+Status: Implementado e BUILD_VALIDATED (Phase 2-3 DEFERRED_TO_FINAL_HUMAN_VALIDATION)
+Execution report: docs/validation/spec_codex_03_farm_tilling_real_params_execution_report.md (2026-07-03)
+Human test scenario: docs/validation/playmode/spec_codex_03_farm_tilling_real_params_human_test_scenario.md
+Re-verificação nesta sessão (Grep/Read no disco):
+  - FarmTillingInputController.cs: `TillStaminaCost = 10`, `WaterStaminaCost = 8`,
+    `HasEnoughStamina()`, `ResolveCurrentDay()` confirmados — sem mais literais `staminaOk: true`/
+    `currentDay: 1`.
+  - Assets/_Game/Tests/EditMode/Farm/FarmTillingStaminaDayTests.cs existe no disco.
+Build: dotnet build PASS (ambos assemblies).
+Play Mode/Unity Test Runner real: DEFERRED — evidência automatizada (código lido + testes
+  compilando) é considerada suficiente para esta baixa de docs-migration, por decisão explícita do
+  orquestrador desta tarefa (spec classificada como não exigindo Play Mode para o fechamento
+  documental). Cenário humano documentado permanece disponível para validação futura.
+```
 
 ---
 
