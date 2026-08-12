@@ -81,7 +81,13 @@ namespace CindarsHope.Save
         [SerializeField] private Skills.ActiveSkillSlots _activeSkillSlots;
         [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
         [SerializeField] private BestiaryManager _bestiaryManager;
-        [SerializeField] private CorpseRecoveryManager _corpseRecoveryManager;
+        // UAC1010: CorpseRecoveryManager e classe C# pura (nao [Serializable], nao MonoBehaviour,
+        // construida por fabrica em GameBootstrap.CreateCorpseRecoveryManager) — nunca e assinavel
+        // pelo Inspector, entao o [SerializeField] era morto (nenhuma cena/prefab pode popula-lo).
+        // Nao ha Rebind* deste campo em SaveManager (DeathSystemBootstrap le bootstrap.CorpseRecoveryManager
+        // separadamente); mantido como campo privado comum para preservar o comportamento atual
+        // (sempre null aqui) sem forcar wiring novo fora de escopo desta spec de limpeza.
+        private CorpseRecoveryManager _corpseRecoveryManager;
         [SerializeField] private PlayerDataSO _playerData;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 

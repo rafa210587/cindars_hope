@@ -5,6 +5,7 @@ namespace CindarsHope.World.Calendar
 {
     public class FestivalRegistry : MonoBehaviour
     {
+        [System.Serializable]
         public struct Festival
         {
             public FestivalType Type;

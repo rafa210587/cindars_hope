@@ -1592,6 +1592,13 @@ namespace CindarsHope.Editor.SceneCreation
             var roofRevealRenderers = new List<SpriteRenderer> { roofRenderer };
             bool hasModularKit = modularVariant != '\0';
 
+            // Marcador de fachada semântica (âncora substituível para arte futura por prédio):
+            // SEMPRE criado, independente de kit modular ou hero sprite — ValidateFableCitySchedule
+            // exige >= BaselineHouseCount (24) SemanticPlaceholder_* na cena, um por prédio v8. O
+            // kit modular ({A,B,C}) já é a arte "quase-final" das paredes, mas ainda não é a arte
+            // bespoke por arquétipo (templo, ferraria, taverna…) que este marcador ancora.
+            CreateSemanticBuildingPlaceholder(house.transform, name, size, doorSide);
+
             // Janelas/placa/marcador de identidade: só para casas SEM kit (a fachada walls_*_topdown
             // do kit já traz janelas pintadas; nas casas de placeholder eles dão leitura ao prédio).
             if (!hasModularKit)
@@ -1920,8 +1927,6 @@ namespace CindarsHope.Editor.SceneCreation
             signRenderer.color = signColor;
             signRenderer.sortingOrder = 24;
             TrySetSortingLayer(signRenderer, "Roof", signRenderer.sortingOrder);
-
-            CreateSemanticBuildingPlaceholder(details.transform, houseName, size, doorSide);
         }
 
         // Replaceable semantic markers: they make each large placeholder readable before the final
@@ -2810,10 +2815,15 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
 
-            // Árvores internas (ScatteredTreePositions + a fileira interna junto à muralha, ambas
-            // adicionadas ao final de BuildBorderTreeRing) recebem collider — o jogador pode
-            // encostar nelas. As da faixa externa (por fora da muralha) não precisam.
-            bool isInternalTree = treeIndex >= TownTreePositions.Length - ScatteredTreePositions.Length - InteriorWallTreeCount;
+            // Árvores internas com trunk collider: SOMENTE as 8 ScatteredTreePositions (árvores
+            // deliberadamente espalhadas dentro da cidade — pedido do jogador). ValidateFableCitySchedule
+            // conta "TownTree_* com BoxCollider2D" e espera exatamente 8 (CountTreeColliders). A fileira
+            // interna junto à muralha (InteriorWallTreeCount) e a floresta externa (border ring) NÃO
+            // recebem collider — são decorativas/densas e um trunk collider ali travaria pathing do
+            // player/NPC sem necessidade (ScatteredTreePositions já é o conjunto "tocável").
+            int scatteredTreesStart = TownTreePositions.Length - ScatteredTreePositions.Length - InteriorWallTreeCount;
+            bool isInternalTree = treeIndex >= scatteredTreesStart &&
+                                   treeIndex < scatteredTreesStart + ScatteredTreePositions.Length;
             if (isInternalTree)
             {
                 // World-space target ≈0.65×0.50 around the trunk/base. The object itself is scaled,

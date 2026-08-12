@@ -49,7 +49,11 @@ namespace CindarsHope.Combat.StatusEffect
         Corruption,
         Slow,
         HeatStress,
-        ColdStress
+        ColdStress,
+        // spec_content_enemy_status_kit_ids: buff generico (status positivos de inimigo —
+        // haste/shield/frenzy/regen/guard). Materializado com este tipo em vez de reusar Vulnerable
+        // (que e debuff). O comportamento runtime de buff e feature a parte; aqui so o tipo/ID existem.
+        Buff
     }
 
     /// <summary>SemÃ¢ntica central por tipo (F01) â€” pura e testÃ¡vel.</summary>

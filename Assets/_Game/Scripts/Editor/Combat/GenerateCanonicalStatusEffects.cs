@@ -16,6 +16,42 @@ namespace CindarsHope.EditorTools.Combat
         private const string AssetFolder = "Assets/_Game/Data/Combat/StatusEffects";
         private const string DatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
 
+        // spec_content_enemy_status_kit_ids_v1 — 12 IDs referenciados por 43 EnemyActionSO
+        // (kits "minor"/buff) que nunca foram materializados no database. IDs como const
+        // (rule id-stability), prefixo status_.
+        public const string StatusSlowMinor = "status_slow_minor";
+        public const string StatusBurnMinor = "status_burn_minor";
+        public const string StatusChillMinor = "status_chill_minor";
+        public const string StatusPoisonMinor = "status_poison_minor";
+        public const string StatusBleedMinor = "status_bleed_minor";
+        public const string StatusConfuseMinor = "status_confuse_minor";
+        public const string StatusRootMinor = "status_root_minor";
+        public const string StatusHaste = "status_haste";
+        public const string StatusShield = "status_shield";
+        public const string StatusFrenzy = "status_frenzy";
+        public const string StatusRegen = "status_regen";
+        public const string StatusGuard = "status_guard";
+
+        // Fórmula "minor" (spec §20): minor = MinorEffectScale do efeito do status pai — placeholder
+        // conservador; balance fino fica fora de escopo (skill economy-balance-tuning). Fallbacks só
+        // disparam se um "_minor" referenciar um pai ausente do database (edge case §23; hoje não
+        // ocorre para os 7 minors abaixo, todos com pai canônico já materializado).
+        private const float MinorEffectScale = 0.60f;
+        private const int FallbackMinorDamagePerTurn = 1;
+        private const int FallbackMinorDurationTurns = 3;
+
+        // Buffs (haste/shield/frenzy/regen/guard) não têm "_minor" nem pai no database canônico
+        // (§23): duração default nomeada, sem efeito numérico de balance (fora de escopo).
+        private const int BuffDurationTurns = 5;
+
+        // Buffs de inimigo (haste/shield/frenzy/regen/guard) usam o tipo dedicado StatusEffectType.Buff
+        // (adicionado ao enum nesta spec, em vez de reusar Vulnerable, que é debuff). O comportamento
+        // runtime de buff é feature à parte; aqui só o tipo/ID são materializados (tipos não mapeados
+        // no ticker seguem com default neutro — nenhum dano-por-turno indevido).
+        private const StatusEffectType BuffMarkerType = StatusEffectType.Buff;
+
+        private static readonly Color BuffColor = new Color(0.8f, 0.75f, 0.2f);
+
         private struct StatusSpec
         {
             public string Id;
@@ -28,6 +64,23 @@ namespace CindarsHope.EditorTools.Combat
             public float DurabilityWearMultiplier;
             public Color Color;
         }
+
+        // (Id do kit, Id do status pai canônico ou null p/ buffs, nome PT-BR de exibição).
+        private static readonly (string Id, string ParentId, string Name)[] MinorAndBuffDefs =
+        {
+            (StatusSlowMinor, "status_slow", "Lentidao Menor"),
+            (StatusBurnMinor, "status_burn", "Queimadura Menor"),
+            (StatusChillMinor, "status_chill", "Congelamento Menor"),
+            (StatusPoisonMinor, "status_poison", "Veneno Menor"),
+            (StatusBleedMinor, "status_bleed", "Sangramento Menor"),
+            (StatusConfuseMinor, "status_confusion_lite", "Confusao Menor"),
+            (StatusRootMinor, "status_root", "Enraizamento Menor"),
+            (StatusHaste, null, "Aceleracao"),
+            (StatusShield, null, "Escudo"),
+            (StatusFrenzy, null, "Frenesi"),
+            (StatusRegen, null, "Regeneracao"),
+            (StatusGuard, null, "Guarda"),
+        };
 
         public static void Generate()
         {
@@ -70,9 +123,68 @@ namespace CindarsHope.EditorTools.Combat
                 assets.Add(asset);
             }
 
+            // spec_content_enemy_status_kit_ids_v1 — após o bloco dos 13 status canônicos, materializa
+            // os 12 IDs "minor"/buff referenciados pelos kits de ataque de inimigo (Fase 1, §20).
+            var canonicalSnapshot = new List<StatusEffectSO>(assets);
+            foreach (var def in MinorAndBuffDefs)
+            {
+                var path = $"{AssetFolder}/{def.Id}.asset";
+                var asset = AssetDatabase.LoadAssetAtPath<StatusEffectSO>(path);
+                if (asset == null)
+                {
+                    asset = ScriptableObject.CreateInstance<StatusEffectSO>();
+                    AssetDatabase.CreateAsset(asset, path);
+                    created++;
+                }
+                else
+                {
+                    updated++;
+                }
+
+                ApplyMinorOrBuffFields(asset, def, canonicalSnapshot);
+                EditorUtility.SetDirty(asset);
+                assets.Add(asset);
+            }
+
             RegisterInDatabase(assets);
             AssetDatabase.SaveAssets();
             Debug.Log($"[GenerateCanonicalStatusEffects] {created} criados, {updated} atualizados, {assets.Count} registrados no database. Pasta: {AssetFolder}");
+        }
+
+        // Fórmula "minor"/buff (spec_content_enemy_status_kit_ids_v1 §20, adaptada ao schema real de
+        // StatusEffectSO — a spec assumia campos Kind/Magnitude/MaxStacks que não existem; o
+        // equivalente real é Type/DamagePerTurn/MoveSpeedMultiplier/BehaviorOverrideSeconds).
+        private static void ApplyMinorOrBuffFields(
+            StatusEffectSO asset,
+            (string Id, string ParentId, string Name) def,
+            List<StatusEffectSO> canonicalAssets)
+        {
+            bool isMinorVariant = !string.IsNullOrEmpty(def.ParentId);
+            StatusEffectSO parent = isMinorVariant ? canonicalAssets.Find(a => a.Id == def.ParentId) : null;
+
+            if (isMinorVariant && parent == null)
+            {
+                Debug.LogWarning($"[GenerateCanonicalStatusEffects] '{def.Id}': pai '{def.ParentId}' nao encontrado no database; aplicando fallback (edge case spec_content_enemy_status_kit_ids_v1 §23).");
+            }
+
+            asset.Id = def.Id;
+            asset.DisplayName = def.Name;
+            asset.Description = parent != null
+                ? $"Variante menor de {parent.DisplayName} ({MinorEffectScale:P0} do efeito)."
+                : "Buff de kit de inimigo (spec_content_enemy_status_kit_ids_v1); sem novo comportamento de aplicacao nesta spec.";
+            asset.Type = parent != null ? parent.Type : BuffMarkerType;
+            asset.DurationTurns = parent != null
+                ? parent.DurationTurns
+                : (isMinorVariant ? FallbackMinorDurationTurns : BuffDurationTurns);
+            asset.DamagePerTurn = parent != null
+                ? Mathf.RoundToInt(parent.DamagePerTurn * MinorEffectScale)
+                : (isMinorVariant ? FallbackMinorDamagePerTurn : 0);
+            asset.MoveSpeedMultiplier = parent != null
+                ? Mathf.Clamp01(1f - (1f - parent.MoveSpeedMultiplier) * MinorEffectScale)
+                : 1f;
+            asset.BehaviorOverrideSeconds = parent != null ? parent.BehaviorOverrideSeconds * MinorEffectScale : 0f;
+            asset.DurabilityWearMultiplier = parent != null ? parent.DurabilityWearMultiplier : 1f;
+            asset.VisualColor = parent != null ? parent.VisualColor : BuffColor;
         }
 
         private static List<StatusSpec> BuildCanonicalSpecs()
