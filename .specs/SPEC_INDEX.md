@@ -5,10 +5,10 @@
 
 Total: **421** specs
 - Fila-FABLE: 5
-- Fila: 69
+- Fila: 67
 - Closeout-MVP: 12
 - Build-Validated: 16
-- Implementado: 299
+- Implementado: 301
 - Automatica: 1
 - Outro: 19
 
@@ -79,8 +79,6 @@ Total: **421** specs
 | spec_city_preservation_first_coherent_relayout | Fila | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | WAVE CITY — Preservation-First TownScene | City / TownScene / NPC movement / World art | .specs/a_implementar/spec_city_preservation_first_coherent_relayout.md |
 | spec_cleanup_uac_serialization_6000_5_v1 | Fila | A implementar | WAVE CLEANUP — Higiene pós-upgrade 6000.5 | Core / NPC / Save / World | .specs/a_implementar/spec_cleanup_uac_serialization_6000_5_v1.md |
 | spec_codex_12_dead_code_removal_batch2 | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cross-cutting (Farm, Quests, UI, World, City, Loot, Core, Save, Cave) | .specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md |
-| spec_content_city_schedule_colliders_facades_v1 | Fila | A implementar | WAVE CONTENT — Integridade da TownScene | City | .specs/a_implementar/spec_content_city_schedule_colliders_facades_v1.md |
-| spec_content_enemy_status_kit_ids_v1 | Fila | A implementar | WAVE CONTENT — Integridade de dados de combate | Combat | .specs/a_implementar/spec_content_enemy_status_kit_ids_v1.md |
 | spec_enemy_attack_kits_v1 | Fila | A implementar | Lote ENEMY_ATTACK_KITS (design-first, gerado 2026-07-03) | Combat / Cave / Enemy AI / Bestiary | .specs/a_implementar/spec_enemy_attack_kits_v1.md |
 | spec_farm_scene_relayout_v4 | Fila | A implementar | WAVE FARM — Coerência da FarmScene (pós WAVE 05/07 + fable_15/17) | Farm | .specs/a_implementar/spec_farm_scene_relayout_v4.md |
 | spec_farm_till_anywhere_tilemap | Fila | A implementar | WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4) | Farm | .specs/a_implementar/spec_farm_till_anywhere_tilemap.md |
@@ -342,6 +340,8 @@ Total: **421** specs
 | spec_codex_13_physics_layers_contact_filter | Implementado | Implementado e BUILD_VALIDATED, DEFERRED_TO_FINAL_HUMAN_VALIDATION (docs-migration 2026-08-12) | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Physics / Combat / Enemy | .specs/implementados/spec_codex_13_physics_layers_contact_filter.md |
 | spec_combat_001_slime_melee_contact_damage_drops | Implementado | Implementado parcial | - | - | .specs/implementados/spec_combat_001_slime_melee_contact_damage_drops.md |
 | spec_combat_002_enemy_data_driven_stats | Implementado | Implementado parcial | - | - | .specs/implementados/spec_combat_002_enemy_data_driven_stats.md |
+| spec_content_city_schedule_colliders_facades_v1 | Implementado | Implementado e UNITY_VALIDATED | WAVE CONTENT — Integridade da TownScene | City | .specs/implementados/spec_content_city_schedule_colliders_facades_v1.md |
+| spec_content_enemy_status_kit_ids_v1 | Implementado | Implementado e UNITY_VALIDATED | WAVE CONTENT — Integridade de dados de combate | Combat | .specs/implementados/spec_content_enemy_status_kit_ids_v1.md |
 | spec_core_001_event_bus_e_eventos_base | Implementado | Implementado | - | - | .specs/implementados/spec_core_001_event_bus_e_eventos_base.md |
 | spec_core_002_bootstrap_managers_e_runtime_references | Implementado | Implementado parcial | - | - | .specs/implementados/spec_core_002_bootstrap_managers_e_runtime_references.md |
 | spec_craft_001_crafting_mvp | Implementado | Implementado parcial | - | - | .specs/implementados/spec_craft_001_crafting_mvp.md |

@@ -1,7 +1,8 @@
 # SPEC — Kits de ataque de inimigo referenciam StatusEffect IDs ausentes
 
 > **Spec ID:** `spec_content_enemy_status_kit_ids_v1`
-> **Status:** A implementar
+> **Status:** Implementado e UNITY_VALIDATED
+> **Evidência (2026-08-12):** `StatusEffectType.Buff` adicionado; 12 status materializados via `GenerateCanonicalStatusEffects` (Inicializar Projeto). `ValidateEnemyAttackKits` 43 erros → **0** (PASSED, 127 checks). EditMode `EnemyKitStatusIdsTests` **12/12**. Suíte EditMode 2858/2858. Commit do batch de execução. Play Mode humano (status aplicando em combate) permanece `DEFERRED_TO_FINAL_VALIDATION` (checklist `spec_validation_human_playmode_smoke_v1`).
 > **Wave:** WAVE CONTENT — Integridade de dados de combate
 > **Priority:** P2
 > **Type:** Data / Content

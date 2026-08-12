@@ -715,28 +715,6 @@
         "path":  ".specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md"
     },
     {
-        "id":  "spec_content_city_schedule_colliders_facades_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CONTENT — Integridade da TownScene",
-        "priority":  "P2",
-        "type":  "Data / Content (cena) — Validation",
-        "domain":  "City",
-        "title":  "SPEC — City schedule: colliders de tronco e placeholders de fachada",
-        "path":  ".specs/a_implementar/spec_content_city_schedule_colliders_facades_v1.md"
-    },
-    {
-        "id":  "spec_content_enemy_status_kit_ids_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE CONTENT — Integridade de dados de combate",
-        "priority":  "P2",
-        "type":  "Data / Content",
-        "domain":  "Combat",
-        "title":  "SPEC — Kits de ataque de inimigo referenciam StatusEffect IDs ausentes",
-        "path":  ".specs/a_implementar/spec_content_enemy_status_kit_ids_v1.md"
-    },
-    {
         "id":  "spec_enemy_attack_kits_v1",
         "bucket":  "Fila",
         "status":  "A implementar",
@@ -3606,6 +3584,28 @@
         "domain":  "",
         "title":  "SPEC COMBAT-002 — Enemy data-driven stats",
         "path":  ".specs/implementados/spec_combat_002_enemy_data_driven_stats.md"
+    },
+    {
+        "id":  "spec_content_city_schedule_colliders_facades_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e UNITY_VALIDATED",
+        "wave":  "WAVE CONTENT — Integridade da TownScene",
+        "priority":  "P2",
+        "type":  "Data / Content (cena) — Validation",
+        "domain":  "City",
+        "title":  "SPEC — City schedule: colliders de tronco e placeholders de fachada",
+        "path":  ".specs/implementados/spec_content_city_schedule_colliders_facades_v1.md"
+    },
+    {
+        "id":  "spec_content_enemy_status_kit_ids_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e UNITY_VALIDATED",
+        "wave":  "WAVE CONTENT — Integridade de dados de combate",
+        "priority":  "P2",
+        "type":  "Data / Content",
+        "domain":  "Combat",
+        "title":  "SPEC — Kits de ataque de inimigo referenciam StatusEffect IDs ausentes",
+        "path":  ".specs/implementados/spec_content_enemy_status_kit_ids_v1.md"
     },
     {
         "id":  "spec_core_001_event_bus_e_eventos_base",

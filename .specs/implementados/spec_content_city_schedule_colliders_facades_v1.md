@@ -1,7 +1,8 @@
 # SPEC — City schedule: colliders de tronco e placeholders de fachada
 
 > **Spec ID:** `spec_content_city_schedule_colliders_facades_v1`
-> **Status:** A implementar
+> **Status:** Implementado e UNITY_VALIDATED
+> **Evidência (2026-08-12):** Caminho A — `CreateMvpTownScene` ajustado (trunk collider só nas 8 árvores internas + placeholder de fachada semântica por prédio v8). Inicializar Projeto recriou a TownScene. `ValidateFableCitySchedule` → **PASS 21 / FAIL 0** (eram 2 falhas). Compile 0 erros. Smoke visual em Play Mode `DEFERRED_TO_FINAL_VALIDATION`.
 > **Wave:** WAVE CONTENT — Integridade da TownScene
 > **Priority:** P2
 > **Type:** Data / Content (cena) — Validation
