@@ -1,9 +1,9 @@
 ﻿<Solution>
-  <Project Path="CindarsHope.Editor.csproj" />
   <Project Path="CindarsHope.Runtime.csproj" />
   <Project Path="CindarsHope.Tests.EditMode.csproj" />
   <Project Path="CindarsHope.Gameplay.csproj" />
   <Project Path="CindarsHope.Foundation.csproj" />
+  <Project Path="CindarsHope.Editor.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="CindarsHope.Tests.PlayMode.Composition.csproj" />
 </Solution>

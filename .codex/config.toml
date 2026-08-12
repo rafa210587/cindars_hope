@@ -3,9 +3,8 @@
 
 # Model defaults. Codex uses its own model family (not opus/sonnet/haiku) so no explicit
 # model pin is set here by default -- override locally if desired.
-[model]
-# name = "gpt-5-codex"
-reasoning_effort = "medium"
+# model = "gpt-5-codex"
+model_reasoning_effort = "medium"
 
 # Approval / sandbox policy. Claude Code enforces the unsafe-git / .unity-.prefab-.asset /
 # Packages/** / ProjectSettings/** allowlist via permissions.ask (human approves per instance).
