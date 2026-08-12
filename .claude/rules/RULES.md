@@ -48,6 +48,7 @@ Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam w
 | `guard-large-files.ps1` | PreToolUse (Edit/Write) | bloqueia um único Write > 1 MB (dumps acidentais de data/log/blob) |
 | `runtime-code-guard.ps1` | PostToolUse (Edit/Write) | forbidden search APIs, namespaces proibidos, nomes de classe duplicados |
 | `detect-change-scope.ps1` + `stop-summary-check.ps1` | Stop | snapshot de change-scope + checklist de closeout adaptativo; bloqueia o stop em forbidden paths |
+| `sync-harness-and-tracing.ps1` | Stop | se `CLAUDE.md`/`.claude/{skills,rules,agents,commands,settings.json}` mudou → re-roda `Generate-CodexHarness.ps1` (paridade Codex); se `.specs/**` mudou → re-roda `generate_spec_index.ps1` (SPEC_INDEX). Não bloqueia |
 | `permissions.ask` (settings.json) | — | autorização humana per-instance: unsafe git, edits em .unity/.prefab/.asset, Packages/, ProjectSettings/ |
 
 Hooks manuais invocados por commands (não automáticos): `spec-promotion-guard`, `delete-guard`, `docs-status-honesty-check`, `test-scenario-required-guard`, `run-required-validations`, `check-csproj-includes`, `check-runtime-forbidden-search` (versão full-diff), `check-cave-stable-run-scope`, `context-policy-check`, `decision-rule-reference-guard`, `post-edit-docs-validate`.

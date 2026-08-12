@@ -57,6 +57,22 @@ Guia de melhores práticas para materializar o mundo (FarmScene, TownScene, Cave
 - Casa modular = peça de **parede frontal** + **telhado inclinado (3/4)** + **porta** compостas, Y-sorted, com o telhado sumindo ao entrar (`RoofRevealController` já existe no projeto).
 - Telhado NÃO é textura tileável: é peça inteira; não tilar.
 
+## Cave procedural: 3 camadas (decisão 2026-07-03)
+
+A CaveScene é gerada por seed (grid de células), então o terreno dela segue **3 camadas** — não
+tentar "moldes" como base do terreno:
+
+1. **Chão/parede = Tilemap + Rule Tiles** pintados em runtime pelo materializer a partir do grid
+   do level plan. Variação de tile por hash determinístico da célula (`worldSeed|runSeed|level|x|y`)
+   — nunca `Random` (rule `cave-stable-run`). Tiles/sprites vêm do `CaveBiomeArtProfileSO` da banda
+   (spec CV01), com fallback aos placeholders se o profile estiver vazio.
+2. **Props grandes = sprites livres** (cogumelo gigante, pilar, estátua): Y-sort + collider
+   próprio, posicionados pelo planner — não são tiles.
+3. **Stamps (moldes autorados) só para set-pieces** (sala de tesouro, arena do boss, entrada) —
+   exceção, nunca a base do terreno.
+
+Referência de direção: `docs/design/gameplay/cave/CAVE_BIOME_VISUAL_REFERENCE.md` §3.9.
+
 ## Colisão
 
 - `TilemapCollider2D` + `CompositeCollider2D` na camada de obstáculo (Rigidbody2D **Static**, "Used By Composite"). Tiles transparentes/decoração: `Collider Type = None`.
