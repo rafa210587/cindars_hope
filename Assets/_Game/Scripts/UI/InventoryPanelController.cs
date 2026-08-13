@@ -19,6 +19,7 @@ namespace CindarsHope.UI
             Slots,
             Actions,
             DestroyConfirm,
+            MoveMergeDestination,
             EquipmentSelection
         }
 
@@ -33,10 +34,11 @@ namespace CindarsHope.UI
         private bool _isOpen;
         private int _selectedSlotIndex;
         private int _selectedActionIndex;
+        private int _moveMergeSourceSlotIndex = -1;
         private string _message = string.Empty;
         private EquipmentSlot _targetEquipmentSlot = EquipmentSlot.None;
         private Action<bool, string> _onEquipmentSelectionClosed;
-        private readonly string[] _actions = { "Use", "Equip", "Drop", "Destroy", "Split", "Cancel" };
+        private readonly string[] _actions = { "Use", "Equip", "Drop", "Destroy", "Mover/Mesclar", "Split", "Cancel" };
 
         public static void Install(Transform owner)
         {
@@ -110,6 +112,9 @@ namespace CindarsHope.UI
                 case PanelMode.DestroyConfirm:
                     UpdateDestroyConfirmation();
                     break;
+                case PanelMode.MoveMergeDestination:
+                    UpdateMoveMergeDestinationNavigation();
+                    break;
                 case PanelMode.EquipmentSelection:
                     UpdateEquipmentSelectionNavigation();
                     break;
@@ -143,18 +148,21 @@ namespace CindarsHope.UI
             GUILayout.BeginArea(rect, GUI.skin.window);
             var title = _mode == PanelMode.EquipmentSelection
                 ? $"Selecionar para {_targetEquipmentSlot} ({GetFilledSlotCount()}/{GetCapacity()})"
+                : _mode == PanelMode.MoveMergeDestination
+                    ? "Selecione o slot de destino"
                 : $"Inventory ({GetFilledSlotCount()}/{GetCapacity()})";
             GUILayout.Label(title);
             DrawSlots();
             DrawSelectedDetails();
 
-            if (_mode == PanelMode.Actions)
-            {
-                DrawActions();
-            }
-            else if (_mode == PanelMode.DestroyConfirm)
+            if (_mode == PanelMode.DestroyConfirm)
             {
                 DrawDestroyConfirmation();
+            }
+            else if (_mode == PanelMode.MoveMergeDestination)
+            {
+                GUILayout.Space(8f);
+                GUILayout.Label("Selecione o slot de destino (Esc cancela).");
             }
 
             if (!string.IsNullOrWhiteSpace(_message))
@@ -163,11 +171,15 @@ namespace CindarsHope.UI
                 GUILayout.Label(_message);
             }
 
-            if (GUILayout.Button(_mode == PanelMode.EquipmentSelection ? "Cancelar (Esc)" : "Fechar"))
+            if (_mode != PanelMode.Actions && GUILayout.Button(_mode == PanelMode.EquipmentSelection || _mode == PanelMode.MoveMergeDestination ? "Cancelar (Esc)" : "Fechar"))
             {
                 if (_mode == PanelMode.EquipmentSelection)
                 {
                     CompleteEquipmentSelection(false, "Selecao cancelada.");
+                }
+                else if (_mode == PanelMode.MoveMergeDestination)
+                {
+                    CloseOrBack();
                 }
                 else
                 {
@@ -176,6 +188,11 @@ namespace CindarsHope.UI
             }
 
             GUILayout.EndArea();
+
+            if (_mode == PanelMode.Actions)
+            {
+                DrawActions(new Rect(rect.x + (rect.width - 240f) * 0.5f, rect.y + 70f, 240f, 290f));
+            }
         }
 
         private void Toggle()
@@ -251,6 +268,15 @@ namespace CindarsHope.UI
                 return;
             }
 
+            if (_mode == PanelMode.MoveMergeDestination)
+            {
+                _moveMergeSourceSlotIndex = -1;
+                _mode = PanelMode.Slots;
+                _selectedActionIndex = 0;
+                _message = "Movimentacao cancelada.";
+                return;
+            }
+
             if (_mode == PanelMode.Slots)
             {
                 ClosePanel();
@@ -288,7 +314,7 @@ namespace CindarsHope.UI
             else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
                 _mode = PanelMode.Actions;
-                _selectedActionIndex = 0;
+                _selectedActionIndex = FindFirstEnabledActionIndex();
             }
         }
 
@@ -296,11 +322,11 @@ namespace CindarsHope.UI
         {
             if (global::UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
-                _selectedActionIndex = Mathf.Max(0, _selectedActionIndex - 1);
+                MoveActionSelection(-1);
             }
             else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S))
             {
-                _selectedActionIndex = Mathf.Min(_actions.Length - 1, _selectedActionIndex + 1);
+                MoveActionSelection(1);
             }
             else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E))
             {
@@ -345,6 +371,36 @@ namespace CindarsHope.UI
             }
         }
 
+        private void UpdateMoveMergeDestinationNavigation()
+        {
+            var capacity = GetCapacity();
+            if (capacity <= 0)
+            {
+                return;
+            }
+
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.A))
+            {
+                _selectedSlotIndex = Mathf.Max(0, _selectedSlotIndex - 1);
+            }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.D))
+            {
+                _selectedSlotIndex = Mathf.Min(capacity - 1, _selectedSlotIndex + 1);
+            }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.W))
+            {
+                _selectedSlotIndex = Mathf.Max(0, _selectedSlotIndex - 6);
+            }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S))
+            {
+                _selectedSlotIndex = Mathf.Min(capacity - 1, _selectedSlotIndex + 6);
+            }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E))
+            {
+                ExecuteMoveMergeToSelectedSlot();
+            }
+        }
+
         private void ExecuteSelectedAction()
         {
             if (_inventoryManager == null || !_inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot) || slot.IsEmpty)
@@ -369,6 +425,11 @@ namespace CindarsHope.UI
                 case "Destroy":
                     _mode = PanelMode.DestroyConfirm;
                     break;
+                case "Mover/Mesclar":
+                    _moveMergeSourceSlotIndex = _selectedSlotIndex;
+                    _mode = PanelMode.MoveMergeDestination;
+                    _message = "Selecione o slot de destino (Esc cancela).";
+                    break;
                 case "Split":
                     _message = _inventoryManager.SplitSlot(_selectedSlotIndex)
                         ? "Stack split."
@@ -379,6 +440,26 @@ namespace CindarsHope.UI
                     _mode = PanelMode.Slots;
                     break;
             }
+        }
+
+        private void ExecuteMoveMergeToSelectedSlot()
+        {
+            if (_inventoryManager == null || _moveMergeSourceSlotIndex < 0)
+            {
+                _message = "Nenhuma pilha de origem foi selecionada.";
+            }
+            else if (_inventoryManager.TryMoveOrMergeSlot(_moveMergeSourceSlotIndex, _selectedSlotIndex, out var failureReason))
+            {
+                _message = "Pilha movida/mesclada.";
+            }
+            else
+            {
+                _message = failureReason;
+            }
+
+            _moveMergeSourceSlotIndex = -1;
+            _mode = PanelMode.Slots;
+            _selectedActionIndex = 0;
         }
 
         private void ExecuteUse()
@@ -470,7 +551,9 @@ namespace CindarsHope.UI
                     var label = FormatSlotLabel(slot);
                     var previousColor = GUI.color;
                     var previousEnabled = GUI.enabled;
-                    var selectable = _mode != PanelMode.EquipmentSelection || IsCompatibleSlot(slotIndex, _targetEquipmentSlot);
+                    var selectable = _mode == PanelMode.Slots
+                        || _mode == PanelMode.MoveMergeDestination
+                        || (_mode == PanelMode.EquipmentSelection && IsCompatibleSlot(slotIndex, _targetEquipmentSlot));
                     if (slotIndex == _selectedSlotIndex)
                     {
                         GUI.color = Color.yellow;
@@ -483,6 +566,10 @@ namespace CindarsHope.UI
                         if (_mode == PanelMode.EquipmentSelection)
                         {
                             SelectEquipmentSlot(slotIndex);
+                        }
+                        else if (_mode == PanelMode.MoveMergeDestination)
+                        {
+                            ExecuteMoveMergeToSelectedSlot();
                         }
                         else
                         {
@@ -508,27 +595,86 @@ namespace CindarsHope.UI
 
             var equipped = slot.IsEquipped ? $" [{slot.EquipmentBindingId}]" : string.Empty;
             GUILayout.Label($"Selected: {ResolveDisplayName(slot.ItemId)} x{slot.Amount}{equipped}");
+            if (_mode == PanelMode.MoveMergeDestination)
+            {
+                GUILayout.Label($"Origem: slot {_moveMergeSourceSlotIndex + 1}; destino: slot {_selectedSlotIndex + 1}.");
+            }
             if (_mode == PanelMode.EquipmentSelection && !IsCompatibleSlot(_selectedSlotIndex, _targetEquipmentSlot))
             {
                 GUILayout.Label($"Incompativel com {_targetEquipmentSlot}.");
             }
         }
 
-        private void DrawActions()
+        private void DrawActions(Rect rect)
         {
-            GUILayout.Space(8f);
+            GUILayout.BeginArea(rect, GUI.skin.window);
+            GUILayout.Label("Acoes do item");
             GUILayout.BeginVertical(GUI.skin.box);
             for (var index = 0; index < _actions.Length; index++)
             {
-                var label = _actions[index] == "Equip" ? GetEquipActionLabel() : _actions[index];
+                var isEnabled = IsActionEnabled(index);
+                var label = _actions[index] == "Use"
+                    ? (isEnabled ? "Usar" : "Usar (indisponivel)")
+                    : _actions[index] == "Equip" ? GetEquipActionLabel() : _actions[index];
+                var previousEnabled = GUI.enabled;
+                GUI.enabled = isEnabled;
                 if (GUILayout.Button(index == _selectedActionIndex ? $"> {label}" : label))
                 {
                     _selectedActionIndex = index;
                     ExecuteSelectedAction();
                 }
+                GUI.enabled = previousEnabled;
             }
 
             GUILayout.EndVertical();
+            GUILayout.Label("Esc: voltar ao inventario");
+            GUILayout.EndArea();
+        }
+
+        private int FindFirstEnabledActionIndex()
+        {
+            for (var index = 0; index < _actions.Length; index++)
+            {
+                if (IsActionEnabled(index))
+                {
+                    return index;
+                }
+            }
+
+            return 0;
+        }
+
+        private void MoveActionSelection(int direction)
+        {
+            var candidate = _selectedActionIndex;
+            for (var count = 0; count < _actions.Length; count++)
+            {
+                candidate = Mathf.Clamp(candidate + direction, 0, _actions.Length - 1);
+                if (IsActionEnabled(candidate))
+                {
+                    _selectedActionIndex = candidate;
+                    return;
+                }
+
+                if (candidate == 0 || candidate == _actions.Length - 1)
+                {
+                    return;
+                }
+            }
+        }
+
+        private bool IsActionEnabled(int actionIndex)
+        {
+            return actionIndex < 0 || actionIndex >= _actions.Length || _actions[actionIndex] != "Use" || CanUseSelectedItem();
+        }
+
+        private bool CanUseSelectedItem()
+        {
+            return _inventoryManager != null
+                && _inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot)
+                && !slot.IsEmpty
+                && ItemUseManager.Instance != null
+                && ItemUseManager.Instance.CanUseItem(slot.ItemId);
         }
 
         private void DrawDestroyConfirmation()

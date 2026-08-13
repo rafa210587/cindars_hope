@@ -171,7 +171,8 @@ DirectInput	Assets/_Game/Scripts/Player/Movement/DirectionalDoubleTapDetector.cs
 DirectInput	Assets/_Game/Scripts/Player/Movement/PlayerMovementActionInput.cs	19
 DirectInput	Assets/_Game/Scripts/Save/SaveInput.cs	2
 DirectInput	Assets/_Game/Scripts/UI/DebugHud.cs	3
-DirectInput	Assets/_Game/Scripts/UI/InventoryPanelController.cs	24
+# DECISAO 2026-08-13: InventoryPanelController e tela IMGUI/OnGUI de debito conhecido; o submodal de mover/mesclar (spec_bugfix_inventory_move_merge_ui_v1, validado em playtest humano) estende o MESMO padrao (+7 DirectInput). Migracao para Canvas = spec 04_spec_ui_inventory_items_tooltips. Baseline 24->31.
+DirectInput	Assets/_Game/Scripts/UI/InventoryPanelController.cs	31
 DirectInput	Assets/_Game/Scripts/UI/Character/CharacterEquipmentPanelController.cs	9
 DirectInput	Assets/_Game/Scripts/UI/Crafting/CraftingModal.cs	13
 DirectInput	Assets/_Game/Scripts/UI/Death/DeathScreenCanvasController.cs	6

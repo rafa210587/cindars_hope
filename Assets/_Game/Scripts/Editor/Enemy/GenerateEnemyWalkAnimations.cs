@@ -54,7 +54,7 @@ namespace CindarsHope.Editor.Enemy
             var sourceDir = useNormalized ? normDir : rawDir;
             if (!Directory.Exists(sourceDir))
             {
-                Debug.LogWarning($"[GenerateEnemyWalkAnimations] Pasta nao encontrada: {sourceDir}. Nada a gerar.");
+                Debug.Log($"[GenerateEnemyWalkAnimations] Nenhuma pasta fonte encontrada (normalized ou raw). Nada a gerar.");
                 return;
             }
             Debug.Log($"[GenerateEnemyWalkAnimations] Fonte: {sourceDir}" +

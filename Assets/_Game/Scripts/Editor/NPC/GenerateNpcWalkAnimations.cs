@@ -90,7 +90,7 @@ namespace CindarsHope.Editor.NPC
             var sourceDir = Directory.Exists(normDir) ? normDir : rawDir;
             if (!Directory.Exists(sourceDir))
             {
-                Debug.LogWarning($"[GenerateNpcWalkAnimations] Pasta nao encontrada: {sourceDir}. Nada a gerar.");
+                Debug.Log($"[GenerateNpcWalkAnimations] Nenhuma pasta fonte encontrada (normalized ou raw). Nada a gerar.");
                 return;
             }
             Debug.Log($"[GenerateNpcWalkAnimations] Fonte das folhas: {sourceDir}" +

@@ -539,6 +539,95 @@ namespace CindarsHope.Inventory
             return true;
         }
 
+        /// <summary>
+        /// Moves a stack to an empty slot, merges stacks of the same item, or swaps two distinct items.
+        /// The operation is atomic: validation happens before either slot changes.
+        /// </summary>
+        public bool TryMoveOrMergeSlot(int sourceSlotIndex, int destinationSlotIndex, out string failureReason)
+        {
+            failureReason = string.Empty;
+            EnsureCapacity(DefaultCapacity);
+
+            if (sourceSlotIndex < 0 || sourceSlotIndex >= _slots.Count
+                || destinationSlotIndex < 0 || destinationSlotIndex >= _slots.Count)
+            {
+                failureReason = "Slot de origem ou destino invalido.";
+                return false;
+            }
+
+            if (sourceSlotIndex == destinationSlotIndex)
+            {
+                failureReason = "Escolha um slot de destino diferente.";
+                return false;
+            }
+
+            var source = _slots[sourceSlotIndex];
+            var destination = _slots[destinationSlotIndex];
+            if (source == null || source.IsEmpty)
+            {
+                failureReason = "O slot de origem esta vazio.";
+                return false;
+            }
+
+            if (source.IsEquipped || (destination != null && destination.IsEquipped))
+            {
+                failureReason = "Itens equipados nao podem ser movidos.";
+                return false;
+            }
+
+            if (!TryGetItemData(source.ItemId, out var sourceItemData))
+            {
+                failureReason = "O item de origem nao e reconhecido.";
+                return false;
+            }
+
+            if (destination == null)
+            {
+                failureReason = "O slot de destino nao existe.";
+                return false;
+            }
+
+            if (!destination.IsEmpty && !TryGetItemData(destination.ItemId, out _))
+            {
+                failureReason = "O item de destino nao e reconhecido.";
+                return false;
+            }
+
+            var sourceItemId = source.ItemId;
+            var destinationItemId = destination.ItemId;
+            if (destination.IsEmpty)
+            {
+                CopySlotContents(source, destination);
+                source.Clear();
+            }
+            else if (sourceItemId == destinationItemId)
+            {
+                var maxStack = Mathf.Max(1, sourceItemData.MaxStack);
+                var available = maxStack - destination.Amount;
+                if (available <= 0)
+                {
+                    failureReason = "A pilha de destino ja esta cheia.";
+                    return false;
+                }
+
+                var transferred = Mathf.Min(source.Amount, available);
+                source.Amount -= transferred;
+                destination.Amount += transferred;
+                if (source.Amount <= 0)
+                {
+                    source.Clear();
+                }
+            }
+            else
+            {
+                SwapSlotContents(source, destination);
+            }
+
+            RebuildAggregate();
+            PublishRefreshForAffectedItems(sourceItemId, destinationItemId);
+            return true;
+        }
+
         public bool DestroySlot(int slotIndex)
         {
             if (!TryGetSlot(slotIndex, out var slot) || slot.IsEmpty)
@@ -738,6 +827,41 @@ namespace CindarsHope.Inventory
             }
 
             return null;
+        }
+
+        private static void CopySlotContents(InventorySlot source, InventorySlot destination)
+        {
+            destination.ItemId = source.ItemId;
+            destination.Amount = source.Amount;
+            destination.IsEquipped = source.IsEquipped;
+            destination.EquipmentBindingId = source.EquipmentBindingId;
+        }
+
+        private static void SwapSlotContents(InventorySlot first, InventorySlot second)
+        {
+            var firstItemId = first.ItemId;
+            var firstAmount = first.Amount;
+            var firstIsEquipped = first.IsEquipped;
+            var firstEquipmentBindingId = first.EquipmentBindingId;
+
+            CopySlotContents(second, first);
+            second.ItemId = firstItemId;
+            second.Amount = firstAmount;
+            second.IsEquipped = firstIsEquipped;
+            second.EquipmentBindingId = firstEquipmentBindingId;
+        }
+
+        private void PublishRefreshForAffectedItems(string firstItemId, string secondItemId)
+        {
+            if (!string.IsNullOrWhiteSpace(firstItemId))
+            {
+                GameEventBus.Publish(new InventoryChangedEvent(firstItemId, 0, GetAmount(firstItemId)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(secondItemId) && secondItemId != firstItemId)
+            {
+                GameEventBus.Publish(new InventoryChangedEvent(secondItemId, 0, GetAmount(secondItemId)));
+            }
         }
 
         private int GetAvailableCapacityFor(string itemId, int maxStack)

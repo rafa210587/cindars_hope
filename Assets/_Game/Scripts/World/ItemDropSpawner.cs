@@ -9,6 +9,8 @@ namespace CindarsHope.World
     [DisallowMultipleComponent]
     public class ItemDropSpawner : MonoBehaviour
     {
+        private const int DroppedItemSortingOrder = 10;
+
         private static ItemDropSpawner _instance;
 
         private InventoryManager _inventoryManager;
@@ -79,10 +81,17 @@ namespace CindarsHope.World
             {
                 spriteRenderer.sprite = itemData.Icon;
             }
+            spriteRenderer.sortingLayerName = WorldSortingLayers.World;
+            spriteRenderer.sortingOrder = DroppedItemSortingOrder;
 
             var collider = pickupGo.AddComponent<CircleCollider2D>();
             collider.isTrigger = true;
             collider.radius = 0.3f;
+
+            var rigidbody = pickupGo.AddComponent<Rigidbody2D>();
+            rigidbody.bodyType = RigidbodyType2D.Kinematic;
+            rigidbody.gravityScale = 0f;
+            rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var pickup = pickupGo.AddComponent<ItemPickup>();
             pickup.Configure(_nextPickupIndex++, itemId, amount, _inventoryManager);

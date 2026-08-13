@@ -24,7 +24,9 @@ using CindarsHope.Farm.Resources;
 using CindarsHope.Farm.Runtime;
 using CindarsHope.Farm.Shipping;
 using CindarsHope.Craft;
+using CindarsHope.Core.Bootstrap;
 using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
 using CindarsHope.Items.Runtime;
 using CindarsHope.Magic;
 using CindarsHope.Fonte;
@@ -96,7 +98,22 @@ namespace CindarsHope.Composition
         {
             WorldWeatherRuntimeBootstrap.Install(owner);
             WorldEventRuntimeBootstrap.Install(owner);
-            ItemDropSpawner.Install(owner);
+            var itemDropSpawner = ItemDropSpawner.Install(owner);
+            InitializeInventoryItemServices(itemDropSpawner, null);
+        }
+
+        internal static void InitializeInventoryItemServices(ItemDropSpawner itemDropSpawner, ItemUseManager itemUseManager)
+        {
+            var bootstrap = GameBootstrap.Instance;
+            var inventoryManager = bootstrap != null ? bootstrap.InventoryManager as InventoryManager : null;
+            var itemDatabase = bootstrap != null ? bootstrap.ItemDatabase as ItemDatabaseSO : null;
+            if (inventoryManager == null || itemDatabase == null)
+            {
+                return;
+            }
+
+            itemDropSpawner?.Initialize(inventoryManager, itemDatabase);
+            itemUseManager?.Initialize(inventoryManager);
         }
     }
 
@@ -117,7 +134,8 @@ namespace CindarsHope.Composition
     {
         public static void Install(Transform owner)
         {
-            ItemUseManager.Install(owner);
+            var itemUseManager = ItemUseManager.Install(owner);
+            WorldRuntimeInstaller.InitializeInventoryItemServices(ItemDropSpawner.Instance, itemUseManager);
             ConsumableItemRuntimeBootstrap.Install(owner);
             MagicItemRuntimeBootstrap.Install(owner);
             PlayerSpellbookRuntimeBootstrap.Install(owner);

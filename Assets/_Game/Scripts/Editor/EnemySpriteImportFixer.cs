@@ -8,7 +8,7 @@ namespace CindarsHope.Editor
     /// <summary>
     /// Forca PixelsPerUnit + config de pixel art em TODOS os sprites de
     /// Assets/_Game/Resources/EnemySprites e reimporta. Deterministico (seta direto no
-    /// TextureImporter e SaveAndReimport), nao depende do AssetPostprocessor nem de timing.
+    /// TextureImporter e escrita/importacao explicitas), nao depende do AssetPostprocessor nem de timing.
     /// 1 tile do cave = 1 unidade; sprite 64px / PPU => altura base, x EnemyScaleResolver (medium=2x).
     /// Idempotente. Tambem corrige overrides de platform (Standalone/WebGL) que podem ter
     /// ficado com compression != Uncompressed quando o PNG foi copiado no disco fora do Editor
@@ -108,24 +108,40 @@ namespace CindarsHope.Editor
                 pendentes.Add(imp);
             }
 
+            int reimportados = 0;
+            int falhasDeReimportacao = 0;
             if (pendentes.Count > 0)
             {
-                AssetDatabase.StartAssetEditing();
-                try
+                foreach (var imp in pendentes)
                 {
-                    foreach (var imp in pendentes)
+                    string path = imp.assetPath;
+                    try
                     {
-                        imp.SaveAndReimport();
+                        AssetDatabase.WriteImportSettingsIfDirty(path);
+                        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+                        reimportados++;
                     }
-                }
-                finally
-                {
-                    AssetDatabase.StopAssetEditing();
+                    catch (IOException e)
+                    {
+                        falhasDeReimportacao++;
+                        Debug.LogError($"[EnemySpriteImportFixer] Falha de IO ao reimportar '{path}': {e}");
+                    }
+                    catch (System.UnauthorizedAccessException e)
+                    {
+                        falhasDeReimportacao++;
+                        Debug.LogError($"[EnemySpriteImportFixer] Acesso negado ao reimportar '{path}': {e}");
+                    }
+                    catch (System.Exception e)
+                    {
+                        falhasDeReimportacao++;
+                        Debug.LogError($"[EnemySpriteImportFixer] Falha ao reimportar '{path}': {e}");
+                    }
                 }
             }
 
             Debug.Log($"[EnemySpriteImportFixer] Sprites varridos: {varridos}. " +
-                      $"Reimportados com PPU por-sprite: {pendentes.Count} " +
+                      $"Reimportados com PPU por-sprite: {reimportados}. " +
+                      $"Falhas de reimportacao: {falhasDeReimportacao}. " +
                       $"(altura de conteudo normalizada p/ {BaseContentUnits} un base). " +
                       $"Ja corretos (pulados): {jaCorretos}. " +
                       $"Tamanho final = base x EnemyScaleResolver(BestiarySize).");
