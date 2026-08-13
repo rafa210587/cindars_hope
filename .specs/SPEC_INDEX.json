@@ -55,17 +55,6 @@
         "path":  ".specs/a_implementar/fable/fable_85_spec_player_heavy_archetype_art_integration.md"
     },
     {
-        "id":  "spec_bugfix_inventory_move_merge_ui_v1",
-        "bucket":  "Fila",
-        "status":  "",
-        "wave":  "",
-        "priority":  "",
-        "type":  "",
-        "domain":  "",
-        "title":  "/speckit.specify",
-        "path":  ".specs/a_implementar/spec_bugfix_inventory_move_merge_ui_v1.md"
-    },
-    {
         "id":  "spec_cave_biome_art_profiles_runtime",
         "bucket":  "Fila",
         "status":  "A implementar",
@@ -163,28 +152,6 @@
         "domain":  "Farm",
         "title":  "SPEC — FarmScene Relayout v4: Disposição Stardew-like com Montanha, Rio/Ponte, Bosque e Base a Leste",
         "path":  ".specs/a_implementar/spec_farm_scene_relayout_v4.md"
-    },
-    {
-        "id":  "spec_farm_till_anywhere_tilemap",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4)",
-        "priority":  "P1",
-        "type":  "Runtime + Save",
-        "domain":  "Farm",
-        "title":  "SPEC — Arar Qualquer Terra: Solo Arável por Tile (substitui canteiros fixos)",
-        "path":  ".specs/a_implementar/spec_farm_till_anywhere_tilemap.md"
-    },
-    {
-        "id":  "spec_playtest_complete_loadout_and_guide_v1",
-        "bucket":  "Fila",
-        "status":  "A implementar",
-        "wave":  "WAVE VALIDATION — Smoke humano final",
-        "priority":  "P1",
-        "type":  "Tooling / Validation / Docs",
-        "domain":  "Inventory / Equipment / Farm / Validation",
-        "title":  "SPEC — Loadout completo e guia operacional do playtest humano",
-        "path":  ".specs/a_implementar/spec_playtest_complete_loadout_and_guide_v1.md"
     },
     {
         "id":  "spec_town_building_visuals",
@@ -363,17 +330,6 @@
         "path":  ".specs/a_implementar/closeout_mvp/SPEC_29_FINAL_MVP_ACCEPTANCE_AND_PROMOTION.md"
     },
     {
-        "id":  "04_spec_ui_dialogue_choice_runtime",
-        "bucket":  "Build-Validated",
-        "status":  "A implementar",
-        "wave":  "WAVE 04 — UI / UX Foundation",
-        "priority":  "P0",
-        "type":  "Runtime / UI / Dialogue / Choice Modal / Input Focus",
-        "domain":  "UI / Dialogue / Choices / Quest Acceptance / Confirmations",
-        "title":  "SPEC — UI Dialogue Choice Runtime",
-        "path":  ".specs/a_implementar/executadas_build_validated/04_spec_ui_dialogue_choice_runtime.md"
-    },
-    {
         "id":  "04_spec_ui_empty_error_confirmation_patterns_runtime",
         "bucket":  "Build-Validated",
         "status":  "A implementar",
@@ -407,17 +363,6 @@
         "path":  ".specs/a_implementar/executadas_build_validated/04_spec_ui_fonte_menu_flow_runtime.md"
     },
     {
-        "id":  "04_spec_ui_hud_main_gameplay_runtime",
-        "bucket":  "Build-Validated",
-        "status":  "A implementar",
-        "wave":  "WAVE 04 — UI / UX Foundation",
-        "priority":  "P0",
-        "type":  "Runtime / UI / HUD / Notifications / Context",
-        "domain":  "UI / HUD / Hotbar / Active Slots / Notifications / Context Prompts",
-        "title":  "SPEC — UI HUD Main Gameplay Runtime",
-        "path":  ".specs/a_implementar/executadas_build_validated/04_spec_ui_hud_main_gameplay_runtime.md"
-    },
-    {
         "id":  "04_spec_ui_inventory_items_tooltips_runtime",
         "bucket":  "Build-Validated",
         "status":  "A implementar",
@@ -429,17 +374,6 @@
         "path":  ".specs/a_implementar/executadas_build_validated/04_spec_ui_inventory_items_tooltips_runtime.md"
     },
     {
-        "id":  "04_spec_ui_quest_log_screen_runtime",
-        "bucket":  "Build-Validated",
-        "status":  "A implementar",
-        "wave":  "WAVE 04 — UI / UX Foundation",
-        "priority":  "P0",
-        "type":  "Runtime / UI / Quest Log / Spoiler-safe Projection",
-        "domain":  "UI / Quest Log / Quest Detail / Categories / Visibility",
-        "title":  "SPEC — UI Quest Log Screen Runtime",
-        "path":  ".specs/a_implementar/executadas_build_validated/04_spec_ui_quest_log_screen_runtime.md"
-    },
-    {
         "id":  "04_spec_ui_repair_upgrade_screen_flow_runtime",
         "bucket":  "Build-Validated",
         "status":  "A implementar",
@@ -449,17 +383,6 @@
         "domain":  "UI / Equipment / Repair / Upgrade / Cost Preview / Anti-error",
         "title":  "SPEC — UI Repair Upgrade Screen Flow Runtime",
         "path":  ".specs/a_implementar/executadas_build_validated/04_spec_ui_repair_upgrade_screen_flow_runtime.md"
-    },
-    {
-        "id":  "04_spec_ui_shop_buy_sell_runtime",
-        "bucket":  "Build-Validated",
-        "status":  "A implementar",
-        "wave":  "WAVE 04 — UI / UX Foundation",
-        "priority":  "P0",
-        "type":  "Runtime / UI / Shop / Buy Sell / Economy Projection",
-        "domain":  "UI / Shop / Buy / Sell / Stock / Pricing / Empty States",
-        "title":  "SPEC — UI Shop Buy Sell Runtime",
-        "path":  ".specs/a_implementar/executadas_build_validated/04_spec_ui_shop_buy_sell_runtime.md"
     },
     {
         "id":  "04_spec_ui_skill_tree_active_slots_runtime",
@@ -693,6 +616,28 @@
         "path":  ".specs/implementados/spec_04_ui_crafting_screen_runtime.md"
     },
     {
+        "id":  "04_spec_ui_dialogue_choice_runtime",
+        "bucket":  "Implementado",
+        "status":  "Implementado e ACCEPTED",
+        "wave":  "WAVE 04 — UI / UX Foundation",
+        "priority":  "P0",
+        "type":  "Runtime / UI / Dialogue / Choice Modal / Input Focus",
+        "domain":  "UI / Dialogue / Choices / Quest Acceptance / Confirmations",
+        "title":  "SPEC — UI Dialogue Choice Runtime",
+        "path":  ".specs/implementados/04_spec_ui_dialogue_choice_runtime.md"
+    },
+    {
+        "id":  "04_spec_ui_hud_main_gameplay_runtime",
+        "bucket":  "Implementado",
+        "status":  "Implementado e ACCEPTED",
+        "wave":  "WAVE 04 — UI / UX Foundation",
+        "priority":  "P0",
+        "type":  "Runtime / UI / HUD / Notifications / Context",
+        "domain":  "UI / HUD / Hotbar / Active Slots / Notifications / Context Prompts",
+        "title":  "SPEC — UI HUD Main Gameplay Runtime",
+        "path":  ".specs/implementados/04_spec_ui_hud_main_gameplay_runtime.md"
+    },
+    {
         "id":  "04_spec_ui_input_focus_modal_routing_runtime",
         "bucket":  "Implementado",
         "status":  "A implementar",
@@ -702,6 +647,28 @@
         "domain":  "UI / Input / Focus / Modal Stack",
         "title":  "SPEC — UI Input Focus Modal Routing Runtime",
         "path":  ".specs/implementados/spec_04_ui_input_focus_modal_routing_runtime.md"
+    },
+    {
+        "id":  "04_spec_ui_quest_log_screen_runtime",
+        "bucket":  "Implementado",
+        "status":  "Implementado e ACCEPTED",
+        "wave":  "WAVE 04 — UI / UX Foundation",
+        "priority":  "P0",
+        "type":  "Runtime / UI / Quest Log / Spoiler-safe Projection",
+        "domain":  "UI / Quest Log / Quest Detail / Categories / Visibility",
+        "title":  "SPEC — UI Quest Log Screen Runtime",
+        "path":  ".specs/implementados/04_spec_ui_quest_log_screen_runtime.md"
+    },
+    {
+        "id":  "04_spec_ui_shop_buy_sell_runtime",
+        "bucket":  "Implementado",
+        "status":  "Implementado e ACCEPTED",
+        "wave":  "WAVE 04 — UI / UX Foundation",
+        "priority":  "P0",
+        "type":  "Runtime / UI / Shop / Buy Sell / Economy Projection",
+        "domain":  "UI / Shop / Buy / Sell / Stock / Pricing / Empty States",
+        "title":  "SPEC — UI Shop Buy Sell Runtime",
+        "path":  ".specs/implementados/04_spec_ui_shop_buy_sell_runtime.md"
     },
     {
         "id":  "05_spec_companion_eligibility_bond_availability_save_runtime",
@@ -2739,6 +2706,17 @@
         "path":  ".specs/implementados/spec_arch_ui_boundary_residual_v1.md"
     },
     {
+        "id":  "spec_bugfix_inventory_move_merge_ui_v1",
+        "bucket":  "Implementado",
+        "status":  "",
+        "wave":  "",
+        "priority":  "",
+        "type":  "",
+        "domain":  "",
+        "title":  "/speckit.specify",
+        "path":  ".specs/implementados/spec_bugfix_inventory_move_merge_ui_v1.md"
+    },
+    {
         "id":  "spec_bugfix_ui_input_shop_sell_bundle",
         "bucket":  "Implementado",
         "status":  "",
@@ -3223,6 +3201,17 @@
         "path":  ".specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md"
     },
     {
+        "id":  "spec_farm_till_anywhere_tilemap",
+        "bucket":  "Implementado",
+        "status":  "Implementado e ACCEPTED",
+        "wave":  "WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4)",
+        "priority":  "P1",
+        "type":  "Runtime + Save",
+        "domain":  "Farm",
+        "title":  "SPEC — Arar Qualquer Terra: Solo Arável por Tile (substitui canteiros fixos)",
+        "path":  ".specs/implementados/spec_farm_till_anywhere_tilemap.md"
+    },
+    {
         "id":  "spec_fase9c_player_equipment_items_combat_remaining",
         "bucket":  "Implementado",
         "status":  "A implementar / restante não implementado",
@@ -3419,6 +3408,17 @@
         "domain":  "",
         "title":  "SPEC 12 - Player Combat, Weapons, Spells, Skill Actions Runtime",
         "path":  ".specs/implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md"
+    },
+    {
+        "id":  "spec_playtest_complete_loadout_and_guide_v1",
+        "bucket":  "Implementado",
+        "status":  "Implementado e ACCEPTED",
+        "wave":  "WAVE VALIDATION — Smoke humano final",
+        "priority":  "P1",
+        "type":  "Tooling / Validation / Docs",
+        "domain":  "Inventory / Equipment / Farm / Validation",
+        "title":  "SPEC — Loadout completo e guia operacional do playtest humano",
+        "path":  ".specs/implementados/spec_playtest_complete_loadout_and_guide_v1.md"
     },
     {
         "id":  "spec_progression_001_xp_level_atributos_parcial",

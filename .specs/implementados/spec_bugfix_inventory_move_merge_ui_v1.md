@@ -1,11 +1,16 @@
 ---
 id: spec_bugfix_inventory_move_merge_ui_v1
 title: "Bugfix — mover e mesclar pilhas no inventário"
-status: READY
+status: implemented
+date_implemented: 2026-08-13
 type: bugfix_runtime_ui
 depends_on: []
 required_adrs: []
 required_game_rules: []
+evidence:
+  - Código: InventoryManager.TryMoveOrMergeSlot(int, int, out string) em Assets/_Game/Scripts/Inventory/InventoryManager.cs:546; consumido por InventoryPanelController.cs:451.
+  - Play Mode humano PASS 2026-08-13 (usuário confirmou os 11 fluxos de docs/validation/playmode/PLAYTEST_SIMPLES.md, incl. fluxo 4 — Inventário: split, mover para slot vazio, mesclar pilhas, cancelar com Esc).
+  - Validação automatizada preexistente: ver docs/validation/spec_bugfix_inventory_move_merge_ui_v1_execution_report.md (build/EditMode) se presente.
 ---
 
 ## Ordem de execucao

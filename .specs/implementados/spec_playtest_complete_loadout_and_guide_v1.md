@@ -1,7 +1,8 @@
 # SPEC — Loadout completo e guia operacional do playtest humano
 
 > **Spec ID:** `spec_playtest_complete_loadout_and_guide_v1`
-> **Status:** A implementar
+> **Status:** Implementado e ACCEPTED
+> **Evidência:** Código — `DebugLoadoutProvisioner.cs` usa os IDs canônicos reais (`item_shop_tool_hoe_basic` em `CanonicalHoeId`, linha 34) e imprime `READY FOR PLAYTEST` / `REQUIRED FAILURES (N)` (linhas 239-240). `docs/validation/playmode/PLAYTEST_SIMPLES.md` já é o roteiro executável de 11 fluxos com setup, controles, item/slot e critério por passo (produto desta spec). Play Mode humano PASS 2026-08-13 — usuário executou o setup (`Provision Farm Smoke Loadout`, confirmou `READY FOR PLAYTEST`) e os 11 fluxos do guia, confirmando "tudo funcionando bem".
 > **Wave:** WAVE VALIDATION — Smoke humano final
 > **Priority:** P1
 > **Type:** Tooling / Validation / Docs

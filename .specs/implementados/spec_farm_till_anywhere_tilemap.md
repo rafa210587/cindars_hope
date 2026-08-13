@@ -1,7 +1,8 @@
 # SPEC — Arar Qualquer Terra: Solo Arável por Tile (substitui canteiros fixos)
 
 > **Spec ID:** `spec_farm_till_anywhere_tilemap`
-> **Status:** A implementar
+> **Status:** Implementado e ACCEPTED
+> **Evidência:** Código presente e wired — `Assets/_Game/Scripts/Farm/FarmTileGrid.cs`, `FarmTilledSoilService.cs`, `FarmNonArableZones.cs`, `Assets/_Game/Scripts/Save/Providers/FarmTilesSectionProvider.cs`. Play Mode humano PASS 2026-08-13 (fluxo 1 do playtest — arar com `F`, plantar, regar, crescer/colher — usuário confirmou OK; fluxo 11 — save/load — confirmou persistência geral do estado sem erro). Risco residual: os sub-casos "não arar em construção/água/montanha" e "arável dentro da estufa" (critério 14.1) não foram exercitados explicitamente pelo smoke — comportamento herdado do código presente, sem regressão observada.
 > **Wave:** WAVE FARM — Coerência da FarmScene (companion de `spec_farm_scene_relayout_v4`)
 > **Priority:** P1
 > **Type:** Runtime + Save

@@ -1,7 +1,8 @@
 # SPEC — UI Quest Log Screen Runtime
 
 > **Spec ID:** `04_spec_ui_quest_log_screen_runtime`  
-> **Status:** A implementar  
+> **Status:** Implementado e ACCEPTED  
+> **Evidência:** Código presente — `Assets/_Game/Scripts/UI/Quests/Runtime/QuestLogPanelController.cs`, `QuestLogRuntimeBinder.cs`, `Assets/_Game/Scripts/UI/Runtime/QuestLogSpoilerProjection.cs`, `Assets/_Game/Scripts/Quests/Log/QuestLogProjectionService.cs`. Play Mode humano PASS 2026-08-13 (fluxo 7 do playtest — quest: aceitar, abrir `J`, ver objetivo/progresso, entregar e receber recompensa uma única vez — usuário confirmou OK).  
 > **Wave:** WAVE 04 — UI / UX Foundation  
 > **Priority:** P0  
 > **Type:** Runtime / UI / Quest Log / Spoiler-safe Projection  

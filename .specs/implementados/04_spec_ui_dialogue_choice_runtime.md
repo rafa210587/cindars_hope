@@ -1,17 +1,18 @@
-# SPEC — UI HUD Main Gameplay Runtime
+# SPEC — UI Dialogue Choice Runtime
 
-> **Spec ID:** `04_spec_ui_hud_main_gameplay_runtime`  
-> **Status:** A implementar  
+> **Spec ID:** `04_spec_ui_dialogue_choice_runtime`  
+> **Status:** Implementado e ACCEPTED  
+> **Evidência:** Código presente — `Assets/_Game/Scripts/UI/Dialogue/DialogueModal.cs`, `DialogueStateViewModel.cs`, `Assets/_Game/Scripts/UI/Input/InputFocusModalRoutingModel.cs` (foco de diálogo bloqueando gameplay input). Play Mode humano PASS 2026-08-13 (fluxo 6 do playtest — diálogo com NPC: abre, bloqueia movimento, avança falas, encerra e devolve controle — usuário confirmou OK).  
 > **Revision:** EXPANDED_06_07  
 > **Wave:** WAVE 04 — UI / UX Foundation  
 > **Priority:** P0  
-> **Type:** Runtime / UI / HUD / Notifications / Context  
-> **Domain:** UI / HUD / Hotbar / Active Slots / Notifications / Context Prompts  
+> **Type:** Runtime / UI / Dialogue / Choice Modal / Input Focus  
+> **Domain:** UI / Dialogue / Choices / Quest Acceptance / Confirmations  
 > **Parallelizable:** NO  
 > **Parallel group:** WAVE_04_UI_LOCKED  
 > **Can run with:** N/A  
-> **Must not run with:** qualquer spec que altere UI input focus/modal, hotbar, active slots, player stats, hunger/stamina/cansaço, quest notifications, cave HUD ou debug HUD.  
-> **Repo lock scope:** `Assets/_Game/Scripts/UI/**`, `Assets/_Game/Scripts/Player/**`, `Assets/_Game/Scripts/Inventory/**`, `Assets/_Game/Scripts/Skills/**`, `Assets/_Game/Tests/EditMode/UI/**`, `docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md`  
+> **Must not run with:** qualquer spec que altere input focus/modal routing, quest triggers, NPC dialogue runtime, shop/service dialogue, player movement input ou confirmation modals.  
+> **Repo lock scope:** `Assets/_Game/Scripts/UI/**`, `Assets/_Game/Scripts/Dialogue/**`, `Assets/_Game/Scripts/Quests/**`, `Assets/_Game/Tests/EditMode/UI/**`, `docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md`  
 > **Depends on:**  
   - `docs/design/SPEC_SOURCE_MAP.md`
   - `docs/design/SPECIFICATION_PROCESS.md`
@@ -23,16 +24,15 @@
   - `docs/project/CURRENT_STATE.md`
   - `docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md`
   - `docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md`
-  - `docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md`
-  - `.specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md`
+  - `docs/design/gameplay/quests/QUEST_OBJECTIVE_EVENT_SYSTEM_DIRECTION.md`
+  - `.specs/a_implementar/04_spec_ui_input_focus_modal_routing_runtime.md`
 > **Blocks:**  
-  - inventory/hotbar UI;
-  - skill active slots UI;
-  - combat/cave HUD;
-  - notifications system;
-  - debug HUD separation.
-> **Scope:** auditar e consolidar HUD principal de gameplay com stats, hotbar, active slots, contextual prompts e notifications sem poluir a tela.  
-> **Out of scope:** layouts finais, art final, cave combat feedback completo, social/pet/companion UI completa, debug HUD global final, accessibility settings completas.
+  - quest dialogue triggers;
+  - NPC service dialogue;
+  - shop/service entry flow;
+  - confirmation modal patterns;
+> **Scope:** implementar/endurecer diálogo compacto com escolhas, foco modal, bloqueio de gameplay input e hooks seguros para aceitar quest/entregar item/iniciar serviço.  
+> **Out of scope:** conteúdo final de diálogos, retratos/art final, romance/social runtime, NPC schedules, quest content authoring completo, cutscenes/timelines.
 
 ---
 
@@ -40,37 +40,38 @@
 
 ## 1. Contexto
 
-O direction de UI/UX define HUD base: HP, MP quando relevante, Stamina, Fome, Cansaço, hotbar, 4 active slots, arma/ferramenta ativa, status negativos, buffs, companion/pet state quando relevante e quest/context prompt.
+O direction de UI/UX define que diálogo deve ocupar apenas o necessário, com retrato/sprite se disponível, nome do NPC, texto, opções e indicadores de quest/social quando relevantes. Também define que diálogo não deve deixar WASD mover o personagem e deve ser navegável por teclado/mouse e gamepad futuro.
 
-Também define que HUD não deve mostrar Breath/Fôlego/BR e não deve competir com a leitura da cena.
+Esta spec cria a base runtime de Dialogue Modal/Choice UI, dependente do input/focus modal routing.
 
 ---
 
 ## 2. Problema
 
-Sem contrato de HUD:
+Sem contrato de diálogo:
 
 ```text
-HUD pode ficar poluída;
-debug info pode vazar para HUD final;
-hotbar e active slots podem confundir ferramentas/skills;
-status e buffs podem ocupar área de combate;
-notifications podem bloquear input ou empilhar demais;
-quest prompt pode virar texto permanente demais.
+WASD pode mover o jogador durante fala;
+Interact pode ativar o mundo atrás do diálogo;
+opções podem disparar ação errada;
+aceitar quest/entregar item pode acontecer sem confirmação;
+diálogo pode ocupar tela inteira sem necessidade;
+serviço/shop pode abrir sem foco claro.
 ```
 
 ---
 
 ## 3. Objetivo
 
-Consolidar HUD principal:
+Garantir diálogo compacto e seguro:
 
 ```text
-permanent HUD: HP, Stamina, hotbar, active slots, active weapon/tool;
-contextual HUD: MP, fome/cansaço compactos, status/buffs, pet/companion state, quest/context prompt;
-notifications não bloqueiam input;
-debug HUD separado;
-HUD não cobre área central.
+DialogueFocus bloqueia gameplay input;
+opções têm foco navegável;
+choice action é explícita;
+quest acceptance/delivery/service hooks são separados;
+ações irreversíveis usam confirmação;
+layout não ocupa tela inteira sem necessidade.
 ```
 
 ## Source Map Compliance
@@ -90,7 +91,7 @@ HUD não cobre área central.
 
 - docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 - docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
-- docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
+- docs/design/gameplay/quests/QUEST_OBJECTIVE_EVENT_SYSTEM_DIRECTION.md
 
 ### Required interpretation
 
@@ -106,47 +107,45 @@ Ela transforma parte do refinement em contrato implementável com escopo, locks,
 
 ### Covered from directions
 
-- HUD base consolidada inclui HP, MP quando relevante, Stamina, Fome, Cansaço, hotbar, 4 active slots e arma/ferramenta ativa.
-- HUD não mostra Breath/Fôlego/BR.
-- Permanentes: HP, Stamina, hotbar, active slots, arma/ferramenta ativa.
-- Contextuais: MP, fome/cansaço compacto, companion/pet, status/buffs, quest/context prompt.
-- Notifications não devem bloquear input nem empilhar a ponto de cobrir gameplay.
-- Debug HUD é separado do HUD final.
+- Dialogue layout: retrato/sprite, nome NPC, fala, opções, indicadores de quest/social.
+- Diálogo não deve ocupar tela inteira sem necessidade.
+- Diálogo não deve deixar WASD mover personagem.
+- Escolhas indicam ação especial: aceitar quest, entregar item, comprar/vender, iniciar ritual/Fonte etc.
+- Escolhas irreversíveis/grandes exigem confirmação.
 
 ### Deferred / future from directions
 
-- Cave combat feedback completo.
-- Companion/pet UI final.
-- Accessibility settings completas.
-- Visual style final.
-- Gamepad navigation final.
+- Conteúdo final de diálogos.
+- Romance/social conversation trees.
+- Gamepad final.
+- Cutscenes/timelines.
+- Retratos/art final.
 
 ### Explicitly not redefined here
 
-- Player stat formulas.
-- Skill active slots logic.
-- Inventory/hotbar data model.
-- Quest runtime.
-- Combat damage/status logic.
+- Quest runtime content.
+- NPC schedule.
+- Shop economy.
+- Fonte progression.
+- Social relationship runtime.
 
 ## 4. Estado atual do repo
 
 ```text
-Audit report indica HUD/debug e UI 17B/17C-F parciais.
-GameplayInputRouter, toasts, hints, death screen e checkpoint menu podem já existir.
-Esta spec deve auditar antes de criar qualquer sistema novo.
+UI/dialogue podem existir parcialmente.
+Input/modal focus foundation será consolidado pela spec 04_spec_ui_input_focus_modal_routing_runtime.
+Esta spec deve auditar sistemas existentes antes de criar novos.
 ```
 
 A confirmar localmente:
 
 ```text
-HUDController;
-NotificationToastController;
-ContextHintController;
-HotbarUI;
-ActiveSlotsUI;
-DebugHUD;
-PlayerStats bindings.
+DialogueController;
+DialogueUI;
+DialogueChoiceView;
+Quest acceptance hooks;
+NPC/service interaction hooks;
+ModalManager/GameplayInputRouter.
 ```
 
 ---
@@ -154,10 +153,10 @@ PlayerStats bindings.
 ## 5. User stories
 
 ```text
-Como jogador, quero ler vida/stamina/hotbar rapidamente.
-Como jogador, quero notificação curta sem bloquear movimento.
-Como combat/farm player, quero HUD que não cubra área central.
-Como dev, quero debug separado da HUD final.
+Como jogador, quero ler fala e escolher opção sem mover o personagem.
+Como jogador, quero saber quando uma escolha aceita quest, entrega item ou abre loja.
+Como UI, quero foco claro na opção atual.
+Como quest system, quero hook explícito de choice, sem acoplamento visual.
 ```
 
 ---
@@ -165,13 +164,13 @@ Como dev, quero debug separado da HUD final.
 ## 6. Escopo
 
 ```text
-HUD base contract;
-permanent vs contextual sections;
-hotbar/active slots presentation;
-context prompt behavior;
-notification priority/stack limits;
-debug HUD separation;
-tests/validators when feasible.
+Dialogue modal state;
+choice list/focus;
+confirm/cancel behavior;
+special-action markers;
+quest/service hook contracts;
+compact layout rules;
+execution report.
 ```
 
 ---
@@ -179,12 +178,12 @@ tests/validators when feasible.
 ## 7. Fora de escopo
 
 ```text
-Cave combat HUD completo;
-all status icon art;
-pet/companion full UI;
-quest log full UI;
-accessibility settings complete;
-scene/prefab final layout.
+Dialogue content authoring;
+NPC schedules;
+romance/social logic;
+shop screen itself;
+cutscenes;
+voice/audio final.
 ```
 
 ---
@@ -192,23 +191,22 @@ scene/prefab final layout.
 ## 8. Regras de não duplicação
 
 ```text
-Não criar HUDController paralelo se já existir.
-Não misturar debug with final HUD.
-Não colocar Breath/Fôlego/BR.
-Não depender de HUD para lógica de gameplay.
-Não deixar notification bloquear input salvo confirmação crítica.
+Não criar input router paralelo.
+Não criar quest state dentro do diálogo.
+Não fazer dialogue UI aplicar reward diretamente.
+Não usar dialogue choice para burlar confirmation rules.
 ```
 
 ---
 
 ## 9. Critérios de aceite
 
-- HUD contract documentado/implementado.
-- Permanent/contextual sections claras.
-- Hotbar vs active slots separados.
-- Notifications têm stack/priority behavior.
-- Debug output marcado como debug.
-- Report lista PlayMode scenarios finais.
+- DialogueFocus bloqueia gameplay input.
+- Choice navigation funciona sem mundo receber input.
+- Special choices indicam ação.
+- Confirmation exigida para ações irreversíveis/custosas.
+- Quest/service hooks são contratos separados.
+- Report inclui cenário final humano deferido.
 
 ---
 
@@ -217,37 +215,31 @@ Não deixar notification bloquear input salvo confirmação crítica.
 ## 10. Arquitetura alvo
 
 ```text
-Assets/_Game/Scripts/UI/HUD/HudController.cs
-Assets/_Game/Scripts/UI/HUD/HudViewModel.cs
-Assets/_Game/Scripts/UI/HUD/NotificationToastController.cs
-Assets/_Game/Scripts/UI/HUD/ContextHintController.cs
-Assets/_Game/Scripts/UI/HUD/DebugHudGate.cs
-Assets/_Game/Tests/EditMode/UI/HudViewModelTests.cs
+Assets/_Game/Scripts/UI/Dialogue/DialogueModalController.cs
+Assets/_Game/Scripts/UI/Dialogue/DialogueChoiceViewModel.cs
+Assets/_Game/Scripts/UI/Dialogue/DialogueChoiceAction.cs
+Assets/_Game/Tests/EditMode/UI/DialogueChoiceRoutingTests.cs
 ```
 
-Se já existirem, consolidar.
+Consolidar existentes se houver.
 
 ---
 
 ## 11. Contratos
 
-### Data
-
-```text
-HUD consumes player/UI view model, not raw gameplay internals when possible.
-```
-
 ### Runtime
 
 ```text
-HUD is presentation only.
-Gameplay logic remains in gameplay systems.
+Dialogue modal requests DialogueFocus.
+Choices expose action type and payload.
+UI does not own quest/service state.
 ```
 
 ### Events
 
 ```text
-HUD subscribes to events with lifecycle/unsubscribe.
+Choice selected may publish/dispatch a domain command.
+Subscribers must unsubscribe if event-based.
 ```
 
 ### Save
@@ -256,24 +248,30 @@ HUD subscribes to events with lifecycle/unsubscribe.
 No save schema change.
 ```
 
+### UI
+
+```text
+Compact panel; focused option visible; cancel/back clear.
+```
+
 ---
 
 ## 12. Arquivos permitidos
 
 ```text
 Assets/_Game/Scripts/UI/**
+Assets/_Game/Scripts/Dialogue/**
 Assets/_Game/Tests/EditMode/UI/**
 Assets/_Game/Scripts/Editor/Validation/**
-docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md
+docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md
 ```
 
 Leitura permitida:
 
 ```text
-Assets/_Game/Scripts/Player/**
-Assets/_Game/Scripts/Inventory/**
-Assets/_Game/Scripts/Skills/**
-Assets/_Game/Scripts/Core/Events/**
+Assets/_Game/Scripts/Quests/**
+Assets/_Game/Scripts/NPC/**
+Assets/_Game/Scripts/City/**
 ```
 
 ---
@@ -298,11 +296,11 @@ PROJECT_LOG.md
 ## 14. Estratégia
 
 ```text
-1. Auditar HUD/toast/context/debug existentes.
-2. Consolidar contract/view model.
-3. Evitar scene/prefab changes.
-4. Add tests for view model/notification stack if feasible.
-5. Report PlayMode final scenarios.
+1. Auditar diálogo/UI/input existentes.
+2. Integrar com focus/modal foundation.
+3. Criar/ajustar choice view model e action contract.
+4. Criar tests para focus/confirm/cancel quando praticável.
+5. Criar report.
 ```
 
 ---
@@ -310,7 +308,7 @@ PROJECT_LOG.md
 ## 15. Ordem segura
 
 ```text
-Input focus foundation -> HUD main -> individual screens.
+Input focus -> Dialogue modal -> Quest/NPC service integration.
 ```
 
 ---
@@ -318,8 +316,8 @@ Input focus foundation -> HUD main -> individual screens.
 ## 16. Paralelização
 
 - Parallelizable: NO
-- Must not run with UI input focus or hotbar/skill/inventory specs.
-- Reason: HUD is shared presentation foundation.
+- Must not run with input focus modal, quest trigger or NPC dialogue runtime changes.
+- Reason: diálogo cruza input, UI, quest e serviços.
 
 ---
 
@@ -337,9 +335,9 @@ Does this persist Unity references? NO.
 ## 18. Impacto eventos
 
 ```text
-Adds events: SHOULD BE NO.
-Changes events: SHOULD BE NO.
-Requires unsubscribe pattern: YES if HUD subscribers touched.
+Adds events: CONDITIONAL for dialogue choice command if absent.
+Changes existing events: SHOULD BE NO.
+Requires unsubscribe pattern: YES if event subscribers touched.
 ```
 
 ---
@@ -347,8 +345,8 @@ Requires unsubscribe pattern: YES if HUD subscribers touched.
 ## 19. Impacto UI/Unity
 
 ```text
-Changes UI: YES HUD behavior/presentation code.
-Scenes/prefabs/assets: NO in this spec.
+Changes UI: YES dialogue behavior/view model.
+Changes scenes/prefabs/assets: NO.
 Requires PlayMode/final human scenario: YES, DEFERRED.
 ```
 
@@ -357,14 +355,11 @@ Requires PlayMode/final human scenario: YES, DEFERRED.
 ## 20. Riscos
 
 ```text
-Risco: HUD ficar dependente de debug.
-Mitigação: DebugHudGate.
+Risco: ação especial sem confirmação.
+Mitigação: action type + confirmation policy.
 
-Risco: HUD poluir tela.
-Mitigação: permanent/contextual separation.
-
-Risco: duplicate subscriptions.
-Mitigação: event lifecycle tests/audit.
+Risco: diálogo aplicar estado de domínio.
+Mitigação: UI dispatches command only.
 ```
 
 ---
@@ -372,7 +367,7 @@ Mitigação: event lifecycle tests/audit.
 ## 21. Rollback
 
 ```text
-Reverter HUD/view model/toast/hint changes/tests/report.
+Reverter dialogue modal/action/tests/report.
 ```
 
 ---
@@ -382,10 +377,10 @@ Reverter HUD/view model/toast/hint changes/tests/report.
 ## 22. Tasks
 
 - [ ] T001 — Ler fontes.
-- [ ] T002 — Auditar HUD/toast/context/debug existentes.
-- [ ] T003 — Consolidar permanent/contextual HUD contract.
+- [ ] T002 — Auditar diálogo e input existentes.
+- [ ] T003 — Consolidar DialogueFocus/choice action.
 - [ ] T004 — Implementar hardening mínimo.
-- [ ] T005 — Criar tests/validator.
+- [ ] T005 — Criar tests.
 - [ ] T006 — Rodar validações.
 - [ ] T007 — Criar report.
 
@@ -402,7 +397,7 @@ Reverter HUD/view model/toast/hint changes/tests/report.
 | Eventos | A spec cria/usa eventos ou subscriptions? | Mapa de publishers/subscribers e unsubscribe policy. | PARTIAL |
 | UI/Input | Há foco/modal/PlayMode relevante? | Cenário final deferido documentado. | BUILD_VALIDATED no máximo |
 | Testes | Há lógica determinística nova? | EditMode test ou justificativa NOT RUN. | PARTIAL |
-| Report | Execution report foi criado? | `docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md`. | PARTIAL |
+| Report | Execution report foi criado? | `docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md`. | PARTIAL |
 
 ---
 
@@ -411,7 +406,7 @@ Reverter HUD/view model/toast/hint changes/tests/report.
 Antes de alterar qualquer arquivo, Claude Code/Codex deve rodar e registrar no execution report:
 
 ```bash
-rg -n "HudController|HudViewModel|NotificationToast|ContextHint|Hotbar|ActiveSlot|PlayerStats|DebugHud|HP|Stamina|Hunger|Fatigue|Mana" Assets/_Game/Scripts docs/design .specs
+rg -n "Dialogue|DialogueChoice|ChoiceAction|DialogueFocus|QuestAccept|QuestTurnIn|Service|Confirmation|NPC" Assets/_Game/Scripts docs/design .specs
 rg -n "TODO|FIXME|HACK|PARTIAL|DEFERRED|BUILD_VALIDATED|ACCEPTED" .specs docs/validation docs/IMPLEMENTATION_STATUS.md docs/project/CURRENT_STATE.md
 ```
 
@@ -441,7 +436,7 @@ CONFLICT
 ### Scenario 1 — Happy path
 
 ```text
-Given o sistema base relacionado a main gameplay HUD existe ou foi criado de forma mínima
+Given o sistema base relacionado a dialogue choice UI existe ou foi criado de forma mínima
 When o usuário/sistema executa o fluxo principal desta spec
 Then o estado visível/resultado segue o direction canônico
 And nenhum sistema paralelo é criado
@@ -483,14 +478,14 @@ And o status máximo respeita SPEC_VALIDATION_MATRIX_MASTER.md.
 
 A execução deve cobrir ou registrar risco residual para:
 
-- Debug data visible in final HUD.
-- Breath/Fôlego/BR appearing anywhere.
-- Toast stack covering central gameplay.
-- Quest prompt permanent enough to obscure farm/cave view.
-- HUD logic mutating player stats.
-- HUD subscriptions not unsubscribed.
-- Active slot UI mixed with equipment slot UI.
-- Context hint not clearing after target disappears.
+- Choice selecionada dispara ação irreversível sem confirmação.
+- Dialogue UI aplica reward diretamente.
+- WASD move durante fala.
+- Interact confirma choice e interage com mundo simultaneamente.
+- Choice de quest não respeita visibility/spoiler.
+- Choice de serviço abre shop sem trocar focus.
+- Cancel/back perde estado de diálogo sem política clara.
+- Quest turn-in aceita item errado ou parcial sem feedback.
 
 ---
 
@@ -499,7 +494,7 @@ A execução deve cobrir ou registrar risco residual para:
 O execution report desta spec deve conter, no mínimo:
 
 ```md
-# Execution Report — UI HUD Main Gameplay Runtime
+# Execution Report — UI Dialogue Choice Runtime
 
 ## Summary
 - Spec:
@@ -569,40 +564,30 @@ Parar a execução e registrar `BLOCKED` se ocorrer qualquer um destes casos:
 ```
 
 
-## 23G. HUD Visibility Matrix
+## 23G. Dialogue Choice Action Matrix
 
-| Elemento | Permanente | Contextual | Proibido/Observação |
-|---|---:|---:|---|
-| HP | YES | NO | Sempre legível. |
-| Stamina | YES | NO | Ações físicas dependem disso. |
-| Hotbar | YES | NO | Consumíveis/ferramentas conforme design. |
-| 4 Active Skill Slots | YES | NO | Separados de equipamento. |
-| Arma/Ferramenta ativa | YES | NO | Pode ser compacto. |
-| MP | NO | YES | Mostrar quando magia/MP relevante. |
-| Fome/Cansaço | NO | YES | Compacto; não poluir. |
-| Buffs/Debuffs | NO | YES | Ícones/tempo quando ativo. |
-| Quest/context prompt | NO | YES | Deve expirar/ocultar. |
-| Companion/Pet | NO | YES/FUTURE | Somente quando relevante. |
-| Debug IDs/state | NO | NO | Debug HUD separado. |
-| Breath/Fôlego/BR | NO | NO | Removido do design. |
+| ActionType | Exige confirmação | Domain owner | Observação |
+|---|---:|---|---|
+| Continue | NO | Dialogue | Avança fala. |
+| Close | NO | Dialogue/UI | Fecha e restaura foco. |
+| AcceptQuest | SHOULD | Quest | Mostrar nome/resumo sem spoiler. |
+| TurnInQuestItem | YES | Quest/Inventory | Validar item/quantidade. |
+| OpenShop | NO | Shop/UI | Troca para ShopFocus. |
+| StartService | CONDITIONAL | Service/NPC | Custo/risco exige confirmação. |
+| SpendGold | YES | Economy | Mostrar custo total. |
+| UseFonte | YES | Fonte/Future | Evitar spoiler. |
+| MajorChoice | YES | Quest/MainProgression | Registrar escolha e irreversibilidade. |
 
-## 23H. Notification Priority
+## 23H. Dialogue Layout Requirements
 
 ```text
-CRITICAL
-  Confirmação/risco real; pode exigir modal separado.
-
-IMPORTANT
-  Quest updated, rare item, level up, danger.
-
-NORMAL
-  Item gained, crop ready, shop restock.
-
-LOW
-  Flavor/minor info; pode agrupar ou descartar se fila cheia.
+Nome do NPC visível.
+Texto atual legível.
+Opção focada destacada.
+Ações especiais marcadas com ícone/texto curto.
+Botão de back/cancel previsível.
+Sem bloquear toda tela salvo evento especial.
 ```
-
-Regra: notification não deve bloquear input salvo se for modal de confirmação explícita.
 
 ## 25. Validações obrigatórias
 
@@ -615,7 +600,7 @@ Docs:
 Busca local mínima:
 
 ```bash
-rg -n "Quest|Objective|Condition|Trigger|Reward|Flag|Softlock|Debug|InputFocus|Modal|HUD|Notification" Assets/_Game/Scripts docs/design .specs
+rg -n "Dialogue|Inventory|Equipment|Tooltip|Shop|Buy|Sell|Modal|Focus|Confirm|ItemDetail|Compare|Stock|Price" Assets/_Game/Scripts docs/design .specs
 ```
 
 C# runtime/editor quando houver alteração C#:
@@ -649,12 +634,12 @@ Quando houver cenário integrado, registrar em execution report e vincular a doc
 
 ## 26. Testing Quality Gate
 
-- Changed deterministic logic: YES if HUD view model/notification stack logic is changed.
-- Requires EditMode tests: YES for view model/notification rules when harness available.
-- Requires PlayMode automated or final human scenario: YES, DEFERRED for HUD readability and no-debug final presentation scenario.
-- Requires regression test: YES if fixing known HUD/debug/notification bug; otherwise NO.
+- Changed deterministic logic: YES if choice routing/confirmation logic changes.
+- Requires EditMode tests: YES for view model/choice action logic.
+- Requires PlayMode automated or final human scenario: YES, DEFERRED for dialogue blocking player movement and choice selection flow.
+- Requires regression test: YES if fixing known WASD/dialogue input leak; otherwise NO.
 - Human validation timing: DEFERRED_TO_FINAL_VALIDATION se houver cenário integrado; caso contrário NOT REQUIRED.
-- Minimum validation evidence for ACCEPTED: docs validation PASS; C# build PASS if C# changed; EditMode tests PASS or NOT RUN justified; final PlayMode scenario documented; no debug leakage.
+- Minimum validation evidence for ACCEPTED: docs validation PASS; C# build PASS if C# changed; EditMode tests PASS or NOT RUN justified; PlayMode scenario documented; no domain state hidden in UI.
 
 ---
 
@@ -663,7 +648,7 @@ Quando houver cenário integrado, registrar em execution report e vincular a doc
 ```text
 Spec executada sem alterar arquivos proibidos.
 Contratos/data/runtime implementados apenas dentro do escopo.
-Execution report criado em docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md.
+Execution report criado em docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md.
 Fonte/direction coverage preservado.
 Validações obrigatórias PASS ou NOT RUN com motivo, impacto e mitigação.
 Sem promoção indevida para ACCEPTED apenas por compile.
@@ -677,10 +662,10 @@ Sem promoção indevida para ACCEPTED apenas por compile.
 Não duplicar sistemas canônicos existentes.
 Não quebrar save/load.
 Não usar UI como fonte de verdade.
-Não revelar spoilers antes de discovery/visibility policy.
 Não pedir human test por spec.
 Não executar runtime em massa antes da 01Q ou exceção humana explícita.
 Não alterar SPEC_EXECUTION_ORDER.md.
+Não alterar scenes/prefabs/assets nesta spec.
 ```
 
 ---

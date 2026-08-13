@@ -103,6 +103,20 @@
 
 Para rastreabilidade completa entre `docs_old/` e a documentacao ativa, ver `docs/DOCS_OLD_TO_ACTIVE_CROSSWALK.md`.
 
+## Playtest humano 2026-08-13 — baixa de specs PLAYTEST_ONLY
+
+Usuário executou o playtest humano completo (`docs/validation/playmode/PLAYTEST_SIMPLES.md`, 11 fluxos) e confirmou "tudo funcionando bem". As specs abaixo tinham escopo coberto integralmente por um dos 11 fluxos e código já verificado no disco; baixadas com evidência de Play Mode humano.
+
+| Spec | Status | Evidência |
+|---|---|---|
+| [spec_bugfix_inventory_move_merge_ui_v1.md](implementados/spec_bugfix_inventory_move_merge_ui_v1.md) | Implementado e ACCEPTED | `InventoryManager.TryMoveOrMergeSlot` + `InventoryPanelController`; fluxo 4 (Inventário) PASS |
+| [spec_playtest_complete_loadout_and_guide_v1.md](implementados/spec_playtest_complete_loadout_and_guide_v1.md) | Implementado e ACCEPTED | `DebugLoadoutProvisioner` com IDs canônicos + `READY FOR PLAYTEST`; `PLAYTEST_SIMPLES.md` é o guia produzido; setup + 11 fluxos PASS |
+| [spec_farm_till_anywhere_tilemap.md](implementados/spec_farm_till_anywhere_tilemap.md) | Implementado e ACCEPTED | `FarmTileGrid`/`FarmTilledSoilService`/`FarmNonArableZones`/`FarmTilesSectionProvider`; fluxo 1 (Fazenda) PASS |
+| [04_spec_ui_dialogue_choice_runtime.md](implementados/04_spec_ui_dialogue_choice_runtime.md) | Implementado e ACCEPTED | `DialogueModal`/`DialogueStateViewModel`/`InputFocusModalRoutingModel`; fluxo 6 (Diálogo) PASS |
+| [04_spec_ui_hud_main_gameplay_runtime.md](implementados/04_spec_ui_hud_main_gameplay_runtime.md) | Implementado e ACCEPTED | `HUDGameplayViewModel`/`HudVisibilityController`/`ContextHintController`; HUD visível/funcional nos 11 fluxos |
+| [04_spec_ui_quest_log_screen_runtime.md](implementados/04_spec_ui_quest_log_screen_runtime.md) | Implementado e ACCEPTED | `QuestLogPanelController`/`QuestLogRuntimeBinder`/`QuestLogSpoilerProjection`; fluxo 7 (Quest) PASS |
+| [04_spec_ui_shop_buy_sell_runtime.md](implementados/04_spec_ui_shop_buy_sell_runtime.md) | Implementado e ACCEPTED | `ShopMenuModal`/`ShopMenuViewModel`/`ShopTransactionViewModel`; fluxo 3 (Loja do Pip) PASS |
+
 ## Overnight 2026-05-23
 
 A execucao overnight foi reclassificada como parcial. Backend/data skeleton estabilizado e hotfixes pos-merge foram preservados, mas FASE9H/I/J/K/L nao devem ser tratadas como completas.

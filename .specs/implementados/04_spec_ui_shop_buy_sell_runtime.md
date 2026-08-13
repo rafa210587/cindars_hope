@@ -1,17 +1,18 @@
-# SPEC — UI Dialogue Choice Runtime
+# SPEC — UI Shop Buy Sell Runtime
 
-> **Spec ID:** `04_spec_ui_dialogue_choice_runtime`  
-> **Status:** A implementar  
+> **Spec ID:** `04_spec_ui_shop_buy_sell_runtime`  
+> **Status:** Implementado e ACCEPTED  
+> **Evidência:** Código presente — `Assets/_Game/Scripts/UI/Shop/ShopMenuModal.cs`, `ShopMenuViewModel.cs`, `ShopTransactionViewModel.cs`, `ShopPanelLayoutUtility.cs`. Play Mode humano PASS 2026-08-13 (fluxo 3 do playtest — Loja do Pip: abre sem `_playerManager null`, compra e venda atualizam ouro/item uma única vez, relógio pausado durante a loja — usuário confirmou OK).  
 > **Revision:** EXPANDED_06_07  
 > **Wave:** WAVE 04 — UI / UX Foundation  
 > **Priority:** P0  
-> **Type:** Runtime / UI / Dialogue / Choice Modal / Input Focus  
-> **Domain:** UI / Dialogue / Choices / Quest Acceptance / Confirmations  
+> **Type:** Runtime / UI / Shop / Buy Sell / Economy Projection  
+> **Domain:** UI / Shop / Buy / Sell / Stock / Pricing / Empty States  
 > **Parallelizable:** NO  
 > **Parallel group:** WAVE_04_UI_LOCKED  
 > **Can run with:** N/A  
-> **Must not run with:** qualquer spec que altere input focus/modal routing, quest triggers, NPC dialogue runtime, shop/service dialogue, player movement input ou confirmation modals.  
-> **Repo lock scope:** `Assets/_Game/Scripts/UI/**`, `Assets/_Game/Scripts/Dialogue/**`, `Assets/_Game/Scripts/Quests/**`, `Assets/_Game/Tests/EditMode/UI/**`, `docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md`  
+> **Must not run with:** qualquer spec que altere shop/economy backend, inventory sell projection, item pricing, stock refresh, unique/limited stock or modal focus.  
+> **Repo lock scope:** `Assets/_Game/Scripts/UI/**`, `Assets/_Game/Scripts/Economy/**`, `Assets/_Game/Scripts/Inventory/**`, `Assets/_Game/Tests/EditMode/UI/**`, `docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md`  
 > **Depends on:**  
   - `docs/design/SPEC_SOURCE_MAP.md`
   - `docs/design/SPECIFICATION_PROCESS.md`
@@ -23,15 +24,16 @@
   - `docs/project/CURRENT_STATE.md`
   - `docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md`
   - `docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md`
-  - `docs/design/gameplay/quests/QUEST_OBJECTIVE_EVENT_SYSTEM_DIRECTION.md`
-  - `.specs/a_implementar/04_spec_ui_input_focus_modal_routing_runtime.md`
+  - `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md`
+  - `docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md`
+  - `.specs/a_implementar/04_spec_ui_inventory_items_tooltips_runtime.md`
 > **Blocks:**  
-  - quest dialogue triggers;
-  - NPC service dialogue;
-  - shop/service entry flow;
-  - confirmation modal patterns;
-> **Scope:** implementar/endurecer diálogo compacto com escolhas, foco modal, bloqueio de gameplay input e hooks seguros para aceitar quest/entregar item/iniciar serviço.  
-> **Out of scope:** conteúdo final de diálogos, retratos/art final, romance/social runtime, NPC schedules, quest content authoring completo, cutscenes/timelines.
+  - shop/economy backend;
+  - inventory sell projection;
+  - pricing/restock runtime;
+  - limited/unique stock validation;
+> **Scope:** consolidar Shop Buy/Sell UI para separar estoque da loja e inventário do jogador, com preço/quantidade/empty states e proteções anti-erro.  
+> **Out of scope:** economy formulas final, stock refresh backend, shop content, NPC services, scene/prefab final layout, balance.
 
 ---
 
@@ -39,38 +41,39 @@
 
 ## 1. Contexto
 
-O direction de UI/UX define que diálogo deve ocupar apenas o necessário, com retrato/sprite se disponível, nome do NPC, texto, opções e indicadores de quest/social quando relevantes. Também define que diálogo não deve deixar WASD mover o personagem e deve ser navegável por teclado/mouse e gamepad futuro.
+O direction de UI/UX aponta problemas reais: vendedores não mostram itens para vender e, ao selecionar vender, inventário do jogador não aparece corretamente.
 
-Esta spec cria a base runtime de Dialogue Modal/Choice UI, dependente do input/focus modal routing.
+O menu flow define layout obrigatório de Shop Buy/Sell: header com loja/NPC, gold, modo; Buy com estoque da loja; Sell com inventário vendável do jogador; preço unitário, quantidade, total, estoque e empty states.
 
 ---
 
 ## 2. Problema
 
-Sem contrato de diálogo:
+Sem Shop UI contract:
 
 ```text
-WASD pode mover o jogador durante fala;
-Interact pode ativar o mundo atrás do diálogo;
-opções podem disparar ação errada;
-aceitar quest/entregar item pode acontecer sem confirmação;
-diálogo pode ocupar tela inteira sem necessidade;
-serviço/shop pode abrir sem foco claro.
+Sell pode mostrar estoque da loja em vez do inventário do jogador;
+loja vazia pode parecer bug;
+item quest/key pode ser vendido;
+stock limited/unique pode não ficar claro;
+preço pode usar valor persistido errado;
+compra/venda pode permitir arbitragem visualmente opaca.
 ```
 
 ---
 
 ## 3. Objetivo
 
-Garantir diálogo compacto e seguro:
+Consolidar Shop Buy/Sell UI:
 
 ```text
-DialogueFocus bloqueia gameplay input;
-opções têm foco navegável;
-choice action é explícita;
-quest acceptance/delivery/service hooks são separados;
-ações irreversíveis usam confirmação;
-layout não ocupa tela inteira sem necessidade.
+Buy tab mostra shop stock.
+Sell tab mostra player sellable inventory.
+Empty states explícitos.
+Preço unitário/total/quantidade claros.
+LimitedStock/UniqueStock visíveis.
+Quest/key/equipped/favorite blocked.
+Preço vem do economy service.
 ```
 
 ## Source Map Compliance
@@ -90,7 +93,8 @@ layout não ocupa tela inteira sem necessidade.
 
 - docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 - docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
-- docs/design/gameplay/quests/QUEST_OBJECTIVE_EVENT_SYSTEM_DIRECTION.md
+- docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
+- docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
 
 ### Required interpretation
 
@@ -106,45 +110,46 @@ Ela transforma parte do refinement em contrato implementável com escopo, locks,
 
 ### Covered from directions
 
-- Dialogue layout: retrato/sprite, nome NPC, fala, opções, indicadores de quest/social.
-- Diálogo não deve ocupar tela inteira sem necessidade.
-- Diálogo não deve deixar WASD mover personagem.
-- Escolhas indicam ação especial: aceitar quest, entregar item, comprar/vender, iniciar ritual/Fonte etc.
-- Escolhas irreversíveis/grandes exigem confirmação.
+- Shop UI separa Buy, Sell, Shop Inventory, Player Inventory, Gold, Preço unitário, Quantidade, Total, Estoque e Restock/Limited/Unique.
+- Buy mostra estoque da loja; Sell mostra inventário vendável do jogador.
+- Empty states: loja sem itens, jogador sem itens vendáveis, vendedor não compra categoria, estoque esgotado.
+- UniqueStock vendido não reaparece; LimitedStock respeita counter.
+- Preço de venda vem da economia, não de preço final persistido.
+- Nenhuma spec deve permitir loop infinito de comprar barato e vender caro sem limite.
 
 ### Deferred / future from directions
 
-- Conteúdo final de diálogos.
-- Romance/social conversation trees.
-- Gamepad final.
-- Cutscenes/timelines.
-- Retratos/art final.
+- Shop backend formulas final.
+- Full stock refresh implementation.
+- NPC service roster.
+- Balance de economia.
+- Visual prefab final.
 
 ### Explicitly not redefined here
 
-- Quest runtime content.
-- NPC schedule.
-- Shop economy.
-- Fonte progression.
-- Social relationship runtime.
+- Economy pricing service.
+- Inventory backend.
+- Item data schema.
+- NPC schedules.
+- Shop content.
 
 ## 4. Estado atual do repo
 
 ```text
-UI/dialogue podem existir parcialmente.
-Input/modal focus foundation será consolidado pela spec 04_spec_ui_input_focus_modal_routing_runtime.
-Esta spec deve auditar sistemas existentes antes de criar novos.
+Audit report indica shop/economy completos ou parciais e UI shop/sell bundle existente.
+Esta spec deve auditar e harden, não recriar shop backend.
 ```
 
 A confirmar localmente:
 
 ```text
-DialogueController;
-DialogueUI;
-DialogueChoiceView;
-Quest acceptance hooks;
-NPC/service interaction hooks;
-ModalManager/GameplayInputRouter.
+ShopManager;
+ShopUI;
+Sell tab;
+player inventory projection;
+stock state;
+price service;
+empty states.
 ```
 
 ---
@@ -152,10 +157,11 @@ ModalManager/GameplayInputRouter.
 ## 5. User stories
 
 ```text
-Como jogador, quero ler fala e escolher opção sem mover o personagem.
-Como jogador, quero saber quando uma escolha aceita quest, entrega item ou abre loja.
-Como UI, quero foco claro na opção atual.
-Como quest system, quero hook explícito de choice, sem acoplamento visual.
+Como jogador, quero comprar vendo estoque da loja.
+Como jogador, quero vender vendo meu inventário vendável.
+Como jogador, quero entender por que não posso vender um item.
+Como jogador, quero ver total antes de confirmar.
+Como dev, quero impedir UI que permita arbitragem invisível.
 ```
 
 ---
@@ -163,13 +169,13 @@ Como quest system, quero hook explícito de choice, sem acoplamento visual.
 ## 6. Escopo
 
 ```text
-Dialogue modal state;
-choice list/focus;
-confirm/cancel behavior;
-special-action markers;
-quest/service hook contracts;
-compact layout rules;
-execution report.
+Buy/Sell tab projection;
+shop/player inventory separation;
+empty states;
+quantity/price/total display;
+limited/unique stock display;
+non-sellable protection;
+tests/validators.
 ```
 
 ---
@@ -177,12 +183,12 @@ execution report.
 ## 7. Fora de escopo
 
 ```text
-Dialogue content authoring;
-NPC schedules;
-romance/social logic;
-shop screen itself;
-cutscenes;
-voice/audio final.
+economy backend rewrite;
+pricing formulas final;
+stock refresh backend;
+shop content authoring;
+NPC service routing;
+scene/prefab final.
 ```
 
 ---
@@ -190,22 +196,23 @@ voice/audio final.
 ## 8. Regras de não duplicação
 
 ```text
-Não criar input router paralelo.
-Não criar quest state dentro do diálogo.
-Não fazer dialogue UI aplicar reward diretamente.
-Não usar dialogue choice para burlar confirmation rules.
+Não criar ShopManager paralelo.
+Não duplicar pricing rules in UI.
+Não usar shop stock como sell inventory.
+Não vender Quest/Key item por UI.
+Não permitir buy/sell loop sem stock/time limit.
 ```
 
 ---
 
 ## 9. Critérios de aceite
 
-- DialogueFocus bloqueia gameplay input.
-- Choice navigation funciona sem mundo receber input.
-- Special choices indicam ação.
-- Confirmation exigida para ações irreversíveis/custosas.
-- Quest/service hooks são contratos separados.
-- Report inclui cenário final humano deferido.
+- Buy and Sell use correct data sources.
+- Empty states explicit.
+- Prices/quantity/total visible.
+- Non-sellable/equipped/favorite protections.
+- Limited/Unique stock state shown.
+- Report includes PlayMode scenario.
 
 ---
 
@@ -214,31 +221,27 @@ Não usar dialogue choice para burlar confirmation rules.
 ## 10. Arquitetura alvo
 
 ```text
-Assets/_Game/Scripts/UI/Dialogue/DialogueModalController.cs
-Assets/_Game/Scripts/UI/Dialogue/DialogueChoiceViewModel.cs
-Assets/_Game/Scripts/UI/Dialogue/DialogueChoiceAction.cs
-Assets/_Game/Tests/EditMode/UI/DialogueChoiceRoutingTests.cs
+Assets/_Game/Scripts/UI/Shop/ShopScreenController.cs
+Assets/_Game/Scripts/UI/Shop/ShopBuySellViewModel.cs
+Assets/_Game/Scripts/UI/Shop/ShopLineItemViewModel.cs
+Assets/_Game/Tests/EditMode/UI/ShopBuySellViewModelTests.cs
 ```
-
-Consolidar existentes se houver.
 
 ---
 
 ## 11. Contratos
 
+### Data
+
+```text
+Buy projection comes from shop stock.
+Sell projection comes from player inventory filtered by shop/economy rules.
+```
+
 ### Runtime
 
 ```text
-Dialogue modal requests DialogueFocus.
-Choices expose action type and payload.
-UI does not own quest/service state.
-```
-
-### Events
-
-```text
-Choice selected may publish/dispatch a domain command.
-Subscribers must unsubscribe if event-based.
+UI dispatches buy/sell commands; backend owns transaction.
 ```
 
 ### Save
@@ -250,7 +253,7 @@ No save schema change.
 ### UI
 
 ```text
-Compact panel; focused option visible; cancel/back clear.
+Empty states and stock states are explicit.
 ```
 
 ---
@@ -259,18 +262,17 @@ Compact panel; focused option visible; cancel/back clear.
 
 ```text
 Assets/_Game/Scripts/UI/**
-Assets/_Game/Scripts/Dialogue/**
 Assets/_Game/Tests/EditMode/UI/**
 Assets/_Game/Scripts/Editor/Validation/**
-docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md
+docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md
 ```
 
 Leitura permitida:
 
 ```text
-Assets/_Game/Scripts/Quests/**
-Assets/_Game/Scripts/NPC/**
-Assets/_Game/Scripts/City/**
+Assets/_Game/Scripts/Economy/**
+Assets/_Game/Scripts/Inventory/**
+Assets/_Game/Scripts/Items/**
 ```
 
 ---
@@ -295,11 +297,11 @@ PROJECT_LOG.md
 ## 14. Estratégia
 
 ```text
-1. Auditar diálogo/UI/input existentes.
-2. Integrar com focus/modal foundation.
-3. Criar/ajustar choice view model e action contract.
-4. Criar tests para focus/confirm/cancel quando praticável.
-5. Criar report.
+1. Auditar shop UI/economy/inventory.
+2. Consolidar view model.
+3. Add protections/empty states.
+4. Add tests for buy/sell data source and non-sellable filtering.
+5. Report final PlayMode scenarios.
 ```
 
 ---
@@ -307,7 +309,7 @@ PROJECT_LOG.md
 ## 15. Ordem segura
 
 ```text
-Input focus -> Dialogue modal -> Quest/NPC service integration.
+Input focus -> Inventory projection -> Shop Buy/Sell UI -> economy backend future hardening.
 ```
 
 ---
@@ -315,8 +317,8 @@ Input focus -> Dialogue modal -> Quest/NPC service integration.
 ## 16. Paralelização
 
 - Parallelizable: NO
-- Must not run with input focus modal, quest trigger or NPC dialogue runtime changes.
-- Reason: diálogo cruza input, UI, quest e serviços.
+- Must not run with inventory UI, shop/economy backend or stock refresh changes.
+- Reason: shared pricing/stock/inventory projections.
 
 ---
 
@@ -334,9 +336,9 @@ Does this persist Unity references? NO.
 ## 18. Impacto eventos
 
 ```text
-Adds events: CONDITIONAL for dialogue choice command if absent.
-Changes existing events: SHOULD BE NO.
-Requires unsubscribe pattern: YES if event subscribers touched.
+Adds events: SHOULD BE NO.
+Changes events: SHOULD BE NO.
+Requires unsubscribe pattern: YES if UI subscribers touched.
 ```
 
 ---
@@ -344,8 +346,8 @@ Requires unsubscribe pattern: YES if event subscribers touched.
 ## 19. Impacto UI/Unity
 
 ```text
-Changes UI: YES dialogue behavior/view model.
-Changes scenes/prefabs/assets: NO.
+Changes UI: YES view model/behavior.
+Scenes/prefabs/assets: NO.
 Requires PlayMode/final human scenario: YES, DEFERRED.
 ```
 
@@ -354,11 +356,14 @@ Requires PlayMode/final human scenario: YES, DEFERRED.
 ## 20. Riscos
 
 ```text
-Risco: ação especial sem confirmação.
-Mitigação: action type + confirmation policy.
+Risco: sell tab mostrar dados errados.
+Mitigação: tests de source.
 
-Risco: diálogo aplicar estado de domínio.
-Mitigação: UI dispatches command only.
+Risco: price drift.
+Mitigação: UI calls economy service.
+
+Risco: non-sellable vendido.
+Mitigação: filter/protection tests.
 ```
 
 ---
@@ -366,7 +371,7 @@ Mitigação: UI dispatches command only.
 ## 21. Rollback
 
 ```text
-Reverter dialogue modal/action/tests/report.
+Reverter shop UI/view model/tests/report.
 ```
 
 ---
@@ -376,9 +381,9 @@ Reverter dialogue modal/action/tests/report.
 ## 22. Tasks
 
 - [ ] T001 — Ler fontes.
-- [ ] T002 — Auditar diálogo e input existentes.
-- [ ] T003 — Consolidar DialogueFocus/choice action.
-- [ ] T004 — Implementar hardening mínimo.
+- [ ] T002 — Auditar shop/economy/inventory UI.
+- [ ] T003 — Consolidar Buy/Sell projections.
+- [ ] T004 — Implementar empty states/protections.
 - [ ] T005 — Criar tests.
 - [ ] T006 — Rodar validações.
 - [ ] T007 — Criar report.
@@ -396,7 +401,7 @@ Reverter dialogue modal/action/tests/report.
 | Eventos | A spec cria/usa eventos ou subscriptions? | Mapa de publishers/subscribers e unsubscribe policy. | PARTIAL |
 | UI/Input | Há foco/modal/PlayMode relevante? | Cenário final deferido documentado. | BUILD_VALIDATED no máximo |
 | Testes | Há lógica determinística nova? | EditMode test ou justificativa NOT RUN. | PARTIAL |
-| Report | Execution report foi criado? | `docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md`. | PARTIAL |
+| Report | Execution report foi criado? | `docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md`. | PARTIAL |
 
 ---
 
@@ -405,7 +410,7 @@ Reverter dialogue modal/action/tests/report.
 Antes de alterar qualquer arquivo, Claude Code/Codex deve rodar e registrar no execution report:
 
 ```bash
-rg -n "Dialogue|DialogueChoice|ChoiceAction|DialogueFocus|QuestAccept|QuestTurnIn|Service|Confirmation|NPC" Assets/_Game/Scripts docs/design .specs
+rg -n "Shop|Buy|Sell|Stock|LimitedStock|UniqueStock|Price|Gold|Sellable|CanSell|ShopInventory|PlayerInventory|EmptyState" Assets/_Game/Scripts docs/design .specs
 rg -n "TODO|FIXME|HACK|PARTIAL|DEFERRED|BUILD_VALIDATED|ACCEPTED" .specs docs/validation docs/IMPLEMENTATION_STATUS.md docs/project/CURRENT_STATE.md
 ```
 
@@ -435,7 +440,7 @@ CONFLICT
 ### Scenario 1 — Happy path
 
 ```text
-Given o sistema base relacionado a dialogue choice UI existe ou foi criado de forma mínima
+Given o sistema base relacionado a shop buy/sell UI existe ou foi criado de forma mínima
 When o usuário/sistema executa o fluxo principal desta spec
 Then o estado visível/resultado segue o direction canônico
 And nenhum sistema paralelo é criado
@@ -477,14 +482,14 @@ And o status máximo respeita SPEC_VALIDATION_MATRIX_MASTER.md.
 
 A execução deve cobrir ou registrar risco residual para:
 
-- Choice selecionada dispara ação irreversível sem confirmação.
-- Dialogue UI aplica reward diretamente.
-- WASD move durante fala.
-- Interact confirma choice e interage com mundo simultaneamente.
-- Choice de quest não respeita visibility/spoiler.
-- Choice de serviço abre shop sem trocar focus.
-- Cancel/back perde estado de diálogo sem política clara.
-- Quest turn-in aceita item errado ou parcial sem feedback.
+- Sell tab mostrando estoque da loja em vez do inventário do jogador.
+- Buy tab mostrando inventário do jogador.
+- Quest/Key item vendável.
+- Preço UI divergente do economy service.
+- LimitedStock/UniqueStock sem indicação.
+- Total de compra/venda incorreto ao mudar quantidade.
+- Loja vazia sem empty state.
+- Compra/venda processada com gold insuficiente ou estoque zero.
 
 ---
 
@@ -493,7 +498,7 @@ A execução deve cobrir ou registrar risco residual para:
 O execution report desta spec deve conter, no mínimo:
 
 ```md
-# Execution Report — UI Dialogue Choice Runtime
+# Execution Report — UI Shop Buy Sell Runtime
 
 ## Summary
 - Spec:
@@ -563,29 +568,35 @@ Parar a execução e registrar `BLOCKED` se ocorrer qualquer um destes casos:
 ```
 
 
-## 23G. Dialogue Choice Action Matrix
+## 23G. Buy/Sell Projection Contract
 
-| ActionType | Exige confirmação | Domain owner | Observação |
-|---|---:|---|---|
-| Continue | NO | Dialogue | Avança fala. |
-| Close | NO | Dialogue/UI | Fecha e restaura foco. |
-| AcceptQuest | SHOULD | Quest | Mostrar nome/resumo sem spoiler. |
-| TurnInQuestItem | YES | Quest/Inventory | Validar item/quantidade. |
-| OpenShop | NO | Shop/UI | Troca para ShopFocus. |
-| StartService | CONDITIONAL | Service/NPC | Custo/risco exige confirmação. |
-| SpendGold | YES | Economy | Mostrar custo total. |
-| UseFonte | YES | Fonte/Future | Evitar spoiler. |
-| MajorChoice | YES | Quest/MainProgression | Registrar escolha e irreversibilidade. |
+| Aba | Fonte de dados | Filtro | Ação |
+|---|---|---|---|
+| Buy | Shop stock | Available stock, known service, unlocks | Buy command |
+| Sell | Player inventory | CanSell + shop accepts category + not protected | Sell command |
+| Buy empty | Shop stock vazio/esgotado | N/A | Empty state |
+| Sell empty | Player sem item vendável | N/A | Empty state |
+| LimitedStock | Shop stock state | Count > 0 | Mostrar quantidade |
+| UniqueStock | Shop unique state | Not purchased | Mostrar único/esgotado |
 
-## 23H. Dialogue Layout Requirements
+## 23H. Price Display Requirements
 
 ```text
-Nome do NPC visível.
-Texto atual legível.
-Opção focada destacada.
-Ações especiais marcadas com ícone/texto curto.
-Botão de back/cancel previsível.
-Sem bloquear toda tela salvo evento especial.
+Unit price.
+Quantity selected.
+Total price.
+Player gold after transaction preview.
+Reason disabled: no gold, no stock, cannot sell, shop does not buy category, protected item.
+Source: economy/pricing service, not UI formula.
+```
+
+## 23I. Anti-Arbitrage UI Guardrails
+
+```text
+UI must not create price.
+UI must show limited/unique stock when relevant.
+Buy and sell projections must not allow same item loop without stock/time/reputation limits.
+Suspicious buy<=sell cases must be reported unless marked as event/quest/limited exception.
 ```
 
 ## 25. Validações obrigatórias
@@ -633,12 +644,12 @@ Quando houver cenário integrado, registrar em execution report e vincular a doc
 
 ## 26. Testing Quality Gate
 
-- Changed deterministic logic: YES if choice routing/confirmation logic changes.
-- Requires EditMode tests: YES for view model/choice action logic.
-- Requires PlayMode automated or final human scenario: YES, DEFERRED for dialogue blocking player movement and choice selection flow.
-- Requires regression test: YES if fixing known WASD/dialogue input leak; otherwise NO.
+- Changed deterministic logic: YES if shop view model/filter/projection logic changes.
+- Requires EditMode tests: YES for buy/sell projection and non-sellable filter logic.
+- Requires PlayMode automated or final human scenario: YES, DEFERRED for shop open/buy/sell/empty states scenario.
+- Requires regression test: YES if fixing known shop sell inventory bug; otherwise NO.
 - Human validation timing: DEFERRED_TO_FINAL_VALIDATION se houver cenário integrado; caso contrário NOT REQUIRED.
-- Minimum validation evidence for ACCEPTED: docs validation PASS; C# build PASS if C# changed; EditMode tests PASS or NOT RUN justified; PlayMode scenario documented; no domain state hidden in UI.
+- Minimum validation evidence for ACCEPTED: docs validation PASS; C# build PASS if C# changed; EditMode tests PASS or NOT RUN justified; Buy/Sell data sources correct; non-sellable protections enforced.
 
 ---
 
@@ -647,7 +658,7 @@ Quando houver cenário integrado, registrar em execution report e vincular a doc
 ```text
 Spec executada sem alterar arquivos proibidos.
 Contratos/data/runtime implementados apenas dentro do escopo.
-Execution report criado em docs/validation/04_spec_ui_dialogue_choice_runtime_execution_report.md.
+Execution report criado em docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md.
 Fonte/direction coverage preservado.
 Validações obrigatórias PASS ou NOT RUN com motivo, impacto e mitigação.
 Sem promoção indevida para ACCEPTED apenas por compile.

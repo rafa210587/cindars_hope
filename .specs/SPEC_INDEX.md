@@ -5,10 +5,10 @@
 
 Total: **423** specs
 - Fila-FABLE: 5
-- Fila: 16
+- Fila: 13
 - Closeout-MVP: 12
-- Build-Validated: 16
-- Implementado: 301
+- Build-Validated: 12
+- Implementado: 308
 - Automatica: 1
 - Outro: 72
 
@@ -19,7 +19,6 @@ Total: **423** specs
 | fable_00C_master_execution_plan | Fila-FABLE | - | - | - | .specs/a_implementar/fable/fable_00C_master_execution_plan.md |
 | fable_78_spec_cave_ecosystem_population_runtime | Fila-FABLE | A implementar | FABLE Batch 13 (Cave Population) | Cave / Enemy / Combat | .specs/a_implementar/fable/fable_78_spec_cave_ecosystem_population_runtime.md |
 | fable_85_spec_player_heavy_archetype_art_integration | Fila-FABLE | A implementar | WAVE FABLE — Animação & Combat Feel | Player / Combat | .specs/a_implementar/fable/fable_85_spec_player_heavy_archetype_art_integration.md |
-| spec_bugfix_inventory_move_merge_ui_v1 | Fila | - | - | - | .specs/a_implementar/spec_bugfix_inventory_move_merge_ui_v1.md |
 | spec_cave_biome_art_profiles_runtime | Fila | A implementar | CAVE_VISUALS — camada de apresentação por bioma | Cave | .specs/a_implementar/spec_cave_biome_art_profiles_runtime.md |
 | spec_cave_decor_placement_runtime | Fila | A implementar | CAVE_VISUALS — art pass do decor | Cave | .specs/a_implementar/spec_cave_decor_placement_runtime.md |
 | spec_cave_visual_polish_runtime | Fila | A implementar | CAVE_VISUALS — polimento p/ aproximar da keyart | Cave | .specs/a_implementar/spec_cave_visual_polish_runtime.md |
@@ -29,8 +28,6 @@ Total: **423** specs
 | spec_codex_12_dead_code_removal_batch2 | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cross-cutting (Farm, Quests, UI, World, City, Loot, Core, Save, Cave) | .specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md |
 | spec_enemy_attack_kits_v1 | Fila | A implementar | Lote ENEMY_ATTACK_KITS (design-first, gerado 2026-07-03) | Combat / Cave / Enemy AI / Bestiary | .specs/a_implementar/spec_enemy_attack_kits_v1.md |
 | spec_farm_scene_relayout_v4 | Fila | A implementar | WAVE FARM — Coerência da FarmScene (pós WAVE 05/07 + fable_15/17) | Farm | .specs/a_implementar/spec_farm_scene_relayout_v4.md |
-| spec_farm_till_anywhere_tilemap | Fila | A implementar | WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4) | Farm | .specs/a_implementar/spec_farm_till_anywhere_tilemap.md |
-| spec_playtest_complete_loadout_and_guide_v1 | Fila | A implementar | WAVE VALIDATION — Smoke humano final | Inventory / Equipment / Farm / Validation | .specs/a_implementar/spec_playtest_complete_loadout_and_guide_v1.md |
 | spec_town_building_visuals | Fila | - | - | - | .specs/a_implementar/spec_town_building_visuals.md |
 | spec_town_layout_v9_organic | Fila | - | - | - | .specs/a_implementar/spec_town_layout_v9_organic.md |
 | spec_validation_human_playmode_smoke_v1 | Fila | A implementar | WAVE VALIDATION — Rede de Validação Humana Final | Core / Validation | .specs/a_implementar/spec_validation_human_playmode_smoke_v1.md |
@@ -47,15 +44,11 @@ Total: **423** specs
 | spec_mvp_closeout_27_visual_scale_camera_sprite_profiles_closeout | Closeout-MVP | A implementar | - | - | .specs/a_implementar/closeout_mvp/SPEC_27_VISUAL_SCALE_CAMERA_SPRITE_PROFILES_CLOSEOUT.md |
 | spec_mvp_closeout_28_ui_ux_full_gameplay_closeout | Closeout-MVP | A implementar | - | - | .specs/a_implementar/closeout_mvp/SPEC_28_UI_UX_FULL_GAMEPLAY_CLOSEOUT.md |
 | spec_mvp_closeout_29_final_mvp_acceptance_and_promotion | Closeout-MVP | A implementar | - | - | .specs/a_implementar/closeout_mvp/SPEC_29_FINAL_MVP_ACCEPTANCE_AND_PROMOTION.md |
-| 04_spec_ui_dialogue_choice_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Dialogue / Choices / Quest Acceptance / Confirmations | .specs/a_implementar/executadas_build_validated/04_spec_ui_dialogue_choice_runtime.md |
 | 04_spec_ui_empty_error_confirmation_patterns_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Empty States / Blocked States / Confirmation / Focus Order | .specs/a_implementar/executadas_build_validated/04_spec_ui_empty_error_confirmation_patterns_runtime.md |
 | 04_spec_ui_equipment_compare_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Equipment / Compare / Slots / Known Interactions | .specs/a_implementar/executadas_build_validated/04_spec_ui_equipment_compare_runtime.md |
 | 04_spec_ui_fonte_menu_flow_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Fonte / Respawn / Água Viva / Respec / Purification / Final Choice | .specs/a_implementar/executadas_build_validated/04_spec_ui_fonte_menu_flow_runtime.md |
-| 04_spec_ui_hud_main_gameplay_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / HUD / Hotbar / Active Slots / Notifications / Context Prompts | .specs/a_implementar/executadas_build_validated/04_spec_ui_hud_main_gameplay_runtime.md |
 | 04_spec_ui_inventory_items_tooltips_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Inventory / Item Detail / Tooltip / Anti-error | .specs/a_implementar/executadas_build_validated/04_spec_ui_inventory_items_tooltips_runtime.md |
-| 04_spec_ui_quest_log_screen_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Quest Log / Quest Detail / Categories / Visibility | .specs/a_implementar/executadas_build_validated/04_spec_ui_quest_log_screen_runtime.md |
 | 04_spec_ui_repair_upgrade_screen_flow_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Equipment / Repair / Upgrade / Cost Preview / Anti-error | .specs/a_implementar/executadas_build_validated/04_spec_ui_repair_upgrade_screen_flow_runtime.md |
-| 04_spec_ui_shop_buy_sell_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Shop / Buy / Sell / Stock / Pricing / Empty States | .specs/a_implementar/executadas_build_validated/04_spec_ui_shop_buy_sell_runtime.md |
 | 04_spec_ui_skill_tree_active_slots_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Skill Tree / SkillPoints / Active Slots / Capstones / Respec Hooks | .specs/a_implementar/executadas_build_validated/04_spec_ui_skill_tree_active_slots_runtime.md |
 | 04_spec_ui_spell_magic_detail_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Magic / Spell Detail / MP / Cooldown / Requirements / Active Slots | .specs/a_implementar/executadas_build_validated/04_spec_ui_spell_magic_detail_runtime.md |
 | 04_spec_ui_storage_chest_transfer_runtime | Build-Validated | A implementar | WAVE 04 — UI / UX Foundation | UI / Storage / Container / Inventory Transfer / Split / Sort | .specs/a_implementar/executadas_build_validated/04_spec_ui_storage_chest_transfer_runtime.md |
@@ -77,7 +70,11 @@ Total: **423** specs
 | 02_spec_time_clock_day_transition_runtime | Implementado | A implementar | WAVE 02 — Time / Calendar / Weather / Lunar | World / Time / Clock / Day Transition | .specs/implementados/spec_02_time_clock_day_transition_runtime.md |
 | 04_spec_ui_calendar_day_detail_runtime | Implementado | A implementar | WAVE 04 — UI / UX Foundation | UI / Calendar / Day Detail / Weather / Lunar / Festivals / Orders | .specs/implementados/spec_04_ui_calendar_day_detail_runtime.md |
 | 04_spec_ui_crafting_screen_runtime | Implementado | A implementar | WAVE 04 — UI / UX Foundation | UI / Crafting / Recipe Detail / Material Validation / Processing | .specs/implementados/spec_04_ui_crafting_screen_runtime.md |
+| 04_spec_ui_dialogue_choice_runtime | Implementado | Implementado e ACCEPTED | WAVE 04 — UI / UX Foundation | UI / Dialogue / Choices / Quest Acceptance / Confirmations | .specs/implementados/04_spec_ui_dialogue_choice_runtime.md |
+| 04_spec_ui_hud_main_gameplay_runtime | Implementado | Implementado e ACCEPTED | WAVE 04 — UI / UX Foundation | UI / HUD / Hotbar / Active Slots / Notifications / Context Prompts | .specs/implementados/04_spec_ui_hud_main_gameplay_runtime.md |
 | 04_spec_ui_input_focus_modal_routing_runtime | Implementado | A implementar | WAVE 04 — UI / UX Foundation | UI / Input / Focus / Modal Stack | .specs/implementados/spec_04_ui_input_focus_modal_routing_runtime.md |
+| 04_spec_ui_quest_log_screen_runtime | Implementado | Implementado e ACCEPTED | WAVE 04 — UI / UX Foundation | UI / Quest Log / Quest Detail / Categories / Visibility | .specs/implementados/04_spec_ui_quest_log_screen_runtime.md |
+| 04_spec_ui_shop_buy_sell_runtime | Implementado | Implementado e ACCEPTED | WAVE 04 — UI / UX Foundation | UI / Shop / Buy / Sell / Stock / Pricing / Empty States | .specs/implementados/04_spec_ui_shop_buy_sell_runtime.md |
 | 05_spec_companion_eligibility_bond_availability_save_runtime | Implementado | A implementar | WAVE 05 — Farm Animals / Companions | Companions / Eligibility / Recruitment / Bond / Availability / Save | .specs/implementados/spec_05_companion_eligibility_bond_availability_save_runtime.md |
 | 05_spec_farm_animal_products_quality_collection_runtime | Implementado | A implementar | WAVE 05 — Farm Animals / Companions | Farm / Milk / Egg / Wool / Fertilizer Base / Product Quality | .specs/implementados/spec_05_farm_animal_products_quality_collection_runtime.md |
 | 05_spec_farm_animals_housing_feeding_care_runtime | Implementado | A implementar | WAVE 05 — Farm Animals / Companions | Farm / Animals / Cow / Chicken / Sheep / Feed / Housing / Care | .specs/implementados/spec_05_farm_animals_housing_feeding_care_runtime.md |
@@ -263,6 +260,7 @@ Total: **423** specs
 | spec_arch_save_world_cycle_reduction_v21 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_save_world_cycle_reduction_v21.md |
 | spec_arch_scene_world_cycle_reduction_v9 | Implementado | Implementado e BUILD_VALIDATED | - | - | .specs/implementados/spec_arch_scene_world_cycle_reduction_v9.md |
 | spec_arch_ui_boundary_residual_v1 | Implementado | Implementado e BUILD_VALIDATED | WAVE ARCH — Redução Residual de Acoplamento Modular | UI | .specs/implementados/spec_arch_ui_boundary_residual_v1.md |
+| spec_bugfix_inventory_move_merge_ui_v1 | Implementado | - | - | - | .specs/implementados/spec_bugfix_inventory_move_merge_ui_v1.md |
 | spec_bugfix_ui_input_shop_sell_bundle | Implementado | - | - | - | .specs/implementados/spec_bugfix_ui_input_shop_sell_bundle.md |
 | spec_cave_001_cave_scene_portal_e_runtime_basico | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_001_cave_scene_portal_e_runtime_basico.md |
 | spec_cave_002_procedural_contracts_resources_parcial | Implementado | Implementado parcial | - | - | .specs/implementados/spec_cave_002_procedural_contracts_resources_parcial.md |
@@ -307,6 +305,7 @@ Total: **423** specs
 | spec_farm_002_plots_seeds_growth_harvest | Implementado | Implementado parcial | - | - | .specs/implementados/spec_farm_002_plots_seeds_growth_harvest.md |
 | spec_farm_003_arvores_pesca_pickups_world_activities | Implementado | Implementado parcial | - | - | .specs/implementados/spec_farm_003_arvores_pesca_pickups_world_activities.md |
 | spec_farm_irrigacao_solo_planting_ui | Implementado | Implementado parcial | - | - | .specs/implementados/spec_farm_004_irrigacao_solo_planting_ui.md |
+| spec_farm_till_anywhere_tilemap | Implementado | Implementado e ACCEPTED | WAVE FARM — Coerência da FarmScene (companion de spec_farm_scene_relayout_v4) | Farm | .specs/implementados/spec_farm_till_anywhere_tilemap.md |
 | spec_fase9c_player_equipment_items_combat_remaining | Implementado | A implementar / restante não implementado | - | - | .specs/implementados/spec_fase9c_player_equipment_items_combat_remaining.md |
 | spec_fase9d_enemy_actions_ai_combat | Implementado | A implementar / restante não implementado | - | - | .specs/implementados/spec_fase9d_enemy_actions_ai_combat.md |
 | spec_fase9d_enemy_architecture_40_monsters | Implementado | A implementar / restante não implementado | - | - | .specs/implementados/spec_fase9d_enemy_architecture_40_monsters.md |
@@ -325,6 +324,7 @@ Total: **423** specs
 | spec_inventory_slots_capacity_ui_final | Implementado | Implementado parcial | - | - | .specs/implementados/spec_inventory_002_slots_capacity_ui_final.md |
 | spec_npc_physics_cat_companion | Implementado | - | - | - | .specs/implementados/spec_npc_physics_cat_companion.md |
 | spec_player_combat_weapons_spells_skill_actions_runtime | Implementado | - | - | - | .specs/implementados/spec_player_combat_weapons_spells_skill_actions_runtime.md |
+| spec_playtest_complete_loadout_and_guide_v1 | Implementado | Implementado e ACCEPTED | WAVE VALIDATION — Smoke humano final | Inventory / Equipment / Farm / Validation | .specs/implementados/spec_playtest_complete_loadout_and_guide_v1.md |
 | spec_progression_001_xp_level_atributos_parcial | Implementado | Implementado parcial | - | - | .specs/implementados/spec_progression_001_xp_level_atributos_parcial.md |
 | spec_repo_001_pr099_reconciliation_audit | Implementado | Implementado | - | - | .specs/implementados/spec_repo_001_pr099_reconciliation_audit.md |
 | spec_retro_01_projeteis_procedurais_runtime | Implementado | RETRO_DOCUMENTED (código implementado em 2026-06; spec escrita a posteriori para reconstrutibilidade) | - | - | .specs/implementados/spec_retro_01_projeteis_procedurais_runtime.md |

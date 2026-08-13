@@ -1,17 +1,18 @@
-# SPEC — UI Shop Buy Sell Runtime
+# SPEC — UI HUD Main Gameplay Runtime
 
-> **Spec ID:** `04_spec_ui_shop_buy_sell_runtime`  
-> **Status:** A implementar  
+> **Spec ID:** `04_spec_ui_hud_main_gameplay_runtime`  
+> **Status:** Implementado e ACCEPTED  
+> **Evidência:** Código presente — `Assets/_Game/Scripts/UI/HUD/HUDGameplayViewModel.cs`, `HudVisibilityController.cs`, `Assets/_Game/Scripts/UI/Notification/ContextHintController.cs`, `Assets/_Game/Scripts/UI/HudSuppressionConsumer.cs`. Play Mode humano PASS 2026-08-13 — HUD (HP/stamina/hotbar/prompts) esteve visível e funcional durante os 11 fluxos do playtest sem erro reportado.  
 > **Revision:** EXPANDED_06_07  
 > **Wave:** WAVE 04 — UI / UX Foundation  
 > **Priority:** P0  
-> **Type:** Runtime / UI / Shop / Buy Sell / Economy Projection  
-> **Domain:** UI / Shop / Buy / Sell / Stock / Pricing / Empty States  
+> **Type:** Runtime / UI / HUD / Notifications / Context  
+> **Domain:** UI / HUD / Hotbar / Active Slots / Notifications / Context Prompts  
 > **Parallelizable:** NO  
 > **Parallel group:** WAVE_04_UI_LOCKED  
 > **Can run with:** N/A  
-> **Must not run with:** qualquer spec que altere shop/economy backend, inventory sell projection, item pricing, stock refresh, unique/limited stock or modal focus.  
-> **Repo lock scope:** `Assets/_Game/Scripts/UI/**`, `Assets/_Game/Scripts/Economy/**`, `Assets/_Game/Scripts/Inventory/**`, `Assets/_Game/Tests/EditMode/UI/**`, `docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md`  
+> **Must not run with:** qualquer spec que altere UI input focus/modal, hotbar, active slots, player stats, hunger/stamina/cansaço, quest notifications, cave HUD ou debug HUD.  
+> **Repo lock scope:** `Assets/_Game/Scripts/UI/**`, `Assets/_Game/Scripts/Player/**`, `Assets/_Game/Scripts/Inventory/**`, `Assets/_Game/Scripts/Skills/**`, `Assets/_Game/Tests/EditMode/UI/**`, `docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md`  
 > **Depends on:**  
   - `docs/design/SPEC_SOURCE_MAP.md`
   - `docs/design/SPECIFICATION_PROCESS.md`
@@ -23,16 +24,16 @@
   - `docs/project/CURRENT_STATE.md`
   - `docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md`
   - `docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md`
-  - `docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md`
-  - `docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md`
-  - `.specs/a_implementar/04_spec_ui_inventory_items_tooltips_runtime.md`
+  - `docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md`
+  - `.specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md`
 > **Blocks:**  
-  - shop/economy backend;
-  - inventory sell projection;
-  - pricing/restock runtime;
-  - limited/unique stock validation;
-> **Scope:** consolidar Shop Buy/Sell UI para separar estoque da loja e inventário do jogador, com preço/quantidade/empty states e proteções anti-erro.  
-> **Out of scope:** economy formulas final, stock refresh backend, shop content, NPC services, scene/prefab final layout, balance.
+  - inventory/hotbar UI;
+  - skill active slots UI;
+  - combat/cave HUD;
+  - notifications system;
+  - debug HUD separation.
+> **Scope:** auditar e consolidar HUD principal de gameplay com stats, hotbar, active slots, contextual prompts e notifications sem poluir a tela.  
+> **Out of scope:** layouts finais, art final, cave combat feedback completo, social/pet/companion UI completa, debug HUD global final, accessibility settings completas.
 
 ---
 
@@ -40,39 +41,37 @@
 
 ## 1. Contexto
 
-O direction de UI/UX aponta problemas reais: vendedores não mostram itens para vender e, ao selecionar vender, inventário do jogador não aparece corretamente.
+O direction de UI/UX define HUD base: HP, MP quando relevante, Stamina, Fome, Cansaço, hotbar, 4 active slots, arma/ferramenta ativa, status negativos, buffs, companion/pet state quando relevante e quest/context prompt.
 
-O menu flow define layout obrigatório de Shop Buy/Sell: header com loja/NPC, gold, modo; Buy com estoque da loja; Sell com inventário vendável do jogador; preço unitário, quantidade, total, estoque e empty states.
+Também define que HUD não deve mostrar Breath/Fôlego/BR e não deve competir com a leitura da cena.
 
 ---
 
 ## 2. Problema
 
-Sem Shop UI contract:
+Sem contrato de HUD:
 
 ```text
-Sell pode mostrar estoque da loja em vez do inventário do jogador;
-loja vazia pode parecer bug;
-item quest/key pode ser vendido;
-stock limited/unique pode não ficar claro;
-preço pode usar valor persistido errado;
-compra/venda pode permitir arbitragem visualmente opaca.
+HUD pode ficar poluída;
+debug info pode vazar para HUD final;
+hotbar e active slots podem confundir ferramentas/skills;
+status e buffs podem ocupar área de combate;
+notifications podem bloquear input ou empilhar demais;
+quest prompt pode virar texto permanente demais.
 ```
 
 ---
 
 ## 3. Objetivo
 
-Consolidar Shop Buy/Sell UI:
+Consolidar HUD principal:
 
 ```text
-Buy tab mostra shop stock.
-Sell tab mostra player sellable inventory.
-Empty states explícitos.
-Preço unitário/total/quantidade claros.
-LimitedStock/UniqueStock visíveis.
-Quest/key/equipped/favorite blocked.
-Preço vem do economy service.
+permanent HUD: HP, Stamina, hotbar, active slots, active weapon/tool;
+contextual HUD: MP, fome/cansaço compactos, status/buffs, pet/companion state, quest/context prompt;
+notifications não bloqueiam input;
+debug HUD separado;
+HUD não cobre área central.
 ```
 
 ## Source Map Compliance
@@ -92,8 +91,7 @@ Preço vem do economy service.
 
 - docs/design/gameplay/ui_ux/UI_UX_FULL_GAMEPLAY_DIRECTION.md
 - docs/design/gameplay/ui_ux/UI_UX_MENU_SCREEN_FLOWS_DIRECTION.md
-- docs/design/gameplay/loot_crafting_economy/ECONOMY_PRICING_STOCK_REFRESH_DIRECTION.md
-- docs/design/gameplay/loot_crafting_economy/LOOT_CRAFTING_ECONOMY_DIRECTION.md
+- docs/design/gameplay/player/PLAYER_CORE_SYSTEMS_DIRECTION.md
 
 ### Required interpretation
 
@@ -109,46 +107,47 @@ Ela transforma parte do refinement em contrato implementável com escopo, locks,
 
 ### Covered from directions
 
-- Shop UI separa Buy, Sell, Shop Inventory, Player Inventory, Gold, Preço unitário, Quantidade, Total, Estoque e Restock/Limited/Unique.
-- Buy mostra estoque da loja; Sell mostra inventário vendável do jogador.
-- Empty states: loja sem itens, jogador sem itens vendáveis, vendedor não compra categoria, estoque esgotado.
-- UniqueStock vendido não reaparece; LimitedStock respeita counter.
-- Preço de venda vem da economia, não de preço final persistido.
-- Nenhuma spec deve permitir loop infinito de comprar barato e vender caro sem limite.
+- HUD base consolidada inclui HP, MP quando relevante, Stamina, Fome, Cansaço, hotbar, 4 active slots e arma/ferramenta ativa.
+- HUD não mostra Breath/Fôlego/BR.
+- Permanentes: HP, Stamina, hotbar, active slots, arma/ferramenta ativa.
+- Contextuais: MP, fome/cansaço compacto, companion/pet, status/buffs, quest/context prompt.
+- Notifications não devem bloquear input nem empilhar a ponto de cobrir gameplay.
+- Debug HUD é separado do HUD final.
 
 ### Deferred / future from directions
 
-- Shop backend formulas final.
-- Full stock refresh implementation.
-- NPC service roster.
-- Balance de economia.
-- Visual prefab final.
+- Cave combat feedback completo.
+- Companion/pet UI final.
+- Accessibility settings completas.
+- Visual style final.
+- Gamepad navigation final.
 
 ### Explicitly not redefined here
 
-- Economy pricing service.
-- Inventory backend.
-- Item data schema.
-- NPC schedules.
-- Shop content.
+- Player stat formulas.
+- Skill active slots logic.
+- Inventory/hotbar data model.
+- Quest runtime.
+- Combat damage/status logic.
 
 ## 4. Estado atual do repo
 
 ```text
-Audit report indica shop/economy completos ou parciais e UI shop/sell bundle existente.
-Esta spec deve auditar e harden, não recriar shop backend.
+Audit report indica HUD/debug e UI 17B/17C-F parciais.
+GameplayInputRouter, toasts, hints, death screen e checkpoint menu podem já existir.
+Esta spec deve auditar antes de criar qualquer sistema novo.
 ```
 
 A confirmar localmente:
 
 ```text
-ShopManager;
-ShopUI;
-Sell tab;
-player inventory projection;
-stock state;
-price service;
-empty states.
+HUDController;
+NotificationToastController;
+ContextHintController;
+HotbarUI;
+ActiveSlotsUI;
+DebugHUD;
+PlayerStats bindings.
 ```
 
 ---
@@ -156,11 +155,10 @@ empty states.
 ## 5. User stories
 
 ```text
-Como jogador, quero comprar vendo estoque da loja.
-Como jogador, quero vender vendo meu inventário vendável.
-Como jogador, quero entender por que não posso vender um item.
-Como jogador, quero ver total antes de confirmar.
-Como dev, quero impedir UI que permita arbitragem invisível.
+Como jogador, quero ler vida/stamina/hotbar rapidamente.
+Como jogador, quero notificação curta sem bloquear movimento.
+Como combat/farm player, quero HUD que não cubra área central.
+Como dev, quero debug separado da HUD final.
 ```
 
 ---
@@ -168,13 +166,13 @@ Como dev, quero impedir UI que permita arbitragem invisível.
 ## 6. Escopo
 
 ```text
-Buy/Sell tab projection;
-shop/player inventory separation;
-empty states;
-quantity/price/total display;
-limited/unique stock display;
-non-sellable protection;
-tests/validators.
+HUD base contract;
+permanent vs contextual sections;
+hotbar/active slots presentation;
+context prompt behavior;
+notification priority/stack limits;
+debug HUD separation;
+tests/validators when feasible.
 ```
 
 ---
@@ -182,12 +180,12 @@ tests/validators.
 ## 7. Fora de escopo
 
 ```text
-economy backend rewrite;
-pricing formulas final;
-stock refresh backend;
-shop content authoring;
-NPC service routing;
-scene/prefab final.
+Cave combat HUD completo;
+all status icon art;
+pet/companion full UI;
+quest log full UI;
+accessibility settings complete;
+scene/prefab final layout.
 ```
 
 ---
@@ -195,23 +193,23 @@ scene/prefab final.
 ## 8. Regras de não duplicação
 
 ```text
-Não criar ShopManager paralelo.
-Não duplicar pricing rules in UI.
-Não usar shop stock como sell inventory.
-Não vender Quest/Key item por UI.
-Não permitir buy/sell loop sem stock/time limit.
+Não criar HUDController paralelo se já existir.
+Não misturar debug with final HUD.
+Não colocar Breath/Fôlego/BR.
+Não depender de HUD para lógica de gameplay.
+Não deixar notification bloquear input salvo confirmação crítica.
 ```
 
 ---
 
 ## 9. Critérios de aceite
 
-- Buy and Sell use correct data sources.
-- Empty states explicit.
-- Prices/quantity/total visible.
-- Non-sellable/equipped/favorite protections.
-- Limited/Unique stock state shown.
-- Report includes PlayMode scenario.
+- HUD contract documentado/implementado.
+- Permanent/contextual sections claras.
+- Hotbar vs active slots separados.
+- Notifications têm stack/priority behavior.
+- Debug output marcado como debug.
+- Report lista PlayMode scenarios finais.
 
 ---
 
@@ -220,11 +218,15 @@ Não permitir buy/sell loop sem stock/time limit.
 ## 10. Arquitetura alvo
 
 ```text
-Assets/_Game/Scripts/UI/Shop/ShopScreenController.cs
-Assets/_Game/Scripts/UI/Shop/ShopBuySellViewModel.cs
-Assets/_Game/Scripts/UI/Shop/ShopLineItemViewModel.cs
-Assets/_Game/Tests/EditMode/UI/ShopBuySellViewModelTests.cs
+Assets/_Game/Scripts/UI/HUD/HudController.cs
+Assets/_Game/Scripts/UI/HUD/HudViewModel.cs
+Assets/_Game/Scripts/UI/HUD/NotificationToastController.cs
+Assets/_Game/Scripts/UI/HUD/ContextHintController.cs
+Assets/_Game/Scripts/UI/HUD/DebugHudGate.cs
+Assets/_Game/Tests/EditMode/UI/HudViewModelTests.cs
 ```
+
+Se já existirem, consolidar.
 
 ---
 
@@ -233,26 +235,26 @@ Assets/_Game/Tests/EditMode/UI/ShopBuySellViewModelTests.cs
 ### Data
 
 ```text
-Buy projection comes from shop stock.
-Sell projection comes from player inventory filtered by shop/economy rules.
+HUD consumes player/UI view model, not raw gameplay internals when possible.
 ```
 
 ### Runtime
 
 ```text
-UI dispatches buy/sell commands; backend owns transaction.
+HUD is presentation only.
+Gameplay logic remains in gameplay systems.
+```
+
+### Events
+
+```text
+HUD subscribes to events with lifecycle/unsubscribe.
 ```
 
 ### Save
 
 ```text
 No save schema change.
-```
-
-### UI
-
-```text
-Empty states and stock states are explicit.
 ```
 
 ---
@@ -263,15 +265,16 @@ Empty states and stock states are explicit.
 Assets/_Game/Scripts/UI/**
 Assets/_Game/Tests/EditMode/UI/**
 Assets/_Game/Scripts/Editor/Validation/**
-docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md
+docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md
 ```
 
 Leitura permitida:
 
 ```text
-Assets/_Game/Scripts/Economy/**
+Assets/_Game/Scripts/Player/**
 Assets/_Game/Scripts/Inventory/**
-Assets/_Game/Scripts/Items/**
+Assets/_Game/Scripts/Skills/**
+Assets/_Game/Scripts/Core/Events/**
 ```
 
 ---
@@ -296,11 +299,11 @@ PROJECT_LOG.md
 ## 14. Estratégia
 
 ```text
-1. Auditar shop UI/economy/inventory.
-2. Consolidar view model.
-3. Add protections/empty states.
-4. Add tests for buy/sell data source and non-sellable filtering.
-5. Report final PlayMode scenarios.
+1. Auditar HUD/toast/context/debug existentes.
+2. Consolidar contract/view model.
+3. Evitar scene/prefab changes.
+4. Add tests for view model/notification stack if feasible.
+5. Report PlayMode final scenarios.
 ```
 
 ---
@@ -308,7 +311,7 @@ PROJECT_LOG.md
 ## 15. Ordem segura
 
 ```text
-Input focus -> Inventory projection -> Shop Buy/Sell UI -> economy backend future hardening.
+Input focus foundation -> HUD main -> individual screens.
 ```
 
 ---
@@ -316,8 +319,8 @@ Input focus -> Inventory projection -> Shop Buy/Sell UI -> economy backend futur
 ## 16. Paralelização
 
 - Parallelizable: NO
-- Must not run with inventory UI, shop/economy backend or stock refresh changes.
-- Reason: shared pricing/stock/inventory projections.
+- Must not run with UI input focus or hotbar/skill/inventory specs.
+- Reason: HUD is shared presentation foundation.
 
 ---
 
@@ -337,7 +340,7 @@ Does this persist Unity references? NO.
 ```text
 Adds events: SHOULD BE NO.
 Changes events: SHOULD BE NO.
-Requires unsubscribe pattern: YES if UI subscribers touched.
+Requires unsubscribe pattern: YES if HUD subscribers touched.
 ```
 
 ---
@@ -345,8 +348,8 @@ Requires unsubscribe pattern: YES if UI subscribers touched.
 ## 19. Impacto UI/Unity
 
 ```text
-Changes UI: YES view model/behavior.
-Scenes/prefabs/assets: NO.
+Changes UI: YES HUD behavior/presentation code.
+Scenes/prefabs/assets: NO in this spec.
 Requires PlayMode/final human scenario: YES, DEFERRED.
 ```
 
@@ -355,14 +358,14 @@ Requires PlayMode/final human scenario: YES, DEFERRED.
 ## 20. Riscos
 
 ```text
-Risco: sell tab mostrar dados errados.
-Mitigação: tests de source.
+Risco: HUD ficar dependente de debug.
+Mitigação: DebugHudGate.
 
-Risco: price drift.
-Mitigação: UI calls economy service.
+Risco: HUD poluir tela.
+Mitigação: permanent/contextual separation.
 
-Risco: non-sellable vendido.
-Mitigação: filter/protection tests.
+Risco: duplicate subscriptions.
+Mitigação: event lifecycle tests/audit.
 ```
 
 ---
@@ -370,7 +373,7 @@ Mitigação: filter/protection tests.
 ## 21. Rollback
 
 ```text
-Reverter shop UI/view model/tests/report.
+Reverter HUD/view model/toast/hint changes/tests/report.
 ```
 
 ---
@@ -380,10 +383,10 @@ Reverter shop UI/view model/tests/report.
 ## 22. Tasks
 
 - [ ] T001 — Ler fontes.
-- [ ] T002 — Auditar shop/economy/inventory UI.
-- [ ] T003 — Consolidar Buy/Sell projections.
-- [ ] T004 — Implementar empty states/protections.
-- [ ] T005 — Criar tests.
+- [ ] T002 — Auditar HUD/toast/context/debug existentes.
+- [ ] T003 — Consolidar permanent/contextual HUD contract.
+- [ ] T004 — Implementar hardening mínimo.
+- [ ] T005 — Criar tests/validator.
 - [ ] T006 — Rodar validações.
 - [ ] T007 — Criar report.
 
@@ -400,7 +403,7 @@ Reverter shop UI/view model/tests/report.
 | Eventos | A spec cria/usa eventos ou subscriptions? | Mapa de publishers/subscribers e unsubscribe policy. | PARTIAL |
 | UI/Input | Há foco/modal/PlayMode relevante? | Cenário final deferido documentado. | BUILD_VALIDATED no máximo |
 | Testes | Há lógica determinística nova? | EditMode test ou justificativa NOT RUN. | PARTIAL |
-| Report | Execution report foi criado? | `docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md`. | PARTIAL |
+| Report | Execution report foi criado? | `docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md`. | PARTIAL |
 
 ---
 
@@ -409,7 +412,7 @@ Reverter shop UI/view model/tests/report.
 Antes de alterar qualquer arquivo, Claude Code/Codex deve rodar e registrar no execution report:
 
 ```bash
-rg -n "Shop|Buy|Sell|Stock|LimitedStock|UniqueStock|Price|Gold|Sellable|CanSell|ShopInventory|PlayerInventory|EmptyState" Assets/_Game/Scripts docs/design .specs
+rg -n "HudController|HudViewModel|NotificationToast|ContextHint|Hotbar|ActiveSlot|PlayerStats|DebugHud|HP|Stamina|Hunger|Fatigue|Mana" Assets/_Game/Scripts docs/design .specs
 rg -n "TODO|FIXME|HACK|PARTIAL|DEFERRED|BUILD_VALIDATED|ACCEPTED" .specs docs/validation docs/IMPLEMENTATION_STATUS.md docs/project/CURRENT_STATE.md
 ```
 
@@ -439,7 +442,7 @@ CONFLICT
 ### Scenario 1 — Happy path
 
 ```text
-Given o sistema base relacionado a shop buy/sell UI existe ou foi criado de forma mínima
+Given o sistema base relacionado a main gameplay HUD existe ou foi criado de forma mínima
 When o usuário/sistema executa o fluxo principal desta spec
 Then o estado visível/resultado segue o direction canônico
 And nenhum sistema paralelo é criado
@@ -481,14 +484,14 @@ And o status máximo respeita SPEC_VALIDATION_MATRIX_MASTER.md.
 
 A execução deve cobrir ou registrar risco residual para:
 
-- Sell tab mostrando estoque da loja em vez do inventário do jogador.
-- Buy tab mostrando inventário do jogador.
-- Quest/Key item vendável.
-- Preço UI divergente do economy service.
-- LimitedStock/UniqueStock sem indicação.
-- Total de compra/venda incorreto ao mudar quantidade.
-- Loja vazia sem empty state.
-- Compra/venda processada com gold insuficiente ou estoque zero.
+- Debug data visible in final HUD.
+- Breath/Fôlego/BR appearing anywhere.
+- Toast stack covering central gameplay.
+- Quest prompt permanent enough to obscure farm/cave view.
+- HUD logic mutating player stats.
+- HUD subscriptions not unsubscribed.
+- Active slot UI mixed with equipment slot UI.
+- Context hint not clearing after target disappears.
 
 ---
 
@@ -497,7 +500,7 @@ A execução deve cobrir ou registrar risco residual para:
 O execution report desta spec deve conter, no mínimo:
 
 ```md
-# Execution Report — UI Shop Buy Sell Runtime
+# Execution Report — UI HUD Main Gameplay Runtime
 
 ## Summary
 - Spec:
@@ -567,36 +570,40 @@ Parar a execução e registrar `BLOCKED` se ocorrer qualquer um destes casos:
 ```
 
 
-## 23G. Buy/Sell Projection Contract
+## 23G. HUD Visibility Matrix
 
-| Aba | Fonte de dados | Filtro | Ação |
-|---|---|---|---|
-| Buy | Shop stock | Available stock, known service, unlocks | Buy command |
-| Sell | Player inventory | CanSell + shop accepts category + not protected | Sell command |
-| Buy empty | Shop stock vazio/esgotado | N/A | Empty state |
-| Sell empty | Player sem item vendável | N/A | Empty state |
-| LimitedStock | Shop stock state | Count > 0 | Mostrar quantidade |
-| UniqueStock | Shop unique state | Not purchased | Mostrar único/esgotado |
+| Elemento | Permanente | Contextual | Proibido/Observação |
+|---|---:|---:|---|
+| HP | YES | NO | Sempre legível. |
+| Stamina | YES | NO | Ações físicas dependem disso. |
+| Hotbar | YES | NO | Consumíveis/ferramentas conforme design. |
+| 4 Active Skill Slots | YES | NO | Separados de equipamento. |
+| Arma/Ferramenta ativa | YES | NO | Pode ser compacto. |
+| MP | NO | YES | Mostrar quando magia/MP relevante. |
+| Fome/Cansaço | NO | YES | Compacto; não poluir. |
+| Buffs/Debuffs | NO | YES | Ícones/tempo quando ativo. |
+| Quest/context prompt | NO | YES | Deve expirar/ocultar. |
+| Companion/Pet | NO | YES/FUTURE | Somente quando relevante. |
+| Debug IDs/state | NO | NO | Debug HUD separado. |
+| Breath/Fôlego/BR | NO | NO | Removido do design. |
 
-## 23H. Price Display Requirements
-
-```text
-Unit price.
-Quantity selected.
-Total price.
-Player gold after transaction preview.
-Reason disabled: no gold, no stock, cannot sell, shop does not buy category, protected item.
-Source: economy/pricing service, not UI formula.
-```
-
-## 23I. Anti-Arbitrage UI Guardrails
+## 23H. Notification Priority
 
 ```text
-UI must not create price.
-UI must show limited/unique stock when relevant.
-Buy and sell projections must not allow same item loop without stock/time/reputation limits.
-Suspicious buy<=sell cases must be reported unless marked as event/quest/limited exception.
+CRITICAL
+  Confirmação/risco real; pode exigir modal separado.
+
+IMPORTANT
+  Quest updated, rare item, level up, danger.
+
+NORMAL
+  Item gained, crop ready, shop restock.
+
+LOW
+  Flavor/minor info; pode agrupar ou descartar se fila cheia.
 ```
+
+Regra: notification não deve bloquear input salvo se for modal de confirmação explícita.
 
 ## 25. Validações obrigatórias
 
@@ -609,7 +616,7 @@ Docs:
 Busca local mínima:
 
 ```bash
-rg -n "Dialogue|Inventory|Equipment|Tooltip|Shop|Buy|Sell|Modal|Focus|Confirm|ItemDetail|Compare|Stock|Price" Assets/_Game/Scripts docs/design .specs
+rg -n "Quest|Objective|Condition|Trigger|Reward|Flag|Softlock|Debug|InputFocus|Modal|HUD|Notification" Assets/_Game/Scripts docs/design .specs
 ```
 
 C# runtime/editor quando houver alteração C#:
@@ -643,12 +650,12 @@ Quando houver cenário integrado, registrar em execution report e vincular a doc
 
 ## 26. Testing Quality Gate
 
-- Changed deterministic logic: YES if shop view model/filter/projection logic changes.
-- Requires EditMode tests: YES for buy/sell projection and non-sellable filter logic.
-- Requires PlayMode automated or final human scenario: YES, DEFERRED for shop open/buy/sell/empty states scenario.
-- Requires regression test: YES if fixing known shop sell inventory bug; otherwise NO.
+- Changed deterministic logic: YES if HUD view model/notification stack logic is changed.
+- Requires EditMode tests: YES for view model/notification rules when harness available.
+- Requires PlayMode automated or final human scenario: YES, DEFERRED for HUD readability and no-debug final presentation scenario.
+- Requires regression test: YES if fixing known HUD/debug/notification bug; otherwise NO.
 - Human validation timing: DEFERRED_TO_FINAL_VALIDATION se houver cenário integrado; caso contrário NOT REQUIRED.
-- Minimum validation evidence for ACCEPTED: docs validation PASS; C# build PASS if C# changed; EditMode tests PASS or NOT RUN justified; Buy/Sell data sources correct; non-sellable protections enforced.
+- Minimum validation evidence for ACCEPTED: docs validation PASS; C# build PASS if C# changed; EditMode tests PASS or NOT RUN justified; final PlayMode scenario documented; no debug leakage.
 
 ---
 
@@ -657,7 +664,7 @@ Quando houver cenário integrado, registrar em execution report e vincular a doc
 ```text
 Spec executada sem alterar arquivos proibidos.
 Contratos/data/runtime implementados apenas dentro do escopo.
-Execution report criado em docs/validation/04_spec_ui_shop_buy_sell_runtime_execution_report.md.
+Execution report criado em docs/validation/04_spec_ui_hud_main_gameplay_runtime_execution_report.md.
 Fonte/direction coverage preservado.
 Validações obrigatórias PASS ou NOT RUN com motivo, impacto e mitigação.
 Sem promoção indevida para ACCEPTED apenas por compile.
@@ -671,10 +678,10 @@ Sem promoção indevida para ACCEPTED apenas por compile.
 Não duplicar sistemas canônicos existentes.
 Não quebrar save/load.
 Não usar UI como fonte de verdade.
+Não revelar spoilers antes de discovery/visibility policy.
 Não pedir human test por spec.
 Não executar runtime em massa antes da 01Q ou exceção humana explícita.
 Não alterar SPEC_EXECUTION_ORDER.md.
-Não alterar scenes/prefabs/assets nesta spec.
 ```
 
 ---
