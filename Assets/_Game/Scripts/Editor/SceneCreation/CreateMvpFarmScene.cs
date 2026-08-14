@@ -2714,7 +2714,7 @@ namespace CindarsHope.Editor.SceneCreation
             // ── Acude / Nascente v7 — (22,18) na base da montanha norte ──────────────────────────
             // Largura levemente maior que os segmentos do rio (nascente = bacia mais aberta).
             CreateRiverSegment(root.transform, "Acude_Nascente",
-                new Vector3(22f, 18f, 0f),
+                new Vector3(16f, 18f, 0f),
                 new Vector2(5f, 4f),
                 waterColor);
 
@@ -2725,39 +2725,39 @@ namespace CindarsHope.Editor.SceneCreation
 
             // Seg_N v7: (22,18)→(21,8). x≈21.5, y in [8,18]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_N",
-                new Vector3(21.5f, 13f, 0f),
+                new Vector3(15.5f, 13f, 0f),
                 new Vector2(4f, 10f),
                 waterColor);
 
             // Seg_C_Upper v7: acima da ponte. x≈21, y in [4,8]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_C",
-                new Vector3(21f, 6f, 0f),
+                new Vector3(15f, 6f, 0f),
                 new Vector2(4f, 4f),
                 waterColor);
 
             // Vao da ponte v7: agua VISUAL sob a ponte, SEM colisor (passagem livre). x≈21, y in [2,4].
             CreateRiverSegment(root.transform, "RiverCrossing_Bridge",
-                new Vector3(21f, 3f, 0f),
+                new Vector3(15f, 3f, 0f),
                 new Vector2(4f, 2f),
                 waterColor,
                 withCollider: false);
 
             // Seg_C_Lower v7: abaixo da ponte. x≈20, y in [-2,2]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_S",
-                new Vector3(20f, 0f, 0f),
+                new Vector3(14f, 0f, 0f),
                 new Vector2(4f, 4f),
                 waterColor);
 
             // Seg_Lower2 v7: x≈19.5, y in [-8,-2]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_Lower2",
-                new Vector3(19.5f, -5f, 0f),
+                new Vector3(13.5f, -5f, 0f),
                 new Vector2(4f, 6f),
                 waterColor);
 
             // Seg_Delta v7: foz (19,-8)→borda N do lago (~(19,-6)). x≈19, y in [-8,-6]. COM colisor.
             // Funde na borda N do lago — sem terminar no nada.
             CreateRiverSegment(root.transform, "RiverSeg_Delta",
-                new Vector3(19f, -7f, 0f),
+                new Vector3(13f, -7f, 0f),
                 new Vector2(4f, 2f),
                 waterColor);
 
@@ -2766,7 +2766,7 @@ namespace CindarsHope.Editor.SceneCreation
             // + margem/shore, sem flutuar sobre as bordas); sortingOrder superior ao rio.
             var bridge = new GameObject("Bridge_01");
             bridge.transform.SetParent(root.transform);
-            bridge.transform.position = new Vector3(21f, 3f, 0f);
+            bridge.transform.position = new Vector3(15f, 3f, 0f);
             bridge.transform.localScale = new Vector3(4.6f, 2f, 1f);
             var bridgeSr = bridge.AddComponent<SpriteRenderer>();
             var bridgeSprite = WorldSpriteLibrary.Prop("bridge");
