@@ -144,16 +144,41 @@ namespace CindarsHope.Editor.Art
         }
 
         // Agua via Tilemap (lago/rio) — substitui SpriteRenderer esticado + tint alpha por tiles
-        // OPACOS do sprite ground_water real, no mesmo Grid do chao (sortingOrder 1, acima da grama
-        // que e 0). Sem mascarar: se ground_water estiver ausente, nao pinta nada (o chamador decide
-        // fallback, se algum).
+        // OPACOS do sprite ground_water real, no mesmo Grid do chao. sortingOrder 2: ACIMA da grama (0)
+        // e da margem/Shore (1) — a agua cobre o miolo e a areia so aparece no anel da borda.
+        // Sem mascarar: se ground_water estiver ausente, nao pinta nada (o chamador decide fallback).
         public static void PaintWater(Transform parent, string gridName, Vector2 center, Vector2 sizeUnits)
         {
             var waterSprite = WorldSpriteLibrary.Ground("ground_water");
             if (waterSprite == null) return;
             float cs = SpriteWorldSize(waterSprite);
-            var tm = GetOrCreateLayer(parent, gridName, "Water", cs, sortingOrder: 1, "Ground");
+            var tm = GetOrCreateLayer(parent, gridName, "Water", cs, sortingOrder: 3, "Ground");
             PaintRect(tm, waterSprite, center, sizeUnits);
+        }
+
+        // Pinta um retangulo de qualquer tile de CHAO (WorldSpriteLibrary.Ground) numa layer generica
+        // do mesmo Grid — usado para caminhos de terra/pedra, penhasco, etc (nao apenas grama/agua).
+        // Se o tile nao existir na biblioteca, nao pinta nada (sem mascarar — wiring-error fica a
+        // cargo do chamador, que ja loga quando ground_* falta em outros pontos deste arquivo).
+        public static void PaintTile(Transform parent, string gridName, string layerName, int sortingOrder,
+            string groundTileName, Vector2 center, Vector2 sizeUnits)
+        {
+            var tileSprite = WorldSpriteLibrary.Ground(groundTileName);
+            if (tileSprite == null) return;
+            float cs = SpriteWorldSize(tileSprite);
+            var tm = GetOrCreateLayer(parent, gridName, layerName, cs, sortingOrder, "Ground");
+            PaintRect(tm, tileSprite, center, sizeUnits);
+        }
+
+        // Pinta um ANEL de margem (areia) ao redor de um retangulo de agua: o rect EXPANDIDO
+        // (center, size + 2*ring) e pintado na layer "Shore" (sortingOrder 1, mesma ordem da agua).
+        // O chamador deve pintar a agua DEPOIS (mesmo center/size do rect base, sem o ring) para que
+        // ela cubra o miolo do rect expandido e a areia so fique visivel na borda.
+        public static void PaintShoreRing(Transform parent, string gridName, string shoreTileName,
+            Vector2 center, Vector2 sizeUnits, float ringUnits)
+        {
+            var expandedSize = new Vector2(sizeUnits.x + 2f * ringUnits, sizeUnits.y + 2f * ringUnits);
+            PaintTile(parent, gridName, "Shore", sortingOrder: 1, shoreTileName, center, expandedSize);
         }
 
         private static void EnsureFolder()

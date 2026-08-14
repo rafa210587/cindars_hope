@@ -127,6 +127,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateBounds();
             CreateMountainBarrier();    // spec_farm_scene_relayout_v4: montanha (colisao N) + backdrop
             CreateRiverAndBridge();     // spec_farm_scene_relayout_v4: rio (colisao) + ponte andavel
+            CreateFarmPathNetworks();   // terreno: caminhos de terra ligando os marcos (visual, sem collider)
             CreateLockedOreNodes();     // spec_farm_scene_relayout_v4: 4 veios de minerio bloqueados
             CreateMainCamera(playerTransform);
             CreateFarmSceneRuntimeBootstrap();
@@ -2665,6 +2666,12 @@ namespace CindarsHope.Editor.SceneCreation
             var col = barrier.AddComponent<BoxCollider2D>();
             col.isTrigger = false;
             col.size = new Vector2(64f, 4f);
+
+            // Penhasco: tile ground_cliff_rock via Tilemap (layer "Cliff", sortingOrder 2, acima de
+            // grama/shore/agua) cobrindo a mesma faixa da base da montanha — puramente visual, o
+            // MountainCollider acima ja bloqueia. Complementa (nao substitui) o MountainBackdrop tiled.
+            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Cliff", 2, "ground_cliff_rock",
+                new Vector2(0f, 20f), new Vector2(64f, 4f));
         }
 
         // spec_farm_scene_relayout_v4 v7: Rio BORDA LESTE — nascente (22,18) → borda leste → lago SE.
@@ -2682,59 +2689,62 @@ namespace CindarsHope.Editor.SceneCreation
             root.transform.position = Vector3.zero;
 
             // ── Acude / Nascente v7 — (22,18) na base da montanha norte ──────────────────────────
+            // Largura levemente maior que os segmentos do rio (nascente = bacia mais aberta).
             CreateRiverSegment(root.transform, "Acude_Nascente",
                 new Vector3(22f, 18f, 0f),
-                new Vector2(4f, 3f),
+                new Vector2(5f, 4f),
                 waterColor);
 
             // ── Segmentos do rio (rota v7 — borda leste, NUNCA cruza o miolo) ───────────────────
             // PONTE v7 em (21,3): vao sem colisor y∈(2,4) para o jogador atravessar a pe.
             // Segmentos com colisor PARAM acima/abaixo do vao.
+            // Largura alargada de 1.8 → 4.0 (rio de verdade, a ponte deixa de "flutuar" sobre um fio dagua).
 
             // Seg_N v7: (22,18)→(21,8). x≈21.5, y in [8,18]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_N",
                 new Vector3(21.5f, 13f, 0f),
-                new Vector2(1.8f, 10f),
+                new Vector2(4f, 10f),
                 waterColor);
 
             // Seg_C_Upper v7: acima da ponte. x≈21, y in [4,8]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_C",
                 new Vector3(21f, 6f, 0f),
-                new Vector2(1.8f, 4f),
+                new Vector2(4f, 4f),
                 waterColor);
 
             // Vao da ponte v7: agua VISUAL sob a ponte, SEM colisor (passagem livre). x≈21, y in [2,4].
             CreateRiverSegment(root.transform, "RiverCrossing_Bridge",
                 new Vector3(21f, 3f, 0f),
-                new Vector2(1.8f, 2f),
+                new Vector2(4f, 2f),
                 waterColor,
                 withCollider: false);
 
             // Seg_C_Lower v7: abaixo da ponte. x≈20, y in [-2,2]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_S",
                 new Vector3(20f, 0f, 0f),
-                new Vector2(1.8f, 4f),
+                new Vector2(4f, 4f),
                 waterColor);
 
             // Seg_Lower2 v7: x≈19.5, y in [-8,-2]. COM colisor.
             CreateRiverSegment(root.transform, "RiverSeg_Lower2",
                 new Vector3(19.5f, -5f, 0f),
-                new Vector2(1.8f, 6f),
+                new Vector2(4f, 6f),
                 waterColor);
 
             // Seg_Delta v7: foz (19,-8)→borda N do lago (~(19,-6)). x≈19, y in [-8,-6]. COM colisor.
             // Funde na borda N do lago — sem terminar no nada.
             CreateRiverSegment(root.transform, "RiverSeg_Delta",
                 new Vector3(19f, -7f, 0f),
-                new Vector2(1.8f, 2f),
+                new Vector2(4f, 2f),
                 waterColor);
 
             // ── Ponte v7 ─────────────────────────────────────────────────────────────────────────
-            // Centro v7: (21,3); footprint ~3×2; sortingOrder superior ao rio.
+            // Centro v7: (21,3); footprint ~4.6×2 (alargado para cobrir o rio agora com 4.0 de largura
+            // + margem/shore, sem flutuar sobre as bordas); sortingOrder superior ao rio.
             var bridge = new GameObject("Bridge_01");
             bridge.transform.SetParent(root.transform);
             bridge.transform.position = new Vector3(21f, 3f, 0f);
-            bridge.transform.localScale = new Vector3(3f, 2f, 1f);
+            bridge.transform.localScale = new Vector3(4.6f, 2f, 1f);
             var bridgeSr = bridge.AddComponent<SpriteRenderer>();
             var bridgeSprite = WorldSpriteLibrary.Prop("bridge");
             bridgeSr.sprite = bridgeSprite != null ? bridgeSprite : GetBuiltinSprite();
@@ -2757,6 +2767,33 @@ namespace CindarsHope.Editor.SceneCreation
                 new Vector3(24f, -17f, 0f), new Vector3(14f, 6f, 1f), waterColorSr, -2);
         }
 
+        // Caminhos de terra ligando os marcos da fazenda — antes so grama pelada entre predios/crafts
+        // e o portao. Layer "Path" (sortingOrder 2, acima de grama sortingOrder 0 e shore sortingOrder
+        // 1) via WorldTilemapGround.PaintTile. Aproximacoes retangulares das rotas — objetivo e o
+        // chao deixar de ser grama uniforme e ligar os marcos, como na keyart.
+        private static void CreateFarmPathNetworks()
+        {
+            var root = new GameObject("FarmPaths");
+            root.transform.position = Vector3.zero;
+
+            // Homestead (spawn ~24,3) <-> ponte (21,3): faixa horizontal y≈3, x de 18 a 26.
+            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
+                new Vector2(22f, 3f), new Vector2(8f, 3f));
+
+            // Homestead <-> Fonte da Anya (-24,4) e caverna (-28,18): faixa horizontal larga no
+            // miolo, y≈2..4, x de -28 a 20.
+            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
+                new Vector2(-4f, 3f), new Vector2(48f, 2f));
+
+            // Miolo <-> lago (18,-13): faixa vertical x≈2, y de -12 a 2.
+            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
+                new Vector2(2f, -5f), new Vector2(3f, 14f));
+
+            // Miolo <-> fileira sul de animais (y-19): faixa vertical x≈-18, y de -18 a 0.
+            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
+                new Vector2(-18f, -9f), new Vector2(3f, 18f));
+        }
+
         // Corpo de lago — agua real via Tilemap (WorldTilemapGround.PaintWater), OPACA, sem
         // SpriteRenderer esticado nem tint alpha. "color" e "order" preservados na assinatura por
         // compatibilidade dos chamadores (nao usados — a tile de agua e pintada tal como e; a
@@ -2765,6 +2802,10 @@ namespace CindarsHope.Editor.SceneCreation
         private static void CreateLakeBody(Transform parent, string name, Vector3 pos, Vector3 scale, Color color, int order)
         {
             _ = name; _ = color; _ = order;
+            // Margem de areia (Shore) ANTES da agua — o rect expandido pinta a borda, a agua
+            // pintada em seguida cobre o miolo e a areia so fica visivel na faixa externa.
+            WorldTilemapGround.PaintShoreRing(parent, "WorldGrid", "ground_sand_shore",
+                new Vector2(pos.x, pos.y), new Vector2(scale.x, scale.y), ringUnits: 1f);
             WorldTilemapGround.PaintWater(parent, "WorldGrid", new Vector2(pos.x, pos.y), new Vector2(scale.x, scale.y));
         }
 
@@ -2775,6 +2816,10 @@ namespace CindarsHope.Editor.SceneCreation
             Color waterColor = default, bool withCollider = true)
         {
             _ = waterColor;
+
+            // Margem de areia (Shore) ANTES da agua — mesmo padrao de CreateLakeBody.
+            WorldTilemapGround.PaintShoreRing(parent, "WorldGrid", "ground_sand_shore",
+                new Vector2(position.x, position.y), colliderSize, ringUnits: 1f);
 
             // Agua real (tile) cobrindo o footprint do segmento — substitui o SpriteRenderer esticado.
             WorldTilemapGround.PaintWater(parent, "WorldGrid", new Vector2(position.x, position.y), colliderSize);

@@ -131,11 +131,14 @@ Arquivos: `CreateMvpFarmScene.cs`, `WorldTilemapGround.cs`, `WorldSpriteLibrary.
   5.5u) + **crafts espaçados** (workbench 23, forge 27, cooking 31; 4u). Close-ups por área (homestead +
   fileira sul, 3 views na FarmSceneCapture). Prédios/crafts/tamanhos **aprovados visualmente**. Cerca do
   perímetro lê como cerca de madeira no close. Regen exit 0. Bump+spacing NÃO commitado ainda.
-- **PRÓXIMO PASSO (TERRENO — fecha a keyart; precisa Chrome/geração):** gerar tiles de **água+margem
-  (shoreline/bank)**, **caminho de terra**, **penhasco**; **alargar o rio** com margens (conserta a ponte
-  que "flutua"), dar **shoreline ao lago**, pintar **caminhos** ligando homestead↔caverna↔lago↔fileira sul,
-  reposicionar a ponte no rio alargado. Depois commitar. Pendências menores: estufa (visibilidade), banca
-  de venda, D2 pixel-perfect.
+- **2026-08-14 (Claude):** Iteração de proporção **COMMITADA**. **Tiles de terreno gerados** no ChatGPT
+  (folha 2×2: `ground_path_dirt`, `ground_cliff_rock`, `ground_sand_shore`, `ground_path_cobble`), fatiados
+  (crop 4 quadrantes → downscale 64px → reseam), verificados em tiling, importados em `tiles/`. Raw em
+  `_raw_building_sheets/gpt_farm_terrain_sheet.png`. **Wiring do terreno DELEGADO ao Sonnet** (helpers
+  PaintTile/PaintShoreRing em WorldTilemapGround; em CreateMvpFarmScene: alargar rio 1.8→4, margem de areia
+  no rio+lago, caminhos de terra ligando os marcos, penhasco no topo, ajustar ponte).
+- **PRÓXIMO PASSO:** verificar o wiring do Sonnet (disco+build), regen+captura, comparar com keyart, iterar.
+  Depois commitar. Pendências menores: estufa (visibilidade), banca de venda, D2 pixel-perfect.
 
 ### WIP não-commitado (⚠️ verificar antes de confiar)
 Feito nesta sessão mas **não validado em regen limpo** (a última regen do usuário rodou com código
