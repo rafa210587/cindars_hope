@@ -143,6 +143,19 @@ namespace CindarsHope.Editor.Art
             PaintRectWeighted(tm, sprites.ToArray(), weights.ToArray(), center, sizeUnits);
         }
 
+        // Agua via Tilemap (lago/rio) — substitui SpriteRenderer esticado + tint alpha por tiles
+        // OPACOS do sprite ground_water real, no mesmo Grid do chao (sortingOrder 1, acima da grama
+        // que e 0). Sem mascarar: se ground_water estiver ausente, nao pinta nada (o chamador decide
+        // fallback, se algum).
+        public static void PaintWater(Transform parent, string gridName, Vector2 center, Vector2 sizeUnits)
+        {
+            var waterSprite = WorldSpriteLibrary.Ground("ground_water");
+            if (waterSprite == null) return;
+            float cs = SpriteWorldSize(waterSprite);
+            var tm = GetOrCreateLayer(parent, gridName, "Water", cs, sortingOrder: 1, "Ground");
+            PaintRect(tm, waterSprite, center, sizeUnits);
+        }
+
         private static void EnsureFolder()
         {
             if (AssetDatabase.IsValidFolder(TileAssetDir)) return;
