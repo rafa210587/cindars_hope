@@ -765,11 +765,18 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateCraftingStations(CraftingRuntime craftingRuntime, CraftingModal craftingModal)
         {
-            // v7: nicho de craft FORA da casa, homestead leste (spec_farm_scene_relayout_v4 §15.5 v7).
-            // Coords 64x44: Workbench (25,1), Forge (27,1), CookingStation (29,1).
-            CreateCraftingStation("Workbench", "farm_workbench_01", WorkshopType.Workbench, new Vector3(23f, 1f, 0f), new Color(0.58f, 0.36f, 0.18f), craftingRuntime, craftingModal);
-            CreateCraftingStation("Forge", "farm_forge_01", WorkshopType.Forge, new Vector3(27f, 1f, 0f), new Color(0.58f, 0.23f, 0.16f), craftingRuntime, craftingModal);
-            CreateCraftingStation("CookingStation", "farm_cooking_01", WorkshopType.CookingStation, new Vector3(31f, 1f, 0f), new Color(0.77f, 0.55f, 0.22f), craftingRuntime, craftingModal);
+            // v8: respiro para a casa (keyart) — crafts afastados da fachada para o patio de terra ao
+            // sul, homestead leste (X mantidos, Y de 1 -> -4). Coords 64x44: Workbench (23,-4),
+            // Forge (27,-4), CookingStation (31,-4).
+            CreateCraftingStation("Workbench", "farm_workbench_01", WorkshopType.Workbench, new Vector3(23f, -4f, 0f), new Color(0.58f, 0.36f, 0.18f), craftingRuntime, craftingModal);
+            CreateCraftingStation("Forge", "farm_forge_01", WorkshopType.Forge, new Vector3(27f, -4f, 0f), new Color(0.58f, 0.23f, 0.16f), craftingRuntime, craftingModal);
+            CreateCraftingStation("CookingStation", "farm_cooking_01", WorkshopType.CookingStation, new Vector3(31f, -4f, 0f), new Color(0.77f, 0.55f, 0.22f), craftingRuntime, craftingModal);
+
+            // Patio de terra sob a area dos crafts (visual, sem collider) — ~x[21,33] y[-5.5,-1.5].
+            var craftYardRoot = new GameObject("CraftYardGround");
+            craftYardRoot.transform.position = Vector3.zero;
+            WorldTilemapGround.PaintTile(craftYardRoot.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
+                new Vector2(27f, -3.5f), new Vector2(12f, 4f));
         }
 
         private static void CreateCraftingStation(string label, string stationId, WorkshopType stationType, Vector3 position, Color color, CraftingRuntime craftingRuntime, CraftingModal craftingModal)
@@ -1761,6 +1768,13 @@ namespace CindarsHope.Editor.SceneCreation
             var collider = bound.AddComponent<BoxCollider2D>();
             collider.size = size;
 
+            // Top: a montanha (muralha de rocha, CreateMountainBarrier) ja e a barreira visual —
+            // nao desenhar cerca por cima dela. BoxCollider2D acima permanece intacto.
+            if (name == "Top")
+            {
+                return;
+            }
+
             // Visual de cerca tilada cobrindo o bound — antes era parede invisivel (so collider).
             // Nao mexe em transform.localScale (ficaria 1,1,1 sempre) para nao re-escalar o collider,
             // que ja usa "size" diretamente em espaco local (mesma convencao do codigo original).
@@ -2644,21 +2658,6 @@ namespace CindarsHope.Editor.SceneCreation
             var root = new GameObject("MountainBarrier");
             root.transform.position = new Vector3(0f, 20f, 0f); // centro da faixa y[18,22]
 
-            // Visual: backdrop de rocha TILADO (nao esticado) cobrindo a faixa da montanha.
-            var visual = new GameObject("MountainBackdrop");
-            visual.transform.SetParent(root.transform);
-            visual.transform.localPosition = Vector3.zero;
-            visual.transform.localScale = Vector3.one;
-            var sr = visual.AddComponent<SpriteRenderer>();
-            var mountainRockSprite = WorldSpriteLibrary.Prop("rock_ore_0");
-            sr.sprite = mountainRockSprite != null ? mountainRockSprite : GetBuiltinSprite();
-            sr.color = mountainRockSprite != null ? Color.white : new Color(0.38f, 0.34f, 0.30f); // fallback castanho-cinza
-            sr.drawMode = SpriteDrawMode.Tiled;
-            sr.size = new Vector2(64f, 4f);
-            sr.sortingOrder = 0;
-            sr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(sr, "World", 0);
-
             // Colisao solida na base da montanha (nao e trigger — bloqueia o jogador em y >= 18).
             var barrier = new GameObject("MountainCollider");
             barrier.transform.SetParent(root.transform);
@@ -2667,11 +2666,15 @@ namespace CindarsHope.Editor.SceneCreation
             col.isTrigger = false;
             col.size = new Vector2(64f, 4f);
 
-            // Penhasco: tile ground_cliff_rock via Tilemap (layer "Cliff", sortingOrder 2, acima de
-            // grama/shore/agua) cobrindo a mesma faixa da base da montanha — puramente visual, o
-            // MountainCollider acima ja bloqueia. Complementa (nao substitui) o MountainBackdrop tiled.
-            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Cliff", 2, "ground_cliff_rock",
-                new Vector2(0f, 20f), new Vector2(64f, 4f));
+            // Muralha de rocha de verdade (substitui a faixa chapada de ground_cliff_rock que lia
+            // como estrada + o MountainBackdrop builtin). Tile ground_cliff_wall cobre y[19,22]
+            // (layer "Cliff", sortingOrder 2). MountainCollider acima ja bloqueia — isto e visual.
+            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Cliff", 2, "ground_cliff_wall",
+                new Vector2(0f, 20.5f), new Vector2(64f, 3f));
+
+            // Transicao grama->rocha na borda sul da montanha, y[18,19] (layer "CliffTop").
+            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "CliffTop", 2, "ground_cliff_top",
+                new Vector2(0f, 18.5f), new Vector2(64f, 1f));
         }
 
         // spec_farm_scene_relayout_v4 v7: Rio BORDA LESTE — nascente (22,18) → borda leste → lago SE.

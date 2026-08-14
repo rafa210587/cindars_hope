@@ -137,8 +137,19 @@ Arquivos: `CreateMvpFarmScene.cs`, `WorldTilemapGround.cs`, `WorldSpriteLibrary.
   `_raw_building_sheets/gpt_farm_terrain_sheet.png`. **Wiring do terreno DELEGADO ao Sonnet** (helpers
   PaintTile/PaintShoreRing em WorldTilemapGround; em CreateMvpFarmScene: alargar rio 1.8→4, margem de areia
   no rio+lago, caminhos de terra ligando os marcos, penhasco no topo, ajustar ponte).
-- **PRÓXIMO PASSO:** verificar o wiring do Sonnet (disco+build), regen+captura, comparar com keyart, iterar.
-  Depois commitar. Pendências menores: estufa (visibilidade), banca de venda, D2 pixel-perfect.
+- **2026-08-14 (Claude):** Terreno wirado + **bug de sorting da água corrigido** (Shore cobria a água;
+  água → sortingOrder 3, acima da margem). Resultado: rio azul alargado com margens de areia, **ponte
+  atravessa de verdade**, lago com beira, caminhos de terra ligando os marcos. **COMMITADO** (marco do
+  terreno). Fazenda muito próxima da keyart.
+- **2026-08-14 (Claude):** Usuário escolheu **A (gerar muralha de rocha)** + "dar mais espaço à casa,
+  usar keyart". Gerada folha de cliff (2×2 → `ground_cliff_wall`, `ground_cliff_top`, `ground_ore_rock`,
+  `ground_rubble`; seamless 64px, cliff_top só H-reseam) e importada em `tiles/`. Keyart reestudada.
+  **DELEGADO ao Sonnet**: (1) muralha `ground_cliff_wall` na faixa norte y[19,22] + `ground_cliff_top`
+  (transição grama→rocha) em y[18,19], remover cliff_rock chapado; (2) `CreateBound("Top")` sem cerca
+  (montanha é a barreira), manter collider; (3) respiro da casa — crafts y1→-4, pátio de terra sob os
+  crafts, sem sobrepor a casa. Não mover casa/spawn/portais/estufa/fonte.
+- **PRÓXIMO PASSO:** verificar (disco+build), regen+captura, comparar com keyart, iterar. Depois commitar.
+  Pendências menores: estufa (visibilidade), banca de venda, D2 pixel-perfect.
 
 ### WIP não-commitado (⚠️ verificar antes de confiar)
 Feito nesta sessão mas **não validado em regen limpo** (a última regen do usuário rodou com código
