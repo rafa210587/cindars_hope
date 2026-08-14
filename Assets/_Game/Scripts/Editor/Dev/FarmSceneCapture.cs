@@ -18,6 +18,7 @@ namespace CindarsHope.Editor.Dev
         private const string ScenePath = "Assets/_Game/Scenes/FarmScene.unity";
         private const string OutputPath = "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/playmode/farm_capture.png";
         private const string CloseupPath = "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/playmode/farm_capture_closeup.png";
+        private const string AnimalRowPath = "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/playmode/farm_capture_animals.png";
         private const float MarginUnits = 2f;
         private const int TextureWidth = 1600;
         private const int TextureHeight = 1200;
@@ -105,15 +106,18 @@ namespace CindarsHope.Editor.Dev
                 // orthographicSize = metade da altura visivel; garante que largura tambem caiba dado o aspect.
                 camera.orthographicSize = Mathf.Max(halfHeight, halfWidth / aspect);
 
-                // Duas vistas: (1) fazenda inteira; (2) close no zoom do jogo (ortho 8.5) para inspecionar seam/grade do chao.
+                // Duas vistas: (1) fazenda inteira (bounds center); (2) close no HOMESTEAD (player + casa +
+                // crafts) para inspecionar proporcao vs personagem. Player spawn ~ (24,3); casa (28,9).
                 var fullOrtho = camera.orthographicSize;
-                var views = new (string path, float ortho, int w, int h)[]
+                var views = new (string path, float ortho, int w, int h, Vector2 center)[]
                 {
-                    (OutputPath, fullOrtho, TextureWidth, TextureHeight),
-                    (CloseupPath, 8.5f, 1600, 1200),
+                    (OutputPath, fullOrtho, TextureWidth, TextureHeight, new Vector2(center.x, center.y)),
+                    (CloseupPath, 8.5f, 1600, 1200, new Vector2(26f, 6f)),
+                    (AnimalRowPath, 8f, 1600, 1200, new Vector2(-18f, -16f)),
                 };
                 foreach (var v in views)
                 {
+                    camera.transform.position = new Vector3(v.center.x, v.center.y, center.z - 100f);
                     camera.orthographicSize = v.ortho;
                     camera.aspect = v.w / (float)v.h;
                     var rt = new RenderTexture(v.w, v.h, 24, RenderTextureFormat.ARGB32);

@@ -766,9 +766,9 @@ namespace CindarsHope.Editor.SceneCreation
         {
             // v7: nicho de craft FORA da casa, homestead leste (spec_farm_scene_relayout_v4 §15.5 v7).
             // Coords 64x44: Workbench (25,1), Forge (27,1), CookingStation (29,1).
-            CreateCraftingStation("Workbench", "farm_workbench_01", WorkshopType.Workbench, new Vector3(25f, 1f, 0f), new Color(0.58f, 0.36f, 0.18f), craftingRuntime, craftingModal);
+            CreateCraftingStation("Workbench", "farm_workbench_01", WorkshopType.Workbench, new Vector3(23f, 1f, 0f), new Color(0.58f, 0.36f, 0.18f), craftingRuntime, craftingModal);
             CreateCraftingStation("Forge", "farm_forge_01", WorkshopType.Forge, new Vector3(27f, 1f, 0f), new Color(0.58f, 0.23f, 0.16f), craftingRuntime, craftingModal);
-            CreateCraftingStation("CookingStation", "farm_cooking_01", WorkshopType.CookingStation, new Vector3(29f, 1f, 0f), new Color(0.77f, 0.55f, 0.22f), craftingRuntime, craftingModal);
+            CreateCraftingStation("CookingStation", "farm_cooking_01", WorkshopType.CookingStation, new Vector3(31f, 1f, 0f), new Color(0.77f, 0.55f, 0.22f), craftingRuntime, craftingModal);
         }
 
         private static void CreateCraftingStation(string label, string stationId, WorkshopType stationType, Vector3 position, Color color, CraftingRuntime craftingRuntime, CraftingModal craftingModal)
@@ -801,7 +801,7 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
             if (craftingBespokeSprite != null)
             {
-                ApplyUniformBespokeScale(craftingObject.transform, craftingBespokeSprite, 2.25f);
+                ApplyUniformBespokeScale(craftingObject.transform, craftingBespokeSprite, 3f);
             }
 
             if (spriteRenderer.sprite == null)
@@ -1079,7 +1079,7 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(fonteRenderer, "World", 0);
             if (fonteSprite != null)
             {
-                ApplyUniformBespokeScale(fonteVisual.transform, fonteSprite, 2.5f);
+                ApplyUniformBespokeScale(fonteVisual.transform, fonteSprite, 3.2f);
             }
             else
             {
@@ -1233,7 +1233,7 @@ namespace CindarsHope.Editor.SceneCreation
                 // preservando o aspect do sprite. NUNCA usar localScale = tamanho-em-unidades aqui
                 // (multiplicaria pelo nativo e a casa fica gigante).
                 var nat = roofSr.sprite.bounds.size; // unidades no scale 1
-                float targetW = w + 2.5f;            // ~9.5u: footprint (7) + beiral do telhado
+                float targetW = w + 4f;              // ~11u: footprint (7) + beiral; casa dominante
                 float sc = nat.x > 0.01f ? targetW / nat.x : 1f;
                 roof.transform.localScale = new Vector3(sc, sc, 1f);
                 // Pivo bottom-center: alinha a base do sprite a parede sul do footprint (porta),
@@ -1850,7 +1850,7 @@ namespace CindarsHope.Editor.SceneCreation
             housingVisual.transform.SetParent(root.transform);
             housingVisual.transform.localPosition = Vector3.zero;
             var housingSpriteName = housingType == AnimalHousingBuildingType.Coop ? "coop" : "barn";
-            var housingTargetHeight = housingType == AnimalHousingBuildingType.Coop ? 3f : 4f;
+            var housingTargetHeight = housingType == AnimalHousingBuildingType.Coop ? 5f : 7f;
             var housingSr = housingVisual.AddComponent<SpriteRenderer>();
             var housingSprite = WorldSpriteLibrary.Building(housingSpriteName);
             housingSr.sprite = housingSprite != null ? housingSprite : GetBuiltinSprite();
@@ -1936,7 +1936,7 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(sr, "World", 0);
             if (processingSprite != null)
             {
-                ApplyUniformBespokeScale(obj.transform, processingSprite, 3.5f);
+                ApplyUniformBespokeScale(obj.transform, processingSprite, 5.5f);
             }
 
             var col = obj.AddComponent<BoxCollider2D>();
@@ -1981,7 +1981,7 @@ namespace CindarsHope.Editor.SceneCreation
             floorSr.sortingOrder = 0;
             floorSr.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(floorSr, "Ground", floorSr.sortingOrder);
-            ApplyUniformBespokeScale(floor.transform, greenhouseSprite, 4f);
+            ApplyUniformBespokeScale(floor.transform, greenhouseSprite, 5.5f);
 
             const int greenhouseBaseIndex = 200;
             var plotIds = new string[4];
@@ -2124,7 +2124,7 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(caveRenderer, "World", caveRenderer.sortingOrder);
             if (caveSprite != null)
             {
-                ApplyUniformBespokeScale(caveVisual.transform, caveSprite, 3.5f);
+                ApplyUniformBespokeScale(caveVisual.transform, caveSprite, 4.5f);
             }
             else
             {
@@ -2471,7 +2471,7 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(sr, "World", 0);
             if (shippingBinSprite != null)
             {
-                ApplyUniformBespokeScale(obj.transform, shippingBinSprite, 1.5f);
+                ApplyUniformBespokeScale(obj.transform, shippingBinSprite, 2f);
             }
 
             var col = obj.AddComponent<BoxCollider2D>();

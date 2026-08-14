@@ -120,8 +120,22 @@ Arquivos: `CreateMvpFarmScene.cs`, `WorldTilemapGround.cs`, `WorldSpriteLibrary.
     (2) sem **caminhos de terra** (keyart tem); (3) **penhasco/montanha** no topo pouco visível;
     (4) confirmar visibilidade da **estufa** (pode estar atrás da casa); (5) **banca de venda** não gerada;
     (6) as cercas do perímetro parecem trilho — revisar.
-- **PRÓXIMO PASSO:** commitar o milestone (checkpoint). Depois FASE 2-resto: gerar tiles de água+margem,
-  caminho de terra, penhasco (ChatGPT) → wirar (water shoreline, path tilemap). Confirmar D2 pixel-perfect.
+- **2026-08-14 (Claude):** **MILESTONE COMMITADO** (checkpoint local, 48 arquivos: keyart + 13 sprites +
+  wiring + cena regenerada + scripts + plano). NÃO pushado (aguarda pedido do usuário).
+- **2026-08-14 (Claude):** **Bump de escala das construções** (~1.35x) aplicado — casa w+4 (~11u), celeiro
+  5.5, galinheiro 4, estufa 5.5, queijaria/barril 4.5, caverna 4.5, fonte 3.2, crafts 3, envio 2. Captura
+  com close-up no HOMESTEAD (novo center (26,6) na FarmSceneCapture) + player sobreposto em escala real
+  pra conferir proporção. Prédios agora imponentes (casa ~8x player). Aguardando veredito do usuário sobre
+  o tamanho. (Regen exit 0, build green.) NÃO commitado ainda (o bump).
+- **2026-08-14 (Claude):** 2ª iteração — fileira sul MAIOR (celeiro 7u, galinheiro 5u, queijaria/barril
+  5.5u) + **crafts espaçados** (workbench 23, forge 27, cooking 31; 4u). Close-ups por área (homestead +
+  fileira sul, 3 views na FarmSceneCapture). Prédios/crafts/tamanhos **aprovados visualmente**. Cerca do
+  perímetro lê como cerca de madeira no close. Regen exit 0. Bump+spacing NÃO commitado ainda.
+- **PRÓXIMO PASSO (TERRENO — fecha a keyart; precisa Chrome/geração):** gerar tiles de **água+margem
+  (shoreline/bank)**, **caminho de terra**, **penhasco**; **alargar o rio** com margens (conserta a ponte
+  que "flutua"), dar **shoreline ao lago**, pintar **caminhos** ligando homestead↔caverna↔lago↔fileira sul,
+  reposicionar a ponte no rio alargado. Depois commitar. Pendências menores: estufa (visibilidade), banca
+  de venda, D2 pixel-perfect.
 
 ### WIP não-commitado (⚠️ verificar antes de confiar)
 Feito nesta sessão mas **não validado em regen limpo** (a última regen do usuário rodou com código
