@@ -96,6 +96,8 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmWalkInHouse();
             CreateFonteAnya(bootstrap);
             var treeRegistry = CreateTrees(inventoryManager);
+            CreateFarmPerimeterTreeline(
+                AssetDatabase.LoadAssetAtPath<TreeDataSO>(TreeDataPath), inventoryManager);
             var itemPickupRegistry = CreateItemPickups(inventoryManager);
             var craftingModal = CreateCraftingUi(craftingRuntime, modalManager);
             CreateCraftingStations(craftingRuntime, craftingModal);
@@ -1601,6 +1603,36 @@ namespace CindarsHope.Editor.SceneCreation
             return registry;
         }
 
+        // spec: borda natural do perimetro da fazenda — substitui a cerca-trilho removida de
+        // CreateBound. Planta UMA fileira de arvores logo por DENTRO das bordas Sul e Leste,
+        // formando uma moldura natural (a keyart usa floresta/montanha/agua como bordas, nao
+        // cerca). Oeste ja tem o bosque denso de CreateTrees — nao duplicar. Norte e a montanha
+        // (CreateMountainBarrier). Indices 200+ para nao colidir com os 0-67 do bosque/miolo.
+        private static void CreateFarmPerimeterTreeline(TreeDataSO treeData, InventoryManager inventoryManager)
+        {
+            if (treeData == null)
+            {
+                Debug.LogWarning($"TreeDataSO not found at {TreeDataPath}. Perimeter treeline trees will be unassigned.");
+            }
+
+            var parent = new GameObject("PerimeterTreeline");
+            parent.transform.position = Vector3.zero;
+
+            var index = 200;
+
+            // -- Borda SUL (y≈-21): x=-30 ate 30, espacadas ~4u. Abaixo da fileira de animais (y-19). --
+            for (var x = -30f; x <= 30f; x += 4f)
+            {
+                CreateTree(parent.transform, index++, new Vector3(x, -21f, 0f), treeData, inventoryManager);
+            }
+
+            // -- Borda LESTE (x≈31): y=0 ate 16, espacadas ~4u. Pula y[-20,-6]/rio (ja e agua = borda). --
+            for (var y = 0f; y <= 16f; y += 4f)
+            {
+                CreateTree(parent.transform, index++, new Vector3(31f, y, 0f), treeData, inventoryManager);
+            }
+        }
+
         // v7 FASE 3: ~12 pedras no miolo central (x[-17,15] y[-14,15]).
         // Usa FarmResourceInteractable tipo Rock como placeholder visual + coleta.
         private static void CreateMioloPedras(GameObject treesParent, InventoryManager inventoryManager)
@@ -1768,25 +1800,11 @@ namespace CindarsHope.Editor.SceneCreation
             var collider = bound.AddComponent<BoxCollider2D>();
             collider.size = size;
 
-            // Top: a montanha (muralha de rocha, CreateMountainBarrier) ja e a barreira visual —
-            // nao desenhar cerca por cima dela. BoxCollider2D acima permanece intacto.
-            if (name == "Top")
-            {
-                return;
-            }
-
-            // Visual de cerca tilada cobrindo o bound — antes era parede invisivel (so collider).
-            // Nao mexe em transform.localScale (ficaria 1,1,1 sempre) para nao re-escalar o collider,
-            // que ja usa "size" diretamente em espaco local (mesma convencao do codigo original).
-            var sr = bound.AddComponent<SpriteRenderer>();
-            var fenceSprite = WorldSpriteLibrary.Prop("fence");
-            sr.sprite = fenceSprite != null ? fenceSprite : GetBuiltinSprite();
-            sr.color = fenceSprite != null ? Color.white : new Color(0.55f, 0.42f, 0.28f); // marrom-madeira visivel (fallback)
-            sr.drawMode = SpriteDrawMode.Tiled;
-            sr.size = size;
-            sr.sortingOrder = 0;
-            sr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(sr, "World", 0);
+            // Bordas naturais (treeline via CreateFarmPerimeterTreeline + montanha via
+            // CreateMountainBarrier + agua a leste) substituem a cerca-trilho visual antiga —
+            // a keyart usa bordas naturais, nao cerca tilada. O BoxCollider2D acima permanece
+            // intacto para TODOS os bounds (Top/Bottom/Left/Right); apenas o SpriteRenderer de
+            // cerca foi removido.
         }
 
         private static void CreateMainCamera(Transform playerTransform)
@@ -2667,14 +2685,16 @@ namespace CindarsHope.Editor.SceneCreation
             col.size = new Vector2(64f, 4f);
 
             // Muralha de rocha de verdade (substitui a faixa chapada de ground_cliff_rock que lia
-            // como estrada + o MountainBackdrop builtin). Tile ground_cliff_wall cobre y[19,22]
-            // (layer "Cliff", sortingOrder 2). MountainCollider acima ja bloqueia — isto e visual.
+            // como estrada + o MountainBackdrop builtin). Tile ground_cliff_wall cobre y[17,22]
+            // (layer "Cliff", sortingOrder 2). MountainCollider acima ja bloqueia (y[18,22]) — a
+            // rocha visual pode descer um pouco mais que o collider (borda mais alta/imponente,
+            // alinhada a keyart). Isto e puramente visual.
             WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Cliff", 2, "ground_cliff_wall",
-                new Vector2(0f, 20.5f), new Vector2(64f, 3f));
+                new Vector2(0f, 19.5f), new Vector2(64f, 5f));
 
-            // Transicao grama->rocha na borda sul da montanha, y[18,19] (layer "CliffTop").
+            // Transicao grama->rocha na borda sul da montanha, y[16,17] (layer "CliffTop").
             WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "CliffTop", 2, "ground_cliff_top",
-                new Vector2(0f, 18.5f), new Vector2(64f, 1f));
+                new Vector2(0f, 16.5f), new Vector2(64f, 1f));
         }
 
         // spec_farm_scene_relayout_v4 v7: Rio BORDA LESTE — nascente (22,18) → borda leste → lago SE.

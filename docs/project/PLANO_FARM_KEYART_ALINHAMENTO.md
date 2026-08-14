@@ -77,7 +77,22 @@ Arquivos: `CreateMvpFarmScene.cs`, `WorldTilemapGround.cs`, `WorldSpriteLibrary.
 
 ---
 
+## DECISÃO DE ABORDAGEM (2026-08-14)
+Usuário: a cena ainda **não parece a keyart** ("está estranho, o tile do chão não tá legal"). Escolhido
+**CAMINHO 1**: cena tilada + **PASSE DE RIQUEZA** pra aproximar da pintura, mantendo farm-sim dinâmico.
+(Caminho 2 = keyart como fundo pintado foi descartado.) Passe de riqueza = (1) **chão rico** (grama melhor
++ decoração: flores/tufos/manchas de terra), (2) **bordas orgânicas** (borda de pedra do lago + reeds/
+lilypads, bordas de caminho que mesclam), (3) **floresta densa** (arbustos/tocos/cogumelos/macieiras), (4)
+hortas como o campo arado central. Prioridade nº1 do usuário: **o tile do chão/grama**.
+
 ## PROGRESSO / ONDE PARAMOS  ← atualizar ao fim de cada etapa
+- **2026-08-14 (Claude):** treeline no perímetro (cerca-trilho removida, árvores nas bordas sul/leste) +
+  montanha mais alta (cliff y[17,22]) — build exit 0, verificado no disco, **ainda não regenerado/visto**
+  (vai junto com a grama nova). **PASSE DE RIQUEZA iniciado**: gerando sheet de grama rica (base/flores/
+  terra/sombra) no ChatGPT.
+- **PRÓXIMO PASSO:** fatiar/reseam/importar a grama nova → substituir `ground_grass*` → regen+captura.
+  Depois: tiles de borda (lago rock-border, caminho) + camada de decoração (flores/tufos scatter). Iterar
+  vs keyart. Só então commitar.
 - **2026-08-14 (Claude):** Keyart gerada, aprovada pelo usuário e salva
   (`_reference_keyart_GPT/farm_keyart_layout_aprovado_v1.png` + README com mapa keyart→coords). Plano
   criado (este arquivo). **Nada da FASE 2/3 executado ainda.**
@@ -148,8 +163,14 @@ Arquivos: `CreateMvpFarmScene.cs`, `WorldTilemapGround.cs`, `WorldSpriteLibrary.
   (transição grama→rocha) em y[18,19], remover cliff_rock chapado; (2) `CreateBound("Top")` sem cerca
   (montanha é a barreira), manter collider; (3) respiro da casa — crafts y1→-4, pátio de terra sob os
   crafts, sem sobrepor a casa. Não mover casa/spawn/portais/estufa/fonte.
-- **PRÓXIMO PASSO:** verificar (disco+build), regen+captura, comparar com keyart, iterar. Depois commitar.
-  Pendências menores: estufa (visibilidade), banca de venda, D2 pixel-perfect.
+- **2026-08-14 (Claude):** Muralha de rocha wirada (topo lê como montanha, não estrada), cerca do topo
+  removida, casa com respiro (crafts no pátio de terra sul). **COMMITADO.** Fazenda muito próxima da keyart:
+  casa hero c/ espaço, caverna na montanha, Fonte, fileira sul maior, crafts em pátio, rio+margens, ponte,
+  lago, caminhos. 
+- **PENDÊNCIAS MENORES (polish, decidir com usuário):** (1) **cerca do perímetro** (Left/Right/Bottom) lê
+  como trilho/escada — trocar por sebe/treeline ou sprite melhor; (2) **montanha** poderia ser mais alta;
+  (3) confirmar **estufa** visível (em (24,10), à esq da casa); (4) gerar **banca de venda**; (5) **D2
+  pixel-perfect**. Estado atual é um bom ponto de parada se o usuário aprovar.
 
 ### WIP não-commitado (⚠️ verificar antes de confiar)
 Feito nesta sessão mas **não validado em regen limpo** (a última regen do usuário rodou com código
