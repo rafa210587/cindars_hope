@@ -21,9 +21,13 @@ developer_instructions = '''
 - MonoBehaviours finos — apenas bridge para scene e Unity lifecycle
 - Lógica pesada em C# puro (classes separadas, não em MonoBehaviour)
 - Sem gameplay logic vazando para UI
+- SOLID: razões para mudar coesas, contratos pequenos por consumidor, substitutos
+  preservando pré/pós-condições e dependências explícitas; LOC não prova violação.
+- Patterns resolvem variação real e reusam precedentes; não exigir interface por classe.
 
 **2. Comunicação via GameEventBus**
-- Toda comunicação cross-system via `GameEventBus.Publish()` / `Subscribe()`
+- Fatos de gameplay cross-system via `GameEventBus.Publish()` / `Subscribe()`;
+  helpers, policies e queries locais injetadas mantêm chamadas síncronas explícitas.
 - Sem chamadas diretas MonoBehaviour → MonoBehaviour para gameplay
 - Cadeias de eventos acíclicas (sem A→B→A)
 - Payloads leves — apenas primitivos + IDs
@@ -39,13 +43,16 @@ developer_instructions = '''
 - Sem runtime state no save (ex.: coroutines, refs de MonoBehaviour)
 
 **5. Bootstrap**
-- Sistemas inicializados via `GameBootstrap` ou `*RuntimeBootstrap`
+- Sistemas inicializados pelo `GameRuntimeCompositionRoot`/domain installers ou wiring
+  explícito; `*RuntimeBootstrap` legado não autoriza criar novo auto-bootstrap.
 - Sem singletons via `FindObjectOfType` em código novo
 - Wiring scene→bootstrap correto
 
 **6. Namespaces e organização**
 - Nenhum namespace `CindarsHope.Debug` (proibido)
 - Organização de pastas corresponde ao domínio do sistema
+- XML documenta intenção/invariantes quando útil; índice de classe gerado ajuda a localizar
+  código. Não aprovar SOLID pela presença de cabeçalho nem exigir YAML manual universal.
 
 **7. Alinhamento com specs anteriores**
 - Mudanças não quebram contratos de specs já implementadas
@@ -98,12 +105,13 @@ Risk Assessment:
 - `id-stability` — verificar IDs como const strings
 - `non-regression-review` — auditoria complementar de scope/status
 - `system-reuse-audit` — quando sistema paralelo for suspeito
+- `solid-refactoring` — revisar coesão, contratos, dependências e contexto de classe
 
 ## Problemas comuns
 
 ```
 ❌ FindObjectOfType em código novo → bootstrap injection
-❌ MonoBehaviour com >50 linhas de lógica → extrair para C# puro
+❌ MonoBehaviour mistura decisões independentes de UI/save/domínio → extrair costura coesa
 ❌ Chamada direta GetComponent<X>().Method() cross-system → GameEventBus
 ❌ ScriptableObject em save DTO → usar ID string
 ❌ "item_carrot" literal no código → ItemCatalog.Carrot const

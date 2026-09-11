@@ -1,81 +1,104 @@
 ---
 name: spec-authoring
-description: Autora specs implementáveis PROFUNDAS (blueprint executável) — com assinaturas de contrato, classes a criar vs modificar, plano por EDIÇÃO real, pseudo-código quando não-trivial, pattern nomeado por skill, e critérios de aceite binários com Definition of Done (comando + saída literal esperada). Cobre profundidade por TIPO de spec (Runtime/Data/UI, Validation/Docs, Tooling, Governance). Usar ao gerar/refinar qualquer spec em `.specs/a_implementar/`, no /start-spec, ao decompor uma wave, ou quando uma spec parecer rasa. NÃO é para executar spec (isso é `spec-execution`).
+description: Authors executable specs with scope, contracts and verifiable criteria proportional to risk. Use to create/refine a spec or break down a wave; complex changes use a detailed blueprint, while cohesive maintenance may use a short format.
 ---
 
-# Skill: Autoria de Spec Profunda
+# Skill: Deep spec authoring
 
-Precedente: as specs fortes (lote `spec_arch_*_residual_v1`) são blueprints — header rico, contratos nomeados, arquivos exatos, critérios com evidência. As fracas (`spec_world_002`) são bullets vagos. Esta skill eleva o **piso** ao nível das fortes, para Claude **e** Codex executarem igual.
+For staged SDD work, use the [project SDD contract](references/sdd-workflow.md).
+`refinement-authoring` establishes evidence and design choices; this skill owns requirements
+and acceptance; `spec-planning` owns technical design; `spec-task-authoring` owns execution
+breakdown and consistency review. One canonical spec may contain all three artifacts.
+The depth requirements below apply to the completed package, not to an unfinished first
+requirements draft. Keep incomplete packages outside the executable queue and label them.
 
-**Regra central: uma spec forte é um BLUEPRINT EXECUTÁVEL — prescreve o O QUÊ (assinaturas, classes criar vs modificar, EDIÇÃO por arquivo, pseudo-código quando não-trivial, critérios binários com Definition of Done) e NOMEIA o pattern via skill do projeto; NUNCA reensina o pattern. Toda spec passa pelo Gate de Profundidade antes de ir para `.specs/a_implementar/` — se falhar qualquer item, não está pronta.**
+Precedent: strong specs (`spec_arch_*_residual_v1` batch) are blueprints with rich headers, named contracts, exact files and evidence-backed criteria. Weak ones (`spec_world_002`) are vague bullets. This skill raises the **floor** to the stronger level so Claude **and** Codex execute consistently.
 
-## Quando usar
-- Gerar spec nova, ou refinar/reprovar uma rasa; `/start-spec`; decompor wave; planejar lote p/ Claude ou Codex
-- Sempre que um critério for prosa ("funciona bem", "polido") em vez de binário com comando
+**Core rule: a strong spec is an EXECUTABLE BLUEPRINT prescribing WHAT (signatures, classes to create vs. modify, EDITS per file, pseudocode when nontrivial, binary criteria with Definition of Done) and NAMING the pattern through a project skill; NEVER reteach the pattern. Complex specs pass the Depth Gate before entering `.specs/a_implementar/`; any failed item means they are not ready.**
 
-## Profundidade por TIPO de spec (o que "profundo" exige em cada um)
+## When to use
+- Create a spec, refine/reject a shallow one; `/start-spec`; break down a wave; plan a batch for Claude or Codex.
+- Whenever a criterion is prose ("works well", "polished") instead of binary with a command.
 
-| Type | Núcleo profundo obrigatório | §16 Contratos |
+## Proportional selection before the blueprint
+
+Small, cohesive maintenance may use a short spec with objective, scope/allowed files,
+expected behavior, risk and verifiable evidence. Do not require already-existing signatures,
+a method/class plan, artificial pattern, per-class test or deep template for this case.
+The gates and deep template below apply to integration/feature specs or complex changes
+that need that precision. Visual evidence may be compared captures/playback with observable
+criteria; it need not become literal command output. Do not preset validation results to PASS
+before execution. Preserve approval, safety, reuse and ownership in both formats.
+
+## Depth by spec TYPE (complex blueprint)
+
+| Type | Required depth | §16 Contracts |
 |---|---|---|
-| **Runtime / Data / UI** | assinaturas + classes criar/modificar + EDIÇÃO por fase + testes nomeados | obrigatório |
-| **Validation / Docs** | estrutura EXATA do entregável (seções/campos) + paths de evidência + DoD de "gerado" | N/A justificado |
-| **Tooling** | interface do script (params/saída) + idempotência + exit codes esperados | parcial |
-| **Governance** | a decisão + onde registra (ADR/game_rule) + o que passa a ser inválido | N/A justificado |
+| **Runtime / Data / UI** | signatures + classes to create/modify + EDITS per phase + named tests | required |
+| **Validation / Docs** | EXACT deliverable structure (sections/fields) + evidence paths + "generated" DoD | justified N/A |
+| **Tooling** | script interface (parameters/output) + idempotence + expected exit codes | partial |
+| **Governance** | the decision + where it is recorded (ADR/game_rule) + what becomes invalid | N/A justified |
 
-## O padrão — prescrever vs delegar
+## The standard — prescribe vs. delegate
 
-| PRESCREVER (parrudo, desta mudança) | DELEGAR (não reensinar) |
+| PRESCRIBE (specific to this change) | DELEGATE (do not reteach) |
 |---|---|
-| Contratos com **assinatura real** (interface, método, DTO, campos de save, `const` de ID) | o *como genérico* do pattern → **nomear a skill** (`use registry-catalog-pattern, molde X`) |
-| Classes a **CRIAR** (nome+responsabilidade) vs **MODIFICAR** (arquivo+o que muda) | racional/anatomia do pattern (mora na skill/rule) |
-| Plano **por EDIÇÃO** (o que muda em cada método/bloco nomeado) + pseudo-código se não-trivial | estilo C#/hot paths → `csharp-style`/`non-regression-review` |
-| Critério **binário + DoD** (comando + saída literal esperada) | convenções de teste → `editmode-test-authoring` |
+| Contracts with **actual signatures** (interface, method, DTO, save fields, ID `const`) | the generic pattern implementation → **name the skill** (`use registry-catalog-pattern, template X`) |
+| Classes to **CREATE** (name + responsibility) vs. **MODIFY** (file + change) | pattern rationale/structure (belongs in the skill/rule) |
+| Plan **per EDIT** (change in each named method/block) + pseudocode when nontrivial | C#/hot-path style → `csharp-style`/`non-regression-review` |
+| **Binary criterion + DoD** (command + expected literal output) | testing conventions → `editmode-test-authoring` |
 
-## Camadas extras de profundidade (aplicar a TODA spec)
-1. **Passo por edição:** cada fase diz a edição concreta ("em `X.Metodo()`, após `<bloco>`, iterar `<def>` chamando `<api>`"), não "editar X".
-2. **DoD por critério:** o comando + a **saída literal** esperada (`ValidateEnemyAttackKits` imprime `0 error(s)`, era `43`). Números antes→depois.
-3. **Testes nomeados:** cada teste com o nome do método + o que asserta + o valor esperado.
-4. **Edge cases / falhas:** seção `## 23` — o que pode dar errado e como a spec trata (colisão de ID, parent ausente, regen destrutiva, mudança de forma pública).
-5. **Pseudo-código:** onde o algoritmo é não-trivial (fórmula, ordem, condição), incluir o esqueleto.
+## Additional depth (complex blueprint)
+1. **Per-edit step:** each phase states the concrete edit ("in `X.Metodo()`, after `<bloco>`, iterate `<def>` calling `<api>`"), not "edit X".
+2. **DoD per criterion:** command + **literal expected output** (`ValidateEnemyAttackKits` prints `0 error(s)`, previously `43`). Before→after numbers.
+3. **Named tests:** each test specifies its method name, assertion and expected value.
+4. **Edge cases / failures:** section `## 23` — what can fail and how the spec handles it (ID collision, missing parent, destructive regeneration, public shape changes).
+5. **Pseudocode:** include a skeleton for nontrivial algorithms (formula, order, condition).
 
-## Gate de Profundidade (reprova a spec se QUALQUER item faltar)
+## Depth Gate (complex blueprint; justify non-applicable items)
 ```
-[ ] Header completo: Spec ID, Wave, Type, Domain, Priority, Parallelizable + Repo lock scope, Depends/Blocks, Scope/Out-of-scope, Validation level, Executor
-[ ] §9 Estado do repo = Phase 0 REAL (comandos + resultados/contagens de hoje), não "auditar depois"
-[ ] Profundidade do TIPO atendida (ver matriz): code→§16 com ASSINATURA; validation/docs→estrutura exata do entregável
-[ ] Classes a CRIAR (responsabilidade) e a MODIFICAR (a mudança) listadas
-[ ] §20 Estratégia por fase COM edição por arquivo/método + pattern NOMEADO + pseudo-código onde não-trivial
-[ ] Todo critério é BINÁRIO e traz DoD = comando + SAÍDA LITERAL esperada (com número antes→depois quando aplicável)
-[ ] Testes nomeados com asserção + valor esperado (quando o tipo pede teste)
-[ ] §23 Edge cases / falhas presente e não-vazio
-[ ] §18/19 arquivos permitidos/proibidos específicos; nível de validação por `validation-truth`
-[ ] Regra de não-duplicação (§13) nomeia os sistemas existentes que NÃO recriar
-[ ] Auto-suficiente: executável por Claude E Codex sem esta conversa
+[ ] Complete header: Spec ID, Wave, Type, Domain, Priority, Parallelizable + Repo lock scope, Depends/Blocks, Scope/Out-of-scope, Validation level, Executor
+[ ] §9 Repo state = ACTUAL Phase 0 (today's commands + results/counts), not "audit later"
+[ ] TYPE depth met (see matrix): code→§16 with SIGNATURE; validation/docs→exact deliverable structure
+[ ] Classes to CREATE (responsibility) and MODIFY (change) listed
+[ ] §20 Phased strategy WITH edits per file/method + NAMED pattern + pseudocode where nontrivial
+[ ] Every criterion is BINARY with DoD = command + expected LITERAL OUTPUT (before→after counts when applicable)
+[ ] Named tests with assertion + expected value (when the type requires tests)
+[ ] §23 Edge cases / failures present and nonempty
+[ ] §18/19 Specific allowed/forbidden files; validation level through `validation-truth`
+[ ] Non-duplication rule (§13) names existing systems that MUST NOT be recreated
+[ ] Self-contained: executable by Claude AND Codex without this conversation
 ```
 
-## Procedimento de autoria
-1. **Phase 0 real** — Grep/Read/validadores; preencher §9 com estado verdadeiro (arquivos, linhas, IDs, contagens, comandos).
-2. **Escolher o TIPO** e aplicar a coluna certa da matriz.
-3. **Contratos primeiro** (§16) — assinaturas exatas antes do plano (ou estrutura do entregável, se Validation/Docs).
-4. **Plano por EDIÇÃO** (§15/17/20) — CRIAR vs MODIFICAR; pattern-skill por sistema; pseudo-código se não-trivial.
-5. **Critérios binários + DoD** (§14) — comando + saída literal + número antes→depois. Preencher §23 edge cases.
-6. **Header de paralelização/locks** (§3/4); rodar o **Gate**; só então salvar em `.specs/a_implementar/`. O hook `sync-harness-and-tracing` regenera o `SPEC_INDEX` no Stop.
+## Authoring procedure
+1. **Actual Phase 0** — Grep/Read/validators; fill §9 with true state (files, lines, IDs, counts, commands).
+2. **Choose TYPE** and apply the corresponding matrix column.
+3. **Contracts first** (§16) — exact signatures before the plan (or deliverable structure for Validation/Docs).
+4. **Per-EDIT plan** (§15/17/20) — CREATE vs. MODIFY; pattern-skill per system; pseudocode when nontrivial.
+5. **Binary criteria + DoD** (§14) — command + literal output + before→after counts. Fill §23 edge cases.
+6. **Parallelization/lock header** (§3/4); run the **Gate**; only then save in `.specs/a_implementar/`. The `sync-harness-and-tracing` hook regenerates `SPEC_INDEX` at Stop.
 
-Base obrigatória (copiar e preencher, não escrever do zero):
-- **Template profundo:** `.specs/_templates/SPEC_DEEP_TEMPLATE.md`
-- **Exemplo trabalhado:** `.specs/_templates/EXAMPLE_spec_content_enemy_status_kit_ids_v1.md`
+Complex blueprint foundation (use sections relevant to the contract):
+- **Deep template:** `.specs/_templates/SPEC_DEEP_TEMPLATE.md`
+- **Worked example:** `.specs/_templates/EXAMPLE_spec_content_enemy_status_kit_ids_v1.md`
 
-## Quando NÃO usar
-- Executar/implementar spec pronta → `spec-execution`
-- Criar skill/rule/agent/command/hook → `harness-authoring`
-- Mover spec para `implementados/` com evidência → `docs-migration`
-- Planejar a wave macro (quais specs existir) → `/plan-wave` + `SPEC_GENERATION_ROADMAP_MASTER.md`
+## On-demand resources
 
-## Quando parar e reportar
-- Phase 0 revela que o sistema já existe/diverge do pedido → reportar antes de escrever (evita spec que manda recriar)
-- Escopo grande demais para execução isolada → quebrar em N specs com Depends/Blocks entre elas
+When you need a reusable document, open the [template](assets/templates/maintenance-spec.md).
+To calibrate its contents, consult the [hypothetical example](references/examples/maintenance-spec-example.md).
+Do not load both by default; examples neither prove execution nor grant authorization.
 
-## Relacionados
+## When NOT to use
+- Execute/implement a ready spec → `spec-execution`.
+- Create skill/rule/agent/command/hook → `harness-authoring`.
+- Move a spec to `implementados/` with evidence → `docs-migration`.
+- Plan the macro wave (which specs will exist) → `/plan-wave` + `SPEC_GENERATION_ROADMAP_MASTER.md`.
+
+## When to stop and report
+- Phase 0 reveals the system exists or differs from the request → report before writing (avoid specs that recreate it).
+- Scope is too large for isolated execution → split into N specs with Depends/Blocks between them.
+
+## Related
 - `.specs/_templates/SPEC_DEEP_TEMPLATE.md` · `.specs/_templates/EXAMPLE_spec_content_enemy_status_kit_ids_v1.md`
-- `.specs/SPEC_IMPLEMENTABLE_TEMPLATE.md` — skeleton canônico (o profundo é superset)
+- `.specs/SPEC_IMPLEMENTABLE_TEMPLATE.md` — canonical skeleton (the deep version is a superset).
 - `(skill: spec-execution)` · `(skill: system-reuse-audit)` · `(rule: validation-truth)` · `(rule: testing-quality-gate)` · `(rule: code-minimalism-ladder)`

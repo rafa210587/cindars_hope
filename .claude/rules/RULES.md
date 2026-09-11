@@ -6,6 +6,8 @@ Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam w
 
 ## Active Rules
 
+- [Task model routing](./task-model-routing.md) — economical per-task selection, supported host overrides, risk-based escalation and unchanged quality gates.
+
 **Validation & Spec Lifecycle**
 1. [Validation Truth](./validation-truth.md) — exit code 0 ou não passou; falha de script nunca é secundária; sem claims prematuros de aceitação; níveis de validação honestos
 2. [Spec Quality Gate](./spec_quality_gate.md) — status taxonomy canônica; checklist BUILD_VALIDATED; promotion exige evidência *(detalhe → skill `spec-execution`)*
@@ -37,6 +39,11 @@ Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam w
 
 **Orquestração de Subagents**
 19. [Resultado de Subagent Não É Evidência](./subagent-results-not-evidence.md) — o orquestrador verifica artefatos no disco + re-roda o build antes de dar tarefa delegada por concluída; nunca confia na narração *(detalhe → skill `delegated-execution`)*
+
+**Arte & Cenas**
+20. [Fidelidade de Cena à Keyart](./keyart-scene-fidelity.md) — scene com keyart aprovada exige captura comparada por região; proporção usa pixels visíveis e referência do player, e padrões repetidos de borda precisam ter intenção visual explícita.
+
+21. [SOLID e Contexto de AI](./solid-and-ai-context.md) — coesão, contratos substituíveis, dependências explícitas e documentação de intenção; workflow em `solid-refactoring`, revisão nos agentes existentes.
 
 ## Mechanical Enforcement (hooks em .claude/settings.json)
 

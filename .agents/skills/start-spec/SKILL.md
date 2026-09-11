@@ -1,6 +1,6 @@
 ---
 name: start-spec
-description: "Comando de workflow do projeto (equivalente ao /start-spec do Claude Code). Use ao preparar a implementação de uma spec. Entrega um plano de execução sem tocar em código."
+description: "Use ao preparar a implementação de uma spec. Entrega um plano de execução sem tocar em código."
 ---
 
 # /start-spec

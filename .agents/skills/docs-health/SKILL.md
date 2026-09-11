@@ -1,6 +1,6 @@
 ---
 name: docs-health
-description: "Comando de workflow do projeto (equivalente ao /docs-health do Claude Code). Valida a estrutura e a consistência da documentação."
+description: "Valida a estrutura e a consistência da documentação."
 ---
 
 # /docs-health

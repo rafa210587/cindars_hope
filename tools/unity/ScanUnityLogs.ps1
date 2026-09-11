@@ -1,8 +1,16 @@
 param(
-    [string]$LogFile = ".\Logs\unity-compile-validation.log"
+    [string]$LogFile = ".\Logs\unity-compile-validation.log",
+    [ValidateSet('Compile','Tests')][string]$Context = 'Compile',
+    [string]$ResultsPath = ''
 )
 
 $ErrorActionPreference = "Stop"
+
+if ($Context -eq 'Tests') {
+    . (Join-Path $PSScriptRoot 'UnityValidation.Common.ps1')
+    try { $null = Read-UnityTestResult $ResultsPath }
+    catch { Write-Host "Unity log scan FAILED: test evidence invalid. $($_.Exception.Message)"; exit 1 }
+}
 
 function Resolve-FullPath {
     param([string]$Path)
@@ -29,13 +37,14 @@ $criticalPatterns = @(
     "Compilation failed",
     "Script compilation failed",
     "Unhandled exception",
-    "Exception:",
     "Fatal error",
     "BuildFailedException",
     "The type or namespace name",
     "are you missing an assembly reference",
     "Application will terminate with return code 1"
 )
+
+if ($Context -eq 'Compile') { $criticalPatterns += 'Exception:' }
 
 $warningPatterns = @(
     "warning CS",
@@ -46,7 +55,8 @@ $warningPatterns = @(
 
 $criticalMatches = New-Object System.Collections.Generic.List[string]
 $warningMatches = New-Object System.Collections.Generic.List[string]
-$lines = Get-Content -LiteralPath $logFullPath
+$lines = @(Get-Content -LiteralPath $logFullPath)
+if ($lines.Count -eq 0) { Write-Host 'Unity log scan FAILED: empty log is not compile evidence.'; exit 1 }
 
 for ($i = 0; $i -lt $lines.Count; $i++) {
     $line = $lines[$i]

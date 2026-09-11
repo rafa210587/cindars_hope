@@ -1,33 +1,41 @@
 # Rule: Verdade na Validação
 
-**1. Build com sucesso = exit code 0.** Nunca infira sucesso de output filtrado. Uma spec só pode ser `BUILD_VALIDATED` quando `run_strict_validation.ps1` retornou exit code 0. Não faça commit se qualquer check falhou ou ficou desconhecido.
+**Invariante: cada claim exige evidência vigente e resultado explícito; seleção de gates segue
+a matriz canônica em `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`.**
 
-**2. Falha de script PowerShell nunca é secundária.** Se qualquer script retorna non-zero ou `$?` = false: PARE imediatamente, sem commit.
+## Onde se aplica
 
-**3. Níveis de validação são claims diferentes — nunca os misture.**
+- Exit 0 é necessário para PASS; falha/exception/resultado desconhecido nunca vira sucesso.
+- Não infira resultado de logs filtrados. Preserve comando, exit code, artefatos e inputs.
+- `run_strict_validation.ps1` sem `-Gates` é GLOBAL; com gates explícitos é SCOPED.
+  `SCOPED_PASS` não significa `GLOBAL_PASS`. A lista selecionada deve cobrir a matriz/spec.
+- Falha global conhecida permanece FAIL e visível; não aumentar baseline para esconder regressão.
+- Docs-only/harness não exige build Unity. Um gate já executado sobre inputs equivalentes
+  pode ser reutilizado após revisão. Não repetir builds por agente, fase ou closeout.
+- Nova edição invalida apenas evidência cujos inputs relevantes mudaram; dependências,
+  defines, settings, assets e tooling também são inputs, não apenas código/HEAD.
+- Falha em gate obrigatório impede o claim correspondente e ações dependentes.
+  Corrigir/diagnosticar dentro do escopo; trabalho independente autorizado pode continuar.
 
-| Claim | Significa apenas |
+## Claims distintos
+
+| Claim | Evidência que comprova |
 |---|---|
-| `dotnet build` PASS | C# fallback compile passou |
-| Unity batchmode PASS | Unity compile validation passou |
-| Play Mode / manual PASS | gameplay validation passou |
+| .NET PASS | Compile do grafo/projetos gerados; não prova importação/lifecycle Unity |
+| Unity compile PASS | Processo Unity + diagnóstico de compile; pode vir do Test Runner |
+| EditMode/PlayMode PASS | XML recente válido, casos executados e escopo coberto |
+| Asset validation PASS | Resultado explícito do validator aplicável |
+| Human validation PASS | Cenário realmente executado, com resultado |
+| BUILD_VALIDATED/ACCEPTED | Somente requisitos satisfeitos conforme matriz e spec |
 
-Validação bloqueada → reporte como `NOT RUN or BLOCKED` com motivo e residual risk; nunca converta em PASS.
+## Report
 
-**4. Sem claims prematuros.** Proibido sem evidência: "MVP accepted", "Play Mode PASS", "Unity validated", "Phase 2/3 PASS". Use: `BUILD_VALIDATED`, `Phase 2 NOT RUN`, `ACCEPTED pending Phase 2-3`.
-
-## Report block obrigatório
-
-```text
-Validation method: run_strict_validation.ps1
-Exit code: 0
-Assembly-CSharp: PASS | FAIL
-Assembly-CSharp-Editor: PASS | FAIL
-Quality check: PASS | FAIL
-Docs validation: PASS | EXPECTED_FAIL_LEGACY_ONLY | NEW_FAILURE
-Result artifact: docs/validation/LAST_STRICT_VALIDATION_RESULT.json
-```
+Registrar modo GLOBAL/SCOPED, gates selecionados e razão, comando/versões/configuração,
+exit code por execução, arquivos de log/XML realmente produzidos, inputs validados,
+falhas e NOT RUN/NOT APPLICABLE. Não citar artefato que o runner não produz.
+Cenário humano escrito é plano; deferimento não é ACCEPTED.
 
 ## Enforcement
 
-Hook `pre-bash-guard.ps1` bloqueia pipes de `dotnet build` filtrados.
+`run_strict_validation.ps1`, contratos de tooling e revisão de evidência.
+`pre-bash-guard.ps1` proíbe padrões que filtram o resultado do build.

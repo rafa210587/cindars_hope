@@ -1,148 +1,95 @@
-#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-Run strict validation with PowerShell script failure gates.
-
+Executa os gates do projeto com exit codes isolados dos logs.
 .DESCRIPTION
-Central validation command with safe script invocation.
-All scripts must succeed; no secondary issues.
-
-.EXAMPLE
-.\run_strict_validation.ps1
-
-Exit codes:
-  0 - All validations passed
-  1 - Any validation failed (build, quality, script exception, etc)
+Cada script roda em um processo PowerShell filho. Falha de docs, build, ratchet,
+qualidade, arquivo ausente ou exception interrompe a sequencia e retorna exit 1.
 #>
+param(
+    [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path,
+    [string[]]$Gates,
+    [string]$ScopePath = ''
+)
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = 'Stop'
+$ProjectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
+$powerShellPath = (Get-Command powershell.exe -ErrorAction Stop).Source
 
-Write-Host "STRICT_VALIDATION_HARNESS" -ForegroundColor Cyan
-Write-Host "================================================" -ForegroundColor Cyan
-Write-Host ""
+function Invoke-ValidationStep {
+    param([string]$Name, [string]$RelativePath, [string]$Id)
 
-# Helper function: safe script invocation
-function Invoke-SafeScript {
-    param(
-        [string]$Name,
-        [string]$ScriptPath,
-        [hashtable]$Parameters
-    )
+    Write-Host "=== $Name ==="
+    $scriptPath = Join-Path $ProjectRoot $RelativePath
+    if (-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)) {
+        Write-Host "VALIDATION_SCRIPT_MISSING: $RelativePath"
+        return 1
+    }
 
-    Write-Host "=== $Name ===" -ForegroundColor Cyan
-
-    $previousExitCode = $LASTEXITCODE
-    $previousErrorAction = $ErrorActionPreference
-
+    # Native stderr tambem e log; o exit code do processo define sucesso/falha.
+    # Nao retornar stdout pela success stream junto com o resultado numerico.
+    $previousPreference = $ErrorActionPreference
     try {
-        $ErrorActionPreference = "Stop"
-
-        if ($Parameters -and $Parameters.Count -gt 0) {
-            & $ScriptPath @Parameters
-        } else {
-            & $ScriptPath
-        }
-
-        $scriptSuccess = $?
-        $scriptExitCode = $LASTEXITCODE
+        $ErrorActionPreference = 'Continue'
+        $stepArguments = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',$scriptPath)
+        if ($ScopePath -and $Id -in @('quality','diff')) { $stepArguments += @('-ScopePath',$ScopePath) }
+        & $powerShellPath @stepArguments 2>&1 |
+            ForEach-Object { Write-Host $_ }
+        $stepExitCode = $LASTEXITCODE
     } catch {
-        Write-Host ""
-        Write-Host "SCRIPT_EXCEPTION in ${Name}:" -ForegroundColor Red
-        Write-Host "  Message: $($_.Exception.Message)" -ForegroundColor Red
-        Write-Host ""
+        Write-Host "VALIDATION_PROCESS_FAILURE: $Name"
         return 1
     } finally {
-        $ErrorActionPreference = $previousErrorAction
+        $ErrorActionPreference = $previousPreference
     }
-
-    # Check PowerShell status
-    if (-not $scriptSuccess) {
-        Write-Host ""
-        Write-Host "SCRIPT_FAILED_BY_POWERSHELL_STATUS: $Name" -ForegroundColor Red
-        Write-Host ""
+    if ($null -eq $stepExitCode -or $stepExitCode -ne 0) {
+        Write-Host "VALIDATION_STEP_FAILED: $Name (exit $stepExitCode)"
         return 1
     }
-
-    # Check exit code
-    if ($null -ne $scriptExitCode -and $scriptExitCode -ne 0) {
-        Write-Host ""
-        Write-Host "SCRIPT_FAILED_BY_EXIT_CODE: $Name (exit $scriptExitCode)" -ForegroundColor Red
-        Write-Host ""
-        return $scriptExitCode
-    }
-
-    Write-Host "   PASS" -ForegroundColor Green
+    Write-Host "VALIDATION_STEP_PASS: $Name"
     return 0
 }
 
-# Step 0: Corruption guard (fail fast antes de erros de compile confusos)
-Write-Host ""
-Write-Host "0. Corruption guard..." -ForegroundColor Yellow
+$steps = @(
+    @{ Id = 'corruption'; Name = 'corruption guard'; Path = 'tools/validate_no_corruption.ps1'; Failure = 'CORRUPTION_DETECTED' },
+    @{ Id = 'docs'; Name = 'docs validation'; Path = 'tools/docs/validate_docs.ps1'; Failure = 'DOCS_VALIDATION_FAILURE' },
+    @{ Id = 'build'; Name = 'Unity generated-project builds'; Path = 'tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1'; Failure = 'UNITY_PROJECT_BUILD_FAILURE' },
+    @{ Id = 'architecture'; Name = 'architecture ratchet'; Path = 'tools/architecture/Test-ArchitectureRatchet.ps1'; Failure = 'ARCHITECTURE_RATCHET_FAILURE' },
+    @{ Id = 'diff'; Name = 'diff completeness'; Path = 'tools/docs/check_spec_diff_completeness.ps1'; Failure = 'DIFF_COMPLETENESS_FAILURE' },
+    @{ Id = 'quality'; Name = 'quality check'; Path = 'tools/docs/check_spec_quality.ps1'; Failure = 'QUALITY_CHECK_FAILURE' }
+)
 
-$corruptionResult = Invoke-SafeScript -Name "corruption guard" -ScriptPath ".\tools\validate_no_corruption.ps1"
-
-if ($corruptionResult -ne 0) {
-    Write-Host ""
-    Write-Host "STRICT_VALIDATION_RESULT: CORRUPTION_DETECTED" -ForegroundColor Red
-    exit 1
+$scoped = $PSBoundParameters.ContainsKey('Gates')
+if ($scoped) {
+    # -File do PowerShell aceita uma string CSV; chamadas in-process podem passar array.
+    $Gates = @($Gates | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() })
+    if ($Gates.Count -eq 0 -or @($Gates | Where-Object { $_ -notin $steps.Id }).Count -gt 0) {
+        Write-Host 'STRICT_VALIDATION_RESULT: INVALID_GATES'; exit 1
+    }
+    $steps = @($steps | Where-Object { $_.Id -in $Gates })
+}
+if ($ScopePath) {
+    if (-not $scoped) { Write-Host 'STRICT_VALIDATION_RESULT: SCOPE_REQUIRES_EXPLICIT_GATES'; exit 1 }
+    try {
+        $ScopePath = (Resolve-Path -LiteralPath $ScopePath).Path
+        . (Join-Path $PSScriptRoot 'ValidationScope.ps1')
+        $null = Read-ValidationScope $ScopePath $ProjectRoot
+    } catch { Write-Host "STRICT_VALIDATION_RESULT: INVALID_SCOPE; $($_.Exception.Message)"; exit 1 }
 }
 
-# Step 1: Docs validation (allowed to be legacy-only)
-Write-Host ""
-Write-Host "1. Docs validation..." -ForegroundColor Yellow
-
-$docsResult = Invoke-SafeScript -Name "docs validation" -ScriptPath ".\tools\docs\validate_docs.ps1"
-
-if ($docsResult -ne 0) {
-    Write-Host "   WARNING: Docs validation returned non-zero (may be legacy-only)" -ForegroundColor Yellow
-    $docsStatus = "EXPECTED_FAIL_LEGACY_ONLY"
-} else {
-    $docsStatus = "PASS"
+Write-Host 'STRICT_VALIDATION_HARNESS'
+Write-Host "Validation mode: $(if ($scoped) { 'SCOPED' } else { 'GLOBAL' }); gates: $($steps.Id -join ',')"
+Push-Location -LiteralPath $ProjectRoot
+try {
+    foreach ($step in $steps) {
+        $stepResult = Invoke-ValidationStep -Name $step.Name -RelativePath $step.Path -Id $step.Id
+        if ($stepResult -ne 0) {
+            Write-Host "STRICT_VALIDATION_RESULT: $($step.Failure)"
+            exit 1
+        }
+    }
+    if ($scoped) { Write-Host 'STRICT_VALIDATION_RESULT: SCOPED_PASS (not a global result)' }
+    else { Write-Host 'STRICT_VALIDATION_RESULT: GLOBAL_PASS (VALIDATION_PASS)' }
+    exit 0
+} finally {
+    Pop-Location
 }
-
-# Step 2: all Unity-generated C# projects
-Write-Host ""
-Write-Host "2. Unity-generated C# projects build..." -ForegroundColor Yellow
-
-$buildResult = Invoke-SafeScript `
-    -Name "Unity generated-project builds" `
-    -ScriptPath ".\tools\unity\Invoke-UnityGeneratedProjectsBuild.ps1"
-
-if ($buildResult -ne 0) {
-    Write-Host ""
-    Write-Host "STRICT_VALIDATION_RESULT: UNITY_PROJECT_BUILD_FAILURE" -ForegroundColor Red
-    exit 1
-}
-
-# Step 3: Diff completeness check
-Write-Host ""
-Write-Host "3. Spec diff completeness..." -ForegroundColor Yellow
-
-$diffResult = Invoke-SafeScript -Name "diff completeness" -ScriptPath ".\tools\docs\check_spec_diff_completeness.ps1"
-
-if ($diffResult -ne 0) {
-    Write-Host ""
-    Write-Host "STRICT_VALIDATION_RESULT: DIFF_COMPLETENESS_FAILURE" -ForegroundColor Red
-    exit 1
-}
-
-# Step 4: Quality check (cannot fail)
-Write-Host ""
-Write-Host "4. Spec quality check..." -ForegroundColor Yellow
-
-$qualityResult = Invoke-SafeScript -Name "quality check" -ScriptPath ".\tools\docs\check_spec_quality.ps1"
-
-if ($qualityResult -ne 0) {
-    Write-Host ""
-    Write-Host "STRICT_VALIDATION_RESULT: QUALITY_CHECK_FAILURE" -ForegroundColor Red
-    exit 1
-}
-
-# All passed
-Write-Host ""
-Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "STRICT_VALIDATION_RESULT: VALIDATION_PASS" -ForegroundColor Green
-Write-Host "Exit code: 0" -ForegroundColor Green
-Write-Host ""
-
-exit 0

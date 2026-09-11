@@ -183,12 +183,10 @@ $docFiles = @(
 )
 
 $docFiles += Get-ChildItem "docs" -Recurse -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
-$docFiles += Get-ChildItem "tools" -Recurse -Filter "*.ps1" -ErrorAction SilentlyContinue |
-    Where-Object { $_.FullName -ne (Resolve-Path "tools/docs/validate_docs.ps1").Path } |
-    ForEach-Object { $_.FullName }
+# Variaveis de scripts sao codigo, nao placeholders documentais.
 
 # Check for template placeholders
-$placeholderPattern = '\$(source|Source|src|ref|evidence|old|dest)|\$\(\s*docs_old'
+$placeholderPattern = '\$(source|Source|src|ref|evidence|old|dest)(?![a-zA-Z0-9_])|\$\(\s*docs_old'
 $placeholderMatches = Select-String -Path $docFiles -Pattern $placeholderPattern -CaseSensitive -ErrorAction SilentlyContinue
 
 if ($placeholderMatches) {

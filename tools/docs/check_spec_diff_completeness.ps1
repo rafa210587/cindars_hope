@@ -21,12 +21,19 @@ Optional commit message to validate against generic patterns.
 #>
 
 param(
-    [string]$CommitMessage
+    [string]$CommitMessage,
+    [string]$ScopePath = ''
 )
 
 $ErrorActionPreference = "Continue"
 $exitCode = 0
 $issues = @()
+$validationScope = $null
+if ($ScopePath) {
+    . (Join-Path $PSScriptRoot 'ValidationScope.ps1')
+    try { $validationScope = Read-ValidationScope $ScopePath }
+    catch { Write-Host "SPEC_DIFF_COMPLETENESS_CHECK: FAIL; $($_.Exception.Message)"; exit 1 }
+}
 
 Write-Host "SPEC_DIFF_COMPLETENESS_CHECK" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
@@ -36,6 +43,7 @@ Write-Host ""
 Write-Host "1. Checking git diff..." -ForegroundColor Yellow
 
 $gitStatus = & git status --porcelain
+if ($validationScope) { $gitStatus = @($validationScope.changedFiles | ForEach-Object { ' M ' + $_ }) }
 $runtimeChanges = @()
 $testChanges = @()
 $reportChanges = @()
@@ -61,6 +69,8 @@ foreach ($line in $gitStatus) {
     }
 }
 
+if ($validationScope) { $reportChanges = @(@($reportChanges) + @($validationScope.reportPaths) | Select-Object -Unique) }
+$reportChanges = @($reportChanges | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf })
 Write-Host "   Runtime code files changed: $($runtimeChanges.Count)" -ForegroundColor Gray
 Write-Host "   Test files changed: $($testChanges.Count)" -ForegroundColor Gray
 Write-Host "   Report files changed: $($reportChanges.Count)" -ForegroundColor Gray
@@ -142,19 +152,28 @@ Write-Host ""
 Write-Host "4. Checking for deterministic code without tests..." -ForegroundColor Yellow
 
 if ($runtimeChanges.Count -gt 0 -and $testChanges.Count -eq 0) {
-    # Check if report explicitly defers testing
+    # Testes existentes executados sao evidencia; um arquivo de teste novo nao e obrigatorio.
     $testDeferred = $false
+    $existingTestsEvidenced = $false
     foreach ($reportFile in $reportChanges) {
         if (-not (Test-Path $reportFile)) { continue }
 
         $content = Get-Content -Path $reportFile -Raw
+        if ($content -match '(?im)^Existing tests executed:\s*YES\s*$' -and
+            $content -match '(?im)^Test command:\s*\S.+' -and
+            $content -match '(?im)^Test evidence:\s*\S.+' -and
+            $content -match '(?im)^Test result:\s*(PASS|FAIL)\b') {
+            $existingTestsEvidenced = $true
+        }
         if ($content -match 'Automated tests.*not added.*JUSTIFIED|Tests not added.*Justified|Testing deferred') {
             $testDeferred = $true
             break
         }
     }
 
-    if (-not $testDeferred) {
+    if ($existingTestsEvidenced) {
+        Write-Host '   Evidence declared for existing tests; reviewer must verify artifacts, inputs and result (not a test PASS claim).'
+    } elseif (-not $testDeferred) {
         $issues += "WARN: Runtime code changed but no test files found and not deferred in report"
         $issues += "  → If testing was deferred: add 'Automated tests not added: JUSTIFIED' to report"
         $issues += "  → If testing was forgotten: add tests to Assets/_Game/Tests/EditMode/"

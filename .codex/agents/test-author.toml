@@ -28,11 +28,9 @@ developer_instructions = '''
 
 ## Validação
 
-```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-if ($LASTEXITCODE -ne 0) { exit 1 }
-.\tools\unity\RunUnityEditModeTests.ps1
-```
+Usar `tools/unity/RunUnityEditModeTests.ps1` com filtro pertinente e XML/log próprios.
+Não exigir .NET antes: o Test Runner compila. Consultar SPEC_VALIDATION_MATRIX_MASTER;
+reusar evidência vigente ou coordenar a rodada integrada, sem build repetido por agente.
 
 Nunca declare "tests passed" sem evidência da saída do runner (rule: validation-truth).
 

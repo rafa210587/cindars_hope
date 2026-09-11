@@ -1,6 +1,6 @@
 ---
 name: reconcile-status
-description: "Comando de workflow do projeto (equivalente ao /reconcile-status do Claude Code). Audita inconsistências entre arquivos de documentação. Pode ler PROJECT_LOG.md, validation reports e IMPLEMENTATION_STATUS.md — apenas em modo audit."
+description: "Audita inconsistências entre arquivos de documentação. Pode ler PROJECT_LOG.md, validation reports e IMPLEMENTATION_STATUS.md — apenas em modo audit."
 ---
 
 # /reconcile-status

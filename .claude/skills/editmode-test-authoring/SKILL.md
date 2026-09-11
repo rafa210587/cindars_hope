@@ -65,10 +65,8 @@ namespace CindarsHope.Tests.EditMode.<Domain>
 
 ## Validação
 
-```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-if ($LASTEXITCODE -ne 0) { exit 1 }
-.\tools\unity\RunUnityEditModeTests.ps1
-```
+Usar `tools/unity/RunUnityEditModeTests.ps1` com filtro e artefatos pertinentes,
+conforme SPEC_VALIDATION_MATRIX_MASTER. O Test Runner compila; não exigir .NET antes
+nem repetir resultados verificados sobre os mesmos inputs por agente/closeout.
 
 O report block (formato Testing Quality Gate) vai no execution report. Nunca afirme "tests passed" sem o output do runner (rule: validation-truth).

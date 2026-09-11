@@ -4,12 +4,12 @@
 # Codex-native harness so OpenAI Codex CLI operates like our Claude Code setup.
 #
 # NEVER modifies anything under .claude/. NEVER touches *.unity/*.prefab/*.asset. Runs no git
-# commands. Idempotent: safe to re-run; wipes and rebuilds only the generated output paths below.
+# commands. Idempotent: safe to re-run; updates generated files without deleting user-owned files.
 #
 # Outputs (generated, do not hand-edit):
-#   .agents/skills/<name>/SKILL.md      (64 skills + 16 commands-as-skills = 80 dirs)
-#   .codex/agents/<name>.toml           (10 agents)
-#   .codex/rules/<name>.md              (21 rules, raw bytes copy)
+#   .agents/skills/<name>/SKILL.md      (skills and commands-as-skills)
+#   .codex/agents/<name>.toml           (agents)
+#   .codex/rules/<name>.md              (rules, raw bytes copy)
 #   .codex/hooks.json
 #   .codex/config.toml
 #   AGENTS.md                           (only the generated block between markers is refreshed)
@@ -50,23 +50,105 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 function Write-Utf8NoBom {
     param([string]$Path, [string]$Content)
+    if (Test-Path -LiteralPath $Path) {
+        $existing = [IO.File]::ReadAllBytes($Path)
+        if ([Convert]::ToBase64String($existing) -eq [Convert]::ToBase64String($Utf8NoBom.GetBytes($Content))) { return }
+    }
     [System.IO.File]::WriteAllText($Path, $Content, $Utf8NoBom)
 }
 
+function Copy-SourceFile {
+    param([string]$Source, [string]$Destination)
+    # Avoid rewriting identical files, which the host may currently memory-map.
+    if (Test-Path -LiteralPath $Destination) {
+        if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($Source)) -eq [Convert]::ToBase64String([IO.File]::ReadAllBytes($Destination))) { return }
+    }
+    Copy-Item -LiteralPath $Source -Destination $Destination -Force
+}
 function Read-Utf8 {
     param([string]$Path)
     $bytes = [System.IO.File]::ReadAllBytes($Path)
     return [System.Text.Encoding]::UTF8.GetString($bytes)
 }
 
-# --- 0. Reset generated output dirs (idempotent rebuild) ----------------------
+# Validar a origem antes de remover qualquer saida gerada. Preservar eventos/opcoes/ordem.
+$settings = (Read-Utf8 $SettingsPath) | ConvertFrom-Json -ErrorAction Stop
+if ($null -eq $settings.hooks -or $settings.hooks -isnot [pscustomobject]) {
+    throw 'settings.json must contain a hooks object.'
+}
+foreach ($eventProperty in $settings.hooks.PSObject.Properties) {
+    foreach ($route in @($eventProperty.Value)) {
+        if ($null -eq $route -or $route -isnot [pscustomobject] -or $null -eq $route.hooks) {
+            throw 'Invalid hook route in settings.json.'
+        }
+        foreach ($hook in @($route.hooks)) {
+            if ($null -eq $hook -or $hook -isnot [pscustomobject] -or -not $hook.type) {
+                throw 'Invalid hook definition in settings.json.'
+            }
+        }
+        if ($route.PSObject.Properties.Name -contains 'matcher') {
+            if ($route.matcher -isnot [string]) { throw 'Hook matcher must be a string.' }
+            # Traduzir alternativas de nomes conhecidas; regex/custom matchers ficam intactos.
+            $names = [System.Collections.Generic.List[string]]::new()
+            foreach ($name in ($route.matcher -split '\|')) { $names.Add($name) }
+            if ($names.Contains('Edit') -or $names.Contains('Write')) {
+                foreach ($name in @('apply_patch', 'write_file')) {
+                    if (-not $names.Contains($name)) { $names.Add($name) }
+                }
+            }
+            if ($names.Contains('Bash') -or $names.Contains('PowerShell')) {
+                foreach ($name in @('shell', 'exec_command')) {
+                    if (-not $names.Contains($name)) { $names.Add($name) }
+                }
+            }
+            $route.matcher = [string]::Join('|', $names)
+        }
+    }
+}
+$hooksObj = [ordered]@{ hooks = $settings.hooks }
 
-Write-Host "[codex-harness] Resetting generated output directories..."
+$catalogPath = Join-Path $ClaudeDir 'HARNESS_INDEX.md'
+if (-not (Test-Path -LiteralPath $catalogPath)) { throw 'Missing .claude/HARNESS_INDEX.md canonical catalog.' }
+$catalog = Read-Utf8 $catalogPath
+foreach ($folder in @($SkillsSrcDir, $CommandsSrcDir, $AgentsSrcDir)) {
+    foreach ($entry in (Get-ChildItem -LiteralPath $folder)) {
+        $id = if ($entry.PSIsContainer) { $entry.Name } else { [IO.Path]::GetFileNameWithoutExtension($entry.Name) }
+        if ($catalog -notmatch ('`/?' + [regex]::Escape($id) + '`')) { throw "Catalog missing ID: $id" }
+    }
+}
+# Never follow links from sources or destination trees during recursive copy.
+foreach ($folder in @($SkillsSrcDir, $AgentsSkillsOut, $CodexAgentsOut, $CodexRulesOut)) {
+    if (Test-Path -LiteralPath $folder) {
+        foreach ($entry in (Get-ChildItem -LiteralPath $folder -Recurse -Force)) {
+            if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Reparse point not allowed: $($entry.FullName)" }
+        }
+    }
+}
+# --- 0. Prepare generated output dirs (non-destructive) ----------------------
+
+Write-Host "[codex-harness] Preparing generated output directories..."
 
 if (-not $WhatIf) {
-    if (Test-Path $AgentsSkillsOut) { Remove-Item -Recurse -Force $AgentsSkillsOut }
-    if (Test-Path $CodexAgentsOut)  { Remove-Item -Recurse -Force $CodexAgentsOut }
-    if (Test-Path $CodexRulesOut)   { Remove-Item -Recurse -Force $CodexRulesOut }
+    $rootPrefix = [System.IO.Path]::GetFullPath($RepoRoot).TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+    foreach ($target in @($AgentsSkillsOut, $CodexAgentsOut, $CodexRulesOut)) {
+        $resolvedTarget = [System.IO.Path]::GetFullPath($target)
+        if (-not $resolvedTarget.StartsWith($rootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Generated output target must remain inside the repository.'
+        }
+        $ancestor = $resolvedTarget
+        while ($ancestor.StartsWith($rootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            if (Test-Path -LiteralPath $ancestor) {
+                $item = Get-Item -LiteralPath $ancestor -Force
+                if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+                    throw 'Generated output target must not traverse a reparse point.'
+                }
+            }
+            $ancestor = Split-Path -Parent $ancestor
+        }
+    }
+    foreach ($target in @($AgentsSkillsOut, $CodexAgentsOut, $CodexRulesOut)) {
+        # Preserve extra local files; refresh only source-owned destinations below.
+    }
 
     New-Item -ItemType Directory -Force -Path $AgentsSkillsOut | Out-Null
     New-Item -ItemType Directory -Force -Path $CodexAgentsOut  | Out-Null
@@ -98,6 +180,14 @@ foreach ($dir in $skillDirs) {
     $destDir = Join-Path $AgentsSkillsOut $dir.Name
     $destFile = Join-Path $destDir "SKILL.md"
 
+    if (-not $WhatIf) {
+        foreach ($support in (Get-ChildItem -LiteralPath $dir.FullName -Recurse -File | Where-Object { $_.FullName -ne $srcFile })) {
+            $relative = $support.FullName.Substring($dir.FullName.Length).TrimStart('\', '/')
+            $supportDest = Join-Path $destDir $relative
+            [void][IO.Directory]::CreateDirectory((Split-Path -Parent $supportDest))
+            Copy-SourceFile -Source $support.FullName -Destination $supportDest
+        }
+    }
     $srcText = $null
     try { $srcText = Read-Utf8 $srcFile } catch { $srcText = $null }
 
@@ -139,7 +229,7 @@ foreach ($dir in $skillDirs) {
     # Case C: has frontmatter -> copy verbatim.
     if (-not $WhatIf) {
         New-Item -ItemType Directory -Force -Path $destDir | Out-Null
-        Copy-Item -Path $srcFile -Destination $destFile -Force
+        Copy-SourceFile -Source $srcFile -Destination $destFile
     }
     $Report.SkillsCopied += $dir.Name
 }
@@ -189,7 +279,9 @@ foreach ($cmd in $commandFiles) {
 
     # Sanitize firstLine for a YAML double-quoted scalar (escape backslash then quote).
     $firstLineSafe = $firstLine -replace '\\', '\\\\' -replace '"', '\"'
-    $description = "Comando de workflow do projeto (equivalente ao /$cmdName do Claude Code). $firstLineSafe"
+    # The host may truncate catalog descriptions. Put the functional trigger first instead of
+    # spending the visible prefix on Claude/Codex compatibility information.
+    $description = if ($firstLineSafe) { $firstLineSafe } else { "Workflow command: $cmdName." }
 
     $frontmatter = "---`nname: $cmdName`ndescription: `"$description`"`n---`n`n"
     $synthesized = $frontmatter + $bodyText
@@ -211,7 +303,7 @@ $ReadOnlyAgents = @(
     "game-design-reviewer",
     "non-regression-auditor",
     "performance-auditor",
-    "unity-validator"
+    "pixel-art-scene-reviewer"
 )
 
 function ConvertTo-TomlLiteralTripleQuoted {
@@ -293,7 +385,7 @@ Write-Host "[codex-harness] Copying rules from .claude/rules (raw bytes, verbati
 $ruleFiles = Get-ChildItem -Path $RulesSrcDir -Filter "*.md"
 foreach ($ruleFile in $ruleFiles) {
     if (-not $WhatIf) {
-        Copy-Item -Path $ruleFile.FullName -Destination (Join-Path $CodexRulesOut $ruleFile.Name) -Force
+        Copy-SourceFile -Source $ruleFile.FullName -Destination (Join-Path $CodexRulesOut $ruleFile.Name)
     }
     $Report.RulesCopied += $ruleFile.Name
 }
@@ -302,75 +394,8 @@ foreach ($ruleFile in $ruleFiles) {
 
 Write-Host "[codex-harness] Generating .codex/hooks.json ..."
 
-# Reuse path: all inspected .claude/hooks/*.ps1 read stdin generically via
-#   [Console]::In.ReadToEnd() | ConvertFrom-Json
-# and key off $data.tool_input / $data.tool_name / $data.stop_hook_active, exiting 2 to block.
-# This is the same stdin JSON shape Codex sends (session_id, cwd, hook_event_name, tool_name,
-# tool_input, tool_response, turn_id, permission_mode). No adapter is needed: the SAME
-# .claude/hooks/*.ps1 scripts are invoked directly by .codex/hooks.json. Single source of truth
-# for guard logic; zero duplication.
-#
-# Tool-name matcher mapping (Claude -> Codex):
-#   Bash|PowerShell               -> Bash|PowerShell|shell   (shell execution)
-#   Edit|Write                    -> apply_patch|Edit|Write|write_file  (file edits)
-
-$hooksObj = [ordered]@{
-    hooks = [ordered]@{
-        PreToolUse = @(
-            [ordered]@{
-                matcher = "Bash|PowerShell|shell"
-                hooks = @(
-                    [ordered]@{
-                        type = "command"
-                        command = "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/pre-bash-guard.ps1"
-                    }
-                )
-            },
-            [ordered]@{
-                matcher = "apply_patch|Edit|Write|write_file"
-                hooks = @(
-                    [ordered]@{
-                        type = "command"
-                        command = "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/protected-path-guard.ps1"
-                    },
-                    [ordered]@{
-                        type = "command"
-                        command = "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/guard-secrets.ps1"
-                    },
-                    [ordered]@{
-                        type = "command"
-                        command = "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/guard-large-files.ps1"
-                    }
-                )
-            }
-        )
-        PostToolUse = @(
-            [ordered]@{
-                matcher = "apply_patch|Edit|Write|write_file"
-                hooks = @(
-                    [ordered]@{
-                        type = "command"
-                        command = "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/runtime-code-guard.ps1"
-                    }
-                )
-            }
-        )
-        Stop = @(
-            [ordered]@{
-                hooks = @(
-                    [ordered]@{
-                        type = "command"
-                        command = "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/detect-change-scope.ps1"
-                    },
-                    [ordered]@{
-                        type = "command"
-                        command = "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/stop-summary-check.ps1"
-                    }
-                )
-            }
-        )
-    }
-}
+# $hooksObj vem de settings.json validado antes do reset. Guards de edicao compartilham
+# edit-tool-payload.ps1; equivalencia de matcher nao implica equivalencia de payload.
 
 if (-not $WhatIf) {
     New-Item -ItemType Directory -Force -Path $CodexDir | Out-Null
@@ -383,27 +408,18 @@ if (-not $WhatIf) {
 Write-Host "[codex-harness] Generating .codex/config.toml ..."
 
 $configToml = @"
-# Generated by tools/codex/Generate-CodexHarness.ps1 -- single source of truth is .claude/.
-# Re-run the generator after any .claude/ change; do not hand-edit generated sections.
+# Initial scaffold from tools/codex/Generate-CodexHarness.ps1.
+# Local preferences: future generations preserve this file byte-for-byte.
 
 # Model defaults. Codex uses its own model family (not opus/sonnet/haiku) so no explicit
 # model pin is set here by default -- override locally if desired.
-[model]
-# name = "gpt-5-codex"
-reasoning_effort = "medium"
+# model = "your-configured-model"
+model_reasoning_effort = "medium"
 
-# Approval / sandbox policy. Claude Code enforces the unsafe-git / .unity-.prefab-.asset /
-# Packages/** / ProjectSettings/** allowlist via permissions.ask (human approves per instance).
-# Codex's approval model is coarser (workspace-write / read-only / danger-full-access, plus an
-# approval_policy of untrusted/on-failure/on-request/never) so parity here is split:
-#   - Unsafe git commands and the dotnet-build-truth-gate pattern are HOOK-ENFORCED via
-#     PreToolUse -> .claude/hooks/pre-bash-guard.ps1 (see hooks.json). This blocks unconditionally;
-#     it does not merely ask.
-#   - Edits to *.unity / *.prefab / *.asset / Packages/** / ProjectSettings/** are NOT
-#     hook-blocked (Claude asks per-instance rather than blocking outright). For Codex, the
-#     closest equivalent is to run with a non-"never" approval_policy so Codex prompts before
-#     writing those paths, OR to keep sandbox_mode at "workspace-write" (not full-access) so the
-#     human is in the loop for anything outside the ordinary code/docs surface.
+# Approval / sandbox preferences for a new local config only.
+# Protected edit paths and unsafe Git have configured PreToolUse guards. Enforcement depends
+# on the host loading .codex/hooks.json and supplying supported payloads; workspace-write
+# alone does not restrict particular file extensions. Existing local config is preserved.
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 
@@ -416,7 +432,7 @@ sandbox_mode = "workspace-write"
 # to mirror .claude/settings.json's separate hooks block as closely as possible.
 "@
 
-if (-not $WhatIf) {
+if (-not $WhatIf -and -not (Test-Path -LiteralPath $CodexConfigToml)) {
     Write-Utf8NoBom -Path $CodexConfigToml -Content $configToml
 }
 
@@ -427,109 +443,24 @@ Write-Host "[codex-harness] Refreshing generated block in AGENTS.md ..."
 $BeginMarker = "<!-- BEGIN CODEX-HARNESS (generated) -->"
 $EndMarker   = "<!-- END CODEX-HARNESS (generated) -->"
 
-# Parse rule invariants: prefer the line starting with **Invariante:**; else first non-heading line.
-$ruleIndexLines = @()
-foreach ($ruleFile in ($ruleFiles | Sort-Object Name)) {
-    $ruleName = [System.IO.Path]::GetFileNameWithoutExtension($ruleFile.Name)
-    $invariant = ""
-    try {
-        $ruleText = Read-Utf8 $ruleFile.FullName
-        $invMatch = [regex]::Match($ruleText, '(?m)^\*\*Invariante:\*\*\s*(.+)$')
-        if ($invMatch.Success) {
-            $invariant = $invMatch.Groups[1].Value.Trim()
-        }
-        else {
-            $lines2 = $ruleText -split "`r?`n"
-            foreach ($l in $lines2) {
-                $t = $l.Trim()
-                if ($t -and $t -notmatch '^#' -and $t -notmatch '^>') { $invariant = $t; break }
-            }
-        }
-    }
-    catch {
-        $invariant = "(source file unreadable/corrupt in .claude/rules -- copied as raw bytes; see README)"
-    }
-    if ($invariant.Length -gt 220) { $invariant = $invariant.Substring(0, 217) + "..." }
-    $ruleIndexLines += "- ``$ruleName`` -- $invariant"
-}
-
-$skillIndexLines = @()
-foreach ($dir in ($skillDirs | Sort-Object Name)) {
-    $srcFile = Join-Path $dir.FullName "SKILL.md"
-    $desc = ""
-    if (Test-Path $srcFile) {
-        try {
-            $t = Read-Utf8 $srcFile
-            $dm = [regex]::Match($t, '(?m)^description:\s*(.+)$')
-            if ($dm.Success) { $desc = $dm.Groups[1].Value.Trim() }
-        }
-        catch {
-            $desc = "(source corrupt in .claude/skills -- see README)"
-        }
-    }
-    if ($desc.Length -gt 160) { $desc = $desc.Substring(0, 157) + "..." }
-    $skillIndexLines += "- ``$($dir.Name)`` -- $desc"
-}
-
-$commandIndexLines = @()
-foreach ($cmd in ($commandFiles | Sort-Object Name)) {
-    $cmdName = [System.IO.Path]::GetFileNameWithoutExtension($cmd.Name)
-    $commandIndexLines += "- ``$cmdName`` (skill; equivalent of /$cmdName)"
-}
-
-$agentIndexLines = @()
-foreach ($agentFile in ($agentFiles | Sort-Object Name)) {
-    $agentName = [System.IO.Path]::GetFileNameWithoutExtension($agentFile.Name)
-    $desc = ""
-    try {
-        $t = Read-Utf8 $agentFile.FullName
-        $dm = [regex]::Match($t, '(?m)^description:\s*(.+)$')
-        if ($dm.Success) { $desc = $dm.Groups[1].Value.Trim() }
-    }
-    catch {}
-    if ($desc.Length -gt 160) { $desc = $desc.Substring(0, 157) + "..." }
-    $agentIndexLines += "- ``$agentName`` -- $desc"
-}
-
-$generatedBlockLines = New-Object System.Collections.Generic.List[string]
-$generatedBlockLines.Add($BeginMarker)
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add("<!-- This block is generated by tools/codex/Generate-CodexHarness.ps1 from .claude/. -->")
-$generatedBlockLines.Add("<!-- Do not hand-edit; re-run the generator after any .claude/ change. -->")
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add("## Codex Harness (generated parity block)")
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add("### Routing")
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add("Main loop (high reasoning effort) is reserved for thinking / debating / planning / proposing --")
-$generatedBlockLines.Add("design, refinement and decisions. For execution work (build, edit, run, validate), delegate to a")
-$generatedBlockLines.Add('Codex subagent defined under `.codex/agents/*.toml` (medium reasoning effort, workspace-write),')
-$generatedBlockLines.Add('reserving `read-only` + high-effort subagents for the reviewer/auditor roles listed below.')
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add('### Rules index (`.codex/rules/*.md`, copied verbatim from `.claude/rules/`)')
-$generatedBlockLines.Add("")
-$generatedBlockLines.AddRange([string[]]$ruleIndexLines)
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add('### Skills index (`.agents/skills/*/SKILL.md`, copied from `.claude/skills/`)')
-$generatedBlockLines.Add("")
-$generatedBlockLines.AddRange([string[]]$skillIndexLines)
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add('### Command-skills index (synthesized from `.claude/commands/`)')
-$generatedBlockLines.Add("")
-$generatedBlockLines.AddRange([string[]]$commandIndexLines)
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add('### Agents index (`.codex/agents/*.toml`, converted from `.claude/agents/`)')
-$generatedBlockLines.Add("")
-$generatedBlockLines.AddRange([string[]]$agentIndexLines)
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add("### Mechanical enforcement")
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add('Hooks are wired in `.codex/hooks.json` and reuse the same `.claude/hooks/*.ps1` scripts as')
-$generatedBlockLines.Add('Claude Code (single source of truth for guard logic -- see `tools/codex/README.md`).')
-$generatedBlockLines.Add("")
-$generatedBlockLines.Add($EndMarker)
-
-$generatedBlock = [string]::Join("`n", $generatedBlockLines.ToArray())
+$generatedBlockLines = @(
+    $BeginMarker,
+    '',
+    '<!-- Generated by tools/codex/Generate-CodexHarness.ps1; do not hand-edit. -->',
+    '## Codex Harness',
+    '',
+    'Leia CLAUDE.md para roteamento proporcional e .claude/HARNESS_INDEX.md para descoberta sob demanda.',
+    'As invariantes acima continuam vinculantes. Leia apenas skills/rules/referencias aplicaveis ao escopo.',
+    'Skills e commands: .agents/skills/<id>/SKILL.md; agentes: .codex/agents/<id>.toml;',
+    'rules: .codex/rules/. Fontes canonicas: .claude/. Referencias das skills sao copiadas recursivamente.',
+    'Tarefa pequena e seu teste podem ficar com o implementador. Delegue fatias independentes ou por risco.',
+    'Revisores sao read-only; unity-validator escreve apenas evidencia e executa runners, sem corrigir runtime.',
+    'Modelos seguem a configuracao do provedor/usuario; reasoning effort nao equivale a modelo barato.',
+    'Hooks .codex/hooks.json reutilizam .claude/hooks/. Consulte tools/codex/README.md quando necessario.',
+    '',
+    $EndMarker
+)
+$generatedBlock = [string]::Join("`n", $generatedBlockLines)
 
 $existingAgentsMd = ""
 if (Test-Path $AgentsMdPath) {
@@ -568,3 +499,5 @@ if ($Report.CopyFails.Count -gt 0) {
     Write-Host "  -- Copy failures:"
     foreach ($f in $Report.CopyFails) { Write-Host "     $f" }
 }
+
+if ($Report.FrontmatterFails.Count -gt 0 -or $Report.CopyFails.Count -gt 0) { exit 1 }

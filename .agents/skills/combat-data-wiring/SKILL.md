@@ -61,7 +61,7 @@ Isso é backward-compatible e seguro.
 2. Herde de `DataRegistrySO<<TypeSO>>`
 3. Adicione o namespace `CindarsHope.Core.Data`
 4. Adicione um campo `[SerializeField]` + public property em `GameBootstrap.cs`
-5. Adicione a entry em `Assembly-CSharp.csproj`
+5. Confirmar asmdef e regeneração do projeto Unity correspondente quando necessário
 6. Adicione o check do validator em `CombatDatabaseValidator`
 
 ## Validator: adicionando check de novo database
@@ -84,16 +84,15 @@ Use `Warning` para asset ausente (ainda não criado), `Error` para ID não encon
 
 ## Validação
 
-```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
-```
+Selecionar gates pela SPEC_VALIDATION_MATRIX_MASTER; asset-only não exige .NET.
+Quando compile .NET for pertinente, usar `tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`.
+Reusar evidência verificada; não repetir build no retorno do subagent.
 
 Phase 2 (Unity): `CindarsHope/Validate/Combat/Validate Combat Databases`
 
 ## Regressões comuns
 
-- Esquecer de adicionar o novo .cs ao Assembly-CSharp.csproj
+- Não conferir o asmdef/projeto gerado que deve incluir o novo .cs
 - Usar `Resources.Load` sem fallback guard quando o database ainda pode não estar atribuído
 - Adicionar severity `Error` para asset ausente quando o wiring no Inspector é o próximo passo esperado
 - Não testar o null path de `TryGetById`

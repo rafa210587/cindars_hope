@@ -72,11 +72,10 @@ Precedentes reais: `CaveRuntimeMaterializer.ResolveEnvironmentElementDatabase()`
 
 ## Validação
 
-```powershell
-dotnet build .\Assembly-CSharp.csproj        # sem --no-restore se o Temp foi limpo (NETSDK1004 = infra, rode com restore)
-dotnet build .\Assembly-CSharp-Editor.csproj
-```
-As assemblies reais são `CindarsHope.Runtime`/`CindarsHope.Editor` (asmdefs); `Assembly-CSharp` segue como fallback. CS0234 sobre `CindarsHope.Editor.*` com Unity aberto = csproj transiente (rebuilde 1x — ver memória `unity-open-csproj-transient-build-errors`).
+Selecionar gates na SPEC_VALIDATION_MATRIX_MASTER. Para feedback .NET aplicável, usar
+`tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`; projetos vêm dos asmdefs/solução.
+Drift de csproj pede investigação/regeneração, não reexecução automática. Manter smoke
+de composição/lifecycle pertinente; reusar evidência verificada sobre os mesmos inputs.
 
 ## Regressões comuns
 

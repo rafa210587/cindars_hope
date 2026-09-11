@@ -1,6 +1,5 @@
 ---
 name: non-regression-auditor
-model: sonnet
 description: Audita diffs de implementação e documentação em busca de violações de arquitetura e riscos de regressão (forbidden APIs, breach de scope, violações de save DTO, claims de status falsos). Audit-only — reporta findings com evidência, nunca corrige. Use antes do closeout da spec.
 tools: Read, Glob, Grep, Bash
 ---
@@ -22,7 +21,8 @@ tools: Read, Glob, Grep, Bash
 
 **3. Runtime / Forbidden APIs** (grep nos arquivos mudados)
 - Sem `GameObject.Find` / `FindObjectOfType` / `FindObjectsByType` em código novo
-- Sem chamadas diretas cross-system — toda comunicação via `GameEventBus.Publish()`
+- Fatos de gameplay cross-system via `GameEventBus.Publish()`; helpers/queries/policies
+  locais injetadas são dependências explícitas, não violações automáticas de event bus.
 - Sem namespaces `CindarsHope.Debug`
 
 **4. Save DTO Safety**
@@ -52,6 +52,12 @@ tools: Read, Glob, Grep, Bash
 - Mudança de lógica determinística tem EditMode tests ou justificativa documentada
 - Mudança de UI/scene tem human Play Mode scenario ou justificativa
 - Bugfix tem regression test ou justificativa
+- Refatoração preserva APIs, campos serializados, GUIDs, schema, lifecycle e falhas;
+  teste caracteriza comportamento observável, não apenas estrutura interna.
+- SOLID: checar coesão, substituibilidade e contratos por consumidor; sinalizar abstrações
+  sem variação real. LOC/interface/cabeçalho não certificam qualidade.
+- Comentários de intenção continuam verdadeiros; fatos estruturais vêm do índice gerado,
+  sem frontmatter manual repetindo cada classe.
 
 ---
 
@@ -100,6 +106,7 @@ Risco residual:
 - `non-regression-review` — workflow de auditoria e checklist
 - `event-bus-pattern` — verificar conformidade de eventos
 - `save-load-pattern` — verificar conformidade de save DTOs
+- `solid-refactoring` — revisar costuras, comportamento preservado e contratos SOLID
 
 ## Violações comuns
 

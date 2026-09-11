@@ -1,6 +1,6 @@
 ---
 name: plan-wave
-description: "Comando de workflow do projeto (equivalente ao /plan-wave do Claude Code). Planeja a próxima FASE ou wave de desenvolvimento. Único command autorizado a ler ROADMAP.md por padrão."
+description: "Planeja a próxima FASE ou wave de desenvolvimento. Único command autorizado a ler ROADMAP.md por padrão."
 ---
 
 # /plan-wave

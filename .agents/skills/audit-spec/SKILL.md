@@ -1,6 +1,6 @@
 ---
 name: audit-spec
-description: "Comando de workflow do projeto (equivalente ao /audit-spec do Claude Code). Use para o audit de Phase 0: mapear o que existe, o que está ausente, os riscos e o menor delta seguro. NÃO implementa."
+description: "Use para o audit de Phase 0: mapear o que existe, o que está ausente, os riscos e o menor delta seguro. NÃO implementa."
 ---
 
 # /audit-spec

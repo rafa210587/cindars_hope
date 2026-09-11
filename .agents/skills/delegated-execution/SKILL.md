@@ -1,38 +1,55 @@
 ---
 name: delegated-execution
-description: "Como o loop principal (Opus) delega trabalho de execução a um subagent Sonnet **e verifica o resultado**, evitando os modos de falha já observados (narrar sem fazer; reportar sucesso omitindo desvios; dropar sub-itens em prompts longos). Complementa a rule `subagent-results-not-evidence` e o rout..."
+description: Delegates a bounded slice with ownership and verifies artifacts, behavior and evidence before accepting the executor's result.
 ---
 
-# Skill: Delegated Execution (delegar execução a subagent e verificar)
+# Skill: Delegated execution
 
-Como o loop principal (Opus) delega trabalho de execução a um subagent Sonnet **e verifica o resultado**, evitando os modos de falha já observados (narrar sem fazer; reportar sucesso omitindo desvios; dropar sub-itens em prompts longos). Complementa a rule `subagent-results-not-evidence` e o routing de `feedback_execution_routing`.
+Reuses existing agents and the project's validation matrix.
 
-## Quando usar
+**Core rule: verify the actual result; repeating a command is not an automatic condition
+for trusting evidence already verifiable against the same inputs.**
 
-- Sempre que delegar implementação/edição de código, asset wiring, relayout de cena, migração ou bugfix mecânico a um subagent (`spec-implementer`, `general-purpose` Sonnet, etc.).
+## When to use
 
-## Quando NÃO usar
+Delegated implementation, tooling, docs, asset wiring or bugfix work.
 
-- Tarefas que ficam no loop principal (responder, ler 1–2 arquivos, decidir design). Não delegue o que é debate/decisão.
-- Buscas read-only puras (use `Explore`/haiku direto, sem este cerimonial de verificação de build).
+## Checklist before delegating
 
-## Prompt de delegação — exigir SEMPRE
+- [ ] Ownership and allowed/forbidden files defined.
+- [ ] Tell the executor that other owners work in the repo; preserve prior dirty changes.
+- [ ] Explicit acceptance and non-regression criteria.
+- [ ] Relevant gates and tests selected through SPEC_VALIDATION_MATRIX_MASTER.
+- [ ] Coordinate one owner for the actual Unity/build run on the integrated state.
 
-1. **Sem delegar em cascata:** "NÃO use a ferramenta Agent/Task nem spawne sub-agentes — faça você mesmo." (Subagent em background que spawna filhos tende a retornar narração do pai antes do filho terminar.)
-2. **Escopo + critério de pronto explícitos:** arquivos permitidos/proibidos, e a lista de aceite/anti-regressão da spec (especialmente **remoções** e **requisitos novos do usuário** — são os mais esquecidos).
-3. **Provar com builds:** "rode `dotnet build` runtime+editor, exit 0 obrigatório; conserte até passar; nunca deixe o repo quebrado." (PowerShell, sem pipe filtrado.)
-4. **Retorno = evidência, não narração:** "retorne a lista exata de arquivos criados/editados, os exit codes dos builds, e o que ficou de fora. Se não fez X, diga explicitamente — não narre intenção."
-5. **Prompt grande → numere fases com build após cada uma**, para o agente não dropar sub-itens.
+## Procedure
 
-## Checklist do orquestrador ao receber o resultado (obrigatório)
+1. Delegate a cohesive slice with minimal context. Do not require a build at every listed step.
+2. Require created/edited files, commands, exit codes, log/XML paths and omissions.
+3. Check artifacts and the diff, including small requirements and removals.
+4. Inspect evidence: inputs, tool/configuration, result and executed cases.
+   A PASS report alone is insufficient; so is an old XML file.
+5. Rerun affected gates if later changes, uncovered integration, invalid/missing evidence
+   or concrete suspicion justify it. Do not repeat builds just because the executor
+   was a subagent. Later docs edits do not automatically invalidate C# tests.
+6. Update the report with specific results and limits; scoped is not global.
 
-- [ ] `Glob`/`Grep`: cada arquivo prometido existe e contém o esperado.
-- [ ] Re-rodar `dotnet build` runtime+editor você mesmo → exit 0 (não confiar no exit relatado).
-- [ ] Conferir contra os critérios de aceite + anti-regressão da spec (remoções feitas? requisito novo do usuário atendido? valores alinhados a uma única fonte?).
-- [ ] Se divergir do relatado: corrigir (você ou novo subagent focado) — não propagar o claim.
+## On-demand resources
 
-## Anti-padrões observados (não repetir)
+When you need a reusable document, open the [template](assets/templates/delegation-packet.md).
+To calibrate its contents, consult the [hypothetical example](references/examples/delegation-packet-example.md).
+Do not load both by default; examples neither prove execution nor grant authorization.
 
-- Aceitar "BUILD_VALIDATED" sem verificar (build passa mesmo com desvios que não quebram compile).
-- Spec com o mesmo valor (coords/balance) em duas seções → agente segue a errada. Defina cada valor **uma vez**; outras seções referenciam.
-- Spec longa com remoções/adições enterradas no meio → agente completa o "grosso" e dropa o item pequeno.
+## When NOT to use
+
+A simple read-only search or discussion without a useful independent execution slice.
+
+## When to stop and report
+
+Scope conflicts with other owners; results differ from the report; a mandatory requirement
+lacks evidence. Resolve within existing authorization and report pending work honestly.
+
+## Related
+
+- `(rule: subagent-results-not-evidence)`; `(rule: validation-truth)`.
+- `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`; `(skill: spec-execution)`.

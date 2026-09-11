@@ -1,9 +1,11 @@
 ---
 name: resolve-spec-dependency-chain
-description: "Comando de workflow do projeto (equivalente ao /resolve-spec-dependency-chain do Claude Code). > **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é .specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos."
+description: "Resolve same-wave spec dependencies before execution; use as an internal workflow reference."
 ---
 
 # /resolve-spec-dependency-chain
+
+Resolve same-wave spec dependencies before execution; use as an internal workflow reference.
 
 > **NOTA DE RECONCILIAÇÃO (2026-06-12):** a fila wave-based foi executada e movida para executadas_build_validated/. A fila ativa é .specs/a_implementar/fable/. Exemplos com paths NN_spec_* abaixo são históricos.
 

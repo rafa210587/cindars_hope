@@ -44,14 +44,13 @@ Executar specs com contexto mínimo, validação honesta e closeout phase-aware.
 
 ## Validação
 
-```powershell
-.\tools\docs\run_strict_validation.ps1
-if ($LASTEXITCODE -ne 0) { exit 1 }
-```
+Selecionar gates/testes pela `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` via `/validate-spec`.
+Strict sem `-Gates` é GLOBAL; seleção explícita é SCOPED. Obter somente evidência
+faltante/inválida; não repetir builds ou docs por agente, fase ou closeout.
 
 Registrar Phase 2-3 como NOT RUN se Unity/Play Mode não forem executáveis.
 
-Se o Testing Quality Gate exigir EditMode tests → delegar para o agent `test-author`.
+Testes pequenos de comportamento podem ser escritos pelo implementador. Delegar a `test-author` quando a suíte exigir especialização ou puder ser uma fatia independente.
 
 ## Quando parar e reportar
 
@@ -72,9 +71,10 @@ Execution report em `docs/validation/<spec_id>_execution_report.md` com:
 
 1. Ler CLAUDE.md + CURRENT_STATE.md + spec
 2. Scope lock — listar arquivos permitidos/proibidos
-3. Implementar
-4. Rodar `run_strict_validation.ps1`
-5. Rodar `/review-non-regression` (agent `non-regression-auditor`)
+3. Implementar; em refatoração, usar `solid-refactoring`: caracterizar comportamento,
+   reusar costuras, preservar contratos e documentar intenção útil em XML.
+4. Obter os gates/testes aplicáveis e conferir artefatos/inputs conforme a matriz
+5. Revisar não regressão com `non-regression-review`; usar `non-regression-auditor` independente quando o risco/escopo justificar ou a spec exigir, sem delegação automática para toda edição.
 6. Criar o execution report
 7. Chamar `/finish-spec` para o check de elegibilidade
 8. NÃO fazer push
@@ -84,6 +84,8 @@ Execution report em `docs/validation/<spec_id>_execution_report.md` com:
 | Quando | Skill |
 |--------|-------|
 | Qualquer spec | `spec-execution` |
+| Author or revise sprite animation frames/timing | `pixel-art-animator` with `aseprite-authoring`; independent visual review by `pixel-art-scene-reviewer` |
+| Refatoração/coerência de contratos SOLID/contexto por classe | `solid-refactoring` |
 | Spec WAVE_INTEGRATION_* | `wave-integration-slice` |
 | Ability não-slot (Dash/Dodge/Block/sprint) | `player-ability-runtime` |
 | NPC com dialogue/shop/scene | `npc-dialogue-authoring` |
@@ -94,8 +96,8 @@ Execution report em `docs/validation/<spec_id>_execution_report.md` com:
 | Inventário, stack, split, move | `inventory-transactions` |
 | Durabilidade, degradação, reparo | `equipment-durability-repair` |
 | Drop tables, loot pools | `loot-table-authoring` |
-| GameBootstrap / manager wiring | `bootstrap-wiring` |
-| *RuntimeBootstrap scene-aware | `runtime-bootstrap-pattern` |
+| Composition root/domain installers/manager wiring | `bootstrap-wiring` |
+| Manutenção de *RuntimeBootstrap legado (não criar novo) | `runtime-bootstrap-pattern` |
 | Arma/feitiço/status databases | `combat-data-wiring` |
 | Save/load | `save-load-pattern` |
 | Nova seção no save file | `save-section-provider` |

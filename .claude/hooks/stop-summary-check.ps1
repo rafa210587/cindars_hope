@@ -15,20 +15,6 @@ catch {
     # Sem stdin ou stdin malformado: continua como hook informativo
 }
 
-# Verifica se houve alguma mudanca
-try {
-    $changedFiles = @(git diff --name-only 2>$null)
-}
-catch {
-    # Se o git falhar, apenas pula (ex.: contexto fora de repo)
-    exit 0
-}
-
-if ($changedFiles.Count -eq 0 -and -not (git status --porcelain 2>$null)) {
-    # Sem mudancas - pula este hook
-    exit 0
-}
-
 # Le o scope se ele existir
 $scopeFile = ".\.claude\.runtime\change-scope.json"
 $scope = $null
@@ -40,6 +26,9 @@ if (Test-Path $scopeFile) {
         # Ignora erros de parse
     }
 }
+
+# O detector anterior possui o inventario; nao repetir scans git neste hook.
+if ($scope -and $scope.changedFileCount -eq 0) { exit 0 }
 
 # Paths proibidos: bloqueia o stop para Claude tratar a violacao antes de finalizar
 if ($scope -and ($scope.forbiddenPathsChanged -or $scope.rootSpecsRecreated)) {
@@ -70,16 +59,16 @@ if ($scope -and ($scope.docsChanged -or $scope.unityRuntimeChanged -or $scope.pr
     Write-Host ""
 
     if ($scope.docsChanged) {
-        Write-Host "   [ ] Docs validation: PASS / WARNING (run: .\tools\docs\validate_docs.ps1)"
+        Write-Host "   [ ] Docs: registrar resultado real e evidencia do gate aplicavel; reusar inputs equivalentes"
     }
 
     if ($scope.unityRuntimeChanged -or $scope.projectSettingsChanged) {
-        Write-Host "   [ ] Unity compile: PASS / NOT RUN with reason"
-        Write-Host "   [ ] Log scan: PASS / NOT RUN with reason"
+        Write-Host "   [ ] Unity compile/testes: resultado real (PASS / FAIL / NOT RUN + motivo) conforme matriz"
+        Write-Host "   [ ] Log scan: conferir evidencia incorporada ao runner; nao repetir scan no mesmo log"
     }
 
-    Write-Host "   [ ] Non-regression: PASS / WARNING (run: /review-non-regression)"
-    Write-Host "   [ ] Play Mode features: NOT RUN (sandboxed) - user tests later"
+    Write-Host "   [ ] Non-regression: resultado real e findings; revisao proporcional ao risco"
+    if ($scope.unityRuntimeChanged -or $scope.projectSettingsChanged) { Write-Host "   [ ] Play Mode: registrar execucao/evidencia real ou NOT RUN com motivo e risco; nunca presumir resultado" }
 
     if ($scope.saveSystemChanged) {
         Write-Host "   [ ] SAVE SYSTEM CHANGED: save tests updated (defaults, null section, invalid ID, round-trip) or justified (rule: testing-quality-gate; skill: save-section-provider)"
@@ -90,7 +79,7 @@ if ($scope -and ($scope.docsChanged -or $scope.unityRuntimeChanged -or $scope.pr
     Write-Host ""
 
     Write-Host "If spec was implemented:"
-    Write-Host "   [ ] Spec moved to .specs/implementados/ (only via /finish-spec eligibility)"
+    Write-Host "   [ ] Status da spec conferido por /finish-spec; promover somente se elegivel com evidencia"
     Write-Host "   [ ] Evidence header added (commit, files, validations)"
     Write-Host "   [ ] PROJECT_LOG.md updated"
     Write-Host "   [ ] IMPLEMENTATION_STATUS.md updated"
@@ -118,7 +107,7 @@ Write-Host "   x Open PR/MR (awaits user approval)"
 Write-Host "   x Hide validation failures"
 Write-Host "   x Claim compliance without evidence"
 Write-Host ""
-Write-Host "-> If all checks pass, ready to deliver to user"
+Write-Host "-> Reportar gates aplicaveis, falhas e pendencias sem declarar aprovacao automatica"
 Write-Host ""
 Write-Host "==================================================="
 Write-Host ""

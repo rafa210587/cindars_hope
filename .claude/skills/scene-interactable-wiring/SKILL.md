@@ -207,12 +207,9 @@ INTERACTABLE_ANIMATION_DEFERRED  — no depletion visual yet
 
 ## Validação
 
-```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-if ($LASTEXITCODE -ne 0) { Write-Host "BUILD FAILED"; exit 1 }
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
-if ($LASTEXITCODE -ne 0) { Write-Host "EDITOR BUILD FAILED"; exit 1 }
-```
+Selecionar gates pela SPEC_VALIDATION_MATRIX_MASTER. Quando .NET for aplicável, usar
+`tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`; reusar evidência verificada sobre
+os mesmos inputs. Asset-only não exige build C#, mas preserva o smoke de interação abaixo.
 
 O checklist humano de Play Mode deve cobrir:
 - Andar até o interactable → o prompt aparece

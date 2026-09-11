@@ -1,6 +1,5 @@
 ---
 name: test-author
-model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, PowerShell
 description: Escreve EditMode tests para deterministic logic (save DTOs, combat formulas, economy pricing, quest conditions, calendar) seguindo as convenções do projeto. Use quando o Testing Quality Gate exigir testes automatizados para uma spec ou bugfix.
 ---
@@ -28,11 +27,9 @@ description: Escreve EditMode tests para deterministic logic (save DTOs, combat 
 
 ## Validação
 
-```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-if ($LASTEXITCODE -ne 0) { exit 1 }
-.\tools\unity\RunUnityEditModeTests.ps1
-```
+Usar `tools/unity/RunUnityEditModeTests.ps1` com filtro pertinente e XML/log próprios.
+Não exigir .NET antes: o Test Runner compila. Consultar SPEC_VALIDATION_MATRIX_MASTER;
+reusar evidência vigente ou coordenar a rodada integrada, sem build repetido por agente.
 
 Nunca declare "tests passed" sem evidência da saída do runner (rule: validation-truth).
 

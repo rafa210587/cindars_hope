@@ -67,18 +67,20 @@ Inspecione o diretório `.claude/.runtime/` em busca de arquivos de evidência:
 - [ ] `.claude/.runtime/change-scope.json` — detecção de mudança persistida
 - [ ] `.claude/.runtime/validation-results.json` — resultados de validação persistidos
 
-Use-os como evidência para as validações obrigatórias.
+Change-scope auxilia seleção, não prova autoria. Não usar validation-results.json do
+runner legado como aprovação: o agregado pode mascarar FAIL.
 
 ### 5. Validações executadas (se usando /implement-spec)
 
-Se `.claude/.runtime/validation-results.json` existir:
+Conferir os artefatos reais registrados no execution report, vinculados aos inputs atuais:
 
 - [ ] Docs validation: PASS ou WARNING aceitável
 - [ ] Unity compile: PASS ou NOT RUN documentado
 - [ ] Log scan: PASS ou NOT RUN documentado
 - [ ] Status geral: PASS/FAIL/WARNING
 
-Se os arquivos estiverem ausentes, cheque o output do console em busca de evidência de validação.
+Se faltar evidência verificável, executar o gate pertinente. Não repetir comandos apenas
+porque vieram de subagent; seguir SPEC_VALIDATION_MATRIX_MASTER e validation-truth.
 
 ### 6. Segurança de spec/roadmap (se for tarefa de spec)
 

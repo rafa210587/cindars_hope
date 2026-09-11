@@ -17,8 +17,8 @@ Separar falhas de código de falhas de ambiente/tooling antes de reportar o stat
 - Exit code.
 - Path do arquivo de log, quando presente.
 - Linhas-chave de output.
-- Se `dotnet build .\Assembly-CSharp.csproj --no-restore` foi tentado.
-- Se `dotnet build .\Assembly-CSharp-Editor.csproj --no-restore` foi tentado.
+- Quais gates eram aplicáveis pela SPEC_VALIDATION_MATRIX_MASTER e qual evidência existe.
+- Se `Invoke-UnityGeneratedProjectsBuild.ps1` foi usado como fallback/feedback; não é pré-requisito do Test Runner.
 
 ## Regras de classificação
 
@@ -46,9 +46,9 @@ Provável se `dotnet build` reporta tipos ausentes para arquivos recém-adiciona
 
 Ação:
 
-1. Cheque se o novo arquivo `.cs` está listado em `Assembly-CSharp.csproj` ou `Assembly-CSharp-Editor.csproj`.
-2. Adicione compile includes locais só quando necessário para validação neste repo.
-3. Rode de novo `dotnet build`.
+1. Cheque se o novo `.cs` está no projeto gerado correspondente ao asmdef.
+2. Regenerar projetos pelo Unity quando necessário; não perpetuar includes manuais em projetos obsoletos.
+3. Reexecute somente o gate invalidado; Test Runner válido pode prover compile Unity.
 4. Mencione o drift de `.csproj` nas notas de validação se tocado.
 
 ### Unity já aberto

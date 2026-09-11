@@ -49,17 +49,22 @@ Encontrar e corrigir bugs com a menor mudança possível. Sem scope creep, sem r
 
 ## Validação
 
-```powershell
-.\tools\docs\run_strict_validation.ps1
-if ($LASTEXITCODE -ne 0) { exit 1 }
-```
+For live Unity reproduction, use `unity-mcp-operations` when available. Preserve the first
+failure and reproduce its trigger before changing code; the top stack frame is evidence,
+not proof that it owns the defect. Use `unity-performance-profiling` for measured hitch claims.
+If this agent's tool allowlist excludes MCP, request the bounded reproduction/capture from
+the enabled Editor owner and inspect its evidence; a parent connection is not automatically usable here.
+
+Selecionar gates e regressão pela `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`.
+Usar `/validate-spec`; strict GLOBAL e SCOPED são distintos. Reusar evidência verificável
+sobre os mesmos inputs, sem repetir build/docs no retorno ao orquestrador.
 
 Se validation falhar por erro novo → usar `unity-validation-triage` para classificar.
 
 **Testing Quality Gate (obrigatório):**
 - Escrever regression test que falha antes do fix e passa depois; OU
 - Documentar justificativa de por que automação não é prática
-- Se regression test for necessário → delegar para o agent `test-author`
+- Se regression test for necessário, o investigador pode escrever o teste pequeno; delegar a `test-author` quando houver fatia independente ou especialização.
 
 ## Classificação do bug
 
@@ -86,8 +91,8 @@ Depois do fix, classifique como:
 ### Validation
 | Level | Result |
 |-------|--------|
-| run_strict_validation | PASS exit 0 |
-| Non-regression | PASS |
+| Gates aplicáveis (modo/seleção explícitos) | PASS / FAIL / NOT RUN + exit/evidência |
+| Non-regression | PASS / FAIL + evidência |
 
 ### Testing Quality Gate
 Regression test: <path ou JUSTIFIED: motivo>

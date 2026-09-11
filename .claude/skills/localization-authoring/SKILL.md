@@ -1,149 +1,25 @@
 ---
 name: localization-authoring
-description: Todo texto voltado ao player via string key (zero hardcode em UI/diálogo); convenções de LocalizationStringTable e LocalizationService. Usar em specs de diálogo, UI, quest text e em qualquer código que exiba texto visível ao player — especialmente a partir de fase P4 em diante (ADR-0012).
+description: Add or migrate player-facing text through the existing localization keys and service. Use for UI, dialogue, quest and interaction text; preserve system IDs and visible missing-key fallback.
 ---
 
-# Skill: Autoria de Localização
+# Skill: Localization authoring
 
-O projeto adota localização via tabela de strings desde a fase P4 (ADR-0012). A fonte de verdade é `LocalizationStringTable` (dicionário estático lazy-init, PT-BR) e o ponto de acesso é `LocalizationService` (`Get(id)`, `TryGet(id, out value)`, `Has(id)`). Texto hardcoded em UI e diálogo é débito explícito (registrado em ADR-0012 como "Registered Debt" pré-P4); texto **novo** deve sempre usar o sistema.
+New player-facing text uses the existing localization table/service. Do not introduce another
+framework or change quest, NPC, item or save IDs while adding presentation keys.
 
-## Quando usar
+## Essential workflow
+1. Identify every player-visible string in scope and its owning domain. Debug/editor logs and
+   internal IDs are not localized.
+2. Inspect current `LocalizationStringTable` and `LocalizationService` APIs before editing;
+   do not assume historical methods or seed layout.
+3. For new keys, lookup/fallback, placeholders and tests, read
+   [runtime usage](references/runtime-usage.md).
+4. Read [migration and closeout](references/migration-and-closeout.md) only for an explicitly
+   scoped hardcode sweep or compatibility review. Pre-existing debt is not incidental scope.
+5. Test successful lookup, missing-key visibility and parameter formatting. For affected UI,
+   use `hud-canvas-binding` to inspect glyphs, accents, expansion, wrapping and truncation.
 
-- Spec adiciona texto novo visível ao player (toast, label, diálogo, nome de quest, prompt de interação).
-- Spec de diálogo (fable_70, F35, F36) que declare nós de texto novos.
-- UI screen que renderize string derivada de ID (status effect, classe, slot de skill).
-- Qualquer código que hoje ainda usa hardcode (`"Amizade: nivel"`, toast inline) e precise ser migrado.
-- Checklist de closeout: verificar se texto novo entrou na tabela.
-
-## Por que existe
-
-Texto hardcoded em código de gameplay impede tradução futura sem mexer em lógica, cria ruído em testes e viola a separação entre dados e comportamento. A regra de `FailureReason` virar key (`LocalizationService.Get(reason)` na view em vez de string bruta) é o padrão canônico do projeto.
-
-## Sistemas existentes (reusar, não duplicar)
-
-| Classe | Papel |
-|---|---|
-| `LocalizationStringTable` (`CindarsHope.Localization`) | Dicionário `string id → string PT-BR`; lazy-init; `TryGetValue(id, out v)`, `Contains(id)`, `OverrideForTests(dict)` |
-| `LocalizationService` | Acesso público: `Get(id)`, `TryGet(id, out v)`, `Has(id)` — fallback determinístico: key ausente retorna o próprio id (nunca null, nunca exceção) |
-| `LocalizationEntry` | DTO interno: `Id` + `Value`; `IIdentifiedData` |
-
-**Convenção canônica de id** (declarada em `LocalizationStringTable.SeedEntries()`):
-
-```
-{domain}.{spec_ou_npc}.{slot}
-  quest.first_supplies.title
-  quest.first_supplies.desc
-  dialogue.pip.greeting
-  ui.friendship.level_label
-  ui.birthday.gift_toast        ← usa {0} para placeholder
-  interact.zrix_board.prompt
-  contract.cave.milestone.title
-```
-
-- Domínio: `quest.`, `dialogue.`, `ui.`, `interact.`, `contract.`
-- Separador: ponto; segmentos em `snake_case`; sem espaços.
-
-## Procedimento
-
-### Registrar texto novo
-
-Em `LocalizationStringTable.SeedEntries()` (ou partial futura):
-
-```csharp
-yield return new LocalizationEntry("ui.meu_sistema.label", "Texto em PT-BR");
-yield return new LocalizationEntry("quest.minha_quest.title", "Titulo da Quest");
-```
-
-Nunca hardcode a string na view ou no ViewModel.
-
-### Resolver na view / ViewModel
-
-```csharp
-// Caso simples (key sempre presente):
-string label = LocalizationService.Get("ui.meu_sistema.label");
-
-// Caso com fallback explícito:
-if (LocalizationService.TryGet("quest.minha_quest.title", out var title))
-    _titleText.text = title;
-else
-    _titleText.text = "quest.minha_quest.title"; // fallback visível
-
-// FailureReason como key (padrão canônico):
-string msg = LocalizationService.Get(failureReason); // se não tiver key, retorna o próprio reason
-```
-
-**Nunca** retornar string vazia para key ausente — `LocalizationService.Get` já garante fallback = id.
-
-### Placeholder dinâmico (plurais, nomes)
-
-Use `string.Format` ou interpolação APÓS resolver a key:
-
-```csharp
-// "Hoje e aniversario de {0}!" → "Hoje e aniversario de Pip!"
-string toast = string.Format(LocalizationService.Get("ui.birthday.gift_toast"), npcName);
-```
-
-Nunca embutir o valor dinâmico diretamente na key.
-
-### Testar
-
-`LocalizationStringTable.OverrideForTests(dict)` substitui a tabela inteira para o teste (reset com `null`):
-
-```csharp
-LocalizationStringTable.OverrideForTests(new Dictionary<string, string>
-{
-    { "quest.minha_quest.title", "Titulo Teste" }
-});
-Assert.AreEqual("Titulo Teste", LocalizationService.Get("quest.minha_quest.title"));
-LocalizationStringTable.OverrideForTests(null); // cleanup
-```
-
-### Migração de hardcode existente (sweep) — só com spec explícita
-
-A `fable_73` entregou a string table, mas **dezenas de specs anteriores hardcodaram PT-BR** (ex.: `QuestRegistry` em `DisplayName`/`Description`, `TownNpcDialogueLibrary`, nós de `DialogueNode.Text` em SOs). Isso é **registered debt** do ADR-0012 — não migre sozinho dentro de outra spec. Quando houver uma spec de sweep no escopo:
-
-1. **Mapear o hardcode** por domínio:
-   ```powershell
-   Select-String -Path Assets\_Game\Scripts\Quests\Runtime\QuestRegistry*.cs -Pattern 'DisplayName\s*=\s*"'
-   Select-String -Path Assets\_Game\Scripts\NPC\*Dialogue*.cs -Pattern '= "'
-   ```
-2. **Priorizar por visibilidade:** texto de UI/quest/diálogo que o player lê muito primeiro; lore raro depois.
-3. **Migrar em fatias por domínio** (um commit por domínio: quests, depois diálogo, depois UI), cada literal vira `LocalizationService.Get("quest.<id>.title")` + entrada em `LocalizationStringTable.SeedEntries()`.
-4. **Preservar id-stability:** a *key* de localização é um id de domínio novo (segue a convenção `{domain}.{spec_ou_npc}.{slot}`); o id de sistema (questId, npcId) **não muda** (rule `id-stability`).
-5. **Teste de regressão:** o texto exibido antes == `LocalizationService.Get(key)` depois (round-trip via `OverrideForTests`).
-
-Sweep é migração de **apresentação**, não de save nem de id de sistema — nenhum save quebra, nenhum questId muda.
-
-## Regras
-
-- Todo texto visível ao player a partir de P4 usa key → `LocalizationService.Get(key)`.
-- **Nunca** `string.IsNullOrEmpty(LocalizationService.Get(id))` para detectar key ausente — o fallback é o próprio id (sempre não-vazio para ids não-vazios). Use `LocalizationService.Has(id)` ou `TryGet`.
-- Key ausente é **dado visível ao player** (retorna o id como fallback) — não deve chegar a produção. Registrar como débito se a key ainda não existir na tabela.
-- Não criar um segundo sistema de i18n, um `ResourceManager` Unity ou um `Addressables` de texto — ADR-0012 bane localization frameworks em v1.
-- Texto pré-P4 (ex.: `DialogueNode.Text` hardcoded em SOs, `TownNpcDialogueLibrary`) é débito registrado — não migrar sem spec explícita.
-- `LocalizationStringTable` e `LocalizationService` são classes estáticas puras (sem Unity, sem GameEventBus, sem save).
-
-## Saída esperada (checklist de closeout)
-
-```text
-Texto novo voltado ao player: SIM/NÃO
-Keys registradas em LocalizationStringTable: SIM/NÃO APLICÁVEL
-Convenção de id seguida: SIM/NÃO
-LocalizationService.Get usado na view/ViewModel: SIM/NÃO
-Hardcode de string removido/ausente: SIM
-Teste de round-trip (OverrideForTests): SIM/NÃO APLICÁVEL
-```
-
-## Quando NÃO usar
-
-- Texto de **debug/log** interno (`Debug.Log`, `UnityEngine.Debug`) → não localizar; esses nunca chegam ao player.
-- **IDs de sistema** (item IDs, npcIds, evento IDs) → são identificadores, não texto de UI; cobertos pela rule `id-stability`.
-- Texto hardcoded **pré-P4 existente** → é registered debt (ADR-0012); não refatorar a menos que a spec inclua isso explicitamente no escopo.
-- Texto de **editor tools** e validators (só visto por devs) → não precisa de localização.
-
-## Relacionados
-
-- ADR-0012 — decisão canônica de localization
-- `(skill: npc-dialogue-authoring)` — diálogo localizado via keys
-- `(skill: ui-projection-pattern)` — a view resolve a key no ViewModel
-- `(skill: editmode-test-authoring)` — testar tabela via `OverrideForTests`
+Keys use stable domain-based names; dynamic values are formatted after resolving the key.
+Deliver new/migrated keys, call sites, fallback behavior, tests and pending visual coverage.
+External guidance does not authorize adding Unity Localization or Addressables.

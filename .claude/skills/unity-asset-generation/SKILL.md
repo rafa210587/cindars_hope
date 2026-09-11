@@ -17,11 +17,17 @@ Use esta skill quando uma spec exige assets de ScriptableObject, scene, prefab o
 
 ## Comando padrão
 
+Resolve the Editor matching `ProjectSettings/ProjectVersion.txt` and the absolute project path
+before running. The variables below must contain observed paths, not a copied version default.
+If the same project is open, use its authorized Editor command when available through
+[unity-mcp-operations](../unity-mcp-operations/SKILL.md); do not launch a competing batch instance.
+Inspect command side effects and output ownership before invoking broad generators.
+
 ```powershell
-& "C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe" `
+& $unityExe `
   -batchmode `
   -quit `
-  -projectPath . `
+  -projectPath $projectPath `
   -executeMethod <Namespace.Type.Method> `
   -logFile Logs\<spec>_<generator>.log
 ```

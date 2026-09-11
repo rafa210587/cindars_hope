@@ -1,6 +1,6 @@
 ---
 name: bugfix
-description: "Comando de workflow do projeto (equivalente ao /bugfix do Claude Code). Corrige um bug específico dentro do scope dos arquivos afetados. Contexto mínimo. Sem roadmap."
+description: "Corrige um bug específico dentro do scope dos arquivos afetados. Contexto mínimo. Sem roadmap."
 ---
 
 # /bugfix

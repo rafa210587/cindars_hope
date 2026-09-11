@@ -1,51 +1,32 @@
 ---
 name: run-editmode-tests
-description: "Comando de workflow do projeto (equivalente ao /run-editmode-tests do Claude Code). Executa os testes EditMode via Unity batchmode e reporta o resultado com honestidade (PASS / FAIL / NOT RUN com motivo). Não implementa correções."
+description: "Executa EditMode com evidência fresca ou reutiliza resultado pertinente verificável."
 ---
 
 # /run-editmode-tests
 
-Executa os testes EditMode via Unity batchmode e reporta o resultado com honestidade (PASS / FAIL / NOT RUN com motivo). Não implementa correções.
+Executa EditMode com evidência fresca ou reutiliza resultado pertinente verificável.
 
-**Arguments:** `$ARGUMENTS` — opcional: filtro de categoria/nome de teste
-
----
-
-## Pré-condições (verificar antes de rodar)
-
-```powershell
-Set-Location 'D:\Projetos\Jogos\Cindars_hope\cindars_hope'
-Get-Process -Name "Unity" -ErrorAction SilentlyContinue
-```
-
-- Se houver processo Unity rodando: **NÃO rodar** (rule: unity-assets / no-parallel-unity-batchmode). Reportar `NOT RUN — Unity lock` e parar.
-- Compile fallback primeiro: `dotnet build .\Assembly-CSharp.csproj --no-restore` com `$LASTEXITCODE -eq 0`. Se falhar, os testes nem compilam — reportar FAIL de compile e parar.
+**Arguments:** `$ARGUMENTS` — filtro regex Unity opcional; sem filtro executa a suíte completa.
 
 ## Procedimento
 
-```powershell
-.\tools\unity\RunUnityEditModeTests.ps1
-if ($LASTEXITCODE -ne 0) { Write-Host "TESTS FAILED (exit $LASTEXITCODE)" }
-```
-
-Aguardar o término (batchmode é sequencial, um log por execução). Ler o log/result file que o script produzir.
+1. Consultar matriz de validação e resultados anteriores. Um novo input pertinente
+   invalida a evidência; delegação por si só não invalida.
+2. Rodar `tools/unity/RunUnityEditModeTests.ps1` com `-TestFilter` quando pertinente,
+   paths de XML/log próprios da execução e timeout adequado.
+3. Não exigir build .NET antes: Unity compila no Test Runner. .NET é feedback/fallback
+   opcional conforme matriz; drift de csproj não prova que testes Unity não compilam.
+4. Conferir XML novo, total positivo, resultado agregado, casos e filtro. Runner também
+   faz scan de compile/crash; exceptions esperadas ficam sob o Test Framework.
+5. Registrar resultado, comando/versão/configuração, inputs, exit, contagens e artefatos.
 
 ## Saída esperada
 
-```text
-EditMode Tests
-──────────────
-Compile fallback (dotnet): PASS | FAIL
-Unity batchmode tests: PASS | FAIL | NOT RUN
-Reason if NOT RUN: <Unity lock | license | timeout | approval>
-Total / Passed / Failed: <n/n/n ou UNKNOWN>
-Failed tests: <lista ou none>
-Log: <caminho>
-```
+EditMode PASS / FAIL / NOT RUN; compile e comportamento identificados separadamente.
+Lista de falhas e pendências, sem confundir zero testes com sucesso.
 
-## Regras
+## Não fazer automaticamente
 
-- Nunca converter NOT RUN em PASS (rule: validation-truth).
-- Nunca filtrar a saída do build para inferir sucesso — exit code apenas.
-- Falha de teste = parar e reportar; correção é tarefa separada (/bugfix ou spec ativa).
-- Nunca alegar "tests passed" sem o resultado do runner no report.
+Não iniciar projeto aberto nem encerrar editor preexistente. Não modificar testes ou
+expected apenas para obter PASS. Não repetir suíte idêntica no retorno do subagent.

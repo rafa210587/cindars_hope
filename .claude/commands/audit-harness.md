@@ -1,46 +1,25 @@
 # /audit-harness
 
-Audita o harness (`.claude/`) em busca de artefatos ausentes do índice, refs obsoletas, skills muito longas, skill names informais em agents e contagens hardcoded. Produz lista de ações corretivas priorizadas.
+Audita descoberta, referências e decisões do harness .claude, com findings proporcionais ao impacto.
 
-**Arguments:** `$ARGUMENTS` — opcional: `skills`, `agents`, `rules` para escopo parcial (padrão: todos)
+**Arguments:** `$ARGUMENTS` — opcional: artefato, `skills`, `agents`, `rules` ou outro escopo concreto;
+sem filtro, auditar as dimensões aplicáveis ao harness.
 
 ## Quando usar
-
-- Após adicionar batch de novos artefatos ao harness
-- Quando uma skill ou agent parece não estar sendo disparado
-- Antes de revisão do harness com o humano
-- Periodicamente após waves grandes
+- Após mudanças de roteamento ou batch de artefatos; para investigar recurso não descoberto ou instrução contraditória.
 
 ## Procedimento
-
-1. Usar skill `harness-audit` — executar o checklist completo das 8 dimensões
-2. Reportar findings em ordem de impacto:
-   - **Alta:** skills/agents ausentes do CLAUDE.md (nunca disparam)
-   - **Alta:** refs obsoletas (enganam o Claude)
-   - **Média:** skills > 150 linhas ou agents > 130 linhas
-   - **Baixa:** skill names informais, contagens hardcoded, "Quando NÃO usar" ausente
-3. Para cada finding, propor a ação corretiva mínima
-4. Perguntar ao humano se deve executar as correções antes de qualquer edição
+1. Usar `harness-audit`; selecionar dimensões e cenários pertinentes ao escopo.
+2. Conferir descoberta pelo `.claude/HARNESS_INDEX.md`, referências transitivas e cópias publicadas.
+3. Priorizar findings por risco: instrução incorreta, referência quebrada, perda de segurança/evidência
+   ou misrouting. Tamanho de arquivo é sinal para análise, não reprovação por limite arbitrário.
+4. Entregar localização, evidência, impacto e correção mínima. Auditoria isolada não edita;
+   correções já autorizadas são executadas no ownership permitido sem nova pergunta.
 
 ## Não fazer automaticamente
-
-- Não commitar sem confirmação
-- Não deletar artefatos
-- Não mover specs para `implementados/`
-- Não reescrever skills/agents sem aprovação — apenas reportar
+- Deletar artefatos, promover specs, alterar gameplay ou ampliar o escopo da autorização.
+- Tratar formato correto, contagem de linhas ou palavra PASS como prova de comportamento.
 
 ## Saída esperada
-
-```text
-/audit-harness — <data>
-──────────────────────
-[resultado das 8 dimensões da skill harness-audit]
-
-Ações recomendadas (priorizadas):
-1. [Alta] Adicionar X ao CLAUDE.md — ausente do índice
-2. [Alta] Corrigir ref "IMPLEMENTATION_STATUS.md" em agent Y
-3. [Média] Reduzir skill Z de 180 para ≤ 150 linhas
-...
-
-Executar correções? (aguardando confirmação do humano)
-```
+Scope, checks realizados, findings priorizados e limitações. Quando houver autorização de edição,
+incluir correções feitas, validação e arquivos alterados; caso contrário, apresentar ações recomendadas.

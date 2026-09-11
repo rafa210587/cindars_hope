@@ -1,341 +1,111 @@
 ---
 name: save-load-pattern
-description: Implementa save/load com IDs, simple types e sem Unity refs. Use em qualquer tarefa que crie ou altere persistência de dados (save DTOs, sections, migrations, round-trip de estado).
+description: Implementa save/load com IDs estáveis, DTOs simples e providers existentes. Usar ao criar ou alterar persistência, sections, migrations e testes de round-trip.
 ---
 
-# Save/Load Data Pattern
+# Skill: Save/load com identidade estável
 
-Use when the task involves persistence, save data, load data, DTOs, snapshots, or registries.
+O projeto usa `ISaveSectionProvider`, `SaveProviderRegistry` e `SaveMigrationRegistry`;
+`HotbarSectionProvider` é um precedente concreto de adapter com dependência explícita.
 
-## Core Rules
+**Regra central: preservar identidade e dados legados; save contém IDs canônicos e tipos simples, nunca referências Unity.**
 
-1. **Save uses IDs and simple types only.** Never Unity refs.
-2. **Forbidden to serialize:**
-   - `ScriptableObject`
-   - `GameObject`
-   - `Transform`
-   - `MonoBehaviour`
-   - `Sprite`
-   - `Collider`
-   - `Rigidbody`
-3. **Editable save uses `Application.persistentDataPath`.** Never `StreamingAssets`.
-4. **Load resolves IDs via registries.** Registry is source of truth.
-5. **Schema versioning is required.** Track version and provide migrations.
-6. **IDs are stable.** Never rename or reuse IDs without documented migration.
+## Quando usar
 
-## Save Data Structure Pattern
+- Criar/alterar DTO, provider, registro, migration ou recuperação de save.
+- Capturar/restaurar estado por IDs, validar compatibilidade ou snapshot de cave.
 
-### ✅ Correct Example
+## Checklist antes de editar
 
-```csharp
-namespace CindarsHope.Runtime.Save
-{
-    [System.Serializable]
-    public class ItemSaveData
-    {
-        public int itemId;        // ID only
-        public int quantity;      // Simple type
-        public float durability;  // Simple type
-    }
-    
-    [System.Serializable]
-    public class EquipmentSaveData
-    {
-        public int equipmentId;   // ID only
-        public float currentDurability; // Simple type
-        public int weaponSlot;    // Slot index (int)
-    }
-    
-    [System.Serializable]
-    public class PlayerSaveData
-    {
-        public int version = 3;   // Schema version
-        public float positionX, positionY; // Floats only
-        public int[] equippedIds; // IDs only
-        public List<ItemSaveData> inventory; // DTOs with IDs
-    }
-}
-```
+- [ ] Ler DTO/provider/registro atuais do domínio e fixtures de versões afetadas.
+- [ ] IDs de conteúdo são `string` canônicas; índices e quantidades não viram identidade.
+- [ ] Nenhuma Unity ref em DTO: SO, GameObject, Transform, componentes, Sprite ou Rigidbody.
+- [ ] Nenhuma atribuição de ID pela ordem de array, nome de arquivo, `OnValidate`, data ou RNG.
+- [ ] IDs antigos não são removidos/renomeados/reutilizados sem migration e evidência.
+- [ ] Contrato de campo ausente, ID desconhecido e fallback explícito definido.
+- [ ] Teste de round-trip e compatibilidade cobre estado real, não apenas serialize vazio.
 
-### ❌ Incorrect Example
+## Leitura mínima e precedentes
 
-```csharp
-// DO NOT DO THIS:
-[System.Serializable]
-public class ItemSaveData
-{
-    public ItemDataSO itemData;     // ❌ ScriptableObject!
-    public Sprite icon;              // ❌ Sprite!
-    public Transform position;       // ❌ Transform!
-    public MonoBehaviour handler;    // ❌ MonoBehaviour!
-}
-```
+Paths abaixo são relativos a `Assets/_Game/Scripts/`:
 
-## Load Pattern with Registry Resolution
+- `Save/ISaveSectionProvider.cs`: `ProviderId`, `Capture(GameSaveData)`, `Restore(object)`.
+- `Save/Providers/HotbarSectionProvider.cs`: adapter de estado injetado e null handling.
+- `Save/SaveProviderRegistry.cs` e `Save/SaveManager.cs`: registro tipado e ordem de providers.
+- `Save/Migrations/SaveMigrationRegistry.cs`: caminho explícito entre versões e erro de migration.
+- `Inventory/InventorySaveData.cs`: `string ItemId`, `int SlotIndex`, `int Amount`.
 
-### Step 1: Define Registry Interface
+Ler somente os precedentes relevantes e o domínio da spec. Não copiar providers antigos
+que usem busca global; adotar wiring atual por composition root/installers.
 
-```csharp
-public interface IItemRegistry
-{
-    ItemDataSO GetItemById(int itemId);
-    bool TryGetItem(int itemId, out ItemDataSO item);
-}
+## Identidade e DTOs
 
-public class ItemRegistry : MonoBehaviour, IItemRegistry
-{
-    [SerializeField] private ItemDataSO[] items;
-    
-    public ItemDataSO GetItemById(int itemId)
-    {
-        return items.FirstOrDefault(i => i.Id == itemId);
-    }
-    
-    public bool TryGetItem(int itemId, out ItemDataSO item)
-    {
-        item = GetItemById(itemId);
-        return item != null;
-    }
-}
-```
+- IDs de conteúdo vêm do catalog canônico com `public const string`, conforme `id-stability`.
+- `SlotIndex`, quantidade, profundidade e schema version podem ser `int`; não são IDs de conteúdo.
+- Identidade de instância segue o contrato atual do domínio. Não trocar tipos em saves
+  existentes apenas para uniformizar nomenclatura; mudança de tipo exige migration.
+- DTOs persistem primitives, enums, coleções de valores simples e DTOs aninhados.
+  Estado Unity é convertido para valores (ex.: componentes de posição), sem refs.
+- Validators detectam ID vazio/duplicado e referência ausente. Nunca reatribuem IDs
+  pela posição do elemento ou ordem de importação; reordenar catálogo não altera identidade.
+- No load, resolver pelo database/registry existente e tratar ID desconhecido segundo
+  o contrato: erro acionável, fallback documentado ou preservação para recuperação.
+  Não descartar silenciosamente inventário/quest/progresso.
 
-### Step 2: Load From Save Data
+## Procedimento
 
-```csharp
-public class InventoryManager : MonoBehaviour
-{
-    [SerializeField] private IItemRegistry itemRegistry;
-    
-    public void LoadFromSaveData(InventorySaveData saveData)
-    {
-        inventory.Clear();
-        
-        foreach (var itemData in saveData.items)
-        {
-            if (itemRegistry.TryGetItem(itemData.itemId, out var item))
-            {
-                inventory.Add(new InventorySlot 
-                { 
-                    item = item,
-                    quantity = itemData.quantity 
-                });
-            }
-            else
-            {
-                Debug.LogWarning($"Item {itemData.itemId} not found in registry");
-            }
-        }
-    }
-}
-```
+1. Identificar owner do estado, DTO e provider atuais; aplicar `system-reuse-audit`.
+2. Classificar mudança como aditiva ou breaking antes de editar schema.
+3. Capturar valores/IDs no provider existente ou novo provider de domínio coeso.
+   Reusar `ISaveSectionProvider`; não criar um segundo sistema de persistência.
+4. Registrar tipo/ordem no `SaveProviderRegistry` pelo wiring existente.
+   Preservar captura/restauração e fallback exigidos pelo save atual.
+5. Resolver IDs no load com dependências explícitas. Não serializar interface/manager
+   nem supor que `[SerializeField]` injeta interfaces automaticamente.
+6. Preservar escrita atômica, backup e recuperação já existentes. Save editável usa
+   `Application.persistentDataPath`; `StreamingAssets` serve apenas dados read-only.
+7. Validar round-trip, null/section ausente, ID desconhecido, versões legadas e falhas
+   relevantes. Smoke de wiring é necessário se a composição do provider mudou.
 
-## Cave Snapshots (FASE9F Rule)
+## Migration: aditivo vs. breaking
 
-If task involves cave stable run/snapshots:
+| Mudança | Contrato exigido |
+|---|---|
+| Campo/section novo | Default seguro testado em save legado; ausência não perde progresso |
+| Renome/remover ID ou campo | Migration explícita e teste com fixture da versão anterior |
+| Tipo/shape/semântica de dado alterado | Migration por versão no fluxo existente |
+| Layout de arquivo/slots alterado | Scope dedicado e recuperação/backup testados |
 
-**Before implementing, read:**
-- `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
-- `docs/roadmap/FASE9F_CAVE_STABLE_RUN_ROADMAP_PR170_192.md`
+Uma section aditiva não dispensa compatibilidade. Atualizar versão quando o contrato
+atual exigir; não inventar versão ou migration paralela. Nunca editar saves reais do humano.
 
-**Core rule:**
-- `CaveLevel` already visited in same `CaveRunSeed` → Load from snapshot
-- `ForwardExit` and `BackExit` → Cannot regenerate layout/enemies/resource nodes
-- Procedural only changes on new game, KO/death, or explicit debug command
-- Save must persist snapshots with simple types, no Unity refs
+## Cave stable run
 
-**Snapshot pattern:**
+Antes de alterar snapshots/procedural ler:
+- `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`.
+- `docs/refinements/implementados/ref_pr170_192_cave_stable_run_pre_implementation_audit.md`.
 
-```csharp
-[System.Serializable]
-public class CaveLevelSnapshot
-{
-    public int caveRunSeedId;    // ID only
-    public int levelIndex;       // Position in cave
-    public List<EnemySpawnData> enemies;      // DTOs with IDs
-    public List<LootSpawnData> loot;          // DTOs with IDs
-    public CaveLayoutData layoutData;         // Simple types
-    // NO: Transform, GameObject, Collider refs
-}
+`CaveLevel` já visitado na mesma `CaveRunSeed` carrega snapshot. ForwardExit/BackExit
+não regeneram layout, inimigos ou resources. Novo procedural só nos gatilhos autorizados
+pelo contrato stable-run. Usar `cave-stable-run-guard`; nenhum schema alternativo aqui.
 
-[System.Serializable]
-public class EnemySpawnData
-{
-    public int enemyTypeId;      // ID only
-    public float positionX, positionY;
-    public float health;
-    // NO: MonoBehaviour refs
-}
-```
+## Validação e saída esperada
 
-## Schema Versioning
+Reportar DTO/provider/registro afetados, compatibilidade, teste de round-trip/fixture,
+comandos e exit codes. Build não comprova recuperação de save nem gameplay.
+Quando Unity não rodar: `Unity validation: NOT RUN`, motivo, comando tentado e risco residual.
 
-Always include version number and migration support:
+## Quando NÃO usar
 
-```csharp
-[System.Serializable]
-public class SaveFileHeader
-{
-    public const int CURRENT_VERSION = 3;
-    public int schemaVersion = CURRENT_VERSION;
-    public string gameVersion = "1.0.0";
-    public System.DateTime lastSaveTime;
-}
+- Estado apenas transitório sem persistência: usar o contrato de runtime do domínio.
+- Nova seção independente: complementar com `save-section-provider`, sem duplicar este fluxo.
 
-public class SaveMigration
-{
-    public static PlayerSaveData MigrateV2ToV3(string v2Json)
-    {
-        var v2Data = JsonUtility.FromJson<PlayerSaveDataV2>(v2Json);
-        
-        // Migrate EquipmentDurability: Dictionary → List
-        var newDurability = new List<DurabilityEntryData>();
-        foreach (var kvp in v2Data.equipmentDurability)
-        {
-            newDurability.Add(new DurabilityEntryData 
-            { 
-                equipmentId = kvp.Key, 
-                durability = kvp.Value 
-            });
-        }
-        
-        return new PlayerSaveData
-        {
-            version = 3,
-            durabilityData = newDurability,
-            // ... other fields
-        };
-    }
-}
-```
+## Quando parar e reportar
 
-## Migration: aditivo vs. breaking (decisão)
+Spec não autoriza mudança breaking necessária, não há fixture para validar risco de perda,
+ou regra stable-run conflita com proposta. Não mascarar incompatibilidade como default seguro.
 
-A run inteira usou o caminho **aditivo** (campo/section novo + default legado, sem migration) — é o padrão preferido e cobre quase tudo. Mas há mudanças **breaking** que o aditivo não resolve (precedente: o multi-slot de save da `fable_56` foi **adiado** justamente por exigir migration/versioning, fora do escopo de uma spec de UI).
+## Relacionados
 
-| Tipo de mudança | Caminho | Exige migration? |
-|---|---|---|
-| Campo novo num DTO existente | aditivo — default seguro no load legado | NÃO |
-| Section nova (novo domínio de save) | `ISaveSectionProvider` novo (precedente `HotbarSectionProvider`); load legado = section ausente → default | NÃO |
-| Renomear/remover campo/id que já existe em saves reais | **breaking** — migration explícita + bump de versão | SIM |
-| Mudar tipo/shape (Dictionary→List, int→string id) | **breaking** — migration por versão | SIM |
-| Multi-slot / mudar layout do arquivo de save | **breaking** — sessão dedicada de SaveManager | SIM |
-
-Regra de decisão: **se um save real existente continua carregando correto com default, é aditivo.** Se um save existente quebraria ou perderia dado, é breaking → migration obrigatória (`SaveMigration.MigrateVNToVN+1`, bump de `version`, teste de round-trip do save legado). Nunca faça breaking change "no improviso" dentro de uma spec de feature — separe numa spec/sessão de save com o `SaveManager` no escopo permitido (rule `security-and-files`: sobrescrever schema de save é trabalho dedicado).
-
-Sistemas reais: `SaveManager` (orquestra Capture/Restore por section), `ISaveSectionProvider` (precedente `HotbarSectionProvider`/`OnboardingHintsSectionProvider`) — uma section nova é aditiva e NÃO precisa de migration; mexer no layout do `SaveManager` é que é breaking.
-
-## File Location Pattern
-
-```
-Editable save (user-controlled):
-  Application.persistentDataPath + "/saves/save1.json"
-
-Read-only seed data:
-  Application.streamingAssetsPath + "/data/seeds.json" ✓ OK
-
-Initial game data (NOT for user save):
-  Application.streamingAssetsPath + "/templates/*.json" ✓ OK
-
-DO NOT use StreamingAssets for user save.
-```
-
-## ID Lifecycle
-
-### Creating IDs
-
-```csharp
-public class ItemRegistry : MonoBehaviour
-{
-    [SerializeField] private ItemDataSO[] items;
-    
-    private void OnValidate()
-    {
-        // Ensure IDs are unique and stable
-        for (int i = 0; i < items.Length; i++)
-        {
-            if (items[i].Id != i + 1) // IDs start at 1
-            {
-                items[i].Id = i + 1;
-                EditorUtility.SetDirty(items[i]);
-            }
-        }
-    }
-}
-```
-
-### Renaming/Removing IDs (With Migration)
-
-```csharp
-public class SaveMigration
-{
-    private static readonly Dictionary<int, int> IdRemap = new()
-    {
-        { 5, 10 }, // Old ID 5 → New ID 10
-    };
-    
-    public static void MigrateIdChanges(PlayerSaveData data)
-    {
-        // Update inventory item IDs
-        foreach (var item in data.inventory)
-        {
-            if (IdRemap.TryGetValue(item.itemId, out var newId))
-            {
-                item.itemId = newId;
-            }
-        }
-    }
-}
-```
-
-## Audit Checklist
-
-Before finalizing save/load code:
-
-- [ ] No `ScriptableObject` refs in DTOs
-- [ ] No `GameObject` refs in save data
-- [ ] No `Transform`, `Sprite`, `Collider`, `Rigidbody` in serialized classes
-- [ ] IDs used for all references (int, not object)
-- [ ] Registry exists and is injectable
-- [ ] Load resolves IDs via registry (with fallback warning)
-- [ ] Schema version tracked
-- [ ] Migration support documented
-- [ ] IDs are stable and documented
-- [ ] Editable save uses `Application.persistentDataPath`
-- [ ] Read-only data uses `StreamingAssets` (if applicable)
-
-## Common Mistakes (Do NOT)
-
-❌ Serialize ScriptableObject directly:
-```csharp
-public ItemDataSO item; // WRONG!
-```
-
-❌ Serialize Transform:
-```csharp
-public Transform position; // WRONG!
-```
-
-❌ Use StreamingAssets for user save:
-```csharp
-var path = Application.streamingAssetsPath + "/mysave.json"; // WRONG for user data!
-```
-
-❌ Forget migration on ID changes:
-```csharp
-// If you rename ID 5 → 10, you MUST migrate existing saves
-```
-
-❌ Hard-link ScriptableObjects in save class:
-```csharp
-[SerializeField] private ItemDataSO defaultItem; // In save? WRONG!
-```
-
-## Integration
-
-- **Spec Execution** → Uses this pattern if persistence in scope
-- **Non-Regression Review** → Audits for serialization violations
-- **Implementation Closeout** → Validates save pattern in final audit
-
----
-
-**Pattern compliance is mandatory for any save/load/persistence task.**
+- `(rule: id-stability)`; `(rule: unity-architecture)`; `(rule: validation-truth)`.
+- `(skill: save-section-provider)`; `(skill: rng-and-determinism)`; `(skill: cave-stable-run-guard)`.

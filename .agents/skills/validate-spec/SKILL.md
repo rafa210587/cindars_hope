@@ -1,117 +1,37 @@
 ---
 name: validate-spec
-description: "Comando de workflow do projeto (equivalente ao /validate-spec do Claude Code). Roda as validações após a implementação. Registra cada nível separadamente. Sempre documenta NOT RUN com motivo."
+description: "Obtém somente os níveis aplicáveis à spec e confere evidência já disponível."
 ---
 
 # /validate-spec
 
-Roda as validações após a implementação. Registra cada nível separadamente. Sempre documenta NOT RUN com motivo.
+Obtém somente os níveis aplicáveis à spec e confere evidência já disponível.
 
-**Arguments:** `$ARGUMENTS` — ID ou nome da spec (usado para identificar o que mudou)
+**Arguments:** `$ARGUMENTS` — spec alvo.
 
----
+## Procedimento
 
-## Objetivo
-
-Executar os validation levels adequados ao que foi mudado. Registrar os resultados com honestidade.
-
----
-
-## Leitura mínima
-
-1. `CLAUDE.md`
-2. Spec alvo (para determinar os validation levels exigidos)
-3. `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` — validation levels exigidos por tipo de mudança
-4. `docs/project/CURRENT_STATE.md` (para contexto do que mudou)
-
-## Não ler por padrão
-
-```
-PROJECT_LOG.md
-ROADMAP.md
-full IMPLEMENTATION_STATUS.md
-```
-
----
-
-## Níveis de validação (executar apenas o que se aplica)
-
-### Nível 1 — Validação de docs (se algum arquivo .md mudou)
-
-```powershell
-.\tools\docs\validate_docs.ps1
-```
-
-Esperado: PASS 14/14
-
-### Nível 2 — C# Runtime Build (se algum .cs em Assets/ mudou)
-
-```powershell
-dotnet restore .\Assembly-CSharp.csproj
-dotnet build .\Assembly-CSharp.csproj --no-restore
-```
-
-Esperado: 0 errors, 0 new warnings
-
-### Nível 3 — C# Editor Build (se algum editor .cs mudou)
-
-```powershell
-dotnet restore .\Assembly-CSharp-Editor.csproj
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
-```
-
-Esperado: 0 errors (warnings preexistentes são aceitáveis)
-
-### Nível 4 — Unity Validators (Phase 2 — exige Unity Editor local)
-
-```
-CindarsHope/Repair and Validate Project
-CindarsHope/Validate/Combat/Validate Combat Databases
-```
-
-Resultado: PASS / FAIL / NOT RUN
-
-### Nível 5 — Play Mode (Phase 3 — exige humano no Unity Editor)
-
-Conforme o checklist no execution report da spec.
-
-Resultado: PASS / FAIL / NOT RUN
-
----
-
-## Documentação de NOT RUN
-
-Se um validation level não puder rodar, registre:
-
-```
-<Level>: NOT RUN
-Reason: <specific blocker — Unity lock, sandbox, timeout, no Unity license, docs-only spec>
-Command attempted: <command>
-Residual risk: <what is unvalidated>
-```
-
----
+1. Ler spec, CURRENT_STATE e `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`.
+2. Mapear critérios a testes/gates e declarar o escopo real; preservar dirty de outros owners.
+3. Inspecionar evidência vigente. Reexecutar somente gates cujos inputs mudaram,
+   que não tenham evidência verificável ou que respondam a preocupação nova.
+4. Usar `run_strict_validation.ps1 -Gates ...` para a seleção explícita pertinente.
+   Gates: corruption,docs,build,architecture,diff,quality. A matriz decide; o script
+   não adivinha que essa seleção cobre a spec. Sem Gates, o modo é GLOBAL.
+5. `-ScopePath` opcional informa arquivos exatos da tarefa para diff/quality.
+   Conferir o manifesto contra autorização e diff; ele não concede autorização de assets.
+6. Obter comportamento e integração Unity pelos runners/testes adequados.
+   Resultado de Test Runner pode cobrir compile Editor; .NET não prova Unity/Player.
+7. Registrar command/exit/log/XML, inputs e status específico. Docs posteriores invalidam
+   somente a evidência documental pertinente. Não repetir docs fora e dentro do strict.
+8. Executar o checkpoint global uma vez após integração ampla, mantendo FAIL global visível.
 
 ## Saída esperada
 
-```
-Validation Results — <SPEC_ID>
+Execution report com gates selecionados/justificativa, modo GLOBAL/SCOPED, resultados,
+níveis Unity/Player/humano, pendências e risco. Não citar JSON inexistente.
 
-| Level | Type | Result | Duration | Notes |
-|-------|------|--------|----------|-------|
-| 1 | Docs validation | PASS 14/14 / FAIL / NE | Xs | |
-| 2 | C# runtime build | PASS 0E/0W / FAIL / NE | Xs | |
-| 3 | C# editor build | PASS 0E/XW / FAIL / NE | Xs | |
-| 4 | Unity validators | PASS / FAIL / NOT RUN | — | Phase 2 |
-| 5 | Play Mode | PASS / FAIL / NOT RUN | — | Phase 3 — human |
+## Não fazer automaticamente
 
-NE = Not Executed (not applicable for this change type)
-```
-
----
-
-## Quando parar e reportar
-
-- Qualquer C# build error: pare, reporte, não alegue BUILD_VALIDATED
-- Falha de docs validation: pare, reporte
-- Se Level 4-5 forem NOT RUN: registre explicitamente e NÃO alegue UNITY_VALIDATED ou ACCEPTED
+Não executar todos os níveis por extensão .md/.cs nem pedir humano por spec.
+Não apresentar SCOPED_PASS como aprovação global; seguir /finish-spec para promoção.

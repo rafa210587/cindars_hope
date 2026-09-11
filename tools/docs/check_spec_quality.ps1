@@ -15,7 +15,16 @@ Validate that executed specs meet quality gates:
 .\check_spec_quality.ps1
 #>
 
+param([string]$ScopePath = '')
+
 $ErrorActionPreference = "Stop"
+
+$validationScope = $null
+if ($ScopePath) {
+    . (Join-Path $PSScriptRoot 'ValidationScope.ps1')
+    $validationScope = Read-ValidationScope $ScopePath
+    Write-Host 'Quality mode: SCOPED; manifest must match the authorized task and actual diff.'
+}
 
 $exitCode = 0
 $issues = @()
@@ -38,12 +47,16 @@ $forbiddenPatterns = @(
 )
 
 $gitStatus = & git status --porcelain
+if ($validationScope) { $gitStatus = @($validationScope.changedFiles | ForEach-Object { ' M ' + $_ }) }
 if ($gitStatus) {
     $forbiddenAltered = @()
     foreach ($line in $gitStatus) {
         $file = $line.Substring(3).Trim()
         foreach ($pattern in $forbiddenPatterns) {
             if ($file -match $pattern) {
+                # Paths de assets explicitamente autorizados nao sao proibidos por extensao.
+                # Artefatos operacionais continuam proibidos mesmo no manifesto.
+                if ($validationScope -and $file -in $validationScope.allowedPaths -and $file -notmatch '^\.claude/.*\.lock$') { continue }
                 $forbiddenAltered += $file
             }
         }
@@ -71,6 +84,7 @@ $testsInScripts = @()
 
 # Check untracked files
 $gitFilesUntracked = & git ls-files --others --exclude-standard
+if ($validationScope) { $gitFilesUntracked = @($validationScope.changedFiles) }
 foreach ($file in $gitFilesUntracked) {
     if ($file -match "Assets.*Scripts.*Tests\.cs$") {
         $testsInScripts += $file
@@ -79,6 +93,7 @@ foreach ($file in $gitFilesUntracked) {
 
 # Check tracked files
 $gitFilesTracked = & git ls-files
+if ($validationScope) { $gitFilesTracked = @($validationScope.changedFiles) }
 foreach ($file in $gitFilesTracked) {
     if ($file -match "Assets.*Scripts.*Tests\.cs$") {
         $testsInScripts += $file
@@ -89,7 +104,7 @@ foreach ($file in $gitFilesTracked) {
 $testsInScripts = $testsInScripts | Select-Object -Unique
 
 if ($testsInScripts.Count -gt 0) {
-    $issues += 'FAIL: Tests in wrong location (must be EditMode)'
+    $issues += 'FAIL: Tests in runtime Scripts directory (use the applicable test assembly)'
     foreach ($file in $testsInScripts) {
         $issues += "  - $file"
     }
@@ -105,6 +120,7 @@ Write-Host "2b. Checking for operational artifacts..." -ForegroundColor Yellow
 
 $trackedLocks = @()
 $gitFilesTracked = & git ls-files
+if ($validationScope) { $gitFilesTracked = @($validationScope.changedFiles) }
 foreach ($file in $gitFilesTracked) {
     if ($file -match "^\.claude/.*\.lock$") {
         $trackedLocks += $file
@@ -130,6 +146,10 @@ $reportFiles = @()
 $reportPath = "docs/validation"
 if (Test-Path $reportPath) {
     $reportFiles = Get-ChildItem -Path $reportPath -Filter "*execution_report*.md" -ErrorAction SilentlyContinue
+}
+if ($validationScope) {
+    $selectedReports = @($validationScope.reportPaths) + @($validationScope.changedFiles | Where-Object { $_ -match '^docs/validation/.*execution_report.*\.md$' })
+    $reportFiles = @($selectedReports | Select-Object -Unique | ForEach-Object { Get-Item -LiteralPath $_ -ErrorAction Stop })
 }
 
 $mandatorySections = @(
@@ -226,6 +246,7 @@ $bashPatterns = @('head ', 'tail ', ' ls ', 'find ', ' grep ', ' cat ', 'pwd', '
 
 # Get recently modified reports (from git status)
 $gitStatusFull = & git status --porcelain
+if ($validationScope) { $gitStatusFull = @($validationScope.changedFiles | ForEach-Object { ' M ' + $_ }) }
 $recentReports = @()
 foreach ($line in $gitStatusFull) {
     if ($line -match 'docs/validation.*execution_report.*\.md$') {
@@ -381,6 +402,7 @@ foreach ($report in $reportFiles) {
 
 # Check command/rule files for forbidden patterns
 $cmdFiles = Get-ChildItem -Path '.\.claude\commands\*.md', '.\.claude\rules\*.md' -ErrorAction SilentlyContinue
+if ($validationScope) { $cmdFiles = @($validationScope.changedFiles | Where-Object { $_ -match '^\.claude/(commands|rules)/.*\.md$' -and (Test-Path -LiteralPath $_) } | ForEach-Object { Get-Item -LiteralPath $_ }) }
 foreach ($file in $cmdFiles) {
     if (-not $file) { continue }
 

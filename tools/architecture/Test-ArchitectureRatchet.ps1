@@ -13,17 +13,30 @@ $runtimeRoot = Join-Path $ProjectRoot 'Assets\_Game\Scripts'
 function Read-DataLines {
     param([string]$Path)
 
-    Get-Content -LiteralPath $Path -Encoding UTF8 |
-        Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and -not $_.StartsWith('#') }
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required ratchet data missing: $Path" }
+    $dataLines = @(Get-Content -LiteralPath $Path -Encoding UTF8 |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and -not $_.TrimStart().StartsWith('#') })
+    if ($dataLines.Count -eq 0) { throw "Required ratchet data empty: $Path" }
+    return $dataLines
+}
+
+function Assert-RatchetRelativePath {
+    param([string]$Path)
+    if ([string]::IsNullOrWhiteSpace($Path) -or [IO.Path]::IsPathRooted($Path)) { throw "Invalid ratchet path: $Path" }
+    $rootPrefix = $ProjectRoot.TrimEnd('\','/') + [IO.Path]::DirectorySeparatorChar
+    $fullPath = [IO.Path]::GetFullPath((Join-Path $ProjectRoot $Path))
+    if (-not $fullPath.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+        $Path -cne $fullPath.Substring($rootPrefix.Length).Replace('\','/')) { throw "Noncanonical ratchet path: $Path" }
 }
 
 $rules = [ordered]@{}
 foreach ($line in Read-DataLines -Path $rulesPath) {
     $parts = $line -split "`t", 2
-    if ($parts.Count -ne 2) {
+    if ($parts.Count -ne 2 -or [string]::IsNullOrWhiteSpace($parts[0]) -or [string]::IsNullOrWhiteSpace($parts[1])) {
         throw "Invalid architecture rule line: $line"
     }
 
+    if ($rules.Contains($parts[0])) { throw "Duplicate architecture rule: $($parts[0])" }
     $rules[$parts[0]] = [regex]::new(
         $parts[1],
         [System.Text.RegularExpressions.RegexOptions]::CultureInvariant)
@@ -40,11 +53,17 @@ foreach ($line in Read-DataLines -Path $baselinePath) {
         throw "Baseline references unknown rule '$($parts[0])'."
     }
 
-    $baseline["$($parts[0])`n$($parts[1])"] = [int]$parts[2]
+    Assert-RatchetRelativePath $parts[1]
+    $maximum = 0
+    if (-not [int]::TryParse($parts[2], [ref]$maximum) -or $maximum -lt 0) { throw 'Invalid architecture baseline maximum.' }
+    $baselineKey = "$($parts[0])`n$($parts[1])"
+    if ($baseline.ContainsKey($baselineKey)) { throw "Duplicate architecture baseline: $baselineKey" }
+    $baseline[$baselineKey] = $maximum
 }
 
-$files = Get-ChildItem -LiteralPath $runtimeRoot -Recurse -Filter '*.cs' |
-    Where-Object { $_.FullName -notmatch '[\\/]Editor[\\/]' }
+$files = @(Get-ChildItem -LiteralPath $runtimeRoot -Recurse -Filter '*.cs' |
+    Where-Object { $_.FullName -notmatch '[\\/]Editor[\\/]' })
+if ($files.Count -eq 0) { throw 'Runtime source set is empty; ratchet cannot certify missing inputs.' }
 
 $violations = [System.Collections.Generic.List[string]]::new()
 $summary = [System.Collections.Generic.List[string]]::new()
@@ -77,6 +96,7 @@ foreach ($ruleEntry in $rules.GetEnumerator()) {
 }
 
 $serializedGuidCount = 0
+$serializedKeys = @{}
 foreach ($line in Read-DataLines -Path $serializedGuidBaselinePath) {
     $parts = $line -split "`t"
     if ($parts.Count -ne 3) {
@@ -84,6 +104,10 @@ foreach ($line in Read-DataLines -Path $serializedGuidBaselinePath) {
     }
 
     $serializedGuidCount++
+    Assert-RatchetRelativePath $parts[1]
+    if ([string]::IsNullOrWhiteSpace($parts[0]) -or $parts[2] -notmatch '^[a-fA-F0-9]{32}$') { throw 'Invalid serialized GUID baseline value.' }
+    if ($serializedKeys.ContainsKey($parts[1])) { throw "Duplicate serialized GUID path: $($parts[1])" }
+    $serializedKeys[$parts[1]] = $true
     $assetPath = Join-Path $ProjectRoot $parts[1]
     $metaPath = "$assetPath.meta"
     if (-not (Test-Path -LiteralPath $assetPath) -or -not (Test-Path -LiteralPath $metaPath)) {
@@ -100,6 +124,21 @@ foreach ($line in Read-DataLines -Path $serializedGuidBaselinePath) {
 }
 
 $summary.Add("SerializedGuidBaseline: verified=$serializedGuidCount")
+
+# Fonte unica do check antes duplicado no EditMode; inclui Editor e testes.
+$predefinedAssemblyName = 'Assembly' + '-CSharp'
+$sourceRoots = @($runtimeRoot, (Join-Path $ProjectRoot 'Assets/_Game/Tests'))
+$assemblyChecked = 0
+foreach ($sourceRoot in $sourceRoots) {
+    if (-not (Test-Path -LiteralPath $sourceRoot -PathType Container)) { throw "Source root missing: $sourceRoot" }
+    foreach ($sourceFile in Get-ChildItem -LiteralPath $sourceRoot -Recurse -Filter '*.cs' -File) {
+        $assemblyChecked++
+        if ([IO.File]::ReadAllText($sourceFile.FullName).Contains($predefinedAssemblyName)) {
+            $violations.Add("PredefinedAssemblyName: $($sourceFile.FullName)")
+        }
+    }
+}
+$summary.Add("PredefinedAssemblyName: checked=$assemblyChecked")
 
 $summary | ForEach-Object { Write-Output $_ }
 
