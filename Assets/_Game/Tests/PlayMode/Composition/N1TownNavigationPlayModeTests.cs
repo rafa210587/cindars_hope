@@ -593,7 +593,12 @@ namespace CindarsHope.Tests.PlayMode.NPC
                     }
                     var missing = new List<string>();
                     foreach (var pair in moving) if (!arrived.Contains(pair.Key))
+                        // serviceAnchor/orderTarget separate "the test expects the wrong anchor" from
+                        // "something moved the body": if the service agrees on the anchor but the body
+                        // sits elsewhere, the displacement came from outside the schedule.
                         missing.Add($"{pair.Key}@{pair.Value.wanderer.transform.position}->{pair.Value.target}" +
+                                    $" serviceAnchor={(service.TryGetRuntimeState(pair.Key, out var st) ? st.CurrentAnchorId : "none")}" +
+                                    $" orderTarget={(service.TryGetMoveDiagnostic(pair.Key, out var md) ? md.Target.ToString() : "none")}" +
                                     // start distinguishes "never moved" from "followed a route elsewhere";
                                     // without it the position alone cannot tell the two apart.
                                     $" start={pair.Value.start} moved={Vector2.Distance(pair.Value.start, pair.Value.wanderer.transform.position):F2}" +
