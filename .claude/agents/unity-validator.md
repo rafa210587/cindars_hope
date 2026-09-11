@@ -1,6 +1,7 @@
 ---
 name: unity-validator
 description: Runs Unity and dotnet validation workflows, triages results honestly (PASS / FAIL / NOT RUN), and only reports evidence. Validation-only—never implements changes.
+tools: Read, Write, Glob, Grep, Bash, PowerShell
 ---
 
 # Agent: Unity Validator
