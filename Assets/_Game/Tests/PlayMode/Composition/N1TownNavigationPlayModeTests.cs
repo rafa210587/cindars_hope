@@ -162,7 +162,12 @@ namespace CindarsHope.Tests.PlayMode.NPC
             try
             {
                 var body = actor.GetComponent<Rigidbody2D>();
-                var actorCollider = actor.GetComponent<Collider2D>();
+                // The NPC root carries the 1x1 interaction TRIGGER (2x2 world units after VisualScale);
+                // the authored solid body is the non-trigger SolidBody child (0.55x0.4). Physical
+                // reachability and overlap claims must use the solid one -- a trigger legitimately
+                // passes through walls, so asserting on it reported a 0.68u "penetration" that was
+                // simply the interaction volume overlapping the obstacle.
+                var actorCollider = FindNpcSolidBody(actor);
                 var wanderer = actor.GetComponent<NpcWanderer>();
                 var graph = Object.FindFirstObjectByType<NpcTownRouteGraph>();
                 Assert.IsNotNull(body); Assert.IsNotNull(actorCollider); Assert.IsNotNull(wanderer); Assert.IsNotNull(graph);
@@ -221,7 +226,12 @@ namespace CindarsHope.Tests.PlayMode.NPC
                     m.Contains("reason=route_blocked") && m.Contains("from=") && m.Contains("to=")),
                     "after the bounded budget the blocked actor must stop at its physical safe side");
                 var separation = actorCollider.Distance(wallCollider);
-                Assert.IsFalse(separation.isOverlapped,
+                // A body resting against a static collider keeps a small penetration by design
+                // (Box2D linear slop / contact offset), so demanding isOverlapped==false fails every
+                // physically correct stop. The contract stated in this message is "in contact, not
+                // INSIDE", so bound the penetration by the configured contact offset instead.
+                var restingContactAllowance = Mathf.Max(Physics2D.defaultContactOffset, 0.01f);
+                Assert.GreaterOrEqual(separation.distance, -restingContactAllowance,
                     "recovery may wait in contact but must not place the NPC inside the obstacle; " +
                     $"distance={separation.distance:F4} actor={actor.transform.position} " +
                     $"actorBounds={actorCollider.bounds} start={before} routeStart={route[0]} " +
@@ -735,6 +745,23 @@ namespace CindarsHope.Tests.PlayMode.NPC
             if (door == null) return null;
             var colliders = door.GetComponents<Collider2D>();
             for (var i = 0; i < colliders.Length; i++) if (colliders[i].isTrigger) return colliders[i];
+            return null;
+        }
+
+        /// <summary>Returns the NPC's authored solid body collider, never the root interaction trigger.</summary>
+        /// <remarks>Cannot reuse <see cref="FindPermanentSolid"/>: that helper skips colliders with an
+        /// attached Rigidbody2D because it looks for static building geometry, and the NPC SolidBody is
+        /// a child of the NPC's own dynamic body.</remarks>
+        private static Collider2D FindNpcSolidBody(GameObject npc)
+        {
+            Assert.IsNotNull(npc);
+            var colliders = npc.GetComponentsInChildren<Collider2D>(true);
+            for (var i = 0; i < colliders.Length; i++)
+            {
+                var candidate = colliders[i];
+                if (candidate != null && candidate.enabled && !candidate.isTrigger) return candidate;
+            }
+            Assert.Fail($"NPC {npc.name} must expose an enabled solid body collider");
             return null;
         }
 
