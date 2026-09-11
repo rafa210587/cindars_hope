@@ -1,0 +1,21 @@
+        private static HouseDoorInteractable CreateFarmHouseDoor(Transform house, float doorY)
+        {
+            var door = new GameObject("Door");
+            door.transform.SetParent(house, false);
+            door.transform.localPosition = new Vector3(0f, doorY, 0f);
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                door, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
+            var threshold = new GameObject("Threshold");
+            threshold.transform.SetParent(door.transform, false);
+            var leaf = new GameObject("Leaf");
+            leaf.transform.SetParent(door.transform, false);
+            var blocker = door.AddComponent<BoxCollider2D>();
+            blocker.size = new Vector2(FarmDoorGapWidth, FarmWallThickness);
+            var interact = door.AddComponent<BoxCollider2D>();
+            interact.isTrigger = true;
+            interact.size = new Vector2(FarmDoorGapWidth + 0.6f, FarmWallThickness + 2f);
+            var interactable = door.AddComponent<HouseDoorInteractable>();
+            FarmHouseDoorArtAuthoring.Configure(interactable, leaf.transform, threshold.transform, blocker);
+            EditorUtility.SetDirty(interactable);
+            return interactable;
+        }

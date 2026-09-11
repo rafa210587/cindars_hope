@@ -1,0 +1,171 @@
+*** Begin Patch
+*** Update File: Assets/_Game/Scripts/Editor/Art/FarmPerimeterVisualComposer.cs
+@@
+-        private static void CreateOutskirts(Transform parent, Sprite pine, Sprite oak, Dictionary<Sprite, Bounds> measured)
+-        {
+-            var boundary = FarmEnclosedValleyBoundaryContract.InnerBoundary;
+-            var rock = WorldSpriteLibrary.Prop("rock_ore_0");
+-            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+-            var fence = WorldSpriteLibrary.Prop("fence");
+-            for (var segment = 0; segment < boundary.Count; segment++)
+-            {
+-                var a = boundary[segment];
+-                var b = boundary[(segment + 1) % boundary.Count];
+-                var band = FarmEnclosedValleyBoundaryContract.GetSolidBand(segment);
+-                var gate = FarmEnclosedValleyBoundaryContract.IsTownGateSegment(segment);
+-                var solid = new GameObject(gate ? "NaturalBoundary_TownGate" : "NaturalBoundary_" + segment);
+-                solid.transform.SetParent(parent, false);
+-                var collider = solid.AddComponent<PolygonCollider2D>();
+-                collider.SetPath(0, band);
+-                var northEscarpment = FarmEnclosedValleyBoundaryContract.IsNorthEscarpmentSegment(segment);
+-                var baseSpacing = gate ? 0.65f : northEscarpment ? 1.35f : BoundaryBaseSpacing;
+-                var samples = Mathf.CeilToInt(Vector2.Distance(a, b) / baseSpacing);
+-                // The cliff art already exposes the northern collision foot. A second accent chain
+-                // reads as a man-made wall, so only forest edges and the actual town gate get bases.
+-                if (!northEscarpment || gate)
+-                for (var step = 0; step <= samples; step++)
+-                {
+-                    var point = Vector2.Lerp(a, b, step / (float)samples);
+-                    var outward = point.normalized;
+-                    // The forest edge must explain collision without reading as a constructed stone wall.
+-                    // North already has the cliff face, so its accents are wider-spaced. The gate remains fenced.
+-                    var variation = Variation(segment * 17 + step);
+-                    var useRock = variation > (northEscarpment ? 0.48f : 0.82f);
+-                    var baseSprite = gate ? fence : useRock ? rock : bush;
+-                    var baseKind = gate ? "Gate" : useRock ? "Rock" : "Undergrowth";
+-                    var height = gate ? 1.1f : 0.8f + variation * 0.65f;
+-                    if (!gate && !useRock && point.y < -18f)
+-                    {
+-                        // Unequal pairs and singletons, with breaks for exposed roots/stone.
+-                        // Enlarging every old 0.95u sample would create a continuous hedge.
+-                        var cluster = (segment * 3 + step) % 7;
+-                        if (cluster != 0 && cluster != 1 && cluster != 4) continue;
+-                        var tangent = (b - a).normalized;
+-                        var foot = point + outward * (0.35f + variation * 0.6f)
+-                            + tangent * (Variation(step * 11 + segment) - 0.5f) * 0.5f;
+-                        TryUnderstory(parent, "BoundaryUndergrowth_" + segment + "_" + step,
+-                            bush, foot, NativeUnderstoryHeight * (0.8f + variation * 0.2f), measured, true);
+-                        continue;
+-                    }
+-                    Place(parent, "Boundary" + baseKind + "_" + segment + "_" + step,
+-                        baseSprite,
+-                        point + outward * 0.2f - Vector2.up * 0.18f, height, measured, false);
+-                }
+-                if (gate) continue;
+-                var trees = Mathf.CeilToInt(Vector2.Distance(a, b) / 2.1f);
+-                for (var layer = 0; layer < (northEscarpment ? 3 : 5); layer++)
+-                for (var step = 0; step < trees; step++)
+-                {
+-                    if (northEscarpment && (segment + step + layer) % 3 == 1) continue;
+-                    var t = (step + 0.25f + Variation(segment * 31 + layer * 7 + step) * 0.5f) / trees;
+-                    var point = Vector2.Lerp(a, b, t);
+-                    var outward = point.normalized;
+-                    var foot = point + outward * (0.9f + layer * ForestLayerSpacing);
+-                    // North trees live on the plateau behind the cliff, not on its front face.
+-                    if (northEscarpment) foot.y = point.y + 2.8f + layer * 1.1f;
+-                    var index = segment * 101 + layer * 13 + step;
+-                    var sprite = (index * 7 + segment) % 10 < 6 ? pine : oak;
+-                    var height = northEscarpment ? 2.8f + Variation(index * 3) * 1.5f : 3.6f + Variation(index * 3) * 1.5f;
+-                    if (foot.y < -18f)
+-                    {
+-                        if (InSouthernUnderstory(foot)) continue;
+-                        var group = Mathf.FloorToInt((foot.x + 42f) / 5.8f);
+-                        sprite = (index + group * 3) % 10 < 4 ? pine : oak;
+-                        height = sprite == pine ? 3f + Variation(index * 3) * 1.8f
+-                            : 2.9f + Variation(group * 7 + index) * 1.3f;
+-                    }
+-                    var size = Size(sprite, height, measured);
+-                    var canopy = new Rect(foot.x - size.x * 0.5f, foot.y, size.x, size.y);
+-                    if (CanopyHidesBoulderCore(foot, canopy) || canopy.Overlaps(TownCanopyClearance) ||
+-                        !FarmDecorationPlanner.IsTreeCanopyClearOfFountain(foot, size)) continue;
+-                    Place(parent, "Forest_" + segment + "_" + layer + "_" + step,
+-                        sprite, foot, height, measured, false);
+-                }
+-            }
+-        }
++        private static void CreateOutskirts(Transform parent, Sprite pine, Sprite oak, Dictionary<Sprite, Bounds> measured)
++        {
++            var boundary = FarmEnclosedValleyBoundaryContract.InnerBoundary;
++            var rock = WorldSpriteLibrary.Prop("rock_ore_0");
++            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
++            for (var segment = 0; segment < boundary.Count; segment++)
++            {
++                var a = boundary[segment];
++                var b = boundary[(segment + 1) % boundary.Count];
++                var band = FarmEnclosedValleyBoundaryContract.GetSolidBand(segment);
++                var gate = FarmEnclosedValleyBoundaryContract.IsTownGateSegment(segment);
++                var solid = new GameObject(gate ? "NaturalBoundary_TownGate" : "NaturalBoundary_" + segment);
++                solid.transform.SetParent(parent, false);
++                var collider = solid.AddComponent<PolygonCollider2D>();
++                collider.SetPath(0, band);
++                if (gate)
++                {
++                    FarmSettlementVisualComposer.CreateFenceRun(parent, FarmEntrancePhysicsContract.TownGateVisualRun);
++                    continue;
++                }
++                var northEscarpment = FarmEnclosedValleyBoundaryContract.IsNorthEscarpmentSegment(segment);
++                var baseSpacing = northEscarpment ? 1.35f : BoundaryBaseSpacing;
++                var samples = Mathf.CeilToInt(Vector2.Distance(a, b) / baseSpacing);
++                // The cliff art already exposes the northern collision foot. A second accent chain
++                // reads as a man-made wall, so only forest edges and the actual town gate get bases.
++                if (!northEscarpment)
++                for (var step = 0; step <= samples; step++)
++                {
++                    var point = Vector2.Lerp(a, b, step / (float)samples);
++                    var outward = point.normalized;
++                    // The forest edge must explain collision without reading as a constructed stone wall.
++                    // North already has the cliff face, so its accents are wider-spaced. The gate remains fenced.
++                    var variation = Variation(segment * 17 + step);
++                    var useRock = variation > (northEscarpment ? 0.48f : 0.82f);
++                    var baseSprite = useRock ? rock : bush;
++                    var baseKind = useRock ? "Rock" : "Undergrowth";
++                    var height = 0.8f + variation * 0.65f;
++                    if (!useRock && point.y < -18f)
++                    {
++                        // Unequal pairs and singletons, with breaks for exposed roots/stone.
++                        // Enlarging every old 0.95u sample would create a continuous hedge.
++                        var cluster = (segment * 3 + step) % 7;
++                        if (cluster != 0 && cluster != 1 && cluster != 4) continue;
++                        var tangent = (b - a).normalized;
++                        var foot = point + outward * (0.35f + variation * 0.6f)
++                            + tangent * (Variation(step * 11 + segment) - 0.5f) * 0.5f;
++                        TryUnderstory(parent, "BoundaryUndergrowth_" + segment + "_" + step,
++                            bush, foot, NativeUnderstoryHeight * (0.8f + variation * 0.2f), measured, true);
++                        continue;
++                    }
++                    Place(parent, "Boundary" + baseKind + "_" + segment + "_" + step,
++                        baseSprite,
++                        point + outward * 0.2f - Vector2.up * 0.18f, height, measured, false);
++                }
++                var trees = Mathf.CeilToInt(Vector2.Distance(a, b) / 2.1f);
++                for (var layer = 0; layer < (northEscarpment ? 3 : 5); layer++)
++                for (var step = 0; step < trees; step++)
++                {
++                    if (northEscarpment && (segment + step + layer) % 3 == 1) continue;
++                    var t = (step + 0.25f + Variation(segment * 31 + layer * 7 + step) * 0.5f) / trees;
++                    var point = Vector2.Lerp(a, b, t);
++                    var outward = point.normalized;
++                    var foot = point + outward * (0.9f + layer * ForestLayerSpacing);
++                    // North trees live on the plateau behind the cliff, not on its front face.
++                    if (northEscarpment) foot.y = point.y + 2.8f + layer * 1.1f;
++                    var index = segment * 101 + layer * 13 + step;
++                    var sprite = (index * 7 + segment) % 10 < 6 ? pine : oak;
++                    var height = northEscarpment ? 2.8f + Variation(index * 3) * 1.5f : 3.6f + Variation(index * 3) * 1.5f;
++                    if (foot.y < -18f)
++                    {
++                        if (InSouthernUnderstory(foot)) continue;
++                        var group = Mathf.FloorToInt((foot.x + 42f) / 5.8f);
++                        sprite = (index + group * 3) % 10 < 4 ? pine : oak;
++                        height = sprite == pine ? 3f + Variation(index * 3) * 1.8f
++                            : 2.9f + Variation(group * 7 + index) * 1.3f;
++                    }
++                    var size = Size(sprite, height, measured);
++                    var canopy = new Rect(foot.x - size.x * 0.5f, foot.y, size.x, size.y);
++                    if (CanopyHidesBoulderCore(foot, canopy) || canopy.Overlaps(TownCanopyClearance) ||
++                        !FarmDecorationPlanner.IsTreeCanopyClearOfFountain(foot, size)) continue;
++                    Place(parent, "Forest_" + segment + "_" + layer + "_" + step,
++                        sprite, foot, height, measured, false);
++                }
++            }
++        }
+*** End Patch

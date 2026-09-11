@@ -1,0 +1,24 @@
+[Error] ItemData.WEAPON_ITEM_NO_WEAPON_ID: Weapon item 'Iron Pickaxe' (ID: item_tool_pickaxe_iron) is equippable but has no WeaponId. (Asset: Assets/_Game/Data/Items/item_tool_pickaxe_iron.asset) (Object: Iron Pickaxe) [Fix: Set WeaponId in ItemDataSO.]
+[Error] ItemData.WEAPON_ITEM_NO_WEAPON_ID: Weapon item 'Steel Pickaxe' (ID: item_tool_pickaxe_steel) is equippable but has no WeaponId. (Asset: Assets/_Game/Data/Items/item_tool_pickaxe_steel.asset) (Object: Steel Pickaxe) [Fix: Set WeaponId in ItemDataSO.]
+[Error] Projectile.FIREBALL_MISSING_PROJECTILE: Fireball spell 'Fireball' (ID: spell_fireball) has no ProjectilePrefab assigned. (Asset: Assets/_Game/Data/Combat/Spells/spell_fireball.asset) (Object: Fireball) [Fix: Assign ProjectilePrefab in SpellDataSO inspector.]
+[Error] SceneTransitions.MISSING_ANCHOR: spawn_cave_from_farm
+[Error] SceneTransitions.MISSING_ANCHOR: spawn_farm_from_cave
+[Error] SceneTransitions.MISSING_ANCHOR: spawn_farm_from_town
+[Error] SceneTransitions.MISSING_ANCHOR: spawn_town_from_farm
+[Error] SceneTransitions.MISSING_GATE: gate_cave_farm_exit
+[Error] SceneTransitions.MISSING_GATE: gate_farm_cave_entrance
+[Error] SceneTransitions.MISSING_GATE: gate_farm_town_exit
+[Error] SceneTransitions.MISSING_GATE: gate_town_farm_exit
+[Error] Spell.FIREBALL_NO_PROJECTILE: Fireball 'Fireball' has no ProjectilePrefab. (Asset: Assets/_Game/Data/Combat/Spells/spell_fireball.asset) (Object: Fireball) [Fix: Assign ProjectilePrefab in SpellDataSO.]
+[Error] Validar combat databases.Error: 
+[Error] Validar projectile prefabs.Error: 
+[Error] Validar scene transitions.Error: 
+[ValidateFableCitySchedule] Complete. PASS: 21 | FAIL: 0
+[Warning] Validar perfis de arte de bioma da caverna.Warning: [CV01 art profile validation] 59 warning(s):
+[Warning] Validar wiring de escala visual de atores/props.Warning: [ScaleWiring] Boss 'enemy_meteor_ooze_king' has VisualScale=1 (default). It will fall back to the flat global boss scale instead of its natural size. Regenerate the bestiary.
+[Warning] Validar wiring de escala visual de atores/props.Warning: [ScaleWiring] Finished: 0 error(s), 1 warning(s).
+InvalidOperationException: Project validation failed with 3 error(s).
+Total Issues: 1 (Errors: 1, Warnings: 0, Info: 0)
+Total Issues: 202 (Errors: 3, Warnings: 3, Info: 196)
+Total Issues: 6 (Errors: 3, Warnings: 3, Info: 0)
+Total Issues: 8 (Errors: 8, Warnings: 0, Info: 0)

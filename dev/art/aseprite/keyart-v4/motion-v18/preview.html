@@ -1,0 +1,11 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Farm v18 — barco e galinha piloto</title>
+<style>body{background:#18291e;color:#eee6cd;font:16px system-ui;margin:24px;max-width:1050px}img{image-rendering:pixelated}.cards{display:flex;gap:18px;flex-wrap:wrap}.card{background:#2a3f26;padding:16px;min-width:128px}.card img{display:block;width:128px;height:128px}p{line-height:1.5}a{color:#dac378}</style>
+<h1>Barco e galinha — candidatos v18</h1>
+<p>Prévia de arte exportada, sem Unity. Barco76×68: quatro quadros de1.25s, movimento vertical limitado a1pixel da posição base, ciclo5s e popa preservada.</p>
+<img src="boat_v18.gif" width="304" height="272" alt="Barco flutuando suavemente com canvas e apoio fixos">
+<h2>Galinha piloto</h2><p>Arte original32×32. Pés em(16,6)de origem inferior esquerda. Frente: olhos e bico; costas: nuca sem rosto e cauda; lateral direita, espelhável para esquerda. As passadas alternam contato e recuperação, a bicada inclina a cabeça até o chão e o repouso recolhe os pés.</p>
+<div class="cards"><div class="card">Idle ·400ms<img src="chicken_idle.gif"></div><div class="card">Walk down ·140ms<img src="chicken_walk_down.gif"></div><div class="card">Walk up ·140ms<img src="chicken_walk_up.gif"></div><div class="card">Walk side ·140ms<img src="chicken_walk_side.gif"></div><div class="card">Peck ·180ms<img src="chicken_peck.gif"></div><div class="card">Rest ·600ms<img src="chicken_rest.gif"></div></div>
+<h2>Poses a2×</h2><img src="chicken-poses-2x.png" width="640" height="192" alt="Dezenove quadros em ordem do contrato">
+<p>Ordem zero-based: idle0–1; walk_down2–5; walk_up6–9; walk_side10–13; peck14–16; rest17–18. Sheet608×32, JSONarray, fullrect e semtrim. Os GIFs individuais mostram cada ciclo separado.</p>
+<p>Verificados: nativos reabertos, canvas, contagem, duraçãoJSON/GIF, alpha binário e barco idêntico à fonte deslocada0/−1/0/+1pixel vertical. Inspeção visual por poses; playback contínuo observado pelo executor e validação Unity:NOT RUN. Proporção e leitura em cena dependem da integração. <a href="manifest.json">Manifesto</a>.</p>
+</html>

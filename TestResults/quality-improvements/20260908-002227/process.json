@@ -1,0 +1,19 @@
+{
+  "arguments": [
+    "-batchmode",
+    "-nographics",
+    "-projectPath",
+    "D:\\Projetos\\Cindars_Hope\\cindars_hope",
+    "-runTests",
+    "-testPlatform",
+    "EditMode",
+    "-testFilter",
+    "InventorySlotMoveMergeTests;InventoryItemActionTests;InventorySlotOperationsTests;ProjectValidationRunnerTests;SceneTransitionValidationTests",
+    "-testResults",
+    "D:\\Projetos\\Cindars_Hope\\cindars_hope\\TestResults\\quality-improvements\\20260908-002227\\characterization.xml",
+    "-logFile",
+    "D:\\Projetos\\Cindars_Hope\\cindars_hope\\TestResults\\quality-improvements\\20260908-002227\\characterization.log"
+  ],
+  "startedUtc": "2026-09-08T03:22:29.0235219Z",
+  "pid": 45188
+}

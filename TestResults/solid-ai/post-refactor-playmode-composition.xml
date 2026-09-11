@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14,8500045">
+  <test-suite type="TestSuite" id="1011" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.850005" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1004" name="CindarsHope.Tests.PlayMode.Composition.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.PlayMode.Composition.dll" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.841069" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="51932" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1005" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.840014" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1006" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.839325" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1007" name="PlayMode" fullname="CindarsHope.Tests.PlayMode" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.838888" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1008" name="Composition" fullname="CindarsHope.Tests.PlayMode.Composition" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.838313" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1001" name="GameRuntimeCompositionRootPlayModeTests" fullname="CindarsHope.Tests.PlayMode.Composition.GameRuntimeCompositionRootPlayModeTests" classname="CindarsHope.Tests.PlayMode.Composition.GameRuntimeCompositionRootPlayModeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.835962" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1003" name="GameplayScenes_LoadWithoutMissingScripts" fullname="CindarsHope.Tests.PlayMode.Composition.GameRuntimeCompositionRootPlayModeTests.GameplayScenes_LoadWithoutMissingScripts" methodname="GameplayScenes_LoadWithoutMissingScripts" classname="CindarsHope.Tests.PlayMode.Composition.GameRuntimeCompositionRootPlayModeTests" runstate="Runnable" seed="1486567320" result="Passed" start-time="2026-09-08 02:22:44Z" end-time="2026-09-08 02:22:59Z" duration="14.813486" asserts="0">
+                  <properties>
+                    <property name="_JOINTYPE" value="UnityCombinatorial" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[[ConsumableItemRuntimeBootstrap] Nao foi possivel registrar handlers apos 120 tentativas. Itens de comida podem nao restaurar fome ate que GameBootstrap/ItemUseManager estejam disponiveis.
+[MagicItemRuntimeBootstrap] Could not fully bind after 120 attempts. HandlersRegistered=True, TrackerBound=False. Magic item effects may be inert until InventoryManager/ItemUseManager are available.
+[CraftingStationRuntimeBootstrap] No CraftingRuntime found in scene. Crafting stations will not be active.
+[DeathSystemBootstrap] GameBootstrap/PlayerManager/CorpseRecoveryManager nao ficaram prontos apos 120 frames. Sistema de morte NAO inicializado (morte->corpo->respawn indisponivel).
+[QuestRuntimeBootstrap] GameBootstrap not found after max attempts. Initializing QuestService without inventory/gold adapters.
+[QuestProgressEventBridge] Subscribed to gameplay events (WAVE15 + WAVE26 objective variety).
+[QuestRuntimeBootstrap] Quest runtime initialized. Registry quests: 30. Inventory adapter: NULL. Gold adapter: NULL. Progression adapter: NULL.
+[PlayerMovementActionRuntimeBootstrap] Could not resolve PlayerController after max attempts. Dash/Dodge/Block will not be active.
+[NarrativeRuntimeBootstrap] Narrativa inicializada. FlagStore WIRED; hook da mq_act1_00 assinado ao DayStarted.
+DebugHud: initialized as primary instance.
+GameTimeManager initialized.
+GameBootstrap: loadout inicial equipado (arco 'item_weapon_bow_wood' RightHand, flecha 'item_ammo_arrow_basic' LeftHand).
+CombatRuntimeInstaller: Install completed. ItemDb=ItemDatabase, WeaponDb=WeaponDatabase, SpellDb=SpellDatabase, StatusEffectDb=StatusEffectDatabase, EquipmentRuntime=ok
+[Music] Cena ativa='FarmScene' -> ambiente=Fazenda.
+[Music] PlayMusic(Fazenda) (antes=Calmo, cena=InitTestScene8ef23036-fc1f-4da8-a90b-cb9a84d0c131).
+[CraftingStationRuntimeBootstrap] Bound CraftingRuntime '_Bootstrap' to InventoryManager and StaminaManager.
+[PlayerMovementActionRuntimeBootstrap] Resolved PlayerController 'Player' and attached movement action controllers.
+[Music] Cena ativa='FarmScene' -> ambiente=Fazenda.
+[FarmTillingInputController] Inicializado. Pressione [F] sobre um tile para arar.
+PlayerAttackController: created runtime UnarmedAttackDataSO fallback (no asset wired).
+DebugHud: runtime references rebound.
+FarmSceneRuntimeReferenceInstaller: rebound 0 plots, 68 trees. State cache restored: False.
+[FarmSceneRuntimeBootstrap] FarmTileGrid configurado: bounds 64x44, worldOrigin (-32,-22), zonas nao-araveis v7 registradas (construcoes borda+agua borda+montanha+3 areas expansao), miolo x[-18,16] y[-15,16] totalmente aravel, interior da estufa aravel.
+[Music] Cena ativa='FarmScene' -> ambiente=Fazenda.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gurd_ConstructionYard' component 'NpcShopController' shopId 'shop_gurd' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gurd_ConstructionYard' component 'NpcShopController' shopId 'shop_gurd' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gurd_ConstructionYard' component 'NpcShopController' shopId 'shop_gurd' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gurd_ConstructionYard' component 'NpcShopController' shopId 'shop_gurd' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_gurd'. ShopManager initialized sessions: shop_gurd
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gurd_ConstructionYard' component 'NpcShopController' shopId 'shop_gurd' ready via 'OnEnable'. ShopManager initialized sessions: shop_gurd
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Savra_ForestGate' component 'NpcShopController' shopId 'shop_savra' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Savra_ForestGate' component 'NpcShopController' shopId 'shop_savra' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Savra_ForestGate' component 'NpcShopController' shopId 'shop_savra' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Savra_ForestGate' component 'NpcShopController' shopId 'shop_savra' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_savra'. ShopManager initialized sessions: shop_gurd, shop_savra
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Savra_ForestGate' component 'NpcShopController' shopId 'shop_savra' ready via 'OnEnable'. ShopManager initialized sessions: shop_gurd, shop_savra
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Tovin_Registry' component 'NpcShopController' shopId 'shop_tovin' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Tovin_Registry' component 'NpcShopController' shopId 'shop_tovin' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Tovin_Registry' component 'NpcShopController' shopId 'shop_tovin' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Tovin_Registry' component 'NpcShopController' shopId 'shop_tovin' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_tovin'. ShopManager initialized sessions: shop_gurd, shop_savra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Tovin_Registry' component 'NpcShopController' shopId 'shop_tovin' ready via 'OnEnable'. ShopManager initialized sessions: shop_gurd, shop_savra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Ozzra_AlchemyLab' component 'NpcShopController' shopId 'shop_ozzra' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Ozzra_AlchemyLab' component 'NpcShopController' shopId 'shop_ozzra' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Ozzra_AlchemyLab' component 'NpcShopController' shopId 'shop_ozzra' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Ozzra_AlchemyLab' component 'NpcShopController' shopId 'shop_ozzra' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_ozzra'. ShopManager initialized sessions: shop_gurd, shop_ozzra, shop_savra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Ozzra_AlchemyLab' component 'NpcShopController' shopId 'shop_ozzra' ready via 'OnEnable'. ShopManager initialized sessions: shop_gurd, shop_ozzra, shop_savra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Nimble_Workshop' component 'NpcShopController' shopId 'shop_nimble' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Nimble_Workshop' component 'NpcShopController' shopId 'shop_nimble' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Nimble_Workshop' component 'NpcShopController' shopId 'shop_nimble' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Nimble_Workshop' component 'NpcShopController' shopId 'shop_nimble' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_nimble'. ShopManager initialized sessions: shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Nimble_Workshop' component 'NpcShopController' shopId 'shop_nimble' ready via 'OnEnable'. ShopManager initialized sessions: shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Thalindra_Archive' component 'NpcShopController' shopId 'shop_thalindra' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Thalindra_Archive' component 'NpcShopController' shopId 'shop_thalindra' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Thalindra_Archive' component 'NpcShopController' shopId 'shop_thalindra' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Thalindra_Archive' component 'NpcShopController' shopId 'shop_thalindra' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_thalindra'. ShopManager initialized sessions: shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Thalindra_Archive' component 'NpcShopController' shopId 'shop_thalindra' ready via 'OnEnable'. ShopManager initialized sessions: shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Brumdar_Blacksmith' component 'NpcShopController' shopId 'shop_brumdar' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Brumdar_Blacksmith' component 'NpcShopController' shopId 'shop_brumdar' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Brumdar_Blacksmith' component 'NpcShopController' shopId 'shop_brumdar' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Brumdar_Blacksmith' component 'NpcShopController' shopId 'shop_brumdar' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_brumdar'. ShopManager initialized sessions: shop_brumdar, shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Brumdar_Blacksmith' component 'NpcShopController' shopId 'shop_brumdar' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Yael_NightMarket' component 'NpcShopController' shopId 'shop_yael' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Yael_NightMarket' component 'NpcShopController' shopId 'shop_yael' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Yael_NightMarket' component 'NpcShopController' shopId 'shop_yael' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Yael_NightMarket' component 'NpcShopController' shopId 'shop_yael' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_yael'. ShopManager initialized sessions: shop_brumdar, shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Yael_NightMarket' component 'NpcShopController' shopId 'shop_yael' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_gurd, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mara_Registry' component 'NpcShopController' shopId 'shop_mara' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mara_Registry' component 'NpcShopController' shopId 'shop_mara' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mara_Registry' component 'NpcShopController' shopId 'shop_mara' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mara_Registry' component 'NpcShopController' shopId 'shop_mara' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_mara'. ShopManager initialized sessions: shop_brumdar, shop_gurd, shop_mara, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mara_Registry' component 'NpcShopController' shopId 'shop_mara' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_gurd, shop_mara, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Dagna_Quarry' component 'NpcShopController' shopId 'shop_dagna' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Dagna_Quarry' component 'NpcShopController' shopId 'shop_dagna' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Dagna_Quarry' component 'NpcShopController' shopId 'shop_dagna' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Dagna_Quarry' component 'NpcShopController' shopId 'shop_dagna' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_dagna'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gurd, shop_mara, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Dagna_Quarry' component 'NpcShopController' shopId 'shop_dagna' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gurd, shop_mara, shop_nimble, shop_ozzra, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Renko_GeneralMerchant' component 'NpcShopController' shopId 'shop_renko' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Renko_GeneralMerchant' component 'NpcShopController' shopId 'shop_renko' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Renko_GeneralMerchant' component 'NpcShopController' shopId 'shop_renko' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Renko_GeneralMerchant' component 'NpcShopController' shopId 'shop_renko' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_renko'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gurd, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Renko_GeneralMerchant' component 'NpcShopController' shopId 'shop_renko' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gurd, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hess_Tannery' component 'NpcShopController' shopId 'shop_hess' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hess_Tannery' component 'NpcShopController' shopId 'shop_hess' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hess_Tannery' component 'NpcShopController' shopId 'shop_hess' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hess_Tannery' component 'NpcShopController' shopId 'shop_hess' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_hess'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hess_Tannery' component 'NpcShopController' shopId 'shop_hess' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gruta_Tavern' component 'NpcShopController' shopId 'shop_gruta' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gruta_Tavern' component 'NpcShopController' shopId 'shop_gruta' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gruta_Tavern' component 'NpcShopController' shopId 'shop_gruta' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gruta_Tavern' component 'NpcShopController' shopId 'shop_gruta' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_gruta'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gruta_Tavern' component 'NpcShopController' shopId 'shop_gruta' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_dagna, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Corvus_Temple' component 'NpcShopController' shopId 'shop_corvus' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Corvus_Temple' component 'NpcShopController' shopId 'shop_corvus' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Corvus_Temple' component 'NpcShopController' shopId 'shop_corvus' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Corvus_Temple' component 'NpcShopController' shopId 'shop_corvus' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_corvus'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Corvus_Temple' component 'NpcShopController' shopId 'shop_corvus' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Orlan_Inn' component 'NpcShopController' shopId 'shop_orlan' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Orlan_Inn' component 'NpcShopController' shopId 'shop_orlan' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Orlan_Inn' component 'NpcShopController' shopId 'shop_orlan' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Orlan_Inn' component 'NpcShopController' shopId 'shop_orlan' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_orlan'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_orlan, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Orlan_Inn' component 'NpcShopController' shopId 'shop_orlan' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_orlan, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Eiran_AnimalYard' component 'NpcShopController' shopId 'shop_eiran' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Eiran_AnimalYard' component 'NpcShopController' shopId 'shop_eiran' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Eiran_AnimalYard' component 'NpcShopController' shopId 'shop_eiran' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Eiran_AnimalYard' component 'NpcShopController' shopId 'shop_eiran' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_eiran'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_orlan, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Eiran_AnimalYard' component 'NpcShopController' shopId 'shop_eiran' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_nimble, shop_orlan, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mella_Bakery' component 'NpcShopController' shopId 'shop_mella' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mella_Bakery' component 'NpcShopController' shopId 'shop_mella' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mella_Bakery' component 'NpcShopController' shopId 'shop_mella' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mella_Bakery' component 'NpcShopController' shopId 'shop_mella' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_mella'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mella_Bakery' component 'NpcShopController' shopId 'shop_mella' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Pip_TownEntrance' component 'NpcShopController' shopId 'shop_pip' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Pip_TownEntrance' component 'NpcShopController' shopId 'shop_pip' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Pip_TownEntrance' component 'NpcShopController' shopId 'shop_pip' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Pip_TownEntrance' component 'NpcShopController' shopId 'shop_pip' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_pip'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Pip_TownEntrance' component 'NpcShopController' shopId 'shop_pip' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sael_Dock' component 'NpcShopController' shopId 'shop_sael' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sael_Dock' component 'NpcShopController' shopId 'shop_sael' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sael_Dock' component 'NpcShopController' shopId 'shop_sael' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sael_Dock' component 'NpcShopController' shopId 'shop_sael' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_sael'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sael_Dock' component 'NpcShopController' shopId 'shop_sael' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sylveth_SeedVendor' component 'NpcShopController' shopId 'shop_sylveth' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sylveth_SeedVendor' component 'NpcShopController' shopId 'shop_sylveth' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sylveth_SeedVendor' component 'NpcShopController' shopId 'shop_sylveth' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sylveth_SeedVendor' component 'NpcShopController' shopId 'shop_sylveth' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_sylveth'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sylveth_SeedVendor' component 'NpcShopController' shopId 'shop_sylveth' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mirela_Tailor' component 'NpcShopController' shopId 'shop_mirela' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mirela_Tailor' component 'NpcShopController' shopId 'shop_mirela' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mirela_Tailor' component 'NpcShopController' shopId 'shop_mirela' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mirela_Tailor' component 'NpcShopController' shopId 'shop_mirela' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_mirela'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mirela_Tailor' component 'NpcShopController' shopId 'shop_mirela' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Zrix_CaveRoad' component 'NpcShopController' shopId 'shop_zrix' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Zrix_CaveRoad' component 'NpcShopController' shopId 'shop_zrix' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Zrix_CaveRoad' component 'NpcShopController' shopId 'shop_zrix' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Zrix_CaveRoad' component 'NpcShopController' shopId 'shop_zrix' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_zrix'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Zrix_CaveRoad' component 'NpcShopController' shopId 'shop_zrix' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hund_GuardRoute' component 'NpcShopController' shopId 'shop_hund' rebound field '_shopManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hund_GuardRoute' component 'NpcShopController' shopId 'shop_hund' rebound field '_playerManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hund_GuardRoute' component 'NpcShopController' shopId 'shop_hund' rebound field '_inventoryManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hund_GuardRoute' component 'NpcShopController' shopId 'shop_hund' rebound field '_modalManager' from persistent GameBootstrap during 'OnEnable'.
+Scene 'DontDestroyOnLoad' GameObject '_Bootstrap' component 'ShopManager' initialized session 'shop_hund'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hund_GuardRoute' component 'NpcShopController' shopId 'shop_hund' ready via 'OnEnable'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+[Music] Cena ativa='TownScene' -> ambiente=Cidade.
+[Music] PlayMusic(Cidade) (antes=Fazenda, cena=FarmScene).
+[CraftingStationRuntimeBootstrap] Bound CraftingRuntime '_Bootstrap' to InventoryManager and StaminaManager.
+[PlayerMovementActionRuntimeBootstrap] Resolved PlayerController 'Player' and attached movement action controllers.
+[Music] Cena ativa='TownScene' -> ambiente=Cidade.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gurd_ConstructionYard' component 'NpcShopController' shopId 'shop_gurd' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Savra_ForestGate' component 'NpcShopController' shopId 'shop_savra' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Tovin_Registry' component 'NpcShopController' shopId 'shop_tovin' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Ozzra_AlchemyLab' component 'NpcShopController' shopId 'shop_ozzra' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Nimble_Workshop' component 'NpcShopController' shopId 'shop_nimble' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Thalindra_Archive' component 'NpcShopController' shopId 'shop_thalindra' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Brumdar_Blacksmith' component 'NpcShopController' shopId 'shop_brumdar' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Yael_NightMarket' component 'NpcShopController' shopId 'shop_yael' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mara_Registry' component 'NpcShopController' shopId 'shop_mara' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Dagna_Quarry' component 'NpcShopController' shopId 'shop_dagna' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Renko_GeneralMerchant' component 'NpcShopController' shopId 'shop_renko' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hess_Tannery' component 'NpcShopController' shopId 'shop_hess' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Gruta_Tavern' component 'NpcShopController' shopId 'shop_gruta' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Corvus_Temple' component 'NpcShopController' shopId 'shop_corvus' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Orlan_Inn' component 'NpcShopController' shopId 'shop_orlan' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Eiran_AnimalYard' component 'NpcShopController' shopId 'shop_eiran' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mella_Bakery' component 'NpcShopController' shopId 'shop_mella' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Pip_TownEntrance' component 'NpcShopController' shopId 'shop_pip' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sael_Dock' component 'NpcShopController' shopId 'shop_sael' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+DebugHud: runtime references rebound.
+TownSceneRuntimeReferenceInstaller rebound runtime refs.
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Sylveth_SeedVendor' component 'NpcShopController' shopId 'shop_sylveth' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Mirela_Tailor' component 'NpcShopController' shopId 'shop_mirela' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Zrix_CaveRoad' component 'NpcShopController' shopId 'shop_zrix' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+Scene 'Assets/_Game/Scenes/TownScene.unity' GameObject 'NPC_Hund_GuardRoute' component 'NpcShopController' shopId 'shop_hund' ready via 'Start'. ShopManager initialized sessions: shop_brumdar, shop_corvus, shop_dagna, shop_eiran, shop_gruta, shop_gurd, shop_hess, shop_hund, shop_mara, shop_mella, shop_mirela, shop_nimble, shop_orlan, shop_ozzra, shop_pip, shop_renko, shop_sael, shop_savra, shop_sylveth, shop_thalindra, shop_tovin, shop_yael, shop_zrix
+[Music] Cena ativa='TownScene' -> ambiente=Cidade.
+[Music] Cena ativa='CaveScene' -> ambiente=Caverna.
+[Music] PlayMusic(Caverna) (antes=Cidade, cena=TownScene).
+[CraftingStationRuntimeBootstrap] Bound CraftingRuntime '_Bootstrap' to InventoryManager and StaminaManager.
+[PlayerMovementActionRuntimeBootstrap] Resolved PlayerController 'Player' and attached movement action controllers.
+[Music] Cena ativa='CaveScene' -> ambiente=Caverna.
+CavePlayerPathConfinement: enabled. Player=Player, LevelController=CaveRuntime, horizontalHalfWidth=0,005, verticalHalfHeight=0,08, useLateralSamples=False, useVerticalSamples=True, useDiagonalSamples=False.
+PlayerAttackController: created runtime UnarmedAttackDataSO fallback (no asset wired).
+PlayerAttackController.RebindCombatData. ItemDb=ItemDatabase, WeaponDb=WeaponDatabase.
+PlayerAttackController.RebindCombatData (with spell). SpellDb=SpellDatabase.
+FloatingDamageNumberDisplayer: created runtime world-space Canvas.
+DebugHud: runtime references rebound.
+DebugHud: cave runtime references rebound.
+CaveSceneRuntimeReferenceInstaller rebound runtime refs.
+CaveDebugLevelSkipController: enabled=True, nextGateKey=P, altKey=F2, maxGateSearchLevel=100, hasRunManager=True, hasLevelController=True.
+CaveEnemyMaterializer enemy spawn warning: Resolved 30 enemies, below target 31. Data packs/profiles limited the count.
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[EnemyAnimator] slug 'goblin_scrounger': walk carregado (rows=5), 3 clip(s): walk, atk_slash, atk_leap.
+[Music] PlayMusic(Combate) (antes=Caverna, cena=TownScene).
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_kobold_scout SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[EnemyAnimator] slug 'kobold_sentry': walk carregado (rows=5), 3 clip(s): walk, atk_throw, atk_scream.
+[ScaleLog] EnemyId=enemy_kobold_scout SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_kobold_scout SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_kobold_scout SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_cracked_bone SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[EnemyAnimator] slug 'undead_shambler': walk carregado (rows=5), 3 clip(s): walk, atk_claw, atk_rise.
+[ScaleLog] EnemyId=enemy_cracked_bone SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_cracked_bone SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_cave_mite SizeClass=Tiny IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,000
+[EnemyAnimator] slug 'verdant_mite': walk carregado (rows=3), 2 clip(s): walk, atk_bite.
+[ScaleLog] EnemyId=enemy_cave_mite SizeClass=Tiny IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,000
+[ScaleLog] EnemyId=enemy_cave_mite SizeClass=Tiny IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,000
+[ScaleLog] EnemyId=enemy_cave_mite SizeClass=Tiny IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,000
+[ScaleLog] EnemyId=enemy_cave_mite SizeClass=Tiny IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,000
+[ScaleLog] EnemyId=enemy_cave_mite SizeClass=Tiny IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,000
+[ScaleLog] EnemyId=enemy_cave_mite SizeClass=Tiny IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,000
+[ScaleLog] EnemyId=enemy_stone_rat SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[EnemyAnimator] slug 'gen_dire_rat': walk carregado (rows=5), 2 clip(s): walk, atk_bite.
+[ScaleLog] EnemyId=enemy_stone_rat SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_stone_rat SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_stone_rat SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_stone_rat SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_goblin_grashnaar_scavenger SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_kobold_scout SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_kobold_scout SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+[ScaleLog] EnemyId=enemy_kobold_scout SizeClass=Small IsMiniBoss=False IsBoss=False PlayerRef=2 VisualScale=1,500
+CaveBossSpawner: No boss gate for level 1. Skipping boss spawn.
+[CaveRuntimeBridge] Cave level 1 entered. RunSeed=run_20260908022256857_initial_a8eb5d1f799f483ebcba302ee46d1579 BiomeId=biome_cave_earth. Cave runtime validated.
+[Music] Cena ativa='CaveScene' -> ambiente=Caverna.
+CavePlayerPathConfinement: Reset last valid position to (-15.00, -22.00, 0.00).
+[CaveRuntimeBridge] CaveScene entry validated. CaveRunManager present. WorldSeed=cindars_world_seed_001 RunSeed=run_20260908022256857_initial_a8eb5d1f799f483ebcba302ee46d1579 Level=1
+]]></output>
+                </test-case>
+                <test-case id="1002" name="RootAndTracker_RemainSingleAcrossPlayModeFrames" fullname="CindarsHope.Tests.PlayMode.Composition.GameRuntimeCompositionRootPlayModeTests.RootAndTracker_RemainSingleAcrossPlayModeFrames" methodname="RootAndTracker_RemainSingleAcrossPlayModeFrames" classname="CindarsHope.Tests.PlayMode.Composition.GameRuntimeCompositionRootPlayModeTests" runstate="Runnable" seed="1163775350" result="Passed" start-time="2026-09-08 02:22:59Z" end-time="2026-09-08 02:22:59Z" duration="0.009882" asserts="0">
+                  <properties>
+                    <property name="_JOINTYPE" value="UnityCombinatorial" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

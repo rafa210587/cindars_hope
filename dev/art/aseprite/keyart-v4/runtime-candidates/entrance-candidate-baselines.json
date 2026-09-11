@@ -1,0 +1,14 @@
+[
+  {
+    "source": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+    "normalizedSha256": "231031757fdd9c6c9ba3e177341b39d23c5fd97a941ed1afd3782d8729d4a0ae"
+  },
+  {
+    "source": "Assets/_Game/Scripts/Editor/Art/FarmSettlementVisualComposer.cs",
+    "normalizedSha256": "e9fa34b15545cfb8ea4baaa048c0aa7d62dbc8dc50966e96b09891f698fae2f3"
+  },
+  {
+    "source": "Assets/_Game/Scripts/Editor/Art/FarmPerimeterVisualComposer.cs",
+    "normalizedSha256": "a1f0c204c37da2d3810f65f8d97711e22e8361c0b71621974b7048bfc4fab334"
+  }
+]

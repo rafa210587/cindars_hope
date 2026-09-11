@@ -1,0 +1,14 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Farm v16 — materiais candidatos</title>
+<style>body{background:#171e1b;color:#e0e6d9;font:15px system-ui;margin:24px;max-width:1050px}img{image-rendering:pixelated;max-width:none}p{max-width:950px;line-height:1.5}a{color:#c8d693}th,td{text-align:left;padding:7px 22px 7px 0}.labels{display:grid;grid-template-columns:312px 312px 312px;gap:0;margin-left:12px}h1{font-size:24px}</style>
+<h1>Chão e estrada — candidatos v16</h1>
+<p>Prancha offline a 1×, baseada na câmera640×480/ortho8.5. Não é captura do candidato no Unity. A grama usa o tint atual(.8,.85,.78) apenas nesta prancha; os PNGs mantêm suas cores nativas.</p>
+<div class="labels"><b>Grama atual1254² · .221px/px</b><b>Cleanup1254² · .221px/px</b><b>Candidato314² · .881px/px</b></div>
+<img src="offline-camera-density-board.png" width="960" height="650" alt="Comparação offline de três gramas, duas estradas e recorte inalterado do gameplay atual">
+<div class="labels"><b>Estrada atual · .882px/px</b><b>Estrada candidata · .882px/px</b><b>Gameplay atual, recorte inalterado</b></div>
+<p>A estrada conserva a areia quente e as marcas verdes, acrescentando áreas irregulares mais tranquilas entre seis pequenos grupos de cascalho. Na grama, a limpeza é seletiva: sombras verdes, tufos e manchas de terra permanecem; intervalos entre eles ganham massas de cor mais simples. A diferença na grama é discreta e a versão314 não deve ser aceita só por ter menos pixels.</p>
+<table><tr><th>Candidato</th><th>Canvas</th><th>PPU futuro</th><th>Footprint</th></tr><tr><td>ground_path_contact_v16</td><td>64×64</td><td>32</td><td>2u</td></tr><tr><td>ground_grass_contact_v16</td><td>314×314</td><td>32.05103668</td><td>9.796875u</td></tr></table>
+<p>As fontes compartilhadas permanecem intactas. Preservação exata de alpha e faixa de borda do respectivo baseline; grama314 usa nearest no primeiro passo e correção curada em camada separada. Sem blur. <a href="manifest.json">Manifesto e hashes</a>. Aseprite em camadas e PNGs na mesma pasta. Integração e validação Unity:NOT RUN pelo executor de arte.</p>
+<h1>Amostra opcional do celeiro</h1>
+<p>Esquerda original, direita candidato. Simulação nearest a1.569pixel de tela por pixel fonte, conservando proporção atual. Correção limitada a248pixels em seis interiores de tábuas vermelhas do frontão; janela, telhado, ferragens, portas e alpha idênticos. O efeito é discreto: não demonstra sozinho melhoria suficiente para integração.</p>
+<img src="barn-offline-1x-board.png" width="420" height="280" alt="Celeiro original à esquerda e limpeza localizada à direita; comparação offline">
+</html>

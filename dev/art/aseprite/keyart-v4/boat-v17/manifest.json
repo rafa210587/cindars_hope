@@ -1,0 +1,47 @@
+{
+  "status": "CANDIDATE_REVIEWED_OFFLINE",
+  "source": "Assets\\_Game\\Art\\Generated\\World\\props\\boat_keyart_v4.png",
+  "sourceSha256": "c0f86c0f0422c7a9ff869d986ed96ef4c75d662ad7cfee917b58a636c40c53ee",
+  "sourceUnchanged": true,
+  "candidate": "boat_contact_v17.png",
+  "candidateSha256": "0a3d58b1a30142b3dc701245598c3184881f86e3e728f7e8a7a7eaf546859167",
+  "canvas": [
+    76,
+    68
+  ],
+  "note": "Source actually76x68; no resize to initial68x68 estimate",
+  "colorMode": "RGBA",
+  "layers": 3,
+  "frames": 1,
+  "supportBottomLeft": [
+    35,
+    24
+  ],
+  "supportTopLeft": [
+    35,
+    44
+  ],
+  "normalizedPivot": [
+    0.4605263157894737,
+    0.35294117647058826
+  ],
+  "existingImportAndScale": "Preserve existing PPU/scale; source effective18.3px/u; no gameplay footprint change",
+  "baselineAlphaBoundsExclusive": [
+    8,
+    25,
+    66,
+    57
+  ],
+  "candidateAlphaBoundsExclusive": [
+    1,
+    25,
+    66,
+    57
+  ],
+  "changedPixels": 106,
+  "newOpaquePixels": 81,
+  "partialAlpha": 0,
+  "unchangedOutside": "x1..12,y35..55 top-left coordinates",
+  "review": "Opened4x comparison and native1x on light and dark backgrounds. Stern rim now closes; lower hull reconstructed; other pixels unchanged.",
+  "unity": "NOT RUN: root owns integration"
+}

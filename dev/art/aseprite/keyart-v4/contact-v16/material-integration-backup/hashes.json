@@ -1,0 +1,22 @@
+[
+  {
+    "path": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\SceneCreation\\CreateMvpFarmScene.cs",
+    "before": "a451e6208270355410ca4f0d7623b48ee769cad2fe13d4e5ac487b4fdf8f5748",
+    "after": "e646ab4a65f03d89e0f7e989c2ef255d78343fe49ed16103d4292c4dacb47f4f"
+  },
+  {
+    "path": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Art\\FarmPerimeterVisualComposer.cs",
+    "before": "043ef324e83cc6944e2fbe50ff8ec09b0dd18816c79acc5a5edbcf75ca06b8a1",
+    "after": "4d940e1ddd649762bb6c1f596ae67f9bdabfef86aea11acb48df3e25f0a364f5"
+  },
+  {
+    "path": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Art\\FarmPathPalette.cs",
+    "before": "7ed3db984f62af343fcdff90f2156c8f76cbf799b37b3a19f056b01c45434459",
+    "after": "b15868cb552aac7388f087e2032f34a66a674222030340e9173dc1201b071b4b"
+  },
+  {
+    "path": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\GeneratedSpriteImporter.cs",
+    "before": "6b32c81b2fd93f07880f865c870636f8ad1f77f825f6a5f75d998da36656e660",
+    "after": "e1337b2f598ffea19cb80b4f189e83a16925d6c726baa93839de1b0696a8868f"
+  }
+]

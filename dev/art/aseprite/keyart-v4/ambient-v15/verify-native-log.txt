@@ -1,0 +1,3 @@
+PASS reopened fountain_ambient_v15: canvas, frames, layers, tag, timing
+PASS reopened cascade_ambient_v15: canvas, frames, layers, tag, timing
+PASS reopened fish_jump_v15: canvas, frames, layers, tag, timing

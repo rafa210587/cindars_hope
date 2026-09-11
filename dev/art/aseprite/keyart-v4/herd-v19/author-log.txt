@@ -1,0 +1,3 @@
+PASS cow48x48,19frames,3layers,support24,40top
+PASS sheep48x48,19frames,3layers,support24,40top
+PASS goat48x48,19frames,3layers,support24,40top

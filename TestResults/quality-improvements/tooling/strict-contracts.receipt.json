@@ -1,0 +1,21 @@
+{
+  "kind": "recovered_original_command_event",
+  "sourceRollout": "C:\\Users\\Rafa\\.codex\\sessions\\2026\\09\\07\\rollout-2026-09-07T23-01-24-01a07ebf-a7df-74e0-9af1-01654e8f4baf.jsonl",
+  "sourceOrdinal": 931,
+  "sourceEventId": "exec-81b4ac8d-c236-4ebf-a53a-445e7d78be84",
+  "executionTimestamp": "2026-09-08T03:34:50.274Z",
+  "command": [
+    "C:\\Users\\Rafa\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+    "-Command",
+    "& powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'tools/docs/Test-StrictValidation.ps1'; exit $LASTEXITCODE"
+  ],
+  "cwd": "file:///D:/Projetos/Cindars_Hope/cindars_hope",
+  "exitCode": 0,
+  "duration": {
+    "secs": 10,
+    "nanos": 328738800
+  },
+  "rerunForLog": false,
+  "stdoutSha256": "D4A572CF353F801038869ABA0799CC8D3D00DA4061220C13251BA3A5A57EF13E",
+  "note": "stdout/stderr extracted verbatim from the original completed CommandExecution event; no input fingerprint was captured at execution"
+}

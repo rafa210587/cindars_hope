@@ -1,0 +1,1 @@
+PASS: exported212x205 facade has exactly399 cleared aperture pixels; all other pixels unchanged; closed leaf restores every removed source RGBA pixel

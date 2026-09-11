@@ -1,0 +1,7 @@
+{
+  "kind": "captured_process_result",
+  "command": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File tools/codex/Test-CodexHarnessGeneration.ps1",
+  "startedUtc": "2026-09-08T03:42:24.2603549Z",
+  "completedUtc": "2026-09-08T03:42:25.2783629Z",
+  "exitCode": 1
+}

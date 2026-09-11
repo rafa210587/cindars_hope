@@ -1,0 +1,125 @@
+*** Begin Patch
+*** Update File: Assets/_Game/Scripts/Editor/Art/FarmSettlementVisualComposer.cs
+@@
+-        private static void CreateEnclosureFences(Transform parent)
+-        {
+-            var source = WorldSpriteLibrary.Prop("fence_rail_keyart_v4");
+-            if (source == null) throw new InvalidOperationException("Missing settlement fence sprite.");
+-            // Reviewed45x39 source at the reference camera's native density. Uprights retain
+-            // their irregular alpha, cap and ground contact; clean3px timber retains its thickness.
+-            var post = FencePart(source, "fence_post", new Rect(5, 13, 6, 20), new Vector2(0.5f, 0f));
+-            var alternatePost = FencePart(source, "fence_post_right_keyart_v4", new Rect(32, 12, 6, 21), new Vector2(0.5f, 0f));
+-            var rail = FencePart(source, "fence_rail", new Rect(11, 25, 21, 3), new Vector2(0.5f, 0.5f));
+-            var lowerRail = FencePart(source, "fence_rail_lower_keyart_v4", new Rect(11, 17, 21, 3), new Vector2(0.5f, 0.5f));
+-            const float pixelScale = 1f / 18.285714f;
+-            var postWidth = post.rect.width * pixelScale;
+-            foreach (var segment in FarmSettlementPhysicsContract.AllFenceSegments)
+-            {
+-                var horizontal = segment.Size.x > segment.Size.y;
+-                var length = horizontal ? segment.Size.x : segment.Size.y;
+-                // Horizontal extents include post width; vertical extents describe post feet.
+-                var run = horizontal ? length - postWidth : length;
+-                var direction = horizontal ? Vector2.right : Vector2.up;
+-                var start = segment.Center - direction * (run * 0.5f);
+-                var intervals = Mathf.Max(1, Mathf.CeilToInt(run / (27f * pixelScale)));
+-                for (var i = 0; i <= intervals; i++)
+-                {
+-                    var upright = i % 2 == 0 ? post : alternatePost;
+-                    Place(parent, segment.Id + "Post_" + i, upright,
+-                        start + direction * (run * i / intervals), upright.rect.height * pixelScale, false);
+-                }
+-                // Each pair sorts from its local ground midpoint, not the whole enclosure center.
+-                for (var span = 0; span < intervals; span++)
+-                {
+-                    var anchor = new GameObject("Visual_" + segment.Id + "RailSpan_" + span);
+-                    anchor.transform.SetParent(parent, false);
+-                    anchor.transform.position = start + direction * (run * (span + 0.5f) / intervals);
+-                    var sorting = anchor.AddComponent<SortingGroup>();
+-                    sorting.sortingLayerName = "World";
+-                    for (var i = 0; i < 2; i++)
+-                    {
+-                        var visual = new GameObject("Rail_" + i);
+-                        visual.transform.SetParent(anchor.transform, false);
+-                        visual.transform.position = anchor.transform.position
+-                            + Vector3.up * ((i == 0 ? 5.5f : 13.5f) * pixelScale)
+-                            + (horizontal ? Vector3.zero : Vector3.right * (i == 0 ? -0.09f : 0.09f));
+-                        // Rotate only the timber crop; upright posts keep their authored perspective.
+-                        visual.transform.rotation = Quaternion.Euler(0f, 0f, horizontal ? 0f : 90f);
+-                        var renderer = visual.AddComponent<SpriteRenderer>();
+-                        var timber = i == 0 ? lowerRail : rail;
+-                        renderer.sprite = timber;
+-                        renderer.drawMode = SpriteDrawMode.Tiled;
+-                        renderer.tileMode = SpriteTileMode.Continuous;
+-                        var scale = pixelScale * timber.pixelsPerUnit;
+-                        visual.transform.localScale = new Vector3(scale / parent.lossyScale.x,
+-                            scale / parent.lossyScale.y, 1f);
+-                        renderer.size = new Vector2(run / intervals / scale, timber.bounds.size.y);
+-                        renderer.sortingLayerName = "World";
+-                        renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+-                    }
+-                }
+-            }
+-        }
++        private static void CreateEnclosureFences(Transform parent)
++        {
++            foreach (var segment in FarmSettlementPhysicsContract.AllFenceSegments)
++                CreateFenceRun(parent, segment);
++        }
++
++        internal static void CreateFenceRun(Transform parent, FarmSolidRect segment)
++        {
++            var source = WorldSpriteLibrary.Prop("fence_rail_keyart_v4");
++            if (source == null) throw new InvalidOperationException("Missing settlement fence sprite.");
++            // Reviewed45x39 source at the reference camera's native density. Uprights retain
++            // their irregular alpha, cap and ground contact; clean3px timber retains its thickness.
++            var post = FencePart(source, "fence_post", new Rect(5, 13, 6, 20), new Vector2(0.5f, 0f));
++            var alternatePost = FencePart(source, "fence_post_right_keyart_v4", new Rect(32, 12, 6, 21), new Vector2(0.5f, 0f));
++            var rail = FencePart(source, "fence_rail", new Rect(11, 25, 21, 3), new Vector2(0.5f, 0.5f));
++            var lowerRail = FencePart(source, "fence_rail_lower_keyart_v4", new Rect(11, 17, 21, 3), new Vector2(0.5f, 0.5f));
++            const float pixelScale = 1f / 18.285714f;
++            var postWidth = post.rect.width * pixelScale;
++            var horizontal = segment.Size.x > segment.Size.y;
++            var length = horizontal ? segment.Size.x : segment.Size.y;
++            // Horizontal extents include post width; vertical extents describe post feet.
++            var run = horizontal ? length - postWidth : length;
++            var direction = horizontal ? Vector2.right : Vector2.up;
++            var start = segment.Center - direction * (run * 0.5f);
++            var intervals = Mathf.Max(1, Mathf.CeilToInt(run / (27f * pixelScale)));
++            for (var i = 0; i <= intervals; i++)
++            {
++                var upright = i % 2 == 0 ? post : alternatePost;
++                Place(parent, segment.Id + "Post_" + i, upright,
++                    start + direction * (run * i / intervals), upright.rect.height * pixelScale, false);
++            }
++            // Each pair sorts from its local ground midpoint, not the whole enclosure center.
++            for (var span = 0; span < intervals; span++)
++            {
++                var anchor = new GameObject("Visual_" + segment.Id + "RailSpan_" + span);
++                anchor.transform.SetParent(parent, false);
++                anchor.transform.position = start + direction * (run * (span + 0.5f) / intervals);
++                var sorting = anchor.AddComponent<SortingGroup>();
++                sorting.sortingLayerName = "World";
++                for (var i = 0; i < 2; i++)
++                {
++                    var visual = new GameObject("Rail_" + i);
++                    visual.transform.SetParent(anchor.transform, false);
++                    visual.transform.position = anchor.transform.position
++                        + Vector3.up * ((i == 0 ? 5.5f : 13.5f) * pixelScale)
++                        + (horizontal ? Vector3.zero : Vector3.right * (i == 0 ? -0.09f : 0.09f));
++                    // Rotate only the timber crop; upright posts keep their authored perspective.
++                    visual.transform.rotation = Quaternion.Euler(0f, 0f, horizontal ? 0f : 90f);
++                    var renderer = visual.AddComponent<SpriteRenderer>();
++                    var timber = i == 0 ? lowerRail : rail;
++                    renderer.sprite = timber;
++                    renderer.drawMode = SpriteDrawMode.Tiled;
++                    renderer.tileMode = SpriteTileMode.Continuous;
++                    var scale = pixelScale * timber.pixelsPerUnit;
++                    visual.transform.localScale = new Vector3(scale / parent.lossyScale.x,
++                        scale / parent.lossyScale.y, 1f);
++                    renderer.size = new Vector2(run / intervals / scale, timber.bounds.size.y);
++                    renderer.sortingLayerName = "World";
++                    renderer.spriteSortPoint = SpriteSortPoint.Pivot;
++                }
++            }
++        }
+*** End Patch

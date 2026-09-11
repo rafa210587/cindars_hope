@@ -1,0 +1,549 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CindarsHope.Farm;
+using CindarsHope.Farm.Scene;
+using CindarsHope.Foundation;
+using CindarsHope.Player;
+using UnityEngine;
+
+namespace CindarsHope.Editor.Validation
+{
+    /// <summary>Editor-only connectivity proof using the player's actual collider. Queries do not simulate input.</summary>
+    internal static class FarmPhysicalRouteProbe
+    {
+        private const float Step = 0.5f;
+        private const float ApproachDistance = 1.25f;
+        private const int NodeLimit = 12000;
+        private const int HitLimit = 64;
+        private static readonly Vector2Int[] Directions = { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down };
+
+        [Serializable] internal sealed class Route
+        {
+            public string id, status;
+            public Vector2 requestedApproach, reachedApproach;
+            public float tolerance;
+            public Vector2[] path;
+        }
+        [Serializable] internal sealed class Evidence
+        {
+            public string status = "FAIL", reason, colliderType;
+            public string method = "Cardinal BFS at 0.5 world units; actual player collider OverlapCollider and Cast with Physics2D layer collision mask; each route starts at captured spawn. No movement input, interaction or animation is simulated.";
+            public float step = Step, approachTolerance = ApproachDistance;
+            public int visitedNodes, nodeLimit = NodeLimit, layerMask;
+            public Vector2 origin, colliderOffset;
+            public Vector3 colliderWorldSize, colliderLossyScale;
+            public string[] missingLandmarks = Array.Empty<string>();
+            public List<Route> routes = new List<Route>();
+            public List<WaterCheck> dockWaterChecks = new List<WaterCheck>();
+            public List<BoundaryCheck> boundaryChecks = new List<BoundaryCheck>();
+            public List<WaterCheck> houseTillingChecks = new List<WaterCheck>();
+            public List<WaterCheck> landmarkTillingChecks = new List<WaterCheck>();
+            public List<PhysicsCheck> fenceTillingChecks = new List<PhysicsCheck>();
+            public List<PhysicsCheck> greenhouseTillingChecks = new List<PhysicsCheck>();
+            public List<PhysicsCheck> landmarkPhysicsChecks = new List<PhysicsCheck>();
+            public List<AuthoredSolidCheck> authoredSolidChecks = new List<AuthoredSolidCheck>();
+            public List<AuthoredApproachCheck> authoredApproachChecks = new List<AuthoredApproachCheck>();
+            public List<PhysicsCheck> authoredTillingChecks = new List<PhysicsCheck>();
+        }
+
+        [Serializable] internal sealed class BoundaryCheck
+        {
+            public int segment;
+            public Vector2 point;
+            public bool blockedByNaturalBoundary;
+            public string collider;
+        }
+
+        [Serializable] internal sealed class WaterCheck
+        {
+            public Vector2 position;
+            public bool blocked;
+        }
+
+        [Serializable] internal sealed class PhysicsCheck
+        {
+            public string id, status;
+            public Vector2 position;
+            public bool expectedBlocked, actualBlocked;
+        }
+
+        internal static Evidence Evaluate(PlayerController player)
+        {
+            var evidence = new Evidence { origin = player.transform.position };
+            Vector3 originalPosition = player.transform.position;
+            var body = player.GetComponent<Rigidbody2D>();
+            Vector2 originalVelocity = body != null ? body.linearVelocity : Vector2.zero;
+            try
+            {
+                var collider = player.GetComponentsInChildren<Collider2D>().Single(c => !c.isTrigger && c.enabled);
+                evidence.colliderType = collider.GetType().Name;
+                evidence.colliderOffset = collider.offset;
+                evidence.colliderWorldSize = collider.bounds.size;
+                evidence.colliderLossyScale = collider.transform.lossyScale;
+                evidence.layerMask = Physics2D.GetLayerCollisionMask(collider.gameObject.layer);
+                var filter = new ContactFilter2D { useTriggers = false };
+                filter.SetLayerMask(evidence.layerMask);
+                var overlaps = new Collider2D[HitLimit];
+                var hits = new RaycastHit2D[HitLimit];
+                var grid = DomainManagerRegistry.Get<FarmTileGrid>();
+                if (grid == null) throw new InvalidOperationException("Farm tile grid was not installed.");
+                EvaluateAuthoredAffordances(player, collider, filter, overlaps, hits, grid, evidence);
+                var targets = Targets(player, evidence);
+                var origin = evidence.origin;
+                var parents = new Dictionary<Vector2Int, Vector2Int> { [Vector2Int.zero] = Vector2Int.zero };
+                var occupied = new HashSet<Vector2Int>();
+                var queue = new Queue<Vector2Int>();
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                SetPosition(player, origin);
+                if (!IsClear(collider, filter, overlaps, player.transform)) throw new InvalidOperationException("Spawn overlaps a solid collider.");
+                queue.Enqueue(Vector2Int.zero);
+                var reached = new Dictionary<string, Vector2Int>();
+                while (queue.Count > 0 && reached.Count < targets.Count)
+                {
+                    if (stopwatch.Elapsed.TotalSeconds > 45) throw new InvalidOperationException("Physical BFS exceeded 45-second query budget.");
+                    var cell = queue.Dequeue();
+                    var position = origin + (Vector2)cell * Step;
+                    SetPosition(player, position);
+                    foreach (var target in targets)
+                    {
+                        if (reached.ContainsKey(target.Key)) continue;
+                        if ((target.Key == "fishing_approach" || target.Key == "town_exit"))
+                        {
+                            if (Vector2.Distance(position, target.Value) <= Step &&
+                                CanReachExact(player, collider, filter, overlaps, hits, position, target.Value))
+                                reached.Add(target.Key, cell);
+                            SetPosition(player, position);
+                        }
+                        else if (Vector2.Distance(position, target.Value) <= ApproachDistance)
+                            reached.Add(target.Key, cell);
+                    }
+                    foreach (var direction in Directions)
+                    {
+                        var next = cell + direction;
+                        if (parents.ContainsKey(next) || occupied.Contains(next)) continue;
+                        var nextPosition = origin + (Vector2)next * Step;
+                        if (nextPosition.x < FarmLevel1LayoutContract.MinX || nextPosition.x > FarmLevel1LayoutContract.MaxX ||
+                            nextPosition.y < FarmLevel1LayoutContract.MinY || nextPosition.y > FarmLevel1LayoutContract.MaxY) continue;
+                        SetPosition(player, position);
+                        int count = collider.Cast((Vector2)direction, filter, hits, Step);
+                        if (count >= HitLimit) throw new InvalidOperationException("Collider Cast buffer saturated.");
+                        bool blocked = false;
+                        for (int i = 0; i < count; i++)
+                            if (hits[i].collider != null && !hits[i].collider.transform.IsChildOf(player.transform)) { blocked = true; break; }
+                        if (blocked) continue;
+                        SetPosition(player, nextPosition);
+                        if (!IsClear(collider, filter, overlaps, player.transform)) { occupied.Add(next); continue; }
+                        parents.Add(next, cell);
+                        if (parents.Count > NodeLimit) throw new InvalidOperationException("Physical BFS node limit exceeded.");
+                        queue.Enqueue(next);
+                    }
+                }
+                evidence.visitedNodes = parents.Count;
+                foreach (var target in targets)
+                {
+                    var route = new Route { id = target.Key, requestedApproach = target.Value, status = "FAIL", path = Array.Empty<Vector2>(),
+                        tolerance = (target.Key == "fishing_approach" || target.Key == "town_exit") ? 0.1f : ApproachDistance };
+                    if (reached.TryGetValue(target.Key, out var end))
+                    {
+                        var path = new List<Vector2>();
+                        for (var cursor = end; ; cursor = parents[cursor])
+                        {
+                            path.Add(origin + (Vector2)cursor * Step);
+                            if (cursor == Vector2Int.zero) break;
+                        }
+                        path.Reverse();
+                        if ((target.Key == "fishing_approach" || target.Key == "town_exit")) path.Add(target.Value);
+                        route.path = path.ToArray();
+                        route.reachedApproach = path[path.Count - 1];
+                        route.status = "PASS";
+                    }
+                    evidence.routes.Add(route);
+                }
+                // These are deliberately inaccessible positions, not additional navigation goals.
+                var deck = new Vector2(FarmLevel1LayoutContract.FishingSpotX, FarmLevel1LayoutContract.FishingSpotY);
+                foreach (var offset in new[] { new Vector2(-1.8f, 0f), new Vector2(1.8f, -0.7f), new Vector2(0f, -2.4f) })
+                {
+                    SetPosition(player, deck + offset);
+                    evidence.dockWaterChecks.Add(new WaterCheck { position = deck + offset,
+                        blocked = !IsClear(collider, filter, overlaps, player.transform) });
+                }
+                EvaluateBoundary(player, collider, filter, hits, evidence);
+                EvaluateLandmarkPhysics(player, collider, filter, overlaps, evidence);
+
+                // Sample every tile center within the house, including fractional footprint edges.
+                for (float x = Mathf.Floor(FarmLevel1LayoutContract.HouseMinX) + 0.5f;
+                    x < FarmLevel1LayoutContract.HouseMinX + FarmLevel1LayoutContract.HouseWidth; x++)
+                for (float y = Mathf.Floor(FarmLevel1LayoutContract.HouseMinY) + 0.5f;
+                    y < FarmLevel1LayoutContract.HouseMinY + FarmLevel1LayoutContract.HouseHeight; y++)
+                {
+                    if (x < FarmLevel1LayoutContract.HouseMinX || y < FarmLevel1LayoutContract.HouseMinY) continue;
+                    evidence.houseTillingChecks.Add(new WaterCheck { position = new Vector2(x, y),
+                        blocked = !grid.IsTillableAtWorldPosition(x, y) });
+                }
+                foreach (var solidCenter in new[]
+                {
+                    new Vector2(FarmLevel1LayoutContract.FonteAnchorX, FarmLevel1LayoutContract.FonteAnchorY + 1.15f),
+                    new Vector2(FarmLevel1LayoutContract.WellX, FarmLevel1LayoutContract.WellY + 0.15f)
+                })
+                    evidence.landmarkTillingChecks.Add(new WaterCheck { position = solidCenter,
+                        blocked = !grid.IsTillableAtWorldPosition(solidCenter.x, solidCenter.y) });
+                // Regression: the tile beneath an accessible player's feet must not cross a wall.
+                foreach (var fence in FarmSettlementPhysicsContract.AllFenceSegments)
+                {
+                    var blocked = !grid.IsTillableAtWorldPosition(fence.Center.x, fence.Center.y);
+                    evidence.fenceTillingChecks.Add(new PhysicsCheck { id = fence.Id, position = fence.Center,
+                        expectedBlocked = true, actualBlocked = blocked, status = blocked ? "PASS" : "FAIL" });
+                }
+                foreach (var sample in new[]
+                {
+                    (id: "greenhouse_wall_overlap_tile", point: new Vector2(21.6f, 12f), blocked: true),
+                    (id: "greenhouse_usable_interior_tile", point: new Vector2(22.5f, 12f), blocked: false)
+                })
+                {
+                    var blocked = !grid.IsTillableAtWorldPosition(sample.point.x, sample.point.y);
+                    evidence.greenhouseTillingChecks.Add(new PhysicsCheck { id = sample.id,
+                        position = sample.point, expectedBlocked = sample.blocked, actualBlocked = blocked,
+                        status = blocked == sample.blocked ? "PASS" : "FAIL" });
+                }
+                evidence.status = evidence.routes.All(route => route.status == "PASS") &&
+                    evidence.authoredSolidChecks.Count == 24 && evidence.authoredSolidChecks.All(check => check.status == "PASS") &&
+                    evidence.authoredApproachChecks.Count == 4 && evidence.authoredApproachChecks.All(check => check.status == "PASS") &&
+                    evidence.authoredTillingChecks.Count > 0 && evidence.authoredTillingChecks.All(check => check.status == "PASS") &&
+                    evidence.dockWaterChecks.All(check => check.blocked) &&
+                    evidence.landmarkPhysicsChecks.Count > 0 &&
+                    evidence.landmarkPhysicsChecks.All(check => check.status == "PASS") &&
+                    evidence.houseTillingChecks.Count > 0 && evidence.houseTillingChecks.All(check => check.blocked) &&
+                    evidence.landmarkTillingChecks.Count == 2 && evidence.landmarkTillingChecks.All(check => check.blocked) &&
+                    evidence.fenceTillingChecks.Count == FarmSettlementPhysicsContract.AllFenceSegments.Count &&
+                    evidence.fenceTillingChecks.All(check => check.status == "PASS") &&
+                    evidence.greenhouseTillingChecks.All(check => check.status == "PASS") &&
+                    evidence.boundaryChecks.Count > 0 && evidence.boundaryChecks.All(check => check.blockedByNaturalBoundary) ? "PASS" : "FAIL";
+                evidence.reason = evidence.status == "PASS" ? "All approaches connected; dock water blocked; every sampled natural boundary segment blocks outward player-collider sweeps." : "An approach, named authored solid, live tilling tile, dock-water check or boundary sweep failed; inspect individual evidence.";
+            }
+            catch (Exception error) { evidence.reason = error.ToString(); }
+            finally
+            {
+                SetPosition(player, originalPosition);
+                if (body != null) body.linearVelocity = originalVelocity;
+            }
+            return evidence;
+        }
+
+        private static readonly string[] SettlementSolidNames =
+        {
+            "PottingSupplies", "HouseSupplies", "HouseSuppliesSmall", "GreenhouseSupplies",
+            "FieldNorthCrate", "FieldNorthSmallCrate", "FieldSouthCrate", "CheeseSupplies", "ShedSupplies",
+            "HouseWestBarrel_A", "HouseWestBarrel_B", "HouseEastBarrel_A", "HouseEastBarrel_B",
+            "FountainWestBarrel", "FountainEastBarrel", "PastureTrough", "CoopTrough",
+            "BarnHayStack", "BarnHayStackSmall"
+        };
+
+        [Serializable] internal sealed class AuthoredSolidCheck
+        {
+            public string id, status = "FAIL", reason, expectedColliderPath;
+            public int matchingObjects, matchingSolidColliders;
+            public string expectedEntityId;
+            public bool enabled, active, layerIncluded, overlapsExpected;
+            public Vector2 queryFeet, expectedCenter, expectedSize;
+            public string[] actualHitPaths = Array.Empty<string>();
+        }
+
+        [Serializable] internal sealed class AuthoredApproachCheck
+        {
+            public string id, status = "FAIL", reason, interactionTriggerPath;
+            public Vector2 from, position;
+            public bool clear;
+            public float triggerDistance = -1f;
+        }
+
+        private static string ColliderPath(Transform item)
+        {
+            var path = item.name;
+            while (item.parent != null) { item = item.parent; path = item.name + "/" + path; }
+            return path;
+        }
+
+        private static void EvaluateAuthoredAffordances(PlayerController player, Collider2D playerCollider,
+            ContactFilter2D filter, Collider2D[] overlaps, RaycastHit2D[] hits, FarmTileGrid grid, Evidence evidence)
+        {
+            var objects = player.gameObject.scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Transform>(true)).ToArray();
+            void CheckSolid(string id, Func<Transform, bool> matches, Type expectedType, Vector2? contact = null)
+            {
+                var check = new AuthoredSolidCheck { id = id };
+                evidence.authoredSolidChecks.Add(check);
+                var candidates = objects.Where(matches).ToArray();
+                check.matchingObjects = candidates.Length;
+                if (candidates.Length != 1) { check.reason = "Expected exactly one named solid object."; return; }
+                var colliders = candidates[0].GetComponents<Collider2D>().Where(c => !c.isTrigger).ToArray();
+                check.matchingSolidColliders = colliders.Length;
+                if (colliders.Length != 1) { check.reason = "Expected exactly one non-trigger collider, including disabled candidates."; return; }
+                var expected = colliders[0];
+                check.expectedColliderPath = ColliderPath(expected.transform);
+                check.expectedEntityId = expected.GetEntityId().ToString();
+                check.enabled = expected.enabled;
+                check.active = expected.gameObject.activeInHierarchy;
+                check.layerIncluded = (evidence.layerMask & (1 << expected.gameObject.layer)) != 0;
+                if (expected.GetType() != expectedType || !check.enabled || !check.active || !check.layerIncluded ||
+                    (expected.attachedRigidbody != null && !expected.attachedRigidbody.simulated))
+                { check.reason = "Collider type, enabled/active state, simulation or actual player layer mask invalid."; return; }
+                var bounds = expected.bounds;
+                check.expectedCenter = bounds.center;
+                check.expectedSize = bounds.size;
+                if (bounds.size.x <= 0f || bounds.size.y <= 0f) { check.reason = "Empty solid bounds."; return; }
+                // Align the actual player's body center with the contact, preserving its real offset.
+                // A hit on a neighbor or the mountain does not satisfy this named collider check.
+                var bodyOffset = (Vector2)playerCollider.bounds.center - (Vector2)player.transform.position;
+                check.queryFeet = (contact ?? (Vector2)bounds.center) - bodyOffset;
+                SetPosition(player, check.queryFeet);
+                int count = playerCollider.OverlapCollider(filter, overlaps);
+                if (count >= overlaps.Length) throw new InvalidOperationException("Authored solid overlap buffer saturated.");
+                var hitPaths = new List<string>();
+                for (int i = 0; i < count; i++)
+                {
+                    if (overlaps[i] == expected) check.overlapsExpected = true;
+                    if (!overlaps[i].transform.IsChildOf(player.transform)) hitPaths.Add(ColliderPath(overlaps[i].transform));
+                }
+                check.actualHitPaths = hitPaths.ToArray();
+                check.status = check.overlapsExpected ? "PASS" : "FAIL";
+                check.reason = check.overlapsExpected ? "Actual player overlaps the exact expected collider instance." : "Expected collider absent from filtered overlaps; other blockers cannot substitute.";
+
+                // Every tile touched by the solid must agree with the live tilling grid, not only its center.
+                var min = grid.WorldToTile(bounds.min.x + 0.0001f, bounds.min.y + 0.0001f);
+                var max = grid.WorldToTile(bounds.max.x - 0.0001f, bounds.max.y - 0.0001f);
+                for (int y = min.y; y <= max.y; y++)
+                for (int x = min.x; x <= max.x; x++)
+                {
+                    var point = grid.TileToWorldCenter(x, y);
+                    bool blocked = !grid.IsTillableAtWorldPosition(point.x, point.y);
+                    evidence.authoredTillingChecks.Add(new PhysicsCheck
+                    {
+                        id = id + "/tile_" + x + "_" + y, position = point,
+                        expectedBlocked = true, actualBlocked = blocked, status = blocked ? "PASS" : "FAIL"
+                    });
+                }
+            }
+            foreach (var name in SettlementSolidNames)
+                CheckSolid("prop_" + name, t => t.name == "Solid_" + name &&
+                    t.parent != null && t.parent.name == "FarmSettlementDetails", typeof(BoxCollider2D));
+            foreach (var furniture in new[] { "Bed", "FarmHouseChest" })
+                CheckSolid("house_" + furniture, t => t.name == "SolidBase" && t.parent != null &&
+                    t.parent.name == furniture && t.parent.parent != null && t.parent.parent.name == "FarmHouse", typeof(BoxCollider2D));
+            foreach (var jamb in FarmEntrancePhysicsContract.CaveSideBases)
+                CheckSolid(jamb.Id, t => t.name == "Solid_" + jamb.Id && t.parent != null &&
+                    t.parent.name == "CaveEntrance", typeof(BoxCollider2D), jamb.Center);
+            CheckSolid("town_barrier", t => t.name == "NaturalBoundary_TownGate", typeof(PolygonCollider2D),
+                FarmEntrancePhysicsContract.TownGateVisualRun.Center);
+
+            void CheckClearSweep(string id, Vector2 from, Vector2 to, string furniture = null)
+            {
+                var check = new AuthoredApproachCheck { id = id, from = from, position = to };
+                evidence.authoredApproachChecks.Add(check);
+                SetPosition(player, from);
+                check.clear = IsClear(playerCollider, filter, overlaps, player.transform) &&
+                    CanReachExact(player, playerCollider, filter, overlaps, hits, from, to);
+                if (!check.clear) { check.reason = "Actual player overlaps a blocker or its local sweep is blocked."; return; }
+                if (furniture != null)
+                {
+                    var owners = objects.Where(t => t.name == furniture && t.parent != null && t.parent.name == "FarmHouse").ToArray();
+                    if (owners.Length != 1) { check.reason = "Missing or ambiguous furniture interaction owner."; return; }
+                    var triggers = owners[0].GetComponents<Collider2D>().Where(c => c.isTrigger).ToArray();
+                    if (triggers.Length != 1 || !triggers[0].enabled || !triggers[0].gameObject.activeInHierarchy)
+                    { check.reason = "Missing, ambiguous, disabled or inactive furniture trigger."; return; }
+                    check.interactionTriggerPath = ColliderPath(triggers[0].transform);
+                    check.triggerDistance = Vector2.Distance(to, triggers[0].ClosestPoint(to));
+                    if (check.triggerDistance > 0.45f)
+                    { check.reason = "Clear feet position exceeds the 0.45u trigger selection distance."; return; }
+                }
+                check.status = "PASS";
+                check.reason = "Actual player local sweep is clear; required furniture trigger is within reach.";
+            }
+            // Local probes only. No route from the exterior through the closed house door is requested.
+            CheckClearSweep("bed_south_access", new Vector2(12.7f, 12.4f), new Vector2(12.7f, 12.8f), "Bed");
+            CheckClearSweep("chest_south_access", new Vector2(18.1f, 13.45f), new Vector2(18.1f, 13.85f), "FarmHouseChest");
+            var threshold = FarmEntrancePhysicsContract.CaveSourceToWorld(new Vector2(265.5f, 43f));
+            CheckClearSweep("cave_central_passage", new Vector2(threshold.x, FarmLevel1LayoutContract.CaveMouthMinY + 0.35f), threshold);
+            var town = FarmEntrancePhysicsContract.TownInteractionTrigger.Center;
+            CheckClearSweep("town_gate_approach", town + Vector2.left * 0.75f, town);
+        }
+        private static void EvaluateLandmarkPhysics(PlayerController player, Collider2D collider,
+            ContactFilter2D filter, Collider2D[] overlaps, Evidence evidence)
+        {
+            void Check(string id, Vector2 position, bool expectedBlocked)
+            {
+                SetPosition(player, position);
+                var actualBlocked = !IsClear(collider, filter, overlaps, player.transform);
+                evidence.landmarkPhysicsChecks.Add(new PhysicsCheck
+                {
+                    id = id,
+                    position = position,
+                    expectedBlocked = expectedBlocked,
+                    actualBlocked = actualBlocked,
+                    status = actualBlocked == expectedBlocked ? "PASS" : "FAIL"
+                });
+            }
+
+            foreach (var segment in FarmSettlementPhysicsContract.AllFenceSegments)
+                Check("fence_" + segment.Id, segment.Center, true);
+            Check("orchard_gate", FarmSettlementPhysicsContract.OrchardGate, false);
+            Check("pasture_gate", FarmSettlementPhysicsContract.PastureGate, false);
+            Check("well_clearing_approach", FarmSettlementPhysicsContract.WellClearingApproach, false);
+            // Use full-body clearance inside the wooden deck, not a point on its rail edge.
+            Check("dock_expanded_right", new Vector2(14.5f, -8.55f), false);
+            Check("dock_expanded_front", new Vector2(14.5f, -10.05f), false);
+
+            Check("house_west_wall", new Vector2(FarmLevel1LayoutContract.HouseMinX,
+                FarmLevel1LayoutContract.HouseStartY), true);
+            Check("house_north_wall", new Vector2(FarmLevel1LayoutContract.HouseStartX,
+                FarmLevel1LayoutContract.HouseMinY + FarmLevel1LayoutContract.HouseHeight), true);
+            Check("house_front_approach", new Vector2(FarmLevel1LayoutContract.HouseStartX,
+                FarmLevel1LayoutContract.HouseMinY - 1.375f), false);
+
+            Check("coop_base", new Vector2(FarmLevel1LayoutContract.CoopX, FarmLevel1LayoutContract.CoopY + 1f), true);
+            Check("coop_front", new Vector2(FarmLevel1LayoutContract.CoopX, FarmLevel1LayoutContract.CoopY - 1f), false);
+            Check("barn_base", new Vector2(FarmLevel1LayoutContract.BarnX, FarmLevel1LayoutContract.BarnY + 1f), true);
+            Check("barn_front", new Vector2(FarmLevel1LayoutContract.BarnX, FarmLevel1LayoutContract.BarnY - 1f), false);
+            Check("cheese_hut_base", new Vector2(FarmLevel1LayoutContract.ProcessingAX,
+                FarmLevel1LayoutContract.ProcessingAY + 0.8f), true);
+            Check("cheese_hut_front", new Vector2(FarmLevel1LayoutContract.ProcessingAX,
+                FarmLevel1LayoutContract.ProcessingAY - 1f), false);
+            Check("barrel_shed_base", new Vector2(FarmLevel1LayoutContract.ProcessingBX,
+                FarmLevel1LayoutContract.ProcessingBY + 0.8f), true);
+            Check("barrel_shed_front", new Vector2(FarmLevel1LayoutContract.ProcessingBX,
+                FarmLevel1LayoutContract.ProcessingBY - 1f), false);
+
+            // Scene anchors may move with approved composition. Sample the authored structural
+            // positions relative to the root, not obsolete absolute coordinates or measured blockers.
+            var objects = player.gameObject.scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Transform>(true)).ToArray();
+            var greenhouse = (Vector2)objects.Single(item => item.name == "Greenhouse").position;
+            Check("greenhouse_west_base", greenhouse + new Vector2(-2.15f, 0.25f), true);
+            Check("greenhouse_north_base", greenhouse + new Vector2(0f, 2.15f), true);
+            Check("greenhouse_south_approach", greenhouse + new Vector2(0f, -2.75f), false);
+            var fountainRoot = objects.Single(item => item.name == "FonteAnya");
+            var fountain = (Vector2)fountainRoot.position;
+            var respawn = fountainRoot.GetComponentInChildren<CindarsHope.Core.Respawn.AnyaFountain>();
+            if (respawn == null || respawn.RespawnPoint == null)
+                throw new InvalidOperationException("Fountain respawn point is missing or not initialized.");
+            Check("fountain_respawn", respawn.RespawnPoint.position, false);
+            Check("fountain_south_approach", fountain + Vector2.down, false);
+            Check("fountain_basin", fountain + new Vector2(0f, 1.15f), true);
+            Check("well_solid_base", new Vector2(FarmLevel1LayoutContract.WellX,
+                FarmLevel1LayoutContract.WellY + 0.15f), true);
+            Check("well_south_approach", new Vector2(FarmLevel1LayoutContract.WellX,
+                FarmLevel1LayoutContract.WellY - 1.75f), false);
+            Check("bridge_deck", new Vector2(FarmLevel1LayoutContract.BridgeCenterX,
+                FarmLevel1LayoutContract.BridgeCenterY - 0.5f), false);
+        }
+
+        private static bool IsClear(Collider2D collider, ContactFilter2D filter, Collider2D[] overlaps, Transform player)
+        {
+            int count = collider.OverlapCollider(filter, overlaps);
+            if (count >= overlaps.Length) throw new InvalidOperationException("Collider overlap buffer saturated.");
+            for (int i = 0; i < count; i++) if (!overlaps[i].transform.IsChildOf(player)) return false;
+            return true;
+        }
+
+        private static bool CanReachExact(PlayerController player, Collider2D collider, ContactFilter2D filter,
+            Collider2D[] overlaps, RaycastHit2D[] hits, Vector2 from, Vector2 to)
+        {
+            SetPosition(player, from);
+            var delta = to - from;
+            int count = collider.Cast(delta.normalized, filter, hits, delta.magnitude);
+            if (count >= hits.Length) throw new InvalidOperationException("Exact approach cast buffer saturated.");
+            for (int i = 0; i < count; i++)
+                if (hits[i].collider != null && !hits[i].collider.transform.IsChildOf(player.transform)) return false;
+            SetPosition(player, to);
+            return IsClear(collider, filter, overlaps, player.transform);
+        }
+
+        private static void EvaluateBoundary(PlayerController player, Collider2D collider,
+            ContactFilter2D filter, RaycastHit2D[] hits, Evidence evidence)
+        {
+            var boundary = FarmEnclosedValleyBoundaryContract.InnerBoundary;
+            float signedArea = 0f;
+            for (int i = 0; i < boundary.Count; i++)
+            {
+                var a = boundary[i];
+                var b = boundary[(i + 1) % boundary.Count];
+                signedArea += a.x * b.y - b.x * a.y;
+            }
+            for (int segment = 0; segment < boundary.Count; segment++)
+            {
+                var from = boundary[segment];
+                var to = boundary[(segment + 1) % boundary.Count];
+                var tangent = (to - from).normalized;
+                var outward = new Vector2(tangent.y, -tangent.x) * (signedArea > 0f ? 1f : -1f);
+                int samples = Mathf.Max(1, Mathf.CeilToInt(Vector2.Distance(from, to) / Step));
+                // Include vertices as well as segment interiors: seams must not become exits.
+                for (int sample = 0; sample <= samples; sample++)
+                {
+                    var point = Vector2.Lerp(from, to, (float)sample / samples);
+                    SetPosition(player, point - outward * 2f);
+                    int count = collider.Cast(outward, filter, hits, 4f);
+                    if (count >= hits.Length) throw new InvalidOperationException("Boundary cast buffer saturated.");
+                    var check = new BoundaryCheck { segment = segment, point = point, collider = "" };
+                    for (int hit = 0; hit < count; hit++)
+                    {
+                        var target = hits[hit].collider;
+                        if (target == null || !target.name.StartsWith("NaturalBoundary_", StringComparison.Ordinal)) continue;
+                        check.blockedByNaturalBoundary = true;
+                        check.collider = target.name;
+                        break;
+                    }
+                    evidence.boundaryChecks.Add(check);
+                }
+            }
+        }
+
+        private static Dictionary<string, Vector2> Targets(PlayerController player, Evidence evidence)
+        {
+            var objects = player.gameObject.scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true)).ToArray();
+            var missing = new List<string>();
+            Vector2 Approach(string name, Vector2 offset)
+            {
+                var matches = objects.Where(item => item.name == name).ToArray();
+                if (matches.Length != 1)
+                {
+                    missing.Add(name + " (matches=" + matches.Length + ")");
+                    return Vector2.zero;
+                }
+                return (Vector2)matches[0].position + offset;
+            }
+            var targets = new Dictionary<string, Vector2>
+            {
+                ["house"] = new Vector2(FarmLevel1LayoutContract.HouseStartX, FarmLevel1LayoutContract.HouseMinY - 0.75f),
+                ["cultivation"] = new Vector2(FarmLevel1LayoutContract.CropFieldMinX + FarmLevel1LayoutContract.CropFieldWidth / 2f, FarmLevel1LayoutContract.CropFieldMinY + FarmLevel1LayoutContract.CropFieldHeight / 2f),
+                ["well_visual"] = Approach("Visual_CentralWell", Vector2.down),
+                ["fountain_approach"] = Approach("FonteAnya", Vector2.down),
+                ["orchard_gate"] = Approach("Visual_OrchardGate", Vector2.down * 0.5f),
+                ["pasture_gate"] = Approach("Visual_PastureGate", Vector2.right * 0.5f),
+                ["cave_entrance_approach"] = new Vector2(FarmLevel1LayoutContract.CaveEntranceX, FarmLevel1LayoutContract.CaveMouthMinY - 0.75f),
+                ["greenhouse_approach"] = new Vector2(FarmLevel1LayoutContract.GreenhouseMinX + FarmLevel1LayoutContract.GreenhouseWidth / 2f, FarmLevel1LayoutContract.GreenhouseMinY - 0.75f),
+                ["fishing_approach"] = new Vector2(FarmLevel1LayoutContract.FishingSpotX, FarmLevel1LayoutContract.FishingSpotY),
+                ["workbench"] = Approach("CraftingStation_Workbench", Vector2.down),
+                ["forge"] = Approach("CraftingStation_Forge", Vector2.down),
+                ["cooking"] = Approach("CraftingStation_CookingStation", Vector2.down),
+                ["bridge"] = new Vector2(FarmLevel1LayoutContract.BridgeCenterX, FarmLevel1LayoutContract.BridgeCenterY),
+                ["town_exit"] = Approach("Portal_Farm_To_Town", Vector2.zero),
+                ["east_bridge_exit"] = new Vector2(FarmLevel1LayoutContract.SpawnFromTownX, FarmLevel1LayoutContract.SpawnFromTownY),
+                ["animals_west"] = new Vector2(FarmLevel1LayoutContract.AnimalBuildingsMinX + 3f, FarmLevel1LayoutContract.AnimalBuildingsMinY - 1f),
+                ["animals_east"] = new Vector2(FarmLevel1LayoutContract.AnimalBuildingsMinX + FarmLevel1LayoutContract.AnimalBuildingsWidth - 3f, FarmLevel1LayoutContract.AnimalBuildingsMinY - 1f)
+                , ["coop_door_approach"] = Approach("Coop_01", Vector2.down)
+                , ["barn_door_approach"] = Approach("Barn_01", Vector2.down)
+            };
+            evidence.missingLandmarks = missing.ToArray();
+            if (missing.Count > 0) throw new InvalidOperationException("Missing or ambiguous physical route landmarks: " + string.Join(", ", missing));
+            return targets;
+        }
+
+        private static void SetPosition(PlayerController player, Vector3 position)
+        {
+            player.transform.position = position;
+            var body = player.GetComponent<Rigidbody2D>();
+            if (body != null) body.position = position;
+            Physics2D.SyncTransforms();
+        }
+    }
+}

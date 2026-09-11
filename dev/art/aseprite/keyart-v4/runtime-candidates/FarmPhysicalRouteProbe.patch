@@ -1,0 +1,194 @@
+--- a/Assets/_Game/Scripts/Editor/Validation/FarmPhysicalRouteProbe.cs
++++ b/Assets/_Game/Scripts/Editor/Validation/FarmPhysicalRouteProbe.cs
+@@ -42,6 +42,9 @@
+             public List<PhysicsCheck> fenceTillingChecks = new List<PhysicsCheck>();
+             public List<PhysicsCheck> greenhouseTillingChecks = new List<PhysicsCheck>();
+             public List<PhysicsCheck> landmarkPhysicsChecks = new List<PhysicsCheck>();
++            public List<AuthoredSolidCheck> authoredSolidChecks = new List<AuthoredSolidCheck>();
++            public List<AuthoredApproachCheck> authoredApproachChecks = new List<AuthoredApproachCheck>();
++            public List<PhysicsCheck> authoredTillingChecks = new List<PhysicsCheck>();
+         }
+ 
+         [Serializable] internal sealed class BoundaryCheck
+@@ -83,6 +86,9 @@
+                 filter.SetLayerMask(evidence.layerMask);
+                 var overlaps = new Collider2D[HitLimit];
+                 var hits = new RaycastHit2D[HitLimit];
++                var grid = DomainManagerRegistry.Get<FarmTileGrid>();
++                if (grid == null) throw new InvalidOperationException("Farm tile grid was not installed.");
++                EvaluateAuthoredAffordances(player, collider, filter, overlaps, hits, grid, evidence);
+                 var targets = Targets(player, evidence);
+                 var origin = evidence.origin;
+                 var parents = new Dictionary<Vector2Int, Vector2Int> { [Vector2Int.zero] = Vector2Int.zero };
+@@ -164,8 +170,7 @@
+                 }
+                 EvaluateBoundary(player, collider, filter, hits, evidence);
+                 EvaluateLandmarkPhysics(player, collider, filter, overlaps, evidence);
+-                var grid = DomainManagerRegistry.Get<FarmTileGrid>();
+-                if (grid == null) throw new InvalidOperationException("Farm tile grid was not installed.");
++
+                 // Sample every tile center within the house, including fractional footprint edges.
+                 for (float x = Mathf.Floor(FarmLevel1LayoutContract.HouseMinX) + 0.5f;
+                     x < FarmLevel1LayoutContract.HouseMinX + FarmLevel1LayoutContract.HouseWidth; x++)
+@@ -202,6 +207,9 @@
+                         status = blocked == sample.blocked ? "PASS" : "FAIL" });
+                 }
+                 evidence.status = evidence.routes.All(route => route.status == "PASS") &&
++                    evidence.authoredSolidChecks.Count == 24 && evidence.authoredSolidChecks.All(check => check.status == "PASS") &&
++                    evidence.authoredApproachChecks.Count == 4 && evidence.authoredApproachChecks.All(check => check.status == "PASS") &&
++                    evidence.authoredTillingChecks.Count > 0 && evidence.authoredTillingChecks.All(check => check.status == "PASS") &&
+                     evidence.dockWaterChecks.All(check => check.blocked) &&
+                     evidence.landmarkPhysicsChecks.Count > 0 &&
+                     evidence.landmarkPhysicsChecks.All(check => check.status == "PASS") &&
+@@ -211,7 +219,7 @@
+                     evidence.fenceTillingChecks.All(check => check.status == "PASS") &&
+                     evidence.greenhouseTillingChecks.All(check => check.status == "PASS") &&
+                     evidence.boundaryChecks.Count > 0 && evidence.boundaryChecks.All(check => check.blockedByNaturalBoundary) ? "PASS" : "FAIL";
+-                evidence.reason = evidence.status == "PASS" ? "All approaches connected; dock water blocked; every sampled natural boundary segment blocks outward player-collider sweeps." : "An approach, dock-water check or natural boundary sweep failed; inspect individual evidence.";
++                evidence.reason = evidence.status == "PASS" ? "All approaches connected; dock water blocked; every sampled natural boundary segment blocks outward player-collider sweeps." : "An approach, named authored solid, live tilling tile, dock-water check or boundary sweep failed; inspect individual evidence.";
+             }
+             catch (Exception error) { evidence.reason = error.ToString(); }
+             finally
+@@ -222,6 +230,142 @@
+             return evidence;
+         }
+ 
++        private static readonly string[] SettlementSolidNames =
++        {
++            "PottingSupplies", "HouseSupplies", "HouseSuppliesSmall", "GreenhouseSupplies",
++            "FieldNorthCrate", "FieldNorthSmallCrate", "FieldSouthCrate", "CheeseSupplies", "ShedSupplies",
++            "HouseWestBarrel_A", "HouseWestBarrel_B", "HouseEastBarrel_A", "HouseEastBarrel_B",
++            "FountainWestBarrel", "FountainEastBarrel", "PastureTrough", "CoopTrough",
++            "BarnHayStack", "BarnHayStackSmall"
++        };
++
++        [Serializable] internal sealed class AuthoredSolidCheck
++        {
++            public string id, status = "FAIL", reason, expectedColliderPath;
++            public int matchingObjects, matchingSolidColliders, expectedInstanceId;
++            public bool enabled, active, layerIncluded, overlapsExpected;
++            public Vector2 queryFeet, expectedCenter, expectedSize;
++            public string[] actualHitPaths = Array.Empty<string>();
++        }
++
++        [Serializable] internal sealed class AuthoredApproachCheck
++        {
++            public string id, status = "FAIL", reason, interactionTriggerPath;
++            public Vector2 from, position;
++            public bool clear;
++            public float triggerDistance = -1f;
++        }
++
++        private static string ColliderPath(Transform item)
++        {
++            var path = item.name;
++            while (item.parent != null) { item = item.parent; path = item.name + "/" + path; }
++            return path;
++        }
++
++        private static void EvaluateAuthoredAffordances(PlayerController player, Collider2D playerCollider,
++            ContactFilter2D filter, Collider2D[] overlaps, RaycastHit2D[] hits, FarmTileGrid grid, Evidence evidence)
++        {
++            var objects = player.gameObject.scene.GetRootGameObjects()
++                .SelectMany(root => root.GetComponentsInChildren<Transform>(true)).ToArray();
++            void CheckSolid(string id, Func<Transform, bool> matches, Type expectedType, Vector2? contact = null)
++            {
++                var check = new AuthoredSolidCheck { id = id };
++                evidence.authoredSolidChecks.Add(check);
++                var candidates = objects.Where(matches).ToArray();
++                check.matchingObjects = candidates.Length;
++                if (candidates.Length != 1) { check.reason = "Expected exactly one named solid object."; return; }
++                var colliders = candidates[0].GetComponents<Collider2D>().Where(c => !c.isTrigger).ToArray();
++                check.matchingSolidColliders = colliders.Length;
++                if (colliders.Length != 1) { check.reason = "Expected exactly one non-trigger collider, including disabled candidates."; return; }
++                var expected = colliders[0];
++                check.expectedColliderPath = ColliderPath(expected.transform);
++                check.expectedInstanceId = expected.GetInstanceID();
++                check.enabled = expected.enabled;
++                check.active = expected.gameObject.activeInHierarchy;
++                check.layerIncluded = (evidence.layerMask & (1 << expected.gameObject.layer)) != 0;
++                if (expected.GetType() != expectedType || !check.enabled || !check.active || !check.layerIncluded ||
++                    (expected.attachedRigidbody != null && !expected.attachedRigidbody.simulated))
++                { check.reason = "Collider type, enabled/active state, simulation or actual player layer mask invalid."; return; }
++                var bounds = expected.bounds;
++                check.expectedCenter = bounds.center;
++                check.expectedSize = bounds.size;
++                if (bounds.size.x <= 0f || bounds.size.y <= 0f) { check.reason = "Empty solid bounds."; return; }
++                // Align the actual player's body center with the contact, preserving its real offset.
++                // A hit on a neighbor or the mountain does not satisfy this named collider check.
++                var bodyOffset = (Vector2)playerCollider.bounds.center - (Vector2)player.transform.position;
++                check.queryFeet = (contact ?? (Vector2)bounds.center) - bodyOffset;
++                SetPosition(player, check.queryFeet);
++                int count = playerCollider.OverlapCollider(filter, overlaps);
++                if (count >= overlaps.Length) throw new InvalidOperationException("Authored solid overlap buffer saturated.");
++                var hitPaths = new List<string>();
++                for (int i = 0; i < count; i++)
++                {
++                    if (overlaps[i] == expected) check.overlapsExpected = true;
++                    if (!overlaps[i].transform.IsChildOf(player.transform)) hitPaths.Add(ColliderPath(overlaps[i].transform));
++                }
++                check.actualHitPaths = hitPaths.ToArray();
++                check.status = check.overlapsExpected ? "PASS" : "FAIL";
++                check.reason = check.overlapsExpected ? "Actual player overlaps the exact expected collider instance." : "Expected collider absent from filtered overlaps; other blockers cannot substitute.";
++
++                // Every tile touched by the solid must agree with the live tilling grid, not only its center.
++                var min = grid.WorldToTile(bounds.min.x + 0.0001f, bounds.min.y + 0.0001f);
++                var max = grid.WorldToTile(bounds.max.x - 0.0001f, bounds.max.y - 0.0001f);
++                for (int y = min.y; y <= max.y; y++)
++                for (int x = min.x; x <= max.x; x++)
++                {
++                    var point = grid.TileToWorldCenter(x, y);
++                    bool blocked = !grid.IsTillableAtWorldPosition(point.x, point.y);
++                    evidence.authoredTillingChecks.Add(new PhysicsCheck
++                    {
++                        id = id + "/tile_" + x + "_" + y, position = point,
++                        expectedBlocked = true, actualBlocked = blocked, status = blocked ? "PASS" : "FAIL"
++                    });
++                }
++            }
++            foreach (var name in SettlementSolidNames)
++                CheckSolid("prop_" + name, t => t.name == "Solid_" + name &&
++                    t.parent != null && t.parent.name == "FarmSettlementDetails", typeof(BoxCollider2D));
++            foreach (var furniture in new[] { "Bed", "FarmHouseChest" })
++                CheckSolid("house_" + furniture, t => t.name == "SolidBase" && t.parent != null &&
++                    t.parent.name == furniture && t.parent.parent != null && t.parent.parent.name == "FarmHouse", typeof(BoxCollider2D));
++            foreach (var jamb in FarmEntrancePhysicsContract.CaveSideBases)
++                CheckSolid(jamb.Id, t => t.name == "Solid_" + jamb.Id && t.parent != null &&
++                    t.parent.name == "CaveEntrance", typeof(BoxCollider2D), jamb.Center);
++            CheckSolid("town_barrier", t => t.name == "NaturalBoundary_TownGate", typeof(PolygonCollider2D),
++                FarmEntrancePhysicsContract.TownGateVisualRun.Center);
++
++            void CheckClearSweep(string id, Vector2 from, Vector2 to, string furniture = null)
++            {
++                var check = new AuthoredApproachCheck { id = id, from = from, position = to };
++                evidence.authoredApproachChecks.Add(check);
++                SetPosition(player, from);
++                check.clear = IsClear(playerCollider, filter, overlaps, player.transform) &&
++                    CanReachExact(player, playerCollider, filter, overlaps, hits, from, to);
++                if (!check.clear) { check.reason = "Actual player overlaps a blocker or its local sweep is blocked."; return; }
++                if (furniture != null)
++                {
++                    var owners = objects.Where(t => t.name == furniture && t.parent != null && t.parent.name == "FarmHouse").ToArray();
++                    if (owners.Length != 1) { check.reason = "Missing or ambiguous furniture interaction owner."; return; }
++                    var triggers = owners[0].GetComponents<Collider2D>().Where(c => c.isTrigger).ToArray();
++                    if (triggers.Length != 1 || !triggers[0].enabled || !triggers[0].gameObject.activeInHierarchy)
++                    { check.reason = "Missing, ambiguous, disabled or inactive furniture trigger."; return; }
++                    check.interactionTriggerPath = ColliderPath(triggers[0].transform);
++                    check.triggerDistance = Vector2.Distance(to, triggers[0].ClosestPoint(to));
++                    if (check.triggerDistance > 0.45f)
++                    { check.reason = "Clear feet position exceeds the 0.45u trigger selection distance."; return; }
++                }
++                check.status = "PASS";
++                check.reason = "Actual player local sweep is clear; required furniture trigger is within reach.";
++            }
++            // Local probes only. No route from the exterior through the closed house door is requested.
++            CheckClearSweep("bed_south_access", new Vector2(12.7f, 12.4f), new Vector2(12.7f, 12.8f), "Bed");
++            CheckClearSweep("chest_south_access", new Vector2(18.1f, 13.45f), new Vector2(18.1f, 13.85f), "FarmHouseChest");
++            var threshold = FarmEntrancePhysicsContract.CaveSourceToWorld(new Vector2(265.5f, 43f));
++            CheckClearSweep("cave_central_passage", new Vector2(threshold.x, FarmLevel1LayoutContract.CaveMouthMinY + 0.35f), threshold);
++            var town = FarmEntrancePhysicsContract.TownInteractionTrigger.Center;
++            CheckClearSweep("town_gate_approach", town + Vector2.left * 0.75f, town);
++        }
+         private static void EvaluateLandmarkPhysics(PlayerController player, Collider2D collider,
+             ContactFilter2D filter, Collider2D[] overlaps, Evidence evidence)
+         {

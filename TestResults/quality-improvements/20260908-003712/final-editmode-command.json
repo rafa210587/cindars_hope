@@ -1,0 +1,13 @@
+[
+  "-NoProfile",
+  "-File",
+  "tools/unity/RunUnityEditModeTests.ps1",
+  "-ProjectPath",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope",
+  "-UnityPath",
+  "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.7f1\\Editor\\Unity.exe",
+  "-ResultsPath",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope\\TestResults\\quality-improvements\\20260908-003712\\final-editmode.xml",
+  "-LogFile",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope\\TestResults\\quality-improvements\\20260908-003712\\final-editmode.log"
+]

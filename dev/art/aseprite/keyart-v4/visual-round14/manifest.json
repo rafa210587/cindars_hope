@@ -1,0 +1,12 @@
+[
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+    "originalSha256": "54BE39651493C3A67BA8AD9747EAF3C0FDA23A55C0BA4AF67204E5BC193CEA20",
+    "candidate": "FarmDecorationPlanner.cs.txt"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmLandscapeVisualComposer.cs",
+    "originalSha256": "2EC2C5E2F4B44EEF710E7320210F10A51503F336C1EDE0C50DC27DE5976113E0",
+    "candidate": "FarmLandscapeVisualComposer.cs.txt"
+  }
+]

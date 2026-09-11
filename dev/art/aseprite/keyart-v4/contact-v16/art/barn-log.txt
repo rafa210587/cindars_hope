@@ -1,0 +1,1 @@
+PASS barn125x1662layers alpha preserved; changed 248 pixels in local red gable only; nearest offline1.569screenpx/sourcepx

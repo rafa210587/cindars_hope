@@ -1,0 +1,212 @@
+ M .agents/skills/save-load-pattern/SKILL.md
+ M .claude/agents/architecture-reviewer.md
+ M .claude/agents/non-regression-auditor.md
+ M .claude/agents/spec-implementer.md
+ M .claude/hooks/guard-large-files.ps1
+ M .claude/hooks/guard-secrets.ps1
+ M .claude/hooks/protected-path-guard.ps1
+ M .claude/hooks/runtime-code-guard.ps1
+ M .claude/rules/RULES.md
+ M .claude/rules/unity-architecture.md
+ M .claude/skills/save-load-pattern/SKILL.md
+ M .codex/agents/architecture-reviewer.toml
+ M .codex/agents/non-regression-auditor.toml
+ M .codex/agents/spec-implementer.toml
+ M .codex/hooks.json
+ M .codex/rules/RULES.md
+ M .codex/rules/unity-architecture.md
+ M AGENTS.md
+ M Assets/_Game/Art/Generated/World/foliage/tree_stump.png
+ M Assets/_Game/Art/Generated/World/tiles/ground_cliff_top.png
+ M Assets/_Game/Art/Generated/World/tiles/ground_cliff_wall.png
+ M Assets/_Game/Art/Generated/World/trees/tree_apple.png
+ M Assets/_Game/Art/Generated/World/trees/tree_oak.png
+ M Assets/_Game/Art/Generated/World/trees/tree_pine.png
+ M Assets/_Game/Scenes/CaveScene.unity
+ M Assets/_Game/Scenes/FarmScene.unity
+ M Assets/_Game/Scenes/TownScene.unity
+ M Assets/_Game/Scripts/Editor/Art/WorldTilemapGround.cs
+ M Assets/_Game/Scripts/Editor/Dev/FarmSceneCapture.cs
+ M Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
+ M Assets/_Game/Scripts/Editor/Validation/SpriteOpaqueBoundsUtility.cs
+ M Assets/_Game/Scripts/Farm/FarmLevel1LayoutContract.cs
+ M Assets/_Game/Scripts/Farm/Runtime/FarmSceneRuntimeBootstrap.cs
+ M Assets/_Game/Scripts/Inventory/InventoryManager.cs
+ M Assets/_Game/Scripts/NPC/NpcController.cs
+ M Assets/_Game/Scripts/NPC/NpcShopController.cs
+ M Assets/_Game/Scripts/Quests/Runtime/QuestGiverInteractable.cs
+ M Assets/_Game/Scripts/Save/Migrations/SaveBackupService.cs
+ M Assets/_Game/Scripts/Save/SaveManager.Migration.cs
+ M Assets/_Game/Scripts/Save/SaveManager.cs
+ M Assets/_Game/Tests/EditMode/Save/SaveAtomicWriteTests.cs
+ M Assets/_Game/Tests/EditMode/UI/InventorySlotMoveMergeTests.cs
+ M CLAUDE.md
+ M PROJECT_LOG.md
+ M docs/IMPLEMENTATION_STATUS.md
+ M docs/project/CURRENT_STATE.md
+ M docs/project/DOCUMENT_INDEX.md
+ M docs/validation/playmode/farm_capture.png
+ M docs/validation/playmode/farm_capture_animals.png
+ M docs/validation/playmode/farm_capture_closeup.png
+ M tools/codex/Generate-CodexHarness.ps1
+ M tools/codex/README.md
+ M tools/docs/run_strict_validation.ps1
+?? .agents/skills/solid-refactoring/SKILL.md
+?? .claude/hooks/edit-tool-payload.ps1
+?? .claude/rules/keyart-scene-fidelity.md
+?? .claude/rules/solid-and-ai-context.md
+?? .claude/skills/solid-refactoring/SKILL.md
+?? .codex/config.toml.bak-20260812-1934
+?? .codex/rules/keyart-scene-fidelity.md
+?? .codex/rules/solid-and-ai-context.md
+?? .specs/a_implementar/spec_farm_scene_biome_decoration_v1.md
+?? .specs/a_implementar/spec_farm_scene_collision_navigation_v1.md
+?? .specs/a_implementar/spec_farm_scene_keyart_macro_composition_v1.md
+?? .specs/a_implementar/spec_farm_scene_keyart_playmode_acceptance_v1.md
+?? .specs/a_implementar/spec_farm_scene_keyart_richness_completion_v1.md
+?? .specs/a_implementar/spec_farm_scene_keyart_scale_physics_correction_v1.md
+?? .specs/a_implementar/spec_farm_scene_keyart_visual_corrections_v1.md
+?? .specs/a_implementar/spec_farm_scene_landmarks_and_agriculture_v1.md
+?? .specs/a_implementar/spec_farm_scene_organic_terrain_water_v1.md
+?? .specs/a_implementar/spec_farm_scene_spatial_contract_v1.md
+?? .specs/a_implementar/spec_solid_ai_harness_hardening_v1.md
+?? .specs/a_implementar/spec_solid_class_context_v1.md
+?? .specs/a_implementar/spec_solid_inventory_save_refactor_v1.md
+?? .specs/a_implementar/spec_validation_efficiency_harness_v1.md
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_cliff_rock.asset
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_cliff_rock.asset.meta
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_cliff_top.asset
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_cliff_top.asset.meta
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_cliff_wall.asset
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_cliff_wall.asset.meta
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_path_dirt.asset
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_path_dirt.asset.meta
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_sand_shore.asset
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_sand_shore.asset.meta
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_soil.asset
+?? Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_soil.asset.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_cliff_rock.png.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_cliff_top.png.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_cliff_wall.png.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_ore_rock.png.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_path_cobble.png.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_path_dirt.png.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_rubble.png.meta
+?? Assets/_Game/Art/Generated/World/tiles/ground_sand_shore.png.meta
+?? Assets/_Game/Art/Generated/World/trees/tree_stump.png
+?? Assets/_Game/Art/Generated/World/trees/tree_stump.png.meta
+?? Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs
+?? Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs.meta
+?? Assets/_Game/Scripts/Editor/Dev.meta
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneComposition.cs
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneComposition.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneDecoration.cs
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneDecoration.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneLandmarks.cs
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneLandmarks.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneNavigation.cs
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneNavigation.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneSpatialContract.cs
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneSpatialContract.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmTerrainMasks.cs
+?? Assets/_Game/Scripts/Editor/Validation/ValidateFarmTerrainMasks.cs.meta
+?? Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationPolicy.cs
+?? Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationPolicy.cs.meta
+?? Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationRaster.cs
+?? Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationRaster.cs.meta
+?? Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs
+?? Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs.meta
+?? Assets/_Game/Scripts/Inventory/InventorySlotOperations.cs
+?? Assets/_Game/Scripts/Inventory/InventorySlotOperations.cs.meta
+?? Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs
+?? Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs.meta
+?? Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs
+?? Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Editor/FarmTerrainMaskTests.cs
+?? Assets/_Game/Tests/EditMode/Editor/FarmTerrainMaskTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Farm/FarmLandmarkCompositionTests.cs
+?? Assets/_Game/Tests/EditMode/Farm/FarmLandmarkCompositionTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Farm/FarmSceneCompositionContractTests.cs
+?? Assets/_Game/Tests/EditMode/Farm/FarmSceneCompositionContractTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Farm/FarmSceneNavigationContractTests.cs
+?? Assets/_Game/Tests/EditMode/Farm/FarmSceneNavigationContractTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Farm/FarmSceneSpatialContractTests.cs
+?? Assets/_Game/Tests/EditMode/Farm/FarmSceneSpatialContractTests.cs.meta
+?? Assets/_Game/Tests/EditMode/UI/InventorySlotOperationsTests.cs
+?? Assets/_Game/Tests/EditMode/UI/InventorySlotOperationsTests.cs.meta
+?? TestResults/quality-improvements/20260908-000202/baseline-editmode.xml
+?? TestResults/quality-improvements/20260908-000202/baseline-process-result.json
+?? TestResults/quality-improvements/20260908-000202/baseline-process.json
+?? TestResults/quality-improvements/20260908-000202/fingerprint-delta-after.csv
+?? TestResults/quality-improvements/20260908-000202/fingerprints-before.csv
+?? TestResults/quality-improvements/20260908-000202/git-status-before.txt
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/AudioManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/ClusterInputManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/DynamicsManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/EditorBuildSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/EditorSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/GraphicsSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/InputManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/MemorySettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/MultiplayerManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/NavMeshAreas.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/PackageManagerSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/Physics2DSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/PhysicsCoreProjectSettings2D.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/PresetManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/ProjectAuditorSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/ProjectSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/ProjectVersion.txt
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/QualitySettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/SceneTemplateSettings.json
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/TagManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/TimeManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/UnityConnectSettings.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/VFXManager.asset
+?? TestResults/quality-improvements/20260908-000202/snapshot/ProjectSettings/VersionControlSettings.asset
+?? TestResults/solid-ai/POST_REFACTOR_REPORT.md
+?? TestResults/solid-ai/VALIDATION_REPORT.md
+?? TestResults/solid-ai/build-post-refactor-after-restore-exits.tsv
+?? TestResults/solid-ai/change-manifest.txt
+?? TestResults/solid-ai/class-index.jsonl
+?? TestResults/solid-ai/docs-errors.txt
+?? TestResults/solid-ai/editmode-failures.txt
+?? TestResults/solid-ai/editmode.xml
+?? TestResults/solid-ai/post-refactor-focused.xml
+?? TestResults/solid-ai/post-refactor-full.xml
+?? TestResults/solid-ai/post-refactor-playmode-composition.xml
+?? TestResults/solid-ai/pre-refactor-characterization.xml
+?? _art_archive/art/trees/farm_trees_sheet_v1.png
+?? dev/null/post-checkout
+?? dev/null/post-commit
+?? dev/null/post-merge
+?? dev/null/pre-push
+?? docs/architecture/AI_CODE_CONTEXT.md
+?? docs/archive/CURRENT_STATE_before_SOLID_AI_2026_09_08.md
+?? docs/project/PLANO_FARM_KEYART_FIDELIDADE.md
+?? docs/validation/FARM_KEYART_EXECUTION_TRACE.md
+?? docs/validation/SOLID_AI_PROJECT_AUDIT.md
+?? docs/validation/TEST_VALIDATION_EFFICIENCY_REVIEW.md
+?? docs/validation/playmode/farm_capture_colliders.png
+?? docs/validation/playmode/spec_farm_scene_collision_navigation_v1_human_test_scenario.md
+?? docs/validation/playmode/spec_farm_scene_keyart_macro_composition_v1_human_test_scenario.md
+?? docs/validation/playmode/spec_farm_scene_keyart_playmode_scenario.md
+?? docs/validation/playmode/spec_farm_scene_keyart_scale_physics_correction_v1_human_test_scenario.md
+?? docs/validation/playmode/spec_farm_scene_landmarks_and_agriculture_v1_human_test_scenario.md
+?? docs/validation/playmode/spec_solid_inventory_save_refactor_v1_human_test_scenario.md
+?? docs/validation/spec_farm_scene_biome_decoration_v1_execution_report.md
+?? docs/validation/spec_farm_scene_collision_navigation_v1_execution_report.md
+?? docs/validation/spec_farm_scene_keyart_macro_composition_v1_execution_report.md
+?? docs/validation/spec_farm_scene_keyart_playmode_acceptance_v1_execution_report.md
+?? docs/validation/spec_farm_scene_keyart_scale_physics_correction_v1_execution_report.md
+?? docs/validation/spec_farm_scene_landmarks_and_agriculture_v1_execution_report.md
+?? docs/validation/spec_farm_scene_organic_terrain_water_v1_execution_report.md
+?? docs/validation/spec_farm_scene_spatial_contract_v1_execution_report.md
+?? docs/validation/spec_solid_ai_harness_hardening_v1_execution_report.md
+?? docs/validation/spec_solid_class_context_v1_execution_report.md
+?? docs/validation/spec_solid_inventory_save_refactor_v1_execution_report.md
+?? tools/architecture/Get-ClassContext.ps1
+?? tools/architecture/Test-ClassContext.ps1
+?? tools/codex/Test-CodexHarnessGeneration.ps1
+?? tools/codex/Test-EditToolGuards.ps1
+?? tools/docs/Test-StrictValidation.ps1

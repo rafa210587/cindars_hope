@@ -1,0 +1,114 @@
+{
+  "source": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Art\\Generated\\World\\props\\fountain_keyart_v3.png",
+  "sha256": "7956c2ea48e224d2969e9e589e4bd530d872fd5030928144e816bc499098e050",
+  "canvas": [
+    170,
+    159
+  ],
+  "supportPixelBottomLeft": [
+    85,
+    43
+  ],
+  "worldSupport": [
+    -28,
+    3.1
+  ],
+  "worldUnitsPerSourcePixel": 0.051094890510948905,
+  "method": "Original PNG inspected visually, alpha>127 row extents inspected around bottom stone feet. Conservative low rectangles cover the visible foot bands; they exclude tall shafts/water. This is source measurement, not PlayMode contact validation.",
+  "columnFeet": [
+    {
+      "column": "NW",
+      "sourcePixelEdgeRectBottomLeft": [
+        19,
+        108,
+        16,
+        8
+      ],
+      "sourcePixelEdgeRectTopLeft": [
+        19,
+        43,
+        16,
+        8
+      ],
+      "worldCenter": [
+        -30.963503649635037,
+        6.625547445255474
+      ],
+      "worldSize": [
+        0.8175182481751825,
+        0.40875912408759124
+      ]
+    },
+    {
+      "column": "NE",
+      "sourcePixelEdgeRectBottomLeft": [
+        126,
+        107,
+        18,
+        9
+      ],
+      "sourcePixelEdgeRectTopLeft": [
+        126,
+        43,
+        18,
+        9
+      ],
+      "worldCenter": [
+        -25.445255474452555,
+        6.6
+      ],
+      "worldSize": [
+        0.9197080291970803,
+        0.45985401459854014
+      ]
+    },
+    {
+      "column": "SW",
+      "sourcePixelEdgeRectBottomLeft": [
+        19,
+        47,
+        18,
+        8
+      ],
+      "sourcePixelEdgeRectTopLeft": [
+        19,
+        104,
+        18,
+        8
+      ],
+      "worldCenter": [
+        -30.912408759124087,
+        3.5087591240875913
+      ],
+      "worldSize": [
+        0.9197080291970803,
+        0.40875912408759124
+      ]
+    },
+    {
+      "column": "SE",
+      "sourcePixelEdgeRectBottomLeft": [
+        126,
+        47,
+        18,
+        8
+      ],
+      "sourcePixelEdgeRectTopLeft": [
+        126,
+        104,
+        18,
+        8
+      ],
+      "worldCenter": [
+        -25.445255474452555,
+        3.5087591240875913
+      ],
+      "worldSize": [
+        0.9197080291970803,
+        0.40875912408759124
+      ]
+    }
+  ],
+  "basinChanged": false,
+  "unityValidation": "NOT RUN"
+}

@@ -1,0 +1,1 @@
+PASS goat48x48,19frames,3layers,support24,40top

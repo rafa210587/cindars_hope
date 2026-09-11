@@ -1,0 +1,29 @@
+CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests.Plan_AllBiomesAreWithinDeclaredRanges
+  WaterEdge
+  Expected: True
+  But was:  False
+
+at CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests.Plan_AllBiomesAreWithinDeclaredRanges () [0x0005e] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Editor\FarmDecorationPlannerTests.cs:42
+
+
+CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.BridgeVisualScale_IsReducedWithoutDefiningPhysicalFootprint
+  Expected: 0.800000012f
+  But was:  1.39999998f
+
+at CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.BridgeVisualScale_IsReducedWithoutDefiningPhysicalFootprint () [0x0001e] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Farm\FarmSceneCompositionContractTests.cs:43
+
+
+CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.ScaleRanges_AcceptApprovedValuesAndRejectBridgeOutlier
+  Expected: True
+  But was:  False
+
+at CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.ScaleRanges_AcceptApprovedValuesAndRejectBridgeOutlier () [0x00019] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Farm\FarmSceneCompositionContractTests.cs:35
+
+
+CindarsHope.Tests.EditMode.Farm.FarmSceneSpatialContractTests.BlockingFootprints_AreNonArable
+  Expected: True
+  But was:  False
+
+at CindarsHope.Tests.EditMode.Farm.FarmSceneSpatialContractTests.BlockingFootprints_AreNonArable () [0x0010d] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Farm\FarmSceneSpatialContractTests.cs:47
+
+

@@ -1,0 +1,336 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+namespace CindarsHope.Editor.Art
+{
+    /// <summary>Editor-only authoring of native sprite clips/controllers; no ambient runtime script.</summary>
+    public static class FarmAmbientAnimationAuthoring
+    {
+        private const string SourceRoot = "Assets/_Game/Art/Generated/World/ambient/";
+        private const string AssetRoot = SourceRoot + "_AnimationAssets/";
+        private const float FishPeriod = 20f;
+        private static readonly EditorCurveBinding SpriteBinding = EditorCurveBinding.PPtrCurve("", typeof(SpriteRenderer), "m_Sprite");
+
+        [Serializable] private sealed class Sheet { public Frame[] frames; public Meta meta; }
+        [Serializable] private sealed class Frame
+        {
+            public FrameRect frame, spriteSourceSize;
+            public CanvasSize sourceSize;
+            public bool rotated, trimmed;
+            public int duration;
+        }
+        [Serializable] private sealed class FrameRect { public int x, y, w, h; }
+        [Serializable] private sealed class CanvasSize { public int w, h; }
+        [Serializable] private sealed class Meta { public CanvasSize size; }
+        [Serializable] public sealed class ClipReport
+        {
+            public string id, clipPath, controllerPath;
+            public int frameCount;
+            public float period, pixelsPerUnit, activeStart;
+            public Vector2 canvas, pivot;
+            public float[] keyTimes, sampledTimes;
+            public string[] sampledSprites;
+            public bool nativeSamplesMatch, hiddenDuringWait;
+        }
+        [Serializable] public sealed class ValidationReport
+        {
+            public string status = "PASS";
+            public string method = "AnimationClip keyframes and native AnimationMode.SampleAnimationClip on a temporary Editor object. This is not a 21-second Play Mode observation, performance measurement or visual approval.";
+            public ClipReport[] clips;
+            public bool sceneColliderComparisonPerformed, originalCollidersUnchanged;
+            public int colliderCountBefore, colliderCountAfter;
+        }
+        private sealed class ColliderSnapshot
+        {
+            public Collider2D collider;
+            public string serialized;
+            public Matrix4x4 matrix;
+        }
+
+        /// <summary>Call once in CreateMvpFarmScene immediately before MarkSceneDirty/SaveScene.</summary>
+        public static ValidationReport Apply(Scene scene)
+        {
+            Require(scene.IsValid() && scene.isLoaded, "Ambient authoring requires the explicit loaded Farm scene.");
+            var colliders = Components<Collider2D>(scene).Select(c => new ColliderSnapshot
+                { collider = c, serialized = EditorJsonUtility.ToJson(c), matrix = c.transform.localToWorldMatrix }).ToArray();
+            var fountainRoot = scene.GetRootGameObjects().Single(r => r.name == "FonteAnya");
+            var fountain = fountainRoot.transform.Find("Visual")?.GetComponent<SpriteRenderer>();
+            var cascade = Components<SpriteRenderer>(scene).Single(r => r.name == "Visual_RiverConfluenceCascade");
+            Require(fountain != null && fountain.sprite != null && cascade.sprite != null, "Existing fountain/cascade renderer is missing.");
+            BindExisting(fountain, "fountain_v15", 5, 140);
+            BindExisting(cascade, "cascade_v15", 5, 140);
+
+            var fishRoot = scene.GetRootGameObjects().SingleOrDefault(r => r.name == "FarmAmbientVisuals");
+            if (fishRoot == null)
+            {
+                fishRoot = new GameObject("FarmAmbientVisuals");
+                SceneManager.MoveGameObjectToScene(fishRoot, scene);
+            }
+            var fishTransform = fishRoot.transform.Find("Visual_FishJump");
+            if (fishTransform == null)
+            {
+                fishTransform = new GameObject("Visual_FishJump").transform;
+                fishTransform.SetParent(fishRoot.transform, false);
+            }
+            Require(fishTransform.GetComponentsInChildren<Collider2D>(true).Length == 0, "Ambient fish must have no collider.");
+            fishTransform.position = new Vector3(22f, -12f, 0f);
+            fishTransform.localRotation = Quaternion.identity;
+            fishTransform.localScale = Vector3.one;
+            var fish = fishTransform.GetComponent<SpriteRenderer>();
+            if (fish == null) fish = fishTransform.gameObject.AddComponent<SpriteRenderer>();
+            fish.sortingLayerName = "Ground";
+            fish.sortingOrder = 5;
+            fish.spriteSortPoint = SpriteSortPoint.Pivot;
+            var fishClip = BuildClip("fish_v15", 8, 120, new Vector2(48f, 48f), new Vector2(0.5f, 14f / 48f), 18.3f, FishPeriod);
+            fish.sprite = null; // Native clip is also explicitly null throughout the waiting interval.
+            BindAnimator(fish, fishClip, "fish_v15");
+            AssetDatabase.SaveAssets();
+            var report = ValidateGenerated();
+            var after = Components<Collider2D>(scene).ToArray();
+            Require(after.Length == colliders.Length && colliders.All(c => c.collider != null &&
+                after.Contains(c.collider) && EditorJsonUtility.ToJson(c.collider) == c.serialized &&
+                c.collider.transform.localToWorldMatrix == c.matrix), "Ambient authoring changed scene collision.");
+            report.sceneColliderComparisonPerformed = true;
+            report.originalCollidersUnchanged = true;
+            report.colliderCountBefore = colliders.Length;
+            report.colliderCountAfter = after.Length;
+            return report;
+        }
+
+        private static void BindExisting(SpriteRenderer renderer, string id, int count, int milliseconds)
+        {
+            // A frame keeps the complete source canvas, pivot and PPU. Changing sprite references
+            // therefore requires no transform, support, tint, sorting or collider correction.
+            var original = renderer.sprite;
+            var canvas = original.rect.size;
+            var pivot = new Vector2(original.pivot.x / canvas.x, original.pivot.y / canvas.y);
+            var clip = BuildClip(id, count, milliseconds, canvas, pivot, original.pixelsPerUnit, 0f);
+            var curve = AnimationUtility.GetObjectReferenceCurve(clip, SpriteBinding);
+            renderer.sprite = (Sprite)curve[0].value;
+            BindAnimator(renderer, clip, id);
+        }
+
+        private static AnimationClip BuildClip(string id, int count, int milliseconds,
+            Vector2 canvas, Vector2 pivot, float ppu, float period)
+        {
+            var sheet = ReadSheet(id, count, milliseconds, canvas);
+            var texturePath = SourceRoot + id + ".png";
+            AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceSynchronousImport);
+            var importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+            Require(importer != null, "Missing ambient PNG: " + texturePath);
+            importer.textureType = TextureImporterType.Sprite;
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.mipmapEnabled = false;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.alphaIsTransparency = true;
+            importer.maxTextureSize = Mathf.Max(2048, Mathf.NextPowerOfTwo(Mathf.Max(sheet.meta.size.w, sheet.meta.size.h)));
+            importer.SaveAndReimport();
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+            Require(texture != null && texture.width == sheet.meta.size.w && texture.height == sheet.meta.size.h,
+                "Imported ambient sheet dimensions differ from Aseprite metadata: " + id);
+            EnsureFolder(AssetRoot.TrimEnd('/'));
+            var path = AssetRoot + id + ".anim";
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+            if (clip == null) { clip = new AnimationClip { name = id }; AssetDatabase.CreateAsset(clip, path); }
+            var oldSprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
+            var frames = new Sprite[count];
+            for (var i = 0; i < count; i++)
+            {
+                var f = sheet.frames[i].frame;
+                var rect = new Rect(f.x, texture.height - f.y - f.h, f.w, f.h);
+                var name = id + "_frame_" + i.ToString("D2");
+                var sprite = oldSprites.SingleOrDefault(s => s.name == name);
+                if (sprite == null)
+                {
+                    sprite = Sprite.Create(texture, rect, pivot, ppu, 0, SpriteMeshType.FullRect);
+                    sprite.name = name;
+                    // Native AnimationClip owns persistent sprite subassets, matching the water
+                    // authoring pattern; regenerated assets keep their existing local file IDs.
+                    AssetDatabase.AddObjectToAsset(sprite, clip);
+                }
+                Require(sprite.texture == texture && sprite.rect == rect && Mathf.Abs(sprite.pixelsPerUnit - ppu) < 0.0001f &&
+                    Vector2.Distance(sprite.pivot, Vector2.Scale(canvas, pivot)) < 0.001f,
+                    "Existing ambient subasset geometry changed; use a new authored version: " + name);
+                frames[i] = sprite;
+            }
+            var activeDuration = sheet.frames.Sum(f => f.duration) / 1000f;
+            var delayed = period > 0f;
+            if (!delayed) period = activeDuration;
+            Require(period >= activeDuration, "Ambient clip period is shorter than its authored poses.");
+            var keys = new List<ObjectReferenceKeyframe>();
+            var time = delayed ? period - activeDuration : 0f;
+            if (delayed) keys.Add(new ObjectReferenceKeyframe { time = 0f, value = null });
+            for (var i = 0; i < count; i++)
+            {
+                keys.Add(new ObjectReferenceKeyframe { time = time, value = frames[i] });
+                time += sheet.frames[i].duration / 1000f;
+            }
+            // Unity includes one sample after the last sprite key in AnimationClip.length.
+            // Hold the final pose until the exact period; the controller wraps to frame zero.
+            keys.Add(new ObjectReferenceKeyframe { time = period - 0.01f, value = delayed ? null : frames[count - 1] });
+            clip.ClearCurves();
+            clip.frameRate = 100f; // Exact 140ms/120ms poses and 20-second boundary on the clip grid.
+            clip.legacy = false;
+            clip.wrapMode = WrapMode.Loop;
+            AnimationUtility.SetObjectReferenceCurve(clip, SpriteBinding, keys.ToArray());
+            var settings = AnimationUtility.GetAnimationClipSettings(clip);
+            settings.loopTime = true;
+            settings.loopBlend = false;
+            settings.startTime = 0f;
+            settings.stopTime = period;
+            AnimationUtility.SetAnimationClipSettings(clip, settings);
+            EditorUtility.SetDirty(clip);
+            return clip;
+        }
+
+        private static void BindAnimator(SpriteRenderer renderer, AnimationClip clip, string id)
+        {
+            var path = AssetRoot + id + ".controller";
+            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
+            if (controller == null) controller = AnimatorController.CreateAnimatorControllerAtPath(path);
+            // A failed earlier import can leave the owned controller persisted before its layer.
+            if (controller.layers.Length == 0) controller.AddLayer("Base Layer");
+            Require(controller.layers.Length == 1, "Unexpected layers in owned ambient controller: " + id);
+            var machine = controller.layers[0].stateMachine;
+            if (machine.states.Length == 0) machine.AddState("Ambient");
+            Require(machine.states.Length == 1 && machine.states[0].state.name == "Ambient", "Unexpected ambient controller states: " + id);
+            var state = machine.states[0].state;
+            Require(state.transitions.Length == 0 && machine.anyStateTransitions.Length == 0,
+                "Ambient loop must have no transition graph: " + id);
+            state.motion = clip;
+            state.speed = 1f;
+            state.writeDefaultValues = false;
+            machine.defaultState = state;
+            var animator = renderer.GetComponent<Animator>();
+            if (animator == null) animator = renderer.gameObject.AddComponent<Animator>();
+            Require(animator.runtimeAnimatorController == null || animator.runtimeAnimatorController == controller,
+                "An unrelated Animator already owns renderer " + renderer.name);
+            animator.runtimeAnimatorController = controller;
+            animator.applyRootMotion = false;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate; // Fish must advance while its sprite is null.
+            animator.speed = 1f;
+            animator.enabled = true;
+            EditorUtility.SetDirty(controller);
+        }
+
+        public static void ValidateAssetsBatch()
+        {
+            foreach (var id in new[] { "fountain_v15", "cascade_v15", "fish_v15" })
+            {
+                var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(AssetRoot + id + ".anim");
+                var settings = AnimationUtility.GetAnimationClipSettings(clip);
+                Debug.Log($"[FarmAmbient] {id}: length={clip.length:R}, stop={settings.stopTime:R}, fps={clip.frameRate}, loop={settings.loopTime}");
+            }
+            Debug.Log(JsonUtility.ToJson(ValidateGenerated(), true));
+        }
+
+        public static ValidationReport ValidateGenerated()
+        {
+            var reports = new List<ClipReport>();
+            foreach (var id in new[] { "fountain_v15", "cascade_v15", "fish_v15" })
+            {
+                var fish = id == "fish_v15";
+                var count = fish ? 8 : 5;
+                var period = fish ? FishPeriod : 0.7f;
+                var clipPath = AssetRoot + id + ".anim";
+                var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+                var controllerPath = AssetRoot + id + ".controller";
+                var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath);
+                Require(clip != null && controller != null, "Ambient assets missing: " + id);
+                Require(Mathf.Abs(clip.length - period) < 0.0001f && clip.frameRate == 100f &&
+                    AnimationUtility.GetAnimationClipSettings(clip).loopTime, "Ambient period/loop contract failed: " + id);
+                var bindings = AnimationUtility.GetObjectReferenceCurveBindings(clip);
+                Require(bindings.Length == 1 && bindings[0].propertyName == "m_Sprite" && bindings[0].path == "" &&
+                    bindings[0].type == typeof(SpriteRenderer) && AnimationUtility.GetCurveBindings(clip).Length == 0,
+                    "Ambient clip must animate only the renderer sprite: " + id);
+                var curve = AnimationUtility.GetObjectReferenceCurve(clip, SpriteBinding);
+                var poses = curve.Where(k => k.value != null).Select(k => (Sprite)k.value).Distinct().ToArray();
+                Require(poses.Length == count && curve.Length == count + (fish ? 2 : 1), "Ambient frame count differs: " + id);
+                Require(controller.layers.Length == 1 && controller.layers[0].stateMachine.defaultState.motion == clip &&
+                    controller.layers[0].stateMachine.defaultState.speed == 1f, "Ambient controller is not bound at native speed: " + id);
+                var textureImporter = (TextureImporter)AssetImporter.GetAtPath(SourceRoot + id + ".png");
+                Require(textureImporter.filterMode == FilterMode.Point && !textureImporter.mipmapEnabled &&
+                    textureImporter.textureCompression == TextureImporterCompression.Uncompressed, "Ambient import contract failed: " + id);
+                var activeStart = fish ? curve[1].time : 0f;
+                var samples = new List<float>();
+                var names = new List<string>();
+                var temp = new GameObject("AmbientNativeSample") { hideFlags = HideFlags.HideAndDontSave };
+                var ownsAnimationMode = false;
+                try
+                {
+                    var renderer = temp.AddComponent<SpriteRenderer>();
+                    temp.AddComponent<Animator>().runtimeAnimatorController = controller;
+                    Require(!AnimationMode.InAnimationMode(), "An existing animation preview owns the Editor.");
+                    AnimationMode.StartAnimationMode();
+                    ownsAnimationMode = true;
+                    for (var i = 0; i < curve.Length - 1; i++)
+                    {
+                        Require(curve[i + 1].time > curve[i].time, "Ambient keyframe times are not strictly increasing.");
+                        var time = (curve[i].time + curve[i + 1].time) * 0.5f;
+                        AnimationMode.BeginSampling();
+                        AnimationMode.SampleAnimationClip(temp, clip, time);
+                        AnimationMode.EndSampling();
+                        Require(renderer.sprite == curve[i].value, "Native sprite sampling differs at " + id + " time=" + time);
+                        samples.Add(time); names.Add(renderer.sprite != null ? renderer.sprite.name : "null");
+                    }
+                    if (fish)
+                    {
+                        Require(curve[0].value == null && curve[curve.Length - 1].value == null,
+                            "Fish must have no sprite across the loop boundary.");
+                        foreach (var time in new[] { 0f, 0.001f, activeStart - 0.001f, FishPeriod })
+                        {
+                            AnimationMode.BeginSampling();
+                        AnimationMode.SampleAnimationClip(temp, clip, time);
+                        AnimationMode.EndSampling();
+                            Require(renderer.sprite == null, "Fish flashes outside its authored jump at time=" + time);
+                            samples.Add(time); names.Add("null");
+                        }
+                    }
+                }
+                finally { if (ownsAnimationMode) AnimationMode.StopAnimationMode(); UnityEngine.Object.DestroyImmediate(temp); }
+                reports.Add(new ClipReport { id = id, clipPath = clipPath, controllerPath = controllerPath,
+                    frameCount = count, period = clip.length, pixelsPerUnit = poses[0].pixelsPerUnit,
+                    canvas = poses[0].rect.size, pivot = poses[0].pivot, activeStart = activeStart,
+                    keyTimes = curve.Select(k => k.time).ToArray(), sampledTimes = samples.ToArray(), sampledSprites = names.ToArray(),
+                    nativeSamplesMatch = true, hiddenDuringWait = fish });
+            }
+            return new ValidationReport { clips = reports.ToArray() };
+        }
+
+        private static Sheet ReadSheet(string id, int count, int milliseconds, Vector2 canvas)
+        {
+            var path = SourceRoot + id + ".json";
+            Require(File.Exists(path), "Missing Aseprite json-array metadata: " + path);
+            var sheet = JsonUtility.FromJson<Sheet>(File.ReadAllText(path));
+            Require(sheet != null && sheet.frames != null && sheet.frames.Length == count && sheet.meta?.size != null,
+                "Invalid Aseprite frame-array metadata: " + id);
+            foreach (var f in sheet.frames)
+            {
+                Require(f != null && f.frame != null && f.sourceSize != null && !f.rotated && !f.trimmed &&
+                    f.frame.w == canvas.x && f.frame.h == canvas.y && f.sourceSize.w == canvas.x && f.sourceSize.h == canvas.y &&
+                    f.duration == milliseconds && f.frame.x >= 0 && f.frame.y >= 0 &&
+                    f.frame.x + f.frame.w <= sheet.meta.size.w && f.frame.y + f.frame.h <= sheet.meta.size.h,
+                    "Ambient canvas/duration must match the approved source: " + id);
+            }
+            return sheet;
+        }
+        private static IEnumerable<T> Components<T>(Scene scene) where T : Component =>
+            scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<T>(true));
+        private static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path)) return;
+            var parent = Path.GetDirectoryName(path).Replace('\\', '/');
+            EnsureFolder(parent);
+            AssetDatabase.CreateFolder(parent, Path.GetFileName(path));
+        }
+        private static void Require(bool condition, string message)
+        { if (!condition) throw new InvalidOperationException(message); }
+    }
+}

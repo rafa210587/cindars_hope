@@ -1,0 +1,478 @@
+[
+  {
+    "path": ".agents/skills/ability-effect-composition/SKILL.md",
+    "sha256": "E19F6A4B7A2973F9DDA560F9580F954B526E09578649F4B02B171E6C73472C4C"
+  },
+  {
+    "path": ".agents/skills/action-feedback-pipeline/SKILL.md",
+    "sha256": "859B711F82CB3DADEBC4F4779F8534FD21CD32132057AC3A46943362B08F20C6"
+  },
+  {
+    "path": ".agents/skills/audio-event-wiring/SKILL.md",
+    "sha256": "4BDC0C3866FFF2413D41C2009D26D5DA7161D3EFA17600FCF22F0F47953047B9"
+  },
+  {
+    "path": ".agents/skills/audit-harness/SKILL.md",
+    "sha256": "DDCAB1A5B70DE8753273A06732235A1E7AAC6E5B44349560BEE7C5366BA1411B"
+  },
+  {
+    "path": ".agents/skills/audit-spec/SKILL.md",
+    "sha256": "B361C93F4FCBE1302B905544B51D4C92E1BF000E88456A9737659FEB2AC46B14"
+  },
+  {
+    "path": ".agents/skills/boot-integration-smoke/SKILL.md",
+    "sha256": "06D6A2236E724ECF2142CCF2B4968679E7E32905A174375454608758467030EF"
+  },
+  {
+    "path": ".agents/skills/bootstrap-wiring/SKILL.md",
+    "sha256": "5854CEC60D681439264815342EA867893985D8A8A052009F4FDB4F5646D0E578"
+  },
+  {
+    "path": ".agents/skills/bugfix/SKILL.md",
+    "sha256": "AA6B8ECF6840140DC0403371C8C12D3DD05586F29B2DF677AC4174ACEB98DF21"
+  },
+  {
+    "path": ".agents/skills/cave-stable-run-guard/SKILL.md",
+    "sha256": "E8E5DA1037BCA65A0A54AFC7C3FF70806C1D46FE2CD6717AC529978697D62E2B"
+  },
+  {
+    "path": ".agents/skills/chatgpt-web-sprite-gen/SKILL.md",
+    "sha256": "734E370712C133E26B3A02E00EE7CACBBE6215F9FAA9D0193741CCC3F167688A"
+  },
+  {
+    "path": ".agents/skills/combat-data-wiring/SKILL.md",
+    "sha256": "30C3F639887847A521A74E36CB1D1B3CAE4E132BC53802CDAF25AB37F1597EB2"
+  },
+  {
+    "path": ".agents/skills/crafting-recipe-authoring/SKILL.md",
+    "sha256": "26EBC00D13199E9D3F49EA7F9036744A43B2FFEAB0531C709D1FF5C465C48EDF"
+  },
+  {
+    "path": ".agents/skills/crop-farming-systems/SKILL.md",
+    "sha256": "4933E88903BE89952A5DFBE6A554DF3D3B414961DB2D57E3CDC488D6C5CF4F5A"
+  },
+  {
+    "path": ".agents/skills/data-catalog-authoring/SKILL.md",
+    "sha256": "CF94F6C019169185DEE6107FE823FA2E38CD25A6BB37E2BEF98611D406956D25"
+  },
+  {
+    "path": ".agents/skills/decision-rule-extraction/SKILL.md",
+    "sha256": "10CB83F64ED1F314084F0A01240B5BC50805BDC6530A7296B239C11001649BFE"
+  },
+  {
+    "path": ".agents/skills/delegated-execution/SKILL.md",
+    "sha256": "1B1B1628447A08564E9F4C963D8EFB43B52C2A6EB431BA4FD0132C1B7AB292E3"
+  },
+  {
+    "path": ".agents/skills/docs-governance/SKILL.md",
+    "sha256": "FA8B68036DBE281C3471186E4E2B7FFDA2028B61247F26F33F540DD5B2DA7E95"
+  },
+  {
+    "path": ".agents/skills/docs-health/SKILL.md",
+    "sha256": "E0B3E08F7BBE0A90C08BA743EA59CC22A622D4D5155ECFAEED1D5C30125AC12D"
+  },
+  {
+    "path": ".agents/skills/docs-migration/SKILL.md",
+    "sha256": "16B7ECB2FFE06B0BA0C56455BA6378775235269EDE481632DA7E7A8B11B4086D"
+  },
+  {
+    "path": ".agents/skills/economy-balance-tuning/SKILL.md",
+    "sha256": "38FBB3FFC277EE8D1C5A6089FB63B6753236EAF127737B743B3729C5102B52BA"
+  },
+  {
+    "path": ".agents/skills/editmode-test-authoring/SKILL.md",
+    "sha256": "8F25ECFC618B5A7E397B3C0FCCE55B9F70B8C2B5B9347BD31612DDBD301214BA"
+  },
+  {
+    "path": ".agents/skills/editor-tooling-orchestration/SKILL.md",
+    "sha256": "3B7E2E18EE3AF00B4CE0ADEDADEEFF2DE21B864BA3F0EF115DE51A90B3209691"
+  },
+  {
+    "path": ".agents/skills/editor-validator-authoring/SKILL.md",
+    "sha256": "ECA23A9060C7E6DC99BDA69F6EB709876142AE57BB8497AE4F6D729D5C6FD467"
+  },
+  {
+    "path": ".agents/skills/enemy-ai-authoring/SKILL.md",
+    "sha256": "76C75929A47A344B1FD2631545793414AD6B68F89FCC2A7C5E2F83FD56D723DA"
+  },
+  {
+    "path": ".agents/skills/equipment-durability-repair/SKILL.md",
+    "sha256": "9D1ACB8D3CE2C0A43FFC7C51A4D831839D55C9C1CD3DBA9E8E526C2947B83FA8"
+  },
+  {
+    "path": ".agents/skills/event-bus-pattern/SKILL.md",
+    "sha256": "14D28BDF17A489D0866C726E3160F56ECD84C46867A7A6EC488F3D25BD354736"
+  },
+  {
+    "path": ".agents/skills/event-catalog-and-tracing/SKILL.md",
+    "sha256": "D53F581E5FE48849A6EE13341342F5262C9A8885C08C4FFBA0BEC9D15582B402"
+  },
+  {
+    "path": ".agents/skills/execute-spec-strict/SKILL.md",
+    "sha256": "8DB68D11321787F72432A043C953B964A35DEE7069B73BDD2918902232D4FF12"
+  },
+  {
+    "path": ".agents/skills/fail-state-recovery-design/SKILL.md",
+    "sha256": "09495FC23343372A1CA004DBCEC96CD0BD782C801C5A8E0F3D7E642ED73D34EF"
+  },
+  {
+    "path": ".agents/skills/finish-spec/SKILL.md",
+    "sha256": "F8138E621515EF7E1F29D14AB292E351E221427035F5E72579EA54FF07A87B93"
+  },
+  {
+    "path": ".agents/skills/game-feel-checklist/SKILL.md",
+    "sha256": "5634B779A43BD41A3FD5D4B54B7ABAC1683F49D56242D0A21493E7F3F7E274FB"
+  },
+  {
+    "path": ".agents/skills/gameplay-test-scenario/SKILL.md",
+    "sha256": "9BA2CE9090773FE1C3E17BC076BB8164F8E5868FD3540D2E858CB60C268C929A"
+  },
+  {
+    "path": ".agents/skills/harness-audit/SKILL.md",
+    "sha256": "3E8D611F8644B6C39F5CC16FEE6420D402E6375688079EB63AD5D4E833BD0AAA"
+  },
+  {
+    "path": ".agents/skills/harness-authoring/SKILL.md",
+    "sha256": "352443F9114DE4CF7E1C6BD3DD4110655EA19C30357480E51AC4E9B2BEB26BA7"
+  },
+  {
+    "path": ".agents/skills/hud-canvas-binding/SKILL.md",
+    "sha256": "6B149259D7245B52E6495792251566DF363C855E192EF21A22B73458C63BC3D3"
+  },
+  {
+    "path": ".agents/skills/implement-spec/SKILL.md",
+    "sha256": "B0DD8BC26A9A8E77BA26CA724868D800517225D2F90603FC492D06CAE7238ADB"
+  },
+  {
+    "path": ".agents/skills/implementation-closeout/SKILL.md",
+    "sha256": "599EAEBE4CBB07DA618D6DDCEA25C3289703E0723BCD287476C45ABBC45F0500"
+  },
+  {
+    "path": ".agents/skills/input-gamepad-routing/SKILL.md",
+    "sha256": "963EA229D7EE4653FD39B37FD9BDB02E4A64F3EF1AF7A4E8D2FD9BFE96ABAACD"
+  },
+  {
+    "path": ".agents/skills/inventory-transactions/SKILL.md",
+    "sha256": "A7C1BC35993C08A61BD7BB8261D281DFEC9CE5DF583D15181C72D90007A985EB"
+  },
+  {
+    "path": ".agents/skills/localization-authoring/SKILL.md",
+    "sha256": "BE53E62D0D99F1E3A7921C33C5083B000B11F520F732A0DEB72A18CE1FDE27AF"
+  },
+  {
+    "path": ".agents/skills/loop-hierarchy-design/SKILL.md",
+    "sha256": "34791A9C4D6B0874D3BD798F077E6BA970BAAAF697914B947398AA81EBEB8407"
+  },
+  {
+    "path": ".agents/skills/loop-spec-batch-strict/SKILL.md",
+    "sha256": "CBF6F3154690A1A895361473243299A0679ECFB239C825C1AF40986457E4F459"
+  },
+  {
+    "path": ".agents/skills/loot-table-authoring/SKILL.md",
+    "sha256": "F4050CC16B2446EC0977BAEFCCA8A0F0CE9461F240445B09B6ED6616290A9FB2"
+  },
+  {
+    "path": ".agents/skills/monobehaviour-decomposition/SKILL.md",
+    "sha256": "3D2221F7BF8BDFFD00F1E2A76EE5C9FBF79489689B5C1A4188497B6F4D84919E"
+  },
+  {
+    "path": ".agents/skills/non-regression-review/SKILL.md",
+    "sha256": "1D3096087600C45F7438832344FCA3D3399AC949B4A853B7ADA3BE57CA86347C"
+  },
+  {
+    "path": ".agents/skills/npc-dialogue-authoring/SKILL.md",
+    "sha256": "E793CF7D587767415D3BA15EE576196CD9C9622514C8B4D43B1551B69C6F4AD4"
+  },
+  {
+    "path": ".agents/skills/npc-walk-animation/SKILL.md",
+    "sha256": "E4E5A143AF81326088F5EEF149C0488952C5CAD7483572E53756E5F00D19FA2F"
+  },
+  {
+    "path": ".agents/skills/object-pooling-pattern/SKILL.md",
+    "sha256": "84039F0FA092D4BF1608A13592BA8104B9BE80B554AD22441C3383EF43F2D3A9"
+  },
+  {
+    "path": ".agents/skills/observability-and-logging/SKILL.md",
+    "sha256": "F5FEEE9D203BF5661D92C1AD6F77F7E45FFF0CF984A575C3FB7DA21FDBB07DA9"
+  },
+  {
+    "path": ".agents/skills/pixel-art-prompt-authoring/SKILL.md",
+    "sha256": "1B9188A41F7B7BA0E9026D2A26CF89D601B0EECAC0E421E0E2E26E2901E276F2"
+  },
+  {
+    "path": ".agents/skills/plan-wave/SKILL.md",
+    "sha256": "AEF57C3B0A95FDD9AF513732ED39C1FFE642F350B1E18B005F203D38F50422BB"
+  },
+  {
+    "path": ".agents/skills/player-ability-runtime/SKILL.md",
+    "sha256": "C73DB5038A46E30A28AB110376BFCCAED4F74A1C6D6B0304CA2F1EF74B02DE03"
+  },
+  {
+    "path": ".agents/skills/player-needs-survival/SKILL.md",
+    "sha256": "C768F7AF8A54FC8289422032835F28772814B34107D6A7051357D873FCA56F69"
+  },
+  {
+    "path": ".agents/skills/progression-curve-design/SKILL.md",
+    "sha256": "B8E91C6EC6D9193C4198154ADB3D996D20BBFDA6E42205E36F392B052684C590"
+  },
+  {
+    "path": ".agents/skills/quest-authoring/SKILL.md",
+    "sha256": "CB93016EA6601DE6CDD471449BC50B9AD1D14AB398AF27F35D91AB0B77169AC9"
+  },
+  {
+    "path": ".agents/skills/reconcile-status/SKILL.md",
+    "sha256": "DCB75C2F1A6F3A4E6E49FF7F494F8DD95DA4E3016AF427FDF100DAB7AF8565BF"
+  },
+  {
+    "path": ".agents/skills/registry-catalog-pattern/SKILL.md",
+    "sha256": "15BBA23A1080777F8222B9169DC008E3CABE625EB4A3FB26BD0838C36426F81F"
+  },
+  {
+    "path": ".agents/skills/resolve-spec-dependency-chain/SKILL.md",
+    "sha256": "DE82C317A062FB568E18AF190DADF8759F53388AE0356E4E50154A252EDCAC45"
+  },
+  {
+    "path": ".agents/skills/review-non-regression/SKILL.md",
+    "sha256": "C940E578D804DFD87D4B620322CF8B9496C361F9B128FB118E32278152348B8B"
+  },
+  {
+    "path": ".agents/skills/rng-and-determinism/SKILL.md",
+    "sha256": "4BEF69FB2856F204BA5126FBC0181F6734B1B8EC8DB48D43202A51DBA0C68BA5"
+  },
+  {
+    "path": ".agents/skills/run-editmode-tests/SKILL.md",
+    "sha256": "E023E69A2B1DBC6BF7DF77C58117F6E22F980DDA842FFE50F1365EF1C411CF1B"
+  },
+  {
+    "path": ".agents/skills/runtime-bootstrap-pattern/SKILL.md",
+    "sha256": "1FE24E826B2E0B46091F8211A811C31A5C7FDD8E118B5B65B0F290410F6DE74A"
+  },
+  {
+    "path": ".agents/skills/save-load-pattern/SKILL.md",
+    "sha256": "AEB12581CD3633C1FBAE6DBBFCEE754FF6A747DB6E81BFF9A968E3973DAEE446"
+  },
+  {
+    "path": ".agents/skills/save-section-provider/SKILL.md",
+    "sha256": "A77437C290DB76BA7264B954858DD38EB52173CD14E29D5C65827F91365CA2AB"
+  },
+  {
+    "path": ".agents/skills/scene-interactable-wiring/SKILL.md",
+    "sha256": "E5A456D6EB93222ADC299E2D20D7C4F7E5574F6983886782E372539794B6B648"
+  },
+  {
+    "path": ".agents/skills/skill-tree-authoring/SKILL.md",
+    "sha256": "2379E876D66E38CA2B991256F6C2DDEBF61F172C3EBB098DD02D844902E5C463"
+  },
+  {
+    "path": ".agents/skills/solid-refactoring/SKILL.md",
+    "sha256": "37E73B1EB9C19E158F7BE18B56FC1F99B7E8A8019D9C88E542F181B7DFE04712"
+  },
+  {
+    "path": ".agents/skills/spec-authoring/SKILL.md",
+    "sha256": "01A1E73CC74FFBF27B70178CA283E4EE140CBB6640E20A965DA4E19C055AC212"
+  },
+  {
+    "path": ".agents/skills/spec-execution/SKILL.md",
+    "sha256": "DCEA828632FBCC1A2EF4BF0342C3607B14FB91C18BAD28D5200745AF19D4EA41"
+  },
+  {
+    "path": ".agents/skills/sprite-generation-pipeline/SKILL.md",
+    "sha256": "6CE8FA2484907657DCA9E28FDE6BBFF5C049CAB825D2DDB6EF514CC33004947B"
+  },
+  {
+    "path": ".agents/skills/start-spec/SKILL.md",
+    "sha256": "70DB0B17E5A334D9442BD0849D9C8A29CB430973C1B4F931223E0D7835B73BB9"
+  },
+  {
+    "path": ".agents/skills/state-machine-design/SKILL.md",
+    "sha256": "B2CC63424370ED4428DF40C592F25A465861310BFFF1137E1905030CD168542E"
+  },
+  {
+    "path": ".agents/skills/system-reuse-audit/SKILL.md",
+    "sha256": "CC512300A8EEBBEE207BEBC88541341BA9D2F689A24EE2F865F0CE8108DB2583"
+  },
+  {
+    "path": ".agents/skills/tilemap-world-rendering/SKILL.md",
+    "sha256": "3E4CE010321944DED8ADDDD0928CAD4E4A3EB875E99E55EB2A273BDE68129DD4"
+  },
+  {
+    "path": ".agents/skills/time-calendar-weather/SKILL.md",
+    "sha256": "FA569B47851BD77316541056FE60EBC032B1181F2D5306E9C134E5EE05170A6C"
+  },
+  {
+    "path": ".agents/skills/ui-modal-stack/SKILL.md",
+    "sha256": "4368E222B37C96BFD89FAC99DBE1BC8C72E4A86F087A834C0CF2FD63F23E9633"
+  },
+  {
+    "path": ".agents/skills/ui-projection-pattern/SKILL.md",
+    "sha256": "64F40A4581433103C8A4AD33C5C87D59A8D06F2EEC7310526B59EA730EAD74A7"
+  },
+  {
+    "path": ".agents/skills/unity-asset-generation/SKILL.md",
+    "sha256": "289D86BD15E945B4F14A04CCFB8404995BF76DAC898FCA119C30F3314621675C"
+  },
+  {
+    "path": ".agents/skills/unity-validation/SKILL.md",
+    "sha256": "A5001065737F138755ED0A56B64DDC34256B3BA1FFC5C438A4F88870620D7030"
+  },
+  {
+    "path": ".agents/skills/unity-validation-triage/SKILL.md",
+    "sha256": "3562A31DA3DC6FD2B1E1430580DC4F79A42657BD26114F2FC7FF0F7B749D3597"
+  },
+  {
+    "path": ".agents/skills/validate-spec/SKILL.md",
+    "sha256": "6463687D5FD277716EEA9A802EDB71552AACA188BA45B71D5EE2A6353CA6F972"
+  },
+  {
+    "path": ".agents/skills/validate-unity/SKILL.md",
+    "sha256": "7F9A4E4354E6E48852322013761E9868EC1E7F21FCA221E25F7445C111E6434C"
+  },
+  {
+    "path": ".agents/skills/wave-integration-slice/SKILL.md",
+    "sha256": "1DFBFC99CA58AFC94146C1ABBDE42061B3B2D9D519DEA0732E44A6CF32DDFEA5"
+  },
+  {
+    "path": ".codex/agents/architecture-reviewer.toml",
+    "sha256": "ABC42B330A2627F11A8884F40E6558E4838AE3D77A199E298AA005BC4CE63A52"
+  },
+  {
+    "path": ".codex/agents/asset-wiring-specialist.toml",
+    "sha256": "9757AA344CEF4AD08AA12A6749F0676089890723D8F0C2C6E90A8A9799416A85"
+  },
+  {
+    "path": ".codex/agents/bugfix-investigator.toml",
+    "sha256": "27C9E8C50B8D5143106A885349F0F7ADBF5A80D1097D0CD87CD63F4C38A8F174"
+  },
+  {
+    "path": ".codex/agents/docs-curator.toml",
+    "sha256": "3406749B1D99C433730980620DE7677B0D5A71BA0D42DD520634BFB2108818DD"
+  },
+  {
+    "path": ".codex/agents/game-design-reviewer.toml",
+    "sha256": "FB063AE232D8BDCD4D2C44A7774695EFE12B2A9DC9BC64B557B072824327B57E"
+  },
+  {
+    "path": ".codex/agents/non-regression-auditor.toml",
+    "sha256": "BA92DA91532449341BD8F5399B0DC2FC42CFA85B14FD3DBF53D5A7F179FE9257"
+  },
+  {
+    "path": ".codex/agents/performance-auditor.toml",
+    "sha256": "F644F76585B14D5A53275B904AB23FFE73C6D8D4E7560B1F5BAB94CF6D25BB19"
+  },
+  {
+    "path": ".codex/agents/spec-implementer.toml",
+    "sha256": "90100534A8F70CEA0E1FD187E09BEC0561C4B32547069E0C6390BB1A026BF0E1"
+  },
+  {
+    "path": ".codex/agents/test-author.toml",
+    "sha256": "BD419FBEFBEF5DD5D7084729C1023847047A797F04C98B7614D9D8AF38425C65"
+  },
+  {
+    "path": ".codex/agents/unity-validator.toml",
+    "sha256": "0B297D290B7FBBD2F46AE1765F9EE1E6A65F3D7DE43D7F7759BCD325D206C9E2"
+  },
+  {
+    "path": ".codex/rules/cave-stable-run.md",
+    "sha256": "D8839D875FC7E0B7F09CEA6FE33192C3104226891BFF6668AEB97E7DB4888A87"
+  },
+  {
+    "path": ".codex/rules/code-minimalism-ladder.md",
+    "sha256": "E22E1348EC3D141B09C83E0CA30898A7DC2581BA040EC35CB2C6B51D380F110A"
+  },
+  {
+    "path": ".codex/rules/context-reading-policy.md",
+    "sha256": "75E99438EFDD416CD4E03DEBAEC7E5D9FE342BF88E6BCA64FD6A9311DB893DFA"
+  },
+  {
+    "path": ".codex/rules/csharp-style.md",
+    "sha256": "7C3C3401108FCE082F7B65B8F0EE7052599C23E473CF5E97A37570065293A1BF"
+  },
+  {
+    "path": ".codex/rules/docs-governance.md",
+    "sha256": "90BCE648A7D14C7D96D07EA767B3211995CF112F0D1E49F527BAA0990E0B064F"
+  },
+  {
+    "path": ".codex/rules/editor-generation-orchestration.md",
+    "sha256": "CF832B355EC407F5759D84D3183462E7AB8CEA96FC63C61B884C30785124E6D5"
+  },
+  {
+    "path": ".codex/rules/error-handling-resilience.md",
+    "sha256": "706055CD0CEDC099A96C171F0CC5ABE152ED1D41782FFC7563F78EACEAF84B07"
+  },
+  {
+    "path": ".codex/rules/gameplay-design-patterns.md",
+    "sha256": "8374D43882860CE6CE1F2159319088CFC80FA7871B526F597DEA57349EAADF7D"
+  },
+  {
+    "path": ".codex/rules/id-stability.md",
+    "sha256": "DCDBA3439D01196C241E7111B6AB7BD664BB62D1FDBD9ECC8CA941846935FA9B"
+  },
+  {
+    "path": ".codex/rules/keyart-scene-fidelity.md",
+    "sha256": "9F4045FFEA312833D136B35EA37F0A15BE7A912453D88F7C2AFE79DDE2067CF1"
+  },
+  {
+    "path": ".codex/rules/no-magic-balance-values.md",
+    "sha256": "B7D7442C7377395D3A88FBFB488A928823A2205E39816C1971426FCBA6BD892B"
+  },
+  {
+    "path": ".codex/rules/no-unsafe-git.md",
+    "sha256": "9D9895741C01C14FB87DD1F8926448A74AB63BD815DA7BB2AE9D1307C0447176"
+  },
+  {
+    "path": ".codex/rules/RULES.md",
+    "sha256": "9586F50F2E434326BC4D6201A1E7E8BC5064F5B66E4F0760D7A2AA3E85ED8FE0"
+  },
+  {
+    "path": ".codex/rules/security-and-files.md",
+    "sha256": "D461558274CB8DFEFAFF59DCC4CED014D6DEF3C7B0ECDA11529AFDB3ED8D409F"
+  },
+  {
+    "path": ".codex/rules/solid-and-ai-context.md",
+    "sha256": "C67B6E4B78AFDD9AACDF59341110AD830B98245BE65556AAB06B4A99F527A88D"
+  },
+  {
+    "path": ".codex/rules/spec_dependency_resolution.md",
+    "sha256": "95307032A185AA444562F0AC23EB056465B718A854CF388E19AC9308374E4441"
+  },
+  {
+    "path": ".codex/rules/spec_quality_gate.md",
+    "sha256": "5FA6E035F2269AD9EA8E9465A4AD1F976C682CF42C427D9DDA35754D1C2288CC"
+  },
+  {
+    "path": ".codex/rules/subagent-results-not-evidence.md",
+    "sha256": "CEF57E3970B67AE13A7443E4F43887693EC5E72402CF6D1C5F2A5BF509D73115"
+  },
+  {
+    "path": ".codex/rules/testing-quality-gate.md",
+    "sha256": "D61FBB8AB47DA41DAC877671BED868A16BE58C8B88B6179E0F88BB4470108D23"
+  },
+  {
+    "path": ".codex/rules/unity-architecture.md",
+    "sha256": "B12D682489834E27B2E27A015ADDB3843AF5710E86E49AE47EA64A53B76E737D"
+  },
+  {
+    "path": ".codex/rules/unity-assets.md",
+    "sha256": "412F4FB97DABFEABD644F6518DC6D7120B4BC0556ECA17F7C441B638BCA31FB3"
+  },
+  {
+    "path": ".codex/rules/validation-truth.md",
+    "sha256": "65861BD4630B19EC27742AA5A8AE0281E6CE5751AABF154124A773FA3F156081"
+  },
+  {
+    "path": ".codex/rules/windows_powershell_only.md",
+    "sha256": "D1679EF6C122E80EAA59D94BC90A16BA5B044E0C383A376A2D57B402242905D5"
+  },
+  {
+    "path": ".codex/hooks.json",
+    "sha256": "2C0F3DADF82F98D1698143EEDD1DC2B7B0EDD516E672B64C29002AAAF677146B"
+  },
+  {
+    "path": ".codex/config.toml",
+    "sha256": "6F369E1652B349C0B19AD365C038ADE22D65FA2BBD293C3C53FC4A39152A39C4"
+  },
+  {
+    "path": "AGENTS.md",
+    "sha256": "B55598903104D79723238511B4E4B856340B2A92FC733F3C5205AFFFD1A573FC"
+  }
+]

@@ -1,0 +1,90 @@
+{
+  "status": "CANDIDATES_FOR_VISUAL_REVIEW",
+  "sources": [
+    {
+      "path": "Assets\\_Game\\Art\\Generated\\World\\tiles\\ground_path_aseprite_v1.png",
+      "sha256": "dd33c3a632985a8e1ad8038bbb22d2263ee40c1149fca785a89e34ed74e9ee89",
+      "unchanged": true
+    },
+    {
+      "path": "Assets\\_Game\\Art\\Generated\\World\\tiles\\ground_grass_keyart_v2.png",
+      "sha256": "6b5419e57a843071d26f1b2f58fc1f4d079d170e5baf4278945add3231299e4a",
+      "unchanged": true
+    },
+    {
+      "path": "Assets\\_Game\\Art\\Generated\\World\\building\\barn_keyart_v4.png",
+      "sha256": "56f6652658a34a17c224137fe120027033983d8965cb2009d640faaac01ef774",
+      "unchanged": true
+    }
+  ],
+  "assets": [
+    {
+      "name": "ground_path_contact_v16",
+      "canvas": [
+        64,
+        64
+      ],
+      "rgba": true,
+      "opaque": 4096,
+      "partial": 0,
+      "changedPixels": 1483,
+      "edgePixelsPreserved": 4,
+      "ppu": 32,
+      "worldWidth": 2.0,
+      "screenPixelsPerSourcePixel": 0.8823529411764706,
+      "sha256": "8e68fe3456deb733520cf2a11e3b3f7061fc70960d00f2a703d7e552bb339048"
+    },
+    {
+      "name": "ground_grass_contact_v16",
+      "canvas": [
+        314,
+        314
+      ],
+      "rgba": true,
+      "opaque": 98596,
+      "partial": 0,
+      "changedPixels": 18164,
+      "edgePixelsPreserved": 4,
+      "ppu": 32.05103668261563,
+      "worldWidth": 9.796875,
+      "screenPixelsPerSourcePixel": 0.8809479205695017,
+      "sha256": "fb7a5460fff6266baf3825cc527fc562d5585a789f07e5035dc4e7f052c84ca3"
+    },
+    {
+      "name": "ground_grass_contact_v16_fullres_comparison",
+      "canvas": [
+        1254,
+        1254
+      ],
+      "rgba": true,
+      "opaque": 1572516,
+      "partial": 0,
+      "changedPixels": 289106,
+      "edgePixelsPreserved": 16,
+      "ppu": 128,
+      "worldWidth": 9.796875,
+      "screenPixelsPerSourcePixel": 0.22058823529411764,
+      "sha256": "c29cc2c3dbcea543bbf92655ea01f1e63f6e10ac7173aa6f2453d3f466c601f9"
+    },
+    {
+      "name": "barn_contact_v16",
+      "canvas": [
+        125,
+        166
+      ],
+      "changedPixels": 248,
+      "alphaIdentical": true,
+      "opaque": 10915,
+      "partial": 0,
+      "sourceSha256": "56f6652658a34a17c224137fe120027033983d8965cb2009d640faaac01ef774",
+      "sha256": "71345ad2a26d925c9a98b00849f549068beb5dc97479848a98b45a01d72d3ff7",
+      "importPolicy": "Preserve existing barn importer PPU/pivot and scene scale; effective18sourcepx/u",
+      "screenPixelsPerSourcePixel": 1.5686274509803921,
+      "decision": "Optional local sample: effect subtle, root visual review required"
+    }
+  ],
+  "board": "offline-camera-density-board.png",
+  "boardNotes": "Offline nearest-sampled comparison, top grass includes existing FarmGround tint. Not Unity rendering proof. Full source cleanup retained as comparison.",
+  "native": "Aseprite layered files reopened;2layers each",
+  "unity": "NOT RUN: root owns integration"
+}

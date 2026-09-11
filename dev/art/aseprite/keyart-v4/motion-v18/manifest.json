@@ -1,0 +1,237 @@
+{
+  "status": "OFFLINE_CANDIDATES_FROZEN",
+  "sourceBoatSha256": "0a3d58b1a30142b3dc701245598c3184881f86e3e728f7e8a7a7eaf546859167",
+  "assets": [
+    {
+      "name": "boat_v18",
+      "canvas": [
+        76,
+        68
+      ],
+      "sheet": [
+        304,
+        68
+      ],
+      "frameCount": 4,
+      "frames": [
+        {
+          "index": 0,
+          "durationMs": 1250,
+          "opaque": 1426,
+          "partial": 0
+        },
+        {
+          "index": 1,
+          "durationMs": 1250,
+          "opaque": 1426,
+          "partial": 0
+        },
+        {
+          "index": 2,
+          "durationMs": 1250,
+          "opaque": 1426,
+          "partial": 0
+        },
+        {
+          "index": 3,
+          "durationMs": 1250,
+          "opaque": 1426,
+          "partial": 0
+        }
+      ],
+      "tags": [
+        {
+          "name": "boat_bob",
+          "from": 0,
+          "to": 3,
+          "direction": "forward",
+          "color": "#000000ff"
+        }
+      ],
+      "supportBottomLeft": [
+        35,
+        24
+      ],
+      "sha256": "9e631e50a84a9a55d12ba5adc49e880f66de3676d5ae3e28d7de36c27bcb99d9"
+    },
+    {
+      "name": "chicken_v18",
+      "canvas": [
+        32,
+        32
+      ],
+      "sheet": [
+        608,
+        32
+      ],
+      "frameCount": 19,
+      "frames": [
+        {
+          "index": 0,
+          "durationMs": 400,
+          "opaque": 162,
+          "partial": 0
+        },
+        {
+          "index": 1,
+          "durationMs": 400,
+          "opaque": 162,
+          "partial": 0
+        },
+        {
+          "index": 2,
+          "durationMs": 140,
+          "opaque": 159,
+          "partial": 0
+        },
+        {
+          "index": 3,
+          "durationMs": 140,
+          "opaque": 163,
+          "partial": 0
+        },
+        {
+          "index": 4,
+          "durationMs": 140,
+          "opaque": 159,
+          "partial": 0
+        },
+        {
+          "index": 5,
+          "durationMs": 140,
+          "opaque": 163,
+          "partial": 0
+        },
+        {
+          "index": 6,
+          "durationMs": 140,
+          "opaque": 159,
+          "partial": 0
+        },
+        {
+          "index": 7,
+          "durationMs": 140,
+          "opaque": 163,
+          "partial": 0
+        },
+        {
+          "index": 8,
+          "durationMs": 140,
+          "opaque": 159,
+          "partial": 0
+        },
+        {
+          "index": 9,
+          "durationMs": 140,
+          "opaque": 163,
+          "partial": 0
+        },
+        {
+          "index": 10,
+          "durationMs": 140,
+          "opaque": 192,
+          "partial": 0
+        },
+        {
+          "index": 11,
+          "durationMs": 140,
+          "opaque": 191,
+          "partial": 0
+        },
+        {
+          "index": 12,
+          "durationMs": 140,
+          "opaque": 192,
+          "partial": 0
+        },
+        {
+          "index": 13,
+          "durationMs": 140,
+          "opaque": 192,
+          "partial": 0
+        },
+        {
+          "index": 14,
+          "durationMs": 180,
+          "opaque": 191,
+          "partial": 0
+        },
+        {
+          "index": 15,
+          "durationMs": 180,
+          "opaque": 172,
+          "partial": 0
+        },
+        {
+          "index": 16,
+          "durationMs": 180,
+          "opaque": 191,
+          "partial": 0
+        },
+        {
+          "index": 17,
+          "durationMs": 600,
+          "opaque": 153,
+          "partial": 0
+        },
+        {
+          "index": 18,
+          "durationMs": 600,
+          "opaque": 158,
+          "partial": 0
+        }
+      ],
+      "tags": [
+        {
+          "name": "idle",
+          "from": 0,
+          "to": 1,
+          "direction": "forward",
+          "color": "#000000ff"
+        },
+        {
+          "name": "walk_down",
+          "from": 2,
+          "to": 5,
+          "direction": "forward",
+          "color": "#000000ff"
+        },
+        {
+          "name": "walk_up",
+          "from": 6,
+          "to": 9,
+          "direction": "forward",
+          "color": "#000000ff"
+        },
+        {
+          "name": "walk_side",
+          "from": 10,
+          "to": 13,
+          "direction": "forward",
+          "color": "#000000ff"
+        },
+        {
+          "name": "peck",
+          "from": 14,
+          "to": 16,
+          "direction": "forward",
+          "color": "#000000ff"
+        },
+        {
+          "name": "rest",
+          "from": 17,
+          "to": 18,
+          "direction": "forward",
+          "color": "#000000ff"
+        }
+      ],
+      "supportBottomLeft": [
+        16,
+        6
+      ],
+      "sha256": "caf54faec10d36ae82426977d9d558e5b26f422172749cb0c03cf403e865609b"
+    }
+  ],
+  "unity": "NOT RUN: root owns integration",
+  "continuousPlayback": "NOT RUN by art worker; GIFs exported and static poses inspected"
+}
