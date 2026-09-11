@@ -594,6 +594,9 @@ namespace CindarsHope.Tests.PlayMode.NPC
                     var missing = new List<string>();
                     foreach (var pair in moving) if (!arrived.Contains(pair.Key))
                         missing.Add($"{pair.Key}@{pair.Value.wanderer.transform.position}->{pair.Value.target}" +
+                                    // start distinguishes "never moved" from "followed a route elsewhere";
+                                    // without it the position alone cannot tell the two apart.
+                                    $" start={pair.Value.start} moved={Vector2.Distance(pair.Value.start, pair.Value.wanderer.transform.position):F2}" +
                                     $" route={pair.Value.wanderer.RouteIndex}/{pair.Value.wanderer.RouteCount}" +
                                     $" next={pair.Value.wanderer.CurrentRouteTarget} yielding={pair.Value.wanderer.YieldingToNpcId ?? "none"}" +
                                     $" doorWait={pair.Value.wanderer.WaitingForDoorName ?? "none"}" +
