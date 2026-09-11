@@ -17,24 +17,31 @@ namespace CindarsHope.Skills
         }
 
         public bool TryRespec(SkillTreeState state, int playerLevel, ref int gold)
+            => TryRespec(state, playerLevel, ref gold, true);
+
+        internal bool TryRespec(SkillTreeState state, int playerLevel, ref int gold, bool publishEvents)
         {
-            GameEventBus.Publish(new SkillTreeRespecRequestedEvent());
+            if (publishEvents) GameEventBus.Publish(new SkillTreeRespecRequestedEvent());
+
+            int restoredPoints = checked(state.AvailableSkillPoints + state.SpentSkillPoints);
 
             if (state.RespecCount >= FreeRespecCount)
             {
                 if (gold < _respecCostGold)
                 {
-                    GameEventBus.Publish(new SkillTreeRespecFailedEvent($"Not enough gold. Need {_respecCostGold}."));
+                    if (publishEvents) GameEventBus.Publish(new SkillTreeRespecFailedEvent($"Not enough gold. Need {_respecCostGold}."));
                     return false;
                 }
                 gold -= _respecCostGold;
             }
 
-            int totalPointsForLevel = PlayerProgressionRules.CalculateTotalSkillPointsAtLevel(playerLevel);
-            state.FullRespec(totalPointsForLevel);
+            state.FullRespec(restoredPoints);
 
-            GameEventBus.Publish(new SkillTreeRespecCompletedEvent(totalPointsForLevel, state.RespecCount));
-            GameEventBus.Publish(new SkillDerivedStatsChangedEvent());
+            if (publishEvents)
+            {
+                GameEventBus.Publish(new SkillTreeRespecCompletedEvent(restoredPoints, state.RespecCount));
+                GameEventBus.Publish(new SkillDerivedStatsChangedEvent());
+            }
             return true;
         }
 

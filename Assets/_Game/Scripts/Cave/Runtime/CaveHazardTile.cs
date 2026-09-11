@@ -89,7 +89,7 @@ namespace CindarsHope.Cave.Runtime
             // IceSlick: limpa o fator quando expira (mesmo padrÃ£o SetFactor/ClearFactor do projeto).
             if (_iceSlickExpireTime > 0f && Time.time >= _iceSlickExpireTime)
             {
-                _activePlayerController?.SpeedComposer.ClearFactor(SpeedFactorKind.Status);
+                _activePlayerController?.SpeedComposer.ClearFactor(SpeedFactorKind.Terrain);
                 _iceSlickExpireTime = -1f;
             }
         }
@@ -166,7 +166,8 @@ namespace CindarsHope.Cave.Runtime
 
         private void ApplyIceSlick(PlayerController playerController)
         {
-            playerController.SpeedComposer.SetFactor(SpeedFactorKind.Status, Mathf.Max(0.01f, IceSlickFactor));
+            playerController.SpeedComposer.SetFactor(SpeedFactorKind.Terrain,
+                PassiveSurvivalModifierProvider.ResolveTerrainFactor(IceSlickFactor));
             _iceSlickExpireTime = Time.time + IceSlickDurationSeconds;
             GameEventBus.Publish(new PlayerActionFeedbackEvent("Gelo escorregadio!"));
         }
@@ -208,7 +209,7 @@ namespace CindarsHope.Cave.Runtime
             // Garante que o fator de gelo nÃ£o fique preso se o tile for destruÃ­do com o player dentro.
             if (_iceSlickExpireTime > 0f)
             {
-                _activePlayerController?.SpeedComposer.ClearFactor(SpeedFactorKind.Status);
+                _activePlayerController?.SpeedComposer.ClearFactor(SpeedFactorKind.Terrain);
             }
         }
     }

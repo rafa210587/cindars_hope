@@ -16,6 +16,8 @@ namespace CindarsHope.Combat
 {
     public partial class PlayerAttackController
     {
+        private static long s_nextMeleeActionToken;
+
         private void AttackWithSlot(EquipmentSlot slot, string equippedItemId, AttackWeight weight = AttackWeight.Light)
         {
             if (_attackCore.IsAttackBlockedByDodge())
@@ -27,7 +29,7 @@ namespace CindarsHope.Combat
             // Resolve ItemDataSO first to categorize the equipped item.
             ItemDataSO itemData = null;
             if (!string.IsNullOrEmpty(equippedItemId) && _itemDatabase != null)
-                _itemDatabase.TryGetById(equippedItemId, out itemData);
+                _itemDatabase.TryGetById(ItemInstanceIdUtility.GetItemId(equippedItemId), out itemData);
 
             // Lookup weapon refs needed by the core dispatch (may be null).
             WeaponDataSO bowCheck = null;
@@ -91,7 +93,7 @@ namespace CindarsHope.Combat
             float cooldown = CooldownHelper.CalculateWeaponCooldown(weapon);
             if (_statsProvider != null)
             {
-                cooldown = _statsProvider.FinalCooldown(cooldown, weapon);
+                cooldown = _statsProvider.FinalMeleeRecovery(cooldown, slot);
             }
 
             if (!_attackCore.CanAttackSlot(slot, Time.time, cooldown))
@@ -115,8 +117,10 @@ namespace CindarsHope.Combat
             Vector2 swingDirection = _playerController != null ? _playerController.LastFacingDirection : Vector2.right;
             var archetype = WeaponAttackArchetypeMapper.FromWeaponType(weapon.Type);
             GameEventBus.Publish(new PlayerMeleeSwingEvent(swingDirection, cooldown, archetype));
+            GameEventBus.Publish(new PlayerOffensiveActionCommittedEvent(
+                weapon.Id, "Melee"));
             // fable_22: passa a instÃ¢ncia equipada para o ponto Ãºnico de tags (infusÃ£o de tÃªmpera).
-            ExecuteWeaponAttack(weapon, weight, equippedItemId);
+            ExecuteWeaponAttack(weapon, weight, equippedItemId, slot);
             _attackCore.RecordAttack(slot, Time.time);
         }
 
@@ -132,7 +136,11 @@ namespace CindarsHope.Combat
             float lastTime = _attackCore.GetLastAttackTime(ammoSlot);
             var result = _bowArrowService.TryFire(ammoSlot, ammoItemData, lastTime, direction, transform.position);
             if (result.Success)
+            {
+                GameEventBus.Publish(new PlayerOffensiveActionCommittedEvent(
+                    ammoItemData != null ? ammoItemData.Id : string.Empty, "Bow"));
                 _attackCore.RecordAttack(ammoSlot, Time.time);
+            }
         }
 
         // SPEC_07: Delegated to SpellCastService
@@ -189,7 +197,11 @@ namespace CindarsHope.Combat
             return slot == EquipmentSlot.LeftHand ? EquipmentSlot.RightHand : EquipmentSlot.LeftHand;
         }
 
-        private void ExecuteWeaponAttack(WeaponDataSO weapon, AttackWeight weight = AttackWeight.Light, string equippedItemId = null)
+        private void ExecuteWeaponAttack(
+            WeaponDataSO weapon,
+            AttackWeight weight = AttackWeight.Light,
+            string equippedItemId = null,
+            EquipmentSlot slot = EquipmentSlot.RightHand)
         {
             Vector2 direction = _playerController?.LastFacingDirection ?? Vector2.right;
 
@@ -199,7 +211,7 @@ namespace CindarsHope.Combat
             }
             else
             {
-                ExecuteMeleeAttack(weapon, direction, weight, equippedItemId);
+                ExecuteMeleeAttack(weapon, direction, weight, equippedItemId, slot);
             }
 
             if (_equipmentManager != null)
@@ -238,9 +250,16 @@ namespace CindarsHope.Combat
             return registry != null ? registry.GetEdgeTag(equippedItemId) : null;
         }
 
-        private void ExecuteMeleeAttack(WeaponDataSO weapon, Vector2 direction, AttackWeight weight = AttackWeight.Light, string equippedItemId = null)
+        private void ExecuteMeleeAttack(
+            WeaponDataSO weapon,
+            Vector2 direction,
+            AttackWeight weight = AttackWeight.Light,
+            string equippedItemId = null,
+            EquipmentSlot slot = EquipmentSlot.RightHand)
         {
             Vector2 attackCenter = (Vector2)transform.position + direction * 0.5f;
+            string actionToken = "melee:" + System.Threading.Interlocked.Increment(
+                ref s_nextMeleeActionToken).ToString(System.Globalization.CultureInfo.InvariantCulture);
             // spec_codex_13: ContactFilter2D (mask "Enemy" com fallback NoFilter) + buffer
             // pre-alocado reutilizavel (OverlapCircle NonAlloc) — sem alocacao por ataque.
             int candidatesTotal = Physics2D.OverlapCircle(attackCenter, weapon.Range, EnemyContactFilter, _combatQueryBuffer);
@@ -269,7 +288,7 @@ namespace CindarsHope.Combat
                 if (_statsProvider != null)
                 {
                     // F03: inclui scaling por atributo da arma.
-                    finalDamage = _statsProvider.FinalDamage(weapon, weight, guaranteedCrit, out isCrit);
+                    finalDamage = _statsProvider.FinalMeleeDamage(weapon, slot, weight, guaranteedCrit, out isCrit);
                 }
 
                 var damageRequest = new DamageRequest(enemyHealth.EnemyId, finalDamage)
@@ -277,6 +296,13 @@ namespace CindarsHope.Combat
                     DamageType = weapon.DamageType,
                     SourcePosition = transform.position,
                     KnockbackForce = _knockbackForce,
+                    SourceKind = DamageSourceKind.PlayerMelee,
+                    SourceInstanceId = GetEntityId().ToString(),
+                    TargetInstanceId = enemyHealth.EnemyInstanceId,
+                    ActionToken = actionToken,
+                    IsCritical = isCrit,
+                    IsPrimaryDamage = true,
+                    CanTriggerCapstones = true,
                     // fable_06: tags de material da arma (ex.: prata) para matching de vulnerabilidade.
                     // fable_22: + tag de gume da tÃªmpera (FireEdge/...) quando a instÃ¢ncia estÃ¡ infundida.
                     WeaponMaterialTags = ResolveWeaponMaterialTags(weapon, equippedItemId)
@@ -290,7 +316,12 @@ namespace CindarsHope.Combat
                 var posture = enemyHealth.GetComponent<EnemyPostureState>();
                 if (posture != null)
                 {
-                    posture.ApplyPostureDamage(weapon.BaseDamage * AttackChargeRules.PostureMultiplier(weight));
+                    posture.ApplyPostureDamage(
+                        weapon.BaseDamage * AttackChargeRules.PostureMultiplier(weight),
+                        weapon.Id,
+                        GetEntityId().ToString(),
+                        true,
+                        actionToken + ":" + enemyHealth.EnemyInstanceId);
                 }
 
                 CombatLog.Log($"CombatLog: PlayerAttackDamageApplied. EnemyId={enemyHealth.EnemyId}, BaseDamage={weapon.BaseDamage}, FinalDamage={finalDamage}, Weight={weight}, Crit={isCrit}, HP={hpBefore}->{enemyHealth.CurrentHp}", this);
@@ -316,6 +347,7 @@ namespace CindarsHope.Combat
                 _knockbackForce,
                 spawnOffset: 0.5f
             );
+            spawnRequest.SourceCasterRuntimeId = gameObject.GetEntityId().GetHashCode();
 
             var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
             if (!spawnResult.Success)

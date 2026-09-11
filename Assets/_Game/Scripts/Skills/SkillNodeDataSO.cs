@@ -31,6 +31,7 @@ namespace CindarsHope.Skills
         // every node is driven by the deepest unlocked tier of its tree (decision 1.1).
         [Header("Tier & Rank (fable_29)")]
         public int Tier = 1;
+        [Min(1)] public int AuthoredMaxRank = 5;
 
         // fable_29: typed route this node's passive publishes to (decision 1.6).
         // StatModifier → DerivedStats provider (consumer exists); named routes → SkillModifierHooks
@@ -73,6 +74,7 @@ namespace CindarsHope.Skills
             SkillPointCost = Mathf.Max(1, SkillPointCost);
             MinimumPlayerLevel = Mathf.Max(1, MinimumPlayerLevel);
             Tier = Mathf.Clamp(Tier, SkillTierRules.MinTier, SkillTierRules.MaxTier);
+            AuthoredMaxRank = Mathf.Clamp(AuthoredMaxRank <= 0 ? 5 : AuthoredMaxRank, 1, 5);
         }
     }
 }

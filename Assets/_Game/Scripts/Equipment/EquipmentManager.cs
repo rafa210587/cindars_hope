@@ -24,6 +24,7 @@ namespace CindarsHope.Equipment
         [SerializeField] private ToolTier _equippedToolTier = ToolTier.None;
 
         private EquipmentDurabilityTracker _durabilityTracker;
+        private System.Func<string, int?> _weaponDurabilityResolver;
         private Dictionary<EquipmentSlot, string> _slots = new(); // itemInstanceId per slot
 
         // fable_22: registro de infusões de têmpera por instância (paralelo à durabilidade).
@@ -52,6 +53,23 @@ namespace CindarsHope.Equipment
         public ToolType EquippedToolType => _equippedToolType;
         public ToolTier EquippedToolTier => _equippedToolTier;
         public EquipmentDurabilityTracker DurabilityTracker => _durabilityTracker;
+
+        public void ConfigureWeaponDurabilityResolver(System.Func<string, int?> resolver)
+        {
+            _weaponDurabilityResolver = resolver;
+        }
+
+        public int? ResolveBaseDurability(string itemId)
+            => string.IsNullOrWhiteSpace(itemId) ? null : _weaponDurabilityResolver?.Invoke(itemId);
+
+        public void InitializeCraftedItemDurability(string itemInstanceId, int maxDurability)
+        {
+            if (_durabilityTracker != null && !string.IsNullOrWhiteSpace(itemInstanceId)
+                && maxDurability > 0)
+            {
+                _durabilityTracker.InitializeEquipment(itemInstanceId, maxDurability);
+            }
+        }
 
         private void Awake()
         {
@@ -110,11 +128,21 @@ namespace CindarsHope.Equipment
         private void OnEnable()
         {
             GameEventBus.Subscribe<InventoryChangedEvent>(HandleInventoryChanged);
+            GameEventBus.Subscribe<ItemSalvagedEvent>(HandleItemSalvaged);
         }
 
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<InventoryChangedEvent>(HandleInventoryChanged);
+            GameEventBus.Unsubscribe<ItemSalvagedEvent>(HandleItemSalvaged);
+        }
+
+        private void HandleItemSalvaged(ItemSalvagedEvent evt)
+        {
+            if (string.IsNullOrWhiteSpace(evt.ItemInstanceId)) return;
+            _durabilityTracker?.RemoveEquipment(evt.ItemInstanceId);
+            _upgradeRegistry?.Clear(evt.ItemInstanceId);
+            _infusionRegistry?.Clear(evt.ItemInstanceId);
         }
 
         private void OnDestroy()
@@ -164,9 +192,24 @@ namespace CindarsHope.Equipment
                 return;
             }
 
+            InitializeWeaponDurabilityIfNeeded(itemInstanceId);
             _slots[slot] = itemInstanceId ?? string.Empty;
             RebuildAccessoryEffects();
             GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, itemInstanceId));
+        }
+
+        private void InitializeWeaponDurabilityIfNeeded(string itemInstanceId)
+        {
+            if (string.IsNullOrWhiteSpace(itemInstanceId)
+                || _durabilityTracker == null
+                || _durabilityTracker.GetDurability(itemInstanceId) != null)
+            {
+                return;
+            }
+
+            int? maxDurability = _weaponDurabilityResolver?.Invoke(itemInstanceId);
+            if (maxDurability.HasValue && maxDurability.Value > 0)
+                _durabilityTracker.InitializeEquipment(itemInstanceId, maxDurability.Value);
         }
 
         /// <summary>
@@ -343,6 +386,34 @@ namespace CindarsHope.Equipment
                 ?? restoreAmount;
 
             _durabilityTracker.RepairEquipment(itemInstanceId, effectiveRestore);
+        }
+
+        /// <summary>
+        /// Applies an exact repair amount up to a caller supplied cap. This path intentionally bypasses
+        /// bench and RepairEfficiency modifiers and rejects stale snapshots before changing durability.
+        /// </summary>
+        public bool TryRepairItemExact(string itemInstanceId, int expectedCurrent, int expectedMax,
+            int restoreAmount, int capDurability, out int restored)
+        {
+            restored = 0;
+            if (_durabilityTracker == null || string.IsNullOrWhiteSpace(itemInstanceId) || restoreAmount <= 0)
+                return false;
+
+            var durability = _durabilityTracker.GetDurability(itemInstanceId);
+            if (durability == null || durability.IsBroken || AccessoryCatalog.IsRelic(itemInstanceId) ||
+                durability.CurrentDurability != expectedCurrent || durability.MaxDurability != expectedMax)
+                return false;
+
+            int safeCap = Mathf.Clamp(capDurability, 0, durability.MaxDurability);
+            restored = Mathf.Min(restoreAmount, safeCap - durability.CurrentDurability);
+            if (restored <= 0)
+            {
+                restored = 0;
+                return false;
+            }
+
+            _durabilityTracker.RepairEquipment(itemInstanceId, restored);
+            return true;
         }
 
         public DurabilityData GetItemDurability(string itemInstanceId)

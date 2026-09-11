@@ -11,6 +11,7 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
+using CindarsHope.Skills.Runtime;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -58,6 +59,8 @@ namespace CindarsHope.Combat
         private readonly AttackChargeTracker _leftCharge = new AttackChargeTracker();
         private readonly AttackChargeTracker _rightCharge = new AttackChargeTracker();
         private PlayerCombatStatsProvider _statsProvider;
+        private RangedKitingRuntime _rangedKitingRuntime;
+        private System.Func<int> _passiveDefenseSource;
         private SpriteRenderer _chargeTelegraphRenderer;
         private Color _chargeTelegraphBaseColor = Color.white;
 
@@ -149,6 +152,13 @@ namespace CindarsHope.Combat
             _statsProvider = new PlayerCombatStatsProvider(
                 () => progression != null ? progression.Strength : 0,
                 () => skillTree != null ? skillTree.GetAllActivePassiveModifiers() : null);
+            _statsProvider.ConfigureCombatEquipment(
+                ResolvePassiveWeapon,
+                IsPassiveSlotBroken,
+                IsPassiveSlotShield,
+                IsPassiveSlotEmpty);
+            _passiveDefenseSource = () => _statsProvider != null ? _statsProvider.Current.Defense : 0;
+            PlayerDamageReceiver.DefenseSource = _passiveDefenseSource;
 
             // F03: scaling por atributo da arma.
             _statsProvider.AttributeSource = attributeType =>
@@ -189,10 +199,21 @@ namespace CindarsHope.Combat
                 _spellCastRoutine = routineHost.AddComponent<CindarsHope.Combat.Magic.SpellCastRoutine>();
             }
             _spellCastRoutine.Configure(_chargeTelegraphRenderer);
+
+            _rangedKitingRuntime = routineHost.GetComponent<RangedKitingRuntime>();
+            if (_rangedKitingRuntime == null)
+                _rangedKitingRuntime = routineHost.AddComponent<RangedKitingRuntime>();
+            _rangedKitingRuntime.Configure(
+                _playerController,
+                () => _statsProvider?.KitingMoveSpeedBonus ?? 0f,
+                ResolveNearestRangedThreat,
+                ResolveLiveRangedThreat);
         }
 
         private void OnDestroy()
         {
+            if (ReferenceEquals(PlayerDamageReceiver.DefenseSource, _passiveDefenseSource))
+                PlayerDamageReceiver.DefenseSource = null;
             _statsProvider?.Dispose();
         }
 
@@ -262,6 +283,7 @@ namespace CindarsHope.Combat
         private void RefreshServices()
         {
             _bowArrowService = new BowArrowAttackService(_equipmentManager, _inventoryManager, _staminaManager, _itemDatabase, _itemResolver, _knockbackForce, _statusEffectDatabase);
+            _bowArrowService.SourceCasterRuntimeId = gameObject.GetEntityId().GetHashCode();
             _spellCastService = new SpellCastService(_manaManager, _equipmentManager, _itemResolver, _knockbackForce, _statusEffectDatabase);
             // F02: serviÃ§os consomem o mesmo provider (dano derivado em projÃ©teis).
             if (_bowArrowService != null) _bowArrowService.StatsProvider = _statsProvider;
@@ -299,6 +321,77 @@ namespace CindarsHope.Combat
             }
             return _enemyPositionQueryResult;
         }
+
+        private RangedKitingRuntime.ThreatSnapshot? ResolveNearestRangedThreat(Vector2 center)
+        {
+            _combatQuerySeenBuffer.Clear();
+            int count = Physics2D.OverlapCircle(center, RangedKitingRuntime.ThreatSearchRadius, EnemyContactFilter, _combatQueryBuffer);
+            EnemyHealth best = null;
+            float bestDistance = float.PositiveInfinity;
+            for (int i = 0; i < count; i++)
+            {
+                var collider = _combatQueryBuffer[i];
+                if (collider == null) continue;
+                var enemy = collider.GetComponentInParent<EnemyHealth>() ?? collider.GetComponent<EnemyHealth>();
+                if (enemy == null || enemy.IsDead || !_combatQuerySeenBuffer.Add(enemy)) continue;
+
+                float distance = ((Vector2)enemy.transform.position - center).sqrMagnitude;
+                if (best == null || distance < bestDistance
+                    || (Mathf.Approximately(distance, bestDistance)
+                        && string.CompareOrdinal(enemy.EnemyInstanceId, best.EnemyInstanceId) < 0))
+                {
+                    best = enemy;
+                    bestDistance = distance;
+                }
+            }
+
+            return best != null
+                ? new RangedKitingRuntime.ThreatSnapshot(best.EnemyInstanceId, best.transform.position)
+                : (RangedKitingRuntime.ThreatSnapshot?)null;
+        }
+
+        private RangedKitingRuntime.ThreatSnapshot? ResolveLiveRangedThreat(string enemyInstanceId)
+        {
+            if (string.IsNullOrEmpty(enemyInstanceId)) return null;
+            _combatQuerySeenBuffer.Clear();
+            int count = Physics2D.OverlapCircle(transform.position, RangedKitingRuntime.ThreatSearchRadius, EnemyContactFilter, _combatQueryBuffer);
+            for (int i = 0; i < count; i++)
+            {
+                var collider = _combatQueryBuffer[i];
+                if (collider == null) continue;
+                var enemy = collider.GetComponentInParent<EnemyHealth>() ?? collider.GetComponent<EnemyHealth>();
+                if (enemy == null || enemy.IsDead || !_combatQuerySeenBuffer.Add(enemy)) continue;
+                if (string.Equals(enemy.EnemyInstanceId, enemyInstanceId, System.StringComparison.Ordinal))
+                    return new RangedKitingRuntime.ThreatSnapshot(enemy.EnemyInstanceId, enemy.transform.position);
+            }
+            return null;
+        }
+
+        private WeaponDataSO ResolvePassiveWeapon(EquipmentSlot slot)
+        {
+            string itemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(slot) : null;
+            if (string.IsNullOrEmpty(itemId) || _itemResolver == null) return null;
+            return _itemResolver.ResolveEquippedWeapon(slot, itemId, out _);
+        }
+
+        private bool IsPassiveSlotBroken(EquipmentSlot slot)
+        {
+            string itemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(slot) : null;
+            return !string.IsNullOrEmpty(itemId) && _equipmentManager.IsItemBroken(itemId);
+        }
+
+        private bool IsPassiveSlotShield(EquipmentSlot slot)
+        {
+            string itemId = _equipmentManager != null ? _equipmentManager.GetEquippedItem(slot) : null;
+            return !string.IsNullOrEmpty(itemId)
+                && _itemDatabase != null
+                && _itemDatabase.TryGetById(ItemInstanceIdUtility.GetItemId(itemId), out var item)
+                && item != null
+                && item.Category == ItemCategory.Shield;
+        }
+
+        private bool IsPassiveSlotEmpty(EquipmentSlot slot)
+            => _equipmentManager == null || string.IsNullOrEmpty(_equipmentManager.GetEquippedItem(slot));
 
         private void Update()
         {

@@ -28,6 +28,7 @@ namespace CindarsHope.EditorTools.Validation
 
         public bool HasErrors => ErrorCount > 0;
         public bool HasWarnings => WarningCount > 0;
+        public bool Passed => IsConfigured && !HasErrors;
 
         public void AddIssue(ValidationIssue issue)
         {
@@ -46,17 +47,21 @@ namespace CindarsHope.EditorTools.Validation
             sb.AppendLine($"\n========== {validatorName} ==========");
             sb.AppendLine($"Total Issues: {TotalCount} (Errors: {ErrorCount}, Warnings: {WarningCount}, Info: {InfoCount})");
 
-            if (Issues.Count == 0)
+            foreach (var issue in Issues)
+            {
+                sb.AppendLine(issue.ToString());
+            }
+
+            if (!IsConfigured)
+            {
+                sb.AppendLine("Status: NOT_CONFIGURED");
+            }
+            else if (Issues.Count == 0)
             {
                 sb.AppendLine("Status: PASS ✓");
             }
             else
             {
-                foreach (var issue in Issues)
-                {
-                    sb.AppendLine(issue.ToString());
-                }
-
                 if (HasErrors)
                 {
                     sb.AppendLine($"Status: FAIL ({ErrorCount} error(s))");

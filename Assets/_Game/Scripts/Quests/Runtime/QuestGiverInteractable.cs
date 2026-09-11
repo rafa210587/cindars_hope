@@ -23,7 +23,7 @@ namespace CindarsHope.Quests.Runtime
     public class QuestGiverInteractable : MonoBehaviour, IInteractable
     {
         private const string ThalindraNpcId = "npc_thalindra";
-        private const string FirstSuppliesQuestId = "quest_first_supplies_for_cindar";
+        private const string FirstSuppliesQuestId = QuestRuntimeIds.SupplyQuestId;
 
         [SerializeField] private string _npcId = "";
         [SerializeField] private string[] _offeredQuestIds = System.Array.Empty<string>();

@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -66,6 +67,10 @@ namespace CindarsHope.Player
             if (_regenTimer <= 0f && _currentStamina < _maxStamina)
             {
                 float effectiveRegenRate = GetEffectiveRegenRate();
+                var player = PlayerController.ActiveInstance;
+                var world = player != null ? player.transform.position : transform.position;
+                effectiveRegenRate *= NaturalSurvivalRateModifierProvider.Resolve(
+                    NaturalSurvivalRateChannel.StaminaRegen, world.x, world.y);
                 if (effectiveRegenRate > 0)
                 {
                     _regenTimer = 1f / effectiveRegenRate;

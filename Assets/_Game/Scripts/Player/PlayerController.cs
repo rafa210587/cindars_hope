@@ -52,6 +52,7 @@ namespace CindarsHope.Player
 
         /// <summary>Velocidade base configurada (PlayerDataSO ou fallback) — referência do fator derivado.</summary>
         public float BaseMoveSpeed => GetMoveSpeed();
+        public CindarsHope.Core.Data.PlayerNeedsBalanceSO NeedsBalance => _playerNeedsBalance;
 
         /// <summary>
         /// Velocidade efetiva (produto dos fatores). Setter mantido por compatibilidade:

@@ -26,5 +26,8 @@ namespace CindarsHope.Foundation
 
         /// <summary>Skill points spent in the given tree id (e.g. "melee"), used by class inference.</summary>
         int GetPointsSpentInTree(string treeId);
+
+        int GetRank(string nodeId);
+        string GetChosenVariant(string nodeId);
     }
 }

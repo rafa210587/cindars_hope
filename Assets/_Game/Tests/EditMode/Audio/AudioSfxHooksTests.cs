@@ -68,7 +68,8 @@ namespace CindarsHope.Tests.EditMode.Audio
                 { typeof(FishCaughtEvent), SfxCategory.Fish },
                 { typeof(PlayerLevelChangedEvent), SfxCategory.LevelUp },
                 { typeof(DayStartedEvent), SfxCategory.DayStart },
-                { typeof(GameSavedEvent), SfxCategory.Save }
+                { typeof(GameSavedEvent), SfxCategory.Save },
+                { typeof(HouseDoorTransitionCompletedEvent), SfxCategory.Door }
             };
 
             foreach (var pair in expected)
@@ -85,6 +86,16 @@ namespace CindarsHope.Tests.EditMode.Audio
         {
             Assert.AreEqual(SfxCategory.None, SfxEventMap.CategoryFor(typeof(string)));
             Assert.AreEqual(SfxCategory.None, SfxEventMap.CategoryFor(null));
+        }
+
+        [Test]
+        public void DoorEvent_BridgeMappingUsesDoorCategoryAndCooldown()
+        {
+            Assert.AreEqual(SfxCategory.Door, SfxEventMap.CategoryFor<HouseDoorTransitionCompletedEvent>());
+            var gate = new SfxCooldownGate(0.05f);
+            Assert.IsTrue(SfxEventBridge.TryConsumeMappedEvent<HouseDoorTransitionCompletedEvent>(gate, 1f));
+            Assert.IsFalse(SfxEventBridge.TryConsumeMappedEvent<HouseDoorTransitionCompletedEvent>(gate, 1.02f));
+            Assert.IsTrue(SfxEventBridge.TryConsumeMappedEvent<HouseDoorTransitionCompletedEvent>(gate, 1.06f));
         }
 
         [Test]

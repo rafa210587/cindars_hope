@@ -5,44 +5,44 @@ using UnityEngine;
 namespace CindarsHope.Tests.EditMode.Farm
 {
     /// <summary>
-    /// Testes do FarmLevel1LayoutContract v7 (origem centrada, 64x44 tiles).
+    /// Farm envelope contracts after the west-only keyart extension.
     /// </summary>
     public class FarmLevel1LayoutContractTests
     {
         [Test]
-        public void Level1DimensionsAreCorrect_V7()
+        public void Level1DimensionsAreCorrect_EnclosedValley()
         {
-            Assert.That(FarmLevel1LayoutContract.Level1WidthTiles, Is.EqualTo(64f));
-            Assert.That(FarmLevel1LayoutContract.Level1HeightTiles, Is.EqualTo(44f));
+            Assert.That(FarmLevel1LayoutContract.Level1WidthTiles, Is.EqualTo(76f));
+            Assert.That(FarmLevel1LayoutContract.Level1HeightTiles, Is.EqualTo(50f));
         }
 
         [Test]
-        public void BoundsAreOriginCentered()
+        public void WestExtensionPreservesEastNorthAndSouthBounds()
         {
-            Assert.That(FarmLevel1LayoutContract.MinX, Is.EqualTo(-32f));
-            Assert.That(FarmLevel1LayoutContract.MaxX, Is.EqualTo(32f));
-            Assert.That(FarmLevel1LayoutContract.MinY, Is.EqualTo(-22f));
-            Assert.That(FarmLevel1LayoutContract.MaxY, Is.EqualTo(22f));
+            Assert.That(FarmLevel1LayoutContract.MinX, Is.EqualTo(-40f));
+            Assert.That(FarmLevel1LayoutContract.MaxX, Is.EqualTo(36f));
+            Assert.That(FarmLevel1LayoutContract.MinY, Is.EqualTo(-25f));
+            Assert.That(FarmLevel1LayoutContract.MaxY, Is.EqualTo(25f));
         }
 
         [Test]
-        public void Level1SizeValidation_64x44_IsTrue()
+        public void Level1SizeValidation_76x50_IsTrue()
         {
-            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(64f, 44f), Is.True);
+            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(76f, 50f), Is.True);
         }
 
         [Test]
         public void Level1SizeValidation_WrongSize_IsFalse()
         {
             Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(48f, 34f), Is.False);
-            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(40f, 32f), Is.False);
+            Assert.That(FarmLevel1LayoutContract.IsLevel1SizeValid(40f, 36f), Is.False);
         }
 
         [Test]
         public void FarmLevel1SizeContract_MeetsMinimum()
         {
             // FarmScaleContract.IsFarmLevel1SizeValid aceita >= minimo (32x24).
-            Assert.That(FarmScaleContract.IsFarmLevel1SizeValid(64f, 44f), Is.True);
+            Assert.That(FarmScaleContract.IsFarmLevel1SizeValid(72f, 50f), Is.True);
         }
 
         [Test]

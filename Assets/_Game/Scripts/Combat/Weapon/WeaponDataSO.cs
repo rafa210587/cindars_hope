@@ -47,6 +47,8 @@ namespace CindarsHope.Combat.Weapon
         [Range(0f, 3f)] public float PostureDamageModifier = 1f;
         [Range(1f, 3f)] public float CritDamageModifier = 1.5f;
         public WeaponWeightClass WeightClass = WeaponWeightClass.Medium;
+        [Tooltip("True when the weapon occupies both hands for equipment-gated passives.")]
+        public bool RequiresTwoHands;
         public string[] MaterialTagsApplied = new string[0];
         public string[] StatusTagsApplied = new string[0];
         public string AllowedAmmoType = string.Empty;

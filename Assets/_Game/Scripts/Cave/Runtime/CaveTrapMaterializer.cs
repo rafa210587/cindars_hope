@@ -149,6 +149,9 @@ namespace CindarsHope.Cave.Runtime
                         falseChestClosed,
                         falseChestRevealed);
                     detectionRuntime.Register(falseChest);
+                    TemporaryRevealTargetBehaviour.Attach(trapGO, trap.TrapInstanceId,
+                        CindarsHope.Foundation.TemporaryRevealKind.Hazard,
+                        isActive: () => falseChest.State == TrapState.Armed);
                 }
                 else
                 {
@@ -167,6 +170,9 @@ namespace CindarsHope.Cave.Runtime
                         registerTrapStateCallback,
                         trapSprite);
                     detectionRuntime.Register(behaviour);
+                    TemporaryRevealTargetBehaviour.Attach(trapGO, trap.TrapInstanceId,
+                        CindarsHope.Foundation.TemporaryRevealKind.Hazard,
+                        isActive: () => behaviour.State == TrapState.Armed);
                 }
 
                 materializedObjects.Add(trapGO);

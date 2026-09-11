@@ -382,7 +382,8 @@ namespace CindarsHope.UI.Skills
             var purchased = manager.IsNodePurchased(node.SkillNodeId);
             var requirementsMet = RequirementsMet(manager, node, progression?.Level ?? 1);
             var hasPoints = (progression?.UnspentSkillPoints ?? 0) >= node.SkillPointCost;
-            var status = purchased ? "Comprado" : requirementsMet ? hasPoints ? "Disponível" : "Sem pontos" : "Bloqueado";
+            var status = purchased ? "Comprado" : node.NotYetExecutable ? "Indisponível"
+                : requirementsMet ? hasPoints ? "Disponível" : "Sem pontos" : "Bloqueado";
 
             var prevColor = GUI.backgroundColor;
             if (nodeIdx == _selectedNodeIndex)
@@ -393,7 +394,7 @@ namespace CindarsHope.UI.Skills
             GUILayout.Label($"{node.DisplayName} [{status}] - Custo: {node.SkillPointCost} SP");
             GUILayout.Label(node.Description);
             GUILayout.Label($"Requisitos: {FormatRequirements(node)}");
-            GUI.enabled = !purchased && requirementsMet && hasPoints;
+            GUI.enabled = CanOfferPurchase(node, purchased, requirementsMet, hasPoints);
             if (GUILayout.Button("Comprar"))
             {
                 _selectedNodeIndex = nodeIdx;
@@ -423,6 +424,13 @@ namespace CindarsHope.UI.Skills
             GUILayout.EndVertical();
             GUI.backgroundColor = prevColor;
         }
+
+        internal static bool CanOfferPurchase(
+            SkillNodeDataSO node,
+            bool purchased,
+            bool requirementsMet,
+            bool hasPoints)
+            => node != null && !node.NotYetExecutable && !purchased && requirementsMet && hasPoints;
 
         private static bool RequirementsMet(SkillTreeManager manager, SkillNodeDataSO node, int level)
         {

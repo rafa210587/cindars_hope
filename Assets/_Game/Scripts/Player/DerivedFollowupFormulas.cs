@@ -17,11 +17,11 @@ namespace CindarsHope.Player
 
         // --- Craft time reduction --------------------------------------------------------
         /// <summary>Redução máxima de tempo de craft (75%) — nunca instantâneo por bônus.</summary>
-        public const float CraftTimeReductionCap = 0.75f;
+        public const float CraftTimeReductionCap = 0.60f;
 
         // --- Repair efficiency -----------------------------------------------------------
         /// <summary>Bônus máximo de eficiência de reparo (+200% de durabilidade restaurada).</summary>
-        public const float RepairEfficiencyBonusCap = 2f;
+        public const float RepairEfficiencyBonusCap = 0.30f;
 
         // --- Derived move speed (follow-up 1) -------------------------------------------
         /// <summary>
@@ -65,6 +65,21 @@ namespace CindarsHope.Player
             // Não deixa a redução por resistência levar abaixo do floor canônico (1s).
             var floor = Mathf.Min(baseSeconds, minClamp);
             return Mathf.Clamp(reduced, floor, maxClamp);
+        }
+
+        /// <summary>
+        /// Ordem normativa da duração: clamp(base × resistência × recovery, min, max).
+        /// O clamp acontece uma única vez, após as duas reduções, inclusive quando base excede o teto.
+        /// </summary>
+        public static float ApplyStatusDurationModifiers(float baseSeconds, int resistance,
+            float recoveryReduction, float minClamp, float maxClamp)
+        {
+            float safeMin = Mathf.Max(0f, minClamp);
+            float safeMax = Mathf.Max(safeMin, maxClamp);
+            float recoveryMultiplier = 1f - Mathf.Clamp01(recoveryReduction);
+            float adjusted = Mathf.Max(0f, baseSeconds) *
+                StatusDurationMultiplier(resistance) * recoveryMultiplier;
+            return Mathf.Clamp(adjusted, safeMin, safeMax);
         }
 
         /// <summary>

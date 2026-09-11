@@ -6,11 +6,13 @@ namespace CindarsHope.Combat.StatusEffect
     public class ActiveStatusEffect
     {
         public string StatusEffectId;
+        public string SourceId;
         public int RemainingTurns;
 
-        public ActiveStatusEffect(string statusEffectId, int durationTurns)
+        public ActiveStatusEffect(string statusEffectId, int durationTurns, string sourceId = null)
         {
             StatusEffectId = statusEffectId;
+            SourceId = sourceId ?? string.Empty;
             RemainingTurns = durationTurns;
         }
 

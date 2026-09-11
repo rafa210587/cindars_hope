@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
+using System.Threading;
 using CindarsHope.Core.Events;
 using CindarsHope.DebugTools;
 using CindarsHope.Foundation;
@@ -17,6 +19,8 @@ namespace CindarsHope.Combat
     /// </summary>
     public static class PlayerDamageReceiver
     {
+        private static long s_nextCombatResolutionId;
+
         /// <summary>Fonte de Defense (injetável p/ testes; default = passivas via bootstrap).</summary>
         public static System.Func<int> DefenseSource;
 
@@ -52,7 +56,9 @@ namespace CindarsHope.Combat
         }
 
         /// <summary>Aplica dano reduzido ao player. Retorna o dano final aplicado.</summary>
-        public static int ApplyDamage(PlayerManager playerManager, int rawDamage, string sourceId, DamageType damageType = DamageType.Physical, GameObject attacker = null, GameObject playerObject = null)
+        public static int ApplyDamage(PlayerManager playerManager, int rawDamage, string sourceId,
+            DamageType damageType = DamageType.Physical, GameObject attacker = null,
+            GameObject playerObject = null, bool isDamageOverTime = false)
         {
             if (playerManager == null || rawDamage <= 0)
             {
@@ -94,6 +100,10 @@ namespace CindarsHope.Combat
                     rawDamage));
             }
 
+            rawDamage = IncomingDamageModifierProvider.Resolve(
+                rawDamage, damageType, Time.time, isDamageOverTime);
+            rawDamage = CavebornCapstoneProvider.ResolveIncomingDamage(rawDamage, damageType);
+
             var defense = ResolveDefense();
             var resistanceSource = ResistanceProvider.Source;
             var resistance = resistanceSource != null ? resistanceSource(damageType) : 0;
@@ -117,8 +127,10 @@ namespace CindarsHope.Combat
         // F27: perfect block — dano 0, postura refletida no atacante melee, guard break canônico.
         private static void HandlePerfectBlock(int rawDamage, string sourceId, GameObject attacker)
         {
+            string resolutionId = Interlocked.Increment(ref s_nextCombatResolutionId)
+                .ToString(CultureInfo.InvariantCulture);
             CombatLog.Log($"CombatLog: PlayerPerfectBlock. Source={sourceId}, NegatedDamage={rawDamage}");
-            Core.GameEventBus.Publish(new Core.Events.PlayerPerfectBlockEvent(sourceId, rawDamage));
+            Core.GameEventBus.Publish(new Core.Events.PlayerPerfectBlockEvent(sourceId, rawDamage, resolutionId));
             Core.GameEventBus.Publish(new Core.Events.PlayerActionFeedbackEvent("Perfect block!"));
 
             if (attacker == null)
@@ -129,7 +141,12 @@ namespace CindarsHope.Combat
             var posture = attacker.GetComponent<EnemyPostureState>();
             if (posture != null)
             {
-                posture.ApplyPostureDamage(rawDamage * Player.Movement.BlockTimingRules.PostureReflectFraction);
+                posture.ApplyPostureDamage(
+                    rawDamage * Player.Movement.BlockTimingRules.PostureReflectFraction,
+                    "perfect_block",
+                    "player",
+                    true,
+                    resolutionId);
             }
 
             // Inimigo em GuardHold tem a guarda quebrada imediatamente (interação canônica).

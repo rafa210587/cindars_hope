@@ -8,6 +8,7 @@ using CindarsHope.NPC.Gifting;
 using CindarsHope.NPC.Services;
 using CindarsHope.NPC.Schedule;
 using CindarsHope.Skills.Runtime.Effects;
+using CindarsHope.Skills.Runtime;
 using CindarsHope.UI.Routing;
 using CindarsHope.World.Events;
 using CindarsHope.World.Weather;
@@ -53,6 +54,8 @@ namespace CindarsHope.Tests.PlayMode.Composition
             Assert.That(CombatStateTrackerBootstrap.Install(), Is.SameAs(tracker));
             Assert.That(GameRuntimeCompositionRoot.IsReady, Is.True);
             Assert.That(ActiveSkillExecutionController.Instance, Is.Not.Null);
+            AssertOwnedByRoot<SurvivalSkillRuntimeCoordinator>(root);
+            AssertOwnedByRoot<EfficiencyMarkRuntimeCoordinator>(root);
             Assert.That(inputRouter, Is.Not.Null);
             Assert.That(inputRouter.gameObject, Is.SameAs(root.gameObject));
             AssertOwnedByRoot<FriendshipService>(root);

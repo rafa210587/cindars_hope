@@ -136,12 +136,14 @@ namespace CindarsHope.Editor.Items
             asset.HungerRestore = Mathf.Max(0, row.HungerRestore);
             asset.StaminaRestore = Mathf.Max(0, row.StaminaRestore);
             asset.IsEquippable = row.IsEquippable;
+            asset.IsCommonMaterialBonusEligible = CanonicalItemCatalog.IsCommonMaterialBonusEligible(row);
             asset.DurabilityRestoreAmount = Mathf.Max(0, row.DurabilityRestoreAmount);
             if (!string.IsNullOrEmpty(row.AmmoType))
             {
                 asset.AmmoType = row.AmmoType;
             }
             ApplyAmmoEquipFields(asset, row);
+            ApplyMeleeOffhandEquipFields(asset, row);
         }
 
         // Ammo rows are hand-equippable (arrow stack in one hand, bow in the other). Derive the
@@ -210,6 +212,13 @@ namespace CindarsHope.Editor.Items
 
             if (asset.IsEquippable != row.IsEquippable) { asset.IsEquippable = row.IsEquippable; changed = true; }
 
+            var commonBonusEligible = CanonicalItemCatalog.IsCommonMaterialBonusEligible(row);
+            if (asset.IsCommonMaterialBonusEligible != commonBonusEligible)
+            {
+                asset.IsCommonMaterialBonusEligible = commonBonusEligible;
+                changed = true;
+            }
+
             var dura = Mathf.Max(0, row.DurabilityRestoreAmount);
             if (asset.DurabilityRestoreAmount != dura) { asset.DurabilityRestoreAmount = dura; changed = true; }
 
@@ -226,7 +235,29 @@ namespace CindarsHope.Editor.Items
                 changed = true;
             }
 
+            if (ApplyMeleeOffhandEquipFields(asset, row))
+            {
+                changed = true;
+            }
+
             return changed;
+        }
+
+        private static bool ApplyMeleeOffhandEquipFields(ItemDataSO asset, CatalogItemRow row)
+        {
+            if (row.Id != "item_weapon_dagger_copper"
+                && row.Id != "item_weapon_dagger_steel"
+                && row.Id != "item_weapon_dagger_mithril")
+            {
+                return false;
+            }
+
+            var desiredSlots = new[] { CindarsHope.Foundation.EquipmentSlot.LeftHand, CindarsHope.Foundation.EquipmentSlot.RightHand };
+            if (SlotsEqual(asset.AllowedEquipmentSlots, desiredSlots))
+                return false;
+
+            asset.AllowedEquipmentSlots = desiredSlots;
+            return true;
         }
 
         private static void UpsertRecipe(CatalogRecipeRow recipe, GenerationCounters counters)
@@ -260,6 +291,8 @@ namespace CindarsHope.Editor.Items
             asset.OutputItemId = recipe.OutputItemId;
             asset.OutputAmount = Mathf.Max(1, recipe.OutputAmount);
             asset.RequiredStationType = recipe.Station;
+            asset.IsUnlockedByDefault = recipe.IsUnlockedByDefault;
+            asset.RequiredRecipeUnlockId = recipe.RequiredRecipeUnlockId ?? string.Empty;
             asset.Ingredients = recipe.Ingredients
                 .Select(kv => new RecipeIngredient(kv.Key, kv.Value))
                 .ToArray();
@@ -272,6 +305,9 @@ namespace CindarsHope.Editor.Items
             if (asset.DisplayName != recipe.DisplayName) { asset.DisplayName = recipe.DisplayName; changed = true; }
             if (asset.OutputItemId != recipe.OutputItemId) { asset.OutputItemId = recipe.OutputItemId; changed = true; }
             if (asset.RequiredStationType != recipe.Station) { asset.RequiredStationType = recipe.Station; changed = true; }
+            if (asset.IsUnlockedByDefault != recipe.IsUnlockedByDefault) { asset.IsUnlockedByDefault = recipe.IsUnlockedByDefault; changed = true; }
+            string unlockId = recipe.RequiredRecipeUnlockId ?? string.Empty;
+            if (asset.RequiredRecipeUnlockId != unlockId) { asset.RequiredRecipeUnlockId = unlockId; changed = true; }
 
             var outAmount = Mathf.Max(1, recipe.OutputAmount);
             if (asset.OutputAmount != outAmount) { asset.OutputAmount = outAmount; changed = true; }

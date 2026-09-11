@@ -60,6 +60,9 @@ namespace CindarsHope.Save.Providers
                 Gold = _playerManager.CurrentGold,
                 CurrentHunger = currentHunger,
                 MaxHunger = maxHunger,
+                HungerFractionalDrainAccumulator = _hungerManager != null
+                    ? _hungerManager.FractionalDrainAccumulator
+                    : 0f,
                 PlayerPosition = playerPosition
             };
 
@@ -101,7 +104,10 @@ namespace CindarsHope.Save.Providers
 
             if (data != null && _hungerManager != null)
             {
-                _hungerManager.RestoreFromSaveData(data.CurrentHunger, data.MaxHunger);
+                _hungerManager.RestoreFromSaveData(
+                    data.CurrentHunger,
+                    data.MaxHunger,
+                    data.HungerFractionalDrainAccumulator);
             }
 
             // F16: restaura fadiga (saves legados carregam com 0).

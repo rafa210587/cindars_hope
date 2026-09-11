@@ -6,16 +6,7 @@ using UnityEngine;
 
 namespace CindarsHope.Farm.Animals
 {
-    /// <summary>
-    /// fable_12 — animal de fazenda em cena. Anda em bounds estritos do abrigo (clamp por frame —
-    /// mitiga o risco de "escapar do cercado") e é <see cref="IInteractable"/>: alimenta (consome
-    /// ração do inventário) quando não alimentado, ou coleta o produto (AddItem) quando pronto.
-    ///
-    /// Sem GameObject.Find/FindObjectOfType: o registry e o InventoryManager chegam por referência
-    /// serializada (wired no gerador de cena) com fallback ao singleton do registry. Comunicação de
-    /// gameplay via GameEventBus (feedback). Lógica de produto/saúde mora no
-    /// <see cref="FarmAnimalRegistry"/> — este componente só projeta visual e roteia interação.
-    /// </summary>
+    /// <summary>Unity adapter for safe cosmetic motion; care and save remain in the registry.</summary>
     [DisallowMultipleComponent]
     public class FarmAnimalRuntime : MonoBehaviour, IInteractable
     {
@@ -23,62 +14,75 @@ namespace CindarsHope.Farm.Animals
         [SerializeField] private string _animalDataId;
         [SerializeField] private string _feedItemId = FarmAnimalCatalog.ItemFeed;
         [SerializeField] private string _displayName = "Animal";
-
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private Collider2D _interactionCollider;
         [SerializeField] private FarmAnimalRegistry _registry;
         [SerializeField] private InventoryManager _inventoryManager;
+        [SerializeField] private AnimalMotionProfileSO _motionProfile;
+        [SerializeField] private AnimalSpriteAnimator _spriteAnimator;
 
+        // Preserved serialized fallback for animal IDs without a bespoke presentation profile.
         [SerializeField] private Vector2 _wanderBoundsMin = new Vector2(-1.2f, -1.2f);
         [SerializeField] private Vector2 _wanderBoundsMax = new Vector2(1.2f, 1.2f);
         [SerializeField] private float _wanderSpeed = 0.7f;
-        [SerializeField] private float _wanderRadius = 1.0f;
+        [SerializeField] private float _wanderRadius = 1f;
         [SerializeField] private float _pauseMin = 0.8f;
         [SerializeField] private float _pauseMax = 2.5f;
 
-        private Vector2 _anchor;
-        private Vector3 _target;
-        private float _pauseTimer;
-        private bool _isPaused = true;
+        private readonly RaycastHit2D[] _sweepHits = new RaycastHit2D[16];
+        private AnimalMotionState _motionState;
+        private Rect _motionBoundsWorld;
+        private Vector2 _bodySize = new Vector2(0.55f, 0.42f);
+        private float _boundsSkin = 0.03f;
+        private int _obstacleMask = ~0;
+        private Vector2 _lastObservedPosition;
+        private AnimalHealthState _currentHealthState = AnimalHealthState.Healthy;
 
         public string AnimalInstanceId => _animalInstanceId;
+        public string AnimalDataId => _animalDataId;
+        public AnimalMotionMode MotionMode => _motionState != null ? _motionState.Mode : AnimalMotionMode.Idle;
+        public AnimalFacingDirection FacingDirection => _motionState != null ? _motionState.FacingDirection : AnimalFacingDirection.Down;
+        public bool IsMotionPaused => _motionState == null || _motionState.IsPaused;
+        public bool IsInteractionFrozen => _motionState != null && _motionState.IsFrozen;
+        public Rect MotionBoundsWorld => _motionBoundsWorld;
+        public Rect AllowedCenterBounds => AnimalMotionBounds.Contract(_motionBoundsWorld, _bodySize, _boundsSkin);
+        public Vector2 BodySize => _bodySize;
+        public AnimalHealthState CurrentHealthState => _currentHealthState;
+        public AnimalMotionProfileSO MotionProfile => _motionProfile;
+        public AnimalSpriteAnimator SpriteAnimator => _spriteAnimator;
 
         private FarmAnimalRegistry Registry => _registry != null ? _registry : FarmAnimalRegistry.Instance;
 
         private void Start()
         {
-            _anchor = transform.position;
-            _target = transform.position;
-            if (_rigidbody == null)
+            if (_spriteAnimator == null) _spriteAnimator = GetComponent<AnimalSpriteAnimator>();
+            if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
+            if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
+            if (_interactionCollider == null) _interactionCollider = GetComponent<Collider2D>();
+            if (_motionBoundsWorld.width <= 0f || _motionBoundsWorld.height <= 0f)
             {
-                _rigidbody = GetComponent<Rigidbody2D>();
-            }
-            if (_spriteRenderer == null)
-            {
-                _spriteRenderer = GetComponent<SpriteRenderer>();
+                Vector2 anchor = transform.position;
+                _motionBoundsWorld = Rect.MinMaxRect(anchor.x + _wanderBoundsMin.x, anchor.y + _wanderBoundsMin.y,
+                    anchor.x + _wanderBoundsMax.x, anchor.y + _wanderBoundsMax.y);
             }
 
+            BuildMotionState();
+            _lastObservedPosition = transform.position;
             var registry = Registry;
             if (registry != null && !string.IsNullOrWhiteSpace(_animalInstanceId))
             {
                 registry.RegisterRuntime(_animalInstanceId, this);
                 var state = registry.GetAnimal(_animalInstanceId);
-                if (state != null)
-                {
-                    OnHealthStateChanged(state.HealthState);
-                }
+                if (state != null) OnHealthStateChanged(state.HealthState);
             }
-
-            StartPause();
         }
 
         private void OnDestroy()
         {
             var registry = Registry;
             if (registry != null && !string.IsNullOrWhiteSpace(_animalInstanceId))
-            {
                 registry.UnregisterRuntime(_animalInstanceId);
-            }
         }
 
         public void Configure(string animalInstanceId, string animalDataId, string feedItemId, string displayName, FarmAnimalRegistry registry)
@@ -90,145 +94,145 @@ namespace CindarsHope.Farm.Animals
             _registry = registry;
         }
 
+        public void ConfigureMotion(AnimalMotionProfileSO profile, Rect sharedWorldBounds)
+        {
+            if (_spriteAnimator == null) _spriteAnimator = GetComponent<AnimalSpriteAnimator>();
+            if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
+            _motionProfile = profile;
+            _motionBoundsWorld = NormalizeBounds(sharedWorldBounds);
+            if (profile != null)
+            {
+                _bodySize = profile.BodySize;
+                _boundsSkin = profile.BoundsSkin;
+                _obstacleMask = profile.ObstacleMask.value;
+            }
+            BuildMotionState();
+            if (_spriteAnimator != null) _spriteAnimator.Configure(_spriteRenderer, profile);
+        }
+
+        /// <summary>Compatibility hook: older callers supply offsets around this runtime.</summary>
         public void SetWanderBounds(Vector2 min, Vector2 max)
         {
-            _wanderBoundsMin = min;
-            _wanderBoundsMax = max;
+            _wanderBoundsMin = Vector2.Min(min, max);
+            _wanderBoundsMax = Vector2.Max(min, max);
+            Vector2 anchor = transform.position;
+            _motionBoundsWorld = Rect.MinMaxRect(anchor.x + _wanderBoundsMin.x, anchor.y + _wanderBoundsMin.y,
+                anchor.x + _wanderBoundsMax.x, anchor.y + _wanderBoundsMax.y);
         }
 
         private void FixedUpdate()
         {
+            Vector2 current = _rigidbody != null ? _rigidbody.position : (Vector2)transform.position;
+            Vector2 observedDelta = current - _lastObservedPosition;
+            _lastObservedPosition = current;
+
             var state = Registry?.GetAnimal(_animalInstanceId);
-            if (state != null && (state.HealthState == AnimalHealthState.Dead
-                || state.HealthState == AnimalHealthState.Unavailable))
-            {
-                StopMotion();
-                return;
-            }
+            if (state != null && state.HealthState != _currentHealthState) OnHealthStateChanged(state.HealthState);
+            bool unavailable = state == null ||
+                state.HealthState == AnimalHealthState.Dead || state.HealthState == AnimalHealthState.Unavailable ||
+                !AnimalMotionBounds.CanContain(_motionBoundsWorld, _bodySize, _boundsSkin);
 
-            if (_isPaused)
+            EnsureMotionState();
+            _motionState.SetHealthStopped(unavailable);
+            Vector2 displacement = _motionState.Advance(Time.fixedDeltaTime, current, AllowedCenterBounds, CanSweepBody);
+            if (displacement.sqrMagnitude > 0f)
             {
-                _pauseTimer -= Time.fixedDeltaTime;
-                if (_pauseTimer <= 0f)
+                Vector2 next = current + displacement;
+                if (_rigidbody != null) _rigidbody.MovePosition(next);
+                else transform.position = new Vector3(next.x, next.y, transform.position.z);
+            }
+            else StopMotion();
+
+            if (_spriteAnimator != null)
+            {
+                var visualMode = _motionState.IsFrozen ? AnimalMotionMode.Idle : _motionState.Mode;
+                _spriteAnimator.UpdatePresentation(Time.fixedDeltaTime, visualMode, _motionState.FacingDirection,
+                    observedDelta.magnitude, displacement.x);
+            }
+        }
+
+        private bool CanSweepBody(Vector2 origin, Vector2 displacement)
+        {
+            float distance = displacement.magnitude;
+            if (distance <= 0.00001f) return true;
+            var filter = new ContactFilter2D { useTriggers = true };
+            filter.SetLayerMask(_obstacleMask);
+            int count = Physics2D.BoxCast(origin, _bodySize, 0f, displacement / distance,
+                filter, _sweepHits, distance + _boundsSkin);
+            if (count == _sweepHits.Length) return false; // Incomplete query must never open a path.
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D hit = _sweepHits[i].collider;
+                if (hit == null || hit == _interactionCollider || hit.transform.IsChildOf(transform)) continue;
+                if (hit.GetComponentInParent<CindarsHope.Player.PlayerController>() != null) continue;
+
+                var otherAnimal = hit.GetComponentInParent<FarmAnimalRuntime>();
+                if (otherAnimal != null)
                 {
-                    ChooseNewTarget();
+                    if (otherAnimal != this) return false;
+                    continue;
                 }
-                return;
+                if (!hit.isTrigger) return false;
             }
-
-            MoveTowardTarget();
+            return true;
         }
 
-        private void MoveTowardTarget()
+        private void BuildMotionState()
         {
-            float distance = Vector2.Distance(transform.position, _target);
-            if (distance < 0.05f)
-            {
-                StartPause();
-                return;
-            }
-
-            Vector2 direction = ((Vector2)(_target - transform.position)).normalized;
-            if (_rigidbody != null)
-            {
-                _rigidbody.linearVelocity = direction * _wanderSpeed;
-            }
-            else
-            {
-                transform.position += (Vector3)(direction * _wanderSpeed * Time.fixedDeltaTime);
-            }
-
-            ClampInsideBounds();
+            AnimalMotionSettings settings = _motionProfile != null
+                ? _motionProfile.CreateSettings()
+                : new AnimalMotionSettings(_wanderSpeed, _wanderRadius, _pauseMin, _pauseMax,
+                    1.1f, 1.8f, 0.58f, 0.27f, 6, 0.04f);
+            _motionState = new AnimalMotionState(settings, _animalInstanceId, _animalDataId);
+            _motionState.SetHealthStopped(_currentHealthState == AnimalHealthState.Dead ||
+                _currentHealthState == AnimalHealthState.Unavailable);
         }
 
-        private void ClampInsideBounds()
+        private void EnsureMotionState()
         {
-            // Clamp por frame — garantia dura de que o animal nunca sai do cercado.
-            var pos = transform.position;
-            float minX = _anchor.x + _wanderBoundsMin.x;
-            float maxX = _anchor.x + _wanderBoundsMax.x;
-            float minY = _anchor.y + _wanderBoundsMin.y;
-            float maxY = _anchor.y + _wanderBoundsMax.y;
-            pos.x = Mathf.Clamp(pos.x, minX, maxX);
-            pos.y = Mathf.Clamp(pos.y, minY, maxY);
-            transform.position = pos;
+            if (_motionState == null) BuildMotionState();
         }
 
-        private void ChooseNewTarget()
+        private static Rect NormalizeBounds(Rect bounds)
         {
-            _isPaused = false;
-            float angle = Random.Range(0f, Mathf.PI * 2f);
-            float dist = Random.Range(0f, _wanderRadius);
-            Vector2 offset = new Vector2(Mathf.Cos(angle) * dist, Mathf.Sin(angle) * dist);
-            Vector2 intended = _anchor + offset;
-            _target = new Vector3(
-                Mathf.Clamp(intended.x, _anchor.x + _wanderBoundsMin.x, _anchor.x + _wanderBoundsMax.x),
-                Mathf.Clamp(intended.y, _anchor.y + _wanderBoundsMin.y, _anchor.y + _wanderBoundsMax.y),
-                transform.position.z);
-        }
-
-        private void StartPause()
-        {
-            _isPaused = true;
-            _pauseTimer = Random.Range(_pauseMin, _pauseMax);
-            StopMotion();
+            return Rect.MinMaxRect(Mathf.Min(bounds.xMin, bounds.xMax), Mathf.Min(bounds.yMin, bounds.yMax),
+                Mathf.Max(bounds.xMin, bounds.xMax), Mathf.Max(bounds.yMin, bounds.yMax));
         }
 
         private void StopMotion()
         {
-            if (_rigidbody != null)
-            {
-                _rigidbody.linearVelocity = Vector2.zero;
-            }
+            if (_rigidbody != null) _rigidbody.linearVelocity = Vector2.zero;
         }
 
         public void OnHealthStateChanged(AnimalHealthState health)
         {
-            if (_spriteRenderer == null)
-            {
-                return;
-            }
+            _currentHealthState = health;
+            if (_motionState != null)
+                _motionState.SetHealthStopped(health == AnimalHealthState.Dead || health == AnimalHealthState.Unavailable);
+            if (_spriteRenderer == null) return;
 
             switch (health)
             {
                 case AnimalHealthState.Dead:
-                    _spriteRenderer.color = new Color(0.35f, 0.35f, 0.35f, 0.6f);
-                    break;
+                    _spriteRenderer.color = new Color(0.35f, 0.35f, 0.35f, 0.6f); break;
                 case AnimalHealthState.Unavailable:
-                    _spriteRenderer.color = new Color(0.7f, 0.45f, 0.45f, 1f);
-                    break;
+                    _spriteRenderer.color = new Color(0.7f, 0.45f, 0.45f, 1f); break;
                 case AnimalHealthState.Hungry:
-                    _spriteRenderer.color = new Color(0.85f, 0.78f, 0.55f, 1f);
-                    break;
+                    _spriteRenderer.color = new Color(0.85f, 0.78f, 0.55f, 1f); break;
                 default:
-                    _spriteRenderer.color = Color.white;
-                    break;
+                    _spriteRenderer.color = Color.white; break;
             }
         }
-
-        // ───────────────────────────── IInteractable ─────────────────────────────
 
         public string InteractionPrompt
         {
             get
             {
                 var state = Registry?.GetAnimal(_animalInstanceId);
-                if (state == null)
-                {
-                    return _displayName;
-                }
-                if (state.HealthState == AnimalHealthState.Dead)
-                {
-                    return $"{_displayName} (morto)";
-                }
-                if (state.ProductReady)
-                {
-                    return $"Coletar produto ({_displayName})";
-                }
-                if (!state.FedToday)
-                {
-                    return $"Alimentar {_displayName}";
-                }
+                if (state == null) return _displayName;
+                if (state.HealthState == AnimalHealthState.Dead) return $"{_displayName} (morto)";
+                if (state.ProductReady) return $"Coletar produto ({_displayName})";
+                if (!state.FedToday) return $"Alimentar {_displayName}";
                 return $"{_displayName} (alimentado)";
             }
         }
@@ -242,75 +246,50 @@ namespace CindarsHope.Farm.Animals
         public void Interact(GameObject interactor)
         {
             var registry = Registry;
-            if (registry == null)
-            {
-                return;
-            }
-
+            if (registry == null) return;
             var state = registry.GetAnimal(_animalInstanceId);
-            if (state == null || state.HealthState == AnimalHealthState.Dead)
-            {
-                return;
-            }
+            if (state == null || state.HealthState == AnimalHealthState.Dead) return;
 
-            // Prioridade 1: coletar produto pronto.
+            EnsureMotionState();
+            _motionState.Freeze(_motionProfile != null ? _motionProfile.InteractionFreezeSeconds : 0.45f);
+            StopMotion();
+
             if (state.ProductReady)
             {
                 var collect = registry.Collect(_animalInstanceId, out var productItemId, out var quantity);
                 if (collect == FarmAnimalRegistry.CollectResult.Success)
                 {
                     var inventory = ResolveInventory(interactor);
-                    if (inventory != null && !string.IsNullOrWhiteSpace(productItemId))
-                    {
-                        inventory.AddItem(productItemId, quantity);
-                    }
-                    GameEventBus.Publish(new PlayerActionFeedbackEvent(
-                        $"Coletou {productItemId} x{quantity}.", 2f));
+                    if (inventory != null && !string.IsNullOrWhiteSpace(productItemId)) inventory.AddItem(productItemId, quantity);
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent($"Coletou {productItemId} x{quantity}.", 2f));
                 }
                 return;
             }
 
-            // Prioridade 2: alimentar (consome ração do inventário).
             if (!state.FedToday)
             {
                 var inventory = ResolveInventory(interactor);
                 if (inventory != null && !inventory.HasItem(_feedItemId, 1))
                 {
-                    GameEventBus.Publish(new PlayerActionFeedbackEvent(
-                        "Sem racao para alimentar.", 2f));
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Sem racao para alimentar.", 2f));
                     return;
                 }
-
                 var feed = registry.Feed(_animalInstanceId);
                 if (feed == FarmAnimalRegistry.FeedResult.Success)
                 {
-                    if (inventory != null)
-                    {
-                        inventory.RemoveItem(_feedItemId, 1);
-                    }
+                    if (inventory != null) inventory.RemoveItem(_feedItemId, 1);
                     OnHealthStateChanged(state.HealthState);
-                    GameEventBus.Publish(new PlayerActionFeedbackEvent(
-                        $"Alimentou {_displayName}.", 2f));
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent($"Alimentou {_displayName}.", 2f));
                 }
             }
         }
 
         private InventoryManager ResolveInventory(GameObject interactor)
         {
-            if (_inventoryManager != null)
-            {
-                return _inventoryManager;
-            }
-            if (interactor != null)
-            {
-                return interactor.GetComponentInParent<InventoryManager>();
-            }
-            return null;
+            if (_inventoryManager != null) return _inventoryManager;
+            return interactor != null ? interactor.GetComponentInParent<InventoryManager>() : null;
         }
 
-        public void SetInventoryManager(InventoryManager inventoryManager)
-        {
-            _inventoryManager = inventoryManager;
-        }
+        public void SetInventoryManager(InventoryManager inventoryManager) => _inventoryManager = inventoryManager;
     }
 }

@@ -6,6 +6,7 @@ using CindarsHope.Core.Random;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Player;
+using CindarsHope.Skills.Runtime;
 using UnityEngine;
 
 namespace CindarsHope.Combat
@@ -25,6 +26,10 @@ namespace CindarsHope.Combat
         private readonly Func<List<SkillPassiveModifier>> _passivesSource;
         private readonly Func<Dictionary<EquipmentSlot, EquipmentDataSO>> _equipmentSource;
         private readonly Func<float> _critRoll;
+        private Func<EquipmentSlot, Weapon.WeaponDataSO> _weaponSource;
+        private Func<EquipmentSlot, bool> _brokenSource;
+        private Func<EquipmentSlot, bool> _shieldSource;
+        private Func<EquipmentSlot, bool> _emptySource;
 
         private DerivedStatsCalculator.DerivedStats _cached;
         private bool _dirty = true;
@@ -42,7 +47,21 @@ namespace CindarsHope.Combat
             _critRoll = critRoll ?? UnityGameplayRandomSource.Shared.NextFloat;
 
             GameEventBus.Subscribe<EquipmentSlotChangedEvent>(OnInvalidatingEvent);
+            GameEventBus.Subscribe<SkillDerivedStatsChangedEvent>(OnInvalidatingEvent);
             _subscribed = true;
+        }
+
+        public void ConfigureCombatEquipment(
+            Func<EquipmentSlot, Weapon.WeaponDataSO> weaponSource,
+            Func<EquipmentSlot, bool> brokenSource,
+            Func<EquipmentSlot, bool> shieldSource,
+            Func<EquipmentSlot, bool> emptySource)
+        {
+            _weaponSource = weaponSource;
+            _brokenSource = brokenSource;
+            _shieldSource = shieldSource;
+            _emptySource = emptySource;
+            Invalidate();
         }
 
         public DerivedStatsCalculator.DerivedStats Current
@@ -120,11 +139,95 @@ namespace CindarsHope.Combat
             return FinalDamage(baseDamage, weight, guaranteedCrit, out isCrit);
         }
 
+        public int FinalMeleeDamage(
+            Weapon.WeaponDataSO weapon,
+            EquipmentSlot slot,
+            AttackWeight weight,
+            bool guaranteedCrit,
+            out bool isCrit)
+        {
+            var equipment = Snapshot(slot);
+            float attack = Mathf.Max(0, Current.Attack)
+                + PassiveCombatModifierAdapter.MeleeAttackFlat(Current.MeleeAttackBonus, equipment);
+            float baseDamage = (weapon != null ? weapon.BaseDamage : 0) + WeaponScalingBonus(weapon) + attack;
+            float weighted = baseDamage * AttackChargeRules.DamageMultiplier(weight);
+            weighted *= PassiveCombatModifierAdapter.TwoHandedDamageMultiplier(Current.TwoHandedDamageBonus, equipment);
+            weighted *= CombatCapstoneModifierProvider.ResolveDirectMeleeDamageMultiplier();
+            return ApplyCritical(weighted, guaranteedCrit, out isCrit,
+                CombatCapstoneModifierProvider.ResolveMeleeCriticalDamageBonus());
+        }
+
+        public int FinalBowDamage(
+            Weapon.WeaponDataSO weapon,
+            int arrowDamage,
+            EquipmentSlot bowSlot,
+            bool guaranteedCrit,
+            out bool isCrit)
+            => FinalBowDamage(weapon, arrowDamage, bowSlot, guaranteedCrit,
+                0f, 0f, out isCrit);
+
+        public int FinalBowDamage(
+            Weapon.WeaponDataSO weapon,
+            int arrowDamage,
+            EquipmentSlot bowSlot,
+            bool guaranteedCrit,
+            float criticalChanceBonus,
+            float criticalDamageBonus,
+            out bool isCrit)
+        {
+            var equipment = Snapshot(bowSlot);
+            float damage = (weapon != null ? weapon.BaseDamage : 0)
+                + WeaponScalingBonus(weapon)
+                + arrowDamage
+                + Mathf.Max(0, Current.Attack)
+                + PassiveCombatModifierAdapter.BowFlat(Current.BowDamageBonus, equipment);
+            return ApplyCritical(damage, guaranteedCrit, out isCrit,
+                criticalDamageBonus, criticalChanceBonus);
+        }
+
+        public int FinalSpellDamage(int baseDamage, string spellId, bool guaranteedCrit, out bool isCrit)
+            => FinalSpellDamage(baseDamage, spellId, guaranteedCrit, 1f, 0f, out isCrit);
+
+        public int FinalSpellDamage(int baseDamage, string spellId, bool guaranteedCrit,
+            float damageMultiplier, float criticalChanceBonus, out bool isCrit)
+        {
+            float damage = (baseDamage + Current.MagicAttackBonus
+                + (string.Equals(spellId, PassiveCombatModifierAdapter.ArcaneBoltSpellId, StringComparison.Ordinal)
+                    ? Current.ArcaneBoltDamageBonus
+                    : 0f)) * Mathf.Max(0f, damageMultiplier);
+            return ApplyCritical(damage, guaranteedCrit, out isCrit, 0f, criticalChanceBonus);
+        }
+
         public float FinalCooldown(float baseCooldown, Weapon.WeaponDataSO weapon)
         {
             var aspd = weapon != null ? Mathf.Clamp(weapon.AttackSpeedMultiplier, 0.25f, 3f) : 1f;
             return FinalCooldown(baseCooldown) / aspd;
         }
+
+        public float FinalMeleeRecovery(float baseRecovery, EquipmentSlot slot)
+        {
+            float attackSpeed = Mathf.Clamp(Current.AttackSpeed, 0.5f, 3f);
+            return baseRecovery / attackSpeed
+                * PassiveCombatModifierAdapter.DualWieldRecoveryMultiplier(Current.DualWieldRecoverySpeed, Snapshot(slot));
+        }
+
+        public float FinalBowRecovery(float baseRecovery, EquipmentSlot bowSlot)
+        {
+            float attackSpeed = Mathf.Clamp(Current.AttackSpeed, 0.5f, 3f);
+            return baseRecovery / attackSpeed
+                * PassiveCombatModifierAdapter.BowRecoveryMultiplier(Current.BowRecoverySpeed, Snapshot(bowSlot));
+        }
+
+        public float FinalBowRange(float baseRange, EquipmentSlot bowSlot)
+            => baseRange + Mathf.Max(0f,
+                PassiveCombatModifierAdapter.BowFlat(Current.BowRange, Snapshot(bowSlot)));
+
+        public float FinalBowProjectileSpeed(float baseSpeed, EquipmentSlot bowSlot)
+            => Mathf.Max(0.1f, baseSpeed + PassiveCombatModifierAdapter.BowFlat(
+                Current.BowProjectileSpeed, Snapshot(bowSlot)));
+
+        public float KitingMoveSpeedBonus
+            => Mathf.Max(0f, Current.KitingMoveSpeedBonus);
 
         /// <summary>Custo de stamina por arma e peso: campos canônicos se autorados, senão razões F02.</summary>
         public static int WeaponStaminaCost(Weapon.WeaponDataSO weapon, AttackWeight weight)
@@ -162,11 +265,17 @@ namespace CindarsHope.Combat
             if (_subscribed)
             {
                 GameEventBus.Unsubscribe<EquipmentSlotChangedEvent>(OnInvalidatingEvent);
+                GameEventBus.Unsubscribe<SkillDerivedStatsChangedEvent>(OnInvalidatingEvent);
                 _subscribed = false;
             }
         }
 
         private void OnInvalidatingEvent(EquipmentSlotChangedEvent evt)
+        {
+            _dirty = true;
+        }
+
+        private void OnInvalidatingEvent(SkillDerivedStatsChangedEvent evt)
         {
             _dirty = true;
         }
@@ -183,8 +292,40 @@ namespace CindarsHope.Combat
                 baseStaminaRegen: 0f,
                 baseAttackSpeed: 1f,
                 equippedItems: _equipmentSource(),
-                passiveModifiers: _passivesSource());
+                passiveModifiers: Passives);
+
+            _cached.Defense += Mathf.RoundToInt(Mathf.Max(
+                PassiveCombatModifierAdapter.GuardedDefenseFlat(_cached.GuardedDefenseBonus, Snapshot(EquipmentSlot.LeftHand)),
+                PassiveCombatModifierAdapter.GuardedDefenseFlat(_cached.GuardedDefenseBonus, Snapshot(EquipmentSlot.RightHand))));
             _dirty = false;
         }
+
+        private List<SkillPassiveModifier> Passives => _passivesSource() ?? s_emptyPassives;
+
+        private PassiveCombatModifierAdapter.EquipmentSnapshot Snapshot(EquipmentSlot mainSlot)
+        {
+            EquipmentSlot offSlot = mainSlot == EquipmentSlot.LeftHand
+                ? EquipmentSlot.RightHand
+                : EquipmentSlot.LeftHand;
+            return new PassiveCombatModifierAdapter.EquipmentSnapshot(
+                _weaponSource?.Invoke(mainSlot),
+                _weaponSource?.Invoke(offSlot),
+                _brokenSource?.Invoke(mainSlot) ?? false,
+                _brokenSource?.Invoke(offSlot) ?? false,
+                _shieldSource?.Invoke(offSlot) ?? false,
+                _emptySource?.Invoke(offSlot) ?? true);
+        }
+
+        private int ApplyCritical(float damage, bool guaranteedCrit, out bool isCrit,
+            float criticalDamageBonus = 0f, float criticalChanceBonus = 0f)
+        {
+            isCrit = guaranteedCrit || _critRoll() <
+                Mathf.Clamp01(CritChance + Mathf.Max(0f, criticalChanceBonus));
+            float final = isCrit ? damage * (CritMultiplier + Mathf.Max(0f, criticalDamageBonus)) : damage;
+            return Mathf.Max(1, (int)Math.Round(final, MidpointRounding.AwayFromZero));
+        }
+
+        private static readonly List<SkillPassiveModifier> s_emptyPassives =
+            new List<SkillPassiveModifier>(0);
     }
 }

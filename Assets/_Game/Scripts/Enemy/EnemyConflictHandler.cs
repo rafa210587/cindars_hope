@@ -210,6 +210,11 @@ namespace CindarsHope.Enemy
         /// </summary>
         internal bool IsTargetingRival => _rivalHealthTarget != null && !_rivalHealthTarget.IsDead;
 
+        internal void ClearRivalTarget()
+        {
+            _rivalHealthTarget = null;
+        }
+
         /// <summary>True quando este inimigo tem uma fonte de conflito registrada.</summary>
         internal bool HasConflictCombatant => _hasConflictSource;
 

@@ -27,7 +27,7 @@ namespace CindarsHope.World
 
             var go = new GameObject("ItemDropSpawner");
             if (owner != null) go.transform.SetParent(owner, false);
-            else DontDestroyOnLoad(go);
+            else if (Application.isPlaying) DontDestroyOnLoad(go);
             _instance = go.AddComponent<ItemDropSpawner>();
             return _instance;
         }
@@ -41,8 +41,14 @@ namespace CindarsHope.World
             }
 
             _instance = this;
-            if (transform.parent == null)
+            if (transform.parent == null && Application.isPlaying)
                 DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+                _instance = null;
         }
 
         public static ItemDropSpawner Instance => _instance;
@@ -54,6 +60,9 @@ namespace CindarsHope.World
         }
 
         public bool TryDropItem(string itemId, int amount, Vector3 dropPosition)
+            => TryDropItem(itemId, string.Empty, amount, dropPosition);
+
+        public bool TryDropItem(string itemId, string itemInstanceId, int amount, Vector3 dropPosition)
         {
             if (string.IsNullOrWhiteSpace(itemId) || amount <= 0)
             {
@@ -70,6 +79,12 @@ namespace CindarsHope.World
             if (!_inventoryManager.TryGetItemData(itemId, out var itemData))
             {
                 Debug.LogWarning($"ItemDropSpawner: Unknown item id '{itemId}'.", this);
+                return false;
+            }
+            if (!string.IsNullOrWhiteSpace(itemInstanceId) &&
+                (itemData.MaxStack != 1 || amount != 1 || !ItemInstanceIdUtility.IsForItem(itemId, itemInstanceId)))
+            {
+                Debug.LogWarning($"ItemDropSpawner: Invalid instance id '{itemInstanceId}' for '{itemId}'.", this);
                 return false;
             }
 
@@ -94,7 +109,7 @@ namespace CindarsHope.World
             rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var pickup = pickupGo.AddComponent<ItemPickup>();
-            pickup.Configure(_nextPickupIndex++, itemId, amount, _inventoryManager);
+            pickup.Configure(_nextPickupIndex++, itemId, itemInstanceId, amount, _inventoryManager);
 
             _droppedPickups.Add(pickup);
 
@@ -130,11 +145,13 @@ namespace CindarsHope.World
                     continue;
                 }
 
-                TryDropItem(saveData.ItemId, saveData.Amount, saveData.Position);
-                if (_droppedPickups.Count > 0)
+                var previousCount = _droppedPickups.Count;
+                if (TryDropItem(saveData.ItemId, saveData.ItemInstanceId, saveData.Amount, saveData.Position)
+                    && _droppedPickups.Count > previousCount)
                 {
                     var lastPickup = _droppedPickups[_droppedPickups.Count - 1];
-                    lastPickup.SetCollected(saveData.IsCollected);
+                    lastPickup.RestoreFromSaveData(saveData);
+                    _nextPickupIndex = Mathf.Max(_nextPickupIndex, saveData.PickupIndex + 1);
                 }
             }
         }

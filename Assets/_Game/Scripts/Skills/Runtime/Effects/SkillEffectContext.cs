@@ -9,6 +9,10 @@ namespace CindarsHope.Skills.Runtime.Effects
         public string SkillActionId { get; set; }
         public string EffectId { get; set; }
         public int ActiveSlotIndex { get; set; }
+        public string NodeId { get; set; }
+        public int Rank { get; set; } = 1;
+        public string VariantId { get; set; }
+        public SkillActionSO ActionData { get; set; }
 
         // Caster GameObject — resolved at runtime from player, never serialized.
         public GameObject Caster { get; set; }

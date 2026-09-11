@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CindarsHope.Craft.Data;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory.Data;
 
 namespace CindarsHope.Editor.Items
@@ -75,16 +76,71 @@ namespace CindarsHope.Editor.Items
         public List<KeyValuePair<string, int>> Ingredients = new List<KeyValuePair<string, int>>();
         // Estação exigida. None = craft de bolso (padrão, compatível com as receitas existentes).
         public WorkshopType Station = WorkshopType.None;
+        public bool IsUnlockedByDefault = true;
+        public string RequiredRecipeUnlockId = string.Empty;
         public string Notes = string.Empty;
     }
 
     public static class CanonicalItemCatalog
     {
+        private static readonly HashSet<string> CommonMaterialBonusEligibleIds = new HashSet<string>(StringComparer.Ordinal)
+        {
+            // Recursos mundanos de coleta/mineração e processamento básico.
+            "item_material_wood",
+            "item_material_stone",
+            "item_material_copper_ore",
+            "item_material_iron_ore",
+            "item_material_cloth",
+            "item_material_water",
+
+            // Produtos animais ordinários.
+            "item_animal_egg",
+            "item_animal_cow_milk",
+            "item_animal_goat_milk",
+            "item_animal_wool",
+
+            // Culturas e sementes agrícolas ordinárias. Culturas mágicas ou de progressão
+            // (Alihana Tear, Crystal Berry, Shadowroot e Starroot) são deliberadamente excluídas.
+            "item_crop_wheat",
+            "item_crop_carrot",
+            "item_crop_brigandini_grape",
+            "item_crop_moonbean",
+            "item_crop_senya_pepper",
+            "item_crop_sunpepper",
+            "item_crop_thandra_wheat",
+            "item_crop_vale_pumpkin",
+            "item_seed_wheat",
+            "item_seed_carrot",
+            "item_seed_brigandini_grape",
+            "item_seed_moonbean",
+            "item_seed_senya_pepper",
+            "item_seed_sunpepper",
+            "item_seed_thandra_wheat",
+            "item_seed_vale_pumpkin"
+        };
+
+        public const string ImprovisedLureItemId = SurvivalSkillItemIds.ImprovisedLure;
+        public const string FieldDressingItemId = SurvivalSkillItemIds.FieldDressing;
+        public const string CampSupplyItemId = SurvivalSkillItemIds.CampSupply;
+
         public const float SilverMultiplier = 1.5f;
         public const float GoldMultiplier = 2.0f; // EMENDA V3.1: Gold is x2.0, NOT x2.2.
 
         public const string SilverSuffix = "_silver";
         public const string GoldSuffix = "_gold";
+
+        /// <summary>
+        /// Canonical common-material policy used when assets are generated. Eligibility is an
+        /// explicit balance decision per base item instead of an inference from category/source.
+        /// </summary>
+        public static bool IsCommonMaterialBonusEligible(CatalogItemRow row)
+        {
+            if (row == null || string.IsNullOrWhiteSpace(row.Id) || row.IsEquippable
+                || row.Id.EndsWith(SilverSuffix, StringComparison.Ordinal)
+                || row.Id.EndsWith(GoldSuffix, StringComparison.Ordinal))
+                return false;
+            return CommonMaterialBonusEligibleIds.Contains(row.Id);
+        }
 
         // Consistent rounding for BOTH silver and gold (CA-2): round half away from zero.
         public static int QualityValue(int baseValue, float multiplier)
@@ -100,6 +156,8 @@ namespace CindarsHope.Editor.Items
             AddSeedsAndCrops(rows);   // §4  — 12 seeds + 12 crops (crops have quality variants)
             AddFoods(rows);           // §5  — 20 foods
             AddPotions(rows);         // §7  — 8 potions
+            AddSurvivalSkillSupplies(rows); // Skills SDD v1 — committed material costs
+            AddCraftingSkillSupplies(rows); // Skills SDD v1 — irrigator and bomb charges
             AddOilsAndArrows(rows);   // §8  — 4 oils + 6 arrows
             AddMaterials(rows);       // §9  — 10 materials
             AddEssences(rows);        // §10 — 6 essences (EMENDA V3.2)
@@ -257,6 +315,80 @@ namespace CindarsHope.Editor.Items
             Potion("item_consumable_potion_stamina_draught", "Stamina Draught", 70);
         }
 
+        /// <summary>
+        /// Material costs for survival actions. These rows intentionally carry no ordinary-use
+        /// restore payload: the skill transaction owns consumption at its validated commit point.
+        /// Values preserve a clear economy ladder between short control, recovery and the
+        /// once-per-run camp benefit without making any of them a free cooldown-only action.
+        /// </summary>
+        private static void AddSurvivalSkillSupplies(List<CatalogItemRow> rows)
+        {
+            rows.Add(new CatalogItemRow
+            {
+                Id = ImprovisedLureItemId,
+                DisplayName = "Improvised Lure",
+                Category = ItemCategory.Consumable,
+                ConsumableSubtype = ConsumableSubtype.None,
+                BaseValue = 24,
+                MaxStack = 20,
+                IsEquippable = false,
+                Source = CatalogItemSource.Craft,
+                Notes = "Consumed by Isca Improvisada only after placement validation succeeds."
+            });
+
+            rows.Add(new CatalogItemRow
+            {
+                Id = FieldDressingItemId,
+                DisplayName = "Field Dressing",
+                Category = ItemCategory.Consumable,
+                ConsumableSubtype = ConsumableSubtype.None,
+                BaseValue = 45,
+                MaxStack = 20,
+                IsEquippable = false,
+                Source = CatalogItemSource.Craft,
+                Notes = "Consumed by Kit de Emergencia only after its channel completes and is revalidated."
+            });
+
+            rows.Add(new CatalogItemRow
+            {
+                Id = CampSupplyItemId,
+                DisplayName = "Camp Supply",
+                Category = ItemCategory.Consumable,
+                ConsumableSubtype = ConsumableSubtype.None,
+                BaseValue = 90,
+                MaxStack = 10,
+                IsEquippable = false,
+                Source = CatalogItemSource.Craft,
+                Notes = "Consumed by Campo Seguro at commit; the once-per-run flag is owned by survival state."
+            });
+        }
+
+        private static void AddCraftingSkillSupplies(List<CatalogItemRow> rows)
+        {
+            void Supply(string id, string name, int baseValue, int maxStack)
+            {
+                rows.Add(new CatalogItemRow
+                {
+                    Id = id,
+                    DisplayName = name,
+                    Category = ItemCategory.Consumable,
+                    ConsumableSubtype = ConsumableSubtype.None,
+                    BaseValue = baseValue,
+                    MaxStack = maxStack,
+                    IsEquippable = false,
+                    Source = CatalogItemSource.Craft,
+                    Notes = "Consumed atomically by a crafting-tree active skill at commit."
+                });
+            }
+
+            Supply(CraftingSkillItemIds.IrrigatorCharge, "Irrigator Charge", 12, 99);
+            Supply(CraftingSkillItemIds.BombPhysical, "Physical Bomb", 36, 20);
+            Supply(CraftingSkillItemIds.BombFire, "Fire Bomb", 90, 20);
+            Supply(CraftingSkillItemIds.BombFrost, "Frost Bomb", 90, 20);
+            Supply(CraftingSkillItemIds.BombShock, "Shock Bomb", 105, 20);
+            Supply(CraftingSkillItemIds.BombToxic, "Toxic Bomb", 80, 20);
+        }
+
         // §8 — Weapon oils (4, BV 50) + Arrows (6). Oils are dormant until F22 temper tags wire.
         private static void AddOilsAndArrows(List<CatalogItemRow> rows)
         {
@@ -317,6 +449,7 @@ namespace CindarsHope.Editor.Items
             }
 
             Mat("item_material_wood", "Wood", 3, CatalogItemSource.Foraging);
+            Mat("item_processed_wood", "Processed Wood", 6, CatalogItemSource.Craft);
             Mat("item_material_stone", "Stone", 3, CatalogItemSource.Mining);
             Mat("item_material_copper_ore", "Copper Ore", 8);
             Mat("item_material_iron_ore", "Iron Ore", 15);
@@ -815,6 +948,42 @@ namespace CindarsHope.Editor.Items
             R("recipe_oil_frost", "Frost Oil", "item_consumable_oil_frost", ("item_material_frost_core", 1), ("item_material_fiber", 1));
             R("recipe_oil_shock", "Shock Oil", "item_consumable_oil_shock", ("item_material_spark_dust", 2), ("item_material_fiber", 1));
             R("recipe_oil_poison", "Poison Oil", "item_consumable_oil_poison", ("item_material_rot_gland", 1), ("item_material_spores", 2));
+
+            var irrigator = R("recipe_irrigator_charges", "Irrigator Charges",
+                CraftingSkillItemIds.IrrigatorCharge,
+                ("item_material_copper_ore", 1), ("item_material_water", 1));
+            irrigator.OutputAmount = 2;
+            irrigator.Station = WorkshopType.Workbench;
+
+            CatalogRecipeRow BombRecipe(string id, string name, string outputId, string essenceId = null)
+            {
+                var ingredients = new List<(string ing, int amt)>
+                {
+                    ("item_material_copper_ore", 1),
+                    ("item_material_fiber", 1),
+                    ("item_material_spark_dust", 1)
+                };
+                if (!string.IsNullOrEmpty(essenceId)) ingredients.Add((essenceId, 1));
+                var recipe = R(id, name, outputId, ingredients.ToArray());
+                recipe.Station = WorkshopType.Workbench;
+                return recipe;
+            }
+
+            BombRecipe("recipe_bomb_physical", "Physical Bomb", CraftingSkillItemIds.BombPhysical);
+            void LockedBomb(string id, string name, string outputId, string essenceId, string unlockId)
+            {
+                var recipe = BombRecipe(id, name, outputId, essenceId);
+                recipe.IsUnlockedByDefault = false;
+                recipe.RequiredRecipeUnlockId = unlockId;
+            }
+            LockedBomb("recipe_bomb_fire", "Fire Bomb", CraftingSkillItemIds.BombFire,
+                "item_essence_fire", "recipe_unlock_bomb_fire");
+            LockedBomb("recipe_bomb_frost", "Frost Bomb", CraftingSkillItemIds.BombFrost,
+                "item_essence_ice", "recipe_unlock_bomb_frost");
+            LockedBomb("recipe_bomb_shock", "Shock Bomb", CraftingSkillItemIds.BombShock,
+                "item_essence_lightning", "recipe_unlock_bomb_shock");
+            LockedBomb("recipe_bomb_toxic", "Toxic Bomb", CraftingSkillItemIds.BombToxic,
+                "item_essence_toxic", "recipe_unlock_bomb_toxic");
 
             // Cadeia couro/tecido (slice village_economy) — estação Sewing (tear/curtir do distrito da Mirela/Hess).
             R("recipe_leather_from_hide", "Curtir Couro", "item_material_leather", ("item_material_hide", 2)).Station = WorkshopType.Sewing;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Data;
@@ -13,6 +14,7 @@ using CindarsHope.Inventory.Data;
 using CindarsHope.Interaction;
 using CindarsHope.NPC;
 using CindarsHope.NPC.Schedule;
+using CindarsHope.NPC.Runtime;
 using CindarsHope.World;
 using CindarsHope.Player;
 using CindarsHope.Player.Data;
@@ -24,11 +26,11 @@ using CindarsHope.World.Scenes;
 using CindarsHope.UI.Dialogue;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Shop;
-using CindarsHope.NPC.Runtime;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using CindarsHope.UI.Hotbar;
 using CindarsHope.Equipment;
@@ -64,9 +66,20 @@ namespace CindarsHope.Editor.SceneCreation
             CreateScene();
         }
 
+        /// <summary>Town-only diagnostic entrypoint: regenerates this scene and emits one ortho58 frame.</summary>
+        public static void GenerateTownMaterialOrtho58()
+        {
+            CreateScene();
+            var captureType = typeof(CindarsHope.Editor.Dev.TownSceneCapture);
+            var capture = captureType.GetMethod("Capture", BindingFlags.NonPublic | BindingFlags.Static);
+            if (capture == null) throw new System.InvalidOperationException("Town capture entrypoint unavailable.");
+            capture.Invoke(null, new object[] { "art/town-keyart-rework/evidence/revision-04-material-pass/town-overview-ortho58.png", Vector2.zero, 58f });
+        }
+
         public static void CreateScene()
         {
             EnsureFolder("Assets/_Game", "Scenes");
+            TownKeyartSceneArt.PrepareAssets();
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "TownScene";
@@ -116,13 +129,14 @@ namespace CindarsHope.Editor.SceneCreation
             // fable_11: schedule anchors (work/social/home per NPC). Must run after NPCs + houses exist.
             // (As casas agora são FÍSICAS percorríveis — CreateWalkInHouse — sem faixa off-field nem portas
             //  de teleporte. O anchor "home" cai dentro do interior físico da própria casa.)
-            CreateNpcScheduleAnchors();
+            var npcScheduleAnchorRoot = CreateNpcScheduleAnchors();
             CreateTownDecorations();
             // Arredores temáticos (margem nova do footprint): cemitério (NW), boca de gruta (E) e
             // tenda escondida do mercado noturno (S) — moradias ao relento de Maelor/Zrix/Yael.
             CreateTownOutskirts();
             CreateTownTrees();
             CreateTownProps();  // poço, fonte, lampiões, bancos, cerca, placa — preenche a cidade
+            TownKeyartSceneArt.Apply(scene);
             CreateDebugHud(playerManager, inventoryManager, hungerManager, interactionSystem, timeManager, saveManager);
             CreateSceneRuntimeInstaller(playerTransform);
 
@@ -140,6 +154,15 @@ namespace CindarsHope.Editor.SceneCreation
                 modalManager,
                 npcManager);
 
+            TownKeyartActorScale.Apply(scene);
+            // Materialize the measured prop supports only after every final renderer scale and
+            // placement is in place.  Keeping this in the canonical creator makes the saved
+            // scene and the diagnostic census observe the same deterministic physics surface.
+            TownKeyartComponentPhysics.ApplyMeasuredSolids(scene);
+            ResolveFinalNpcWorkPockets(npcScheduleAnchorRoot, scene);
+            // Navigation is materialized last so edges are checked against the final physical scene,
+            // including measured tree/prop supports and market counters.
+            CreateNpcTownRouteGraph(npcScheduleAnchorRoot);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             AssetDatabase.Refresh();
@@ -150,6 +173,58 @@ namespace CindarsHope.Editor.SceneCreation
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
             Selection.activeObject = sceneAsset;
             Debug.Log($"MVP TownScene created at {ScenePath} (120x90 v9 organic layout — spec_town_layout_v9_organic).");
+        }
+
+        private static void ResolveFinalNpcWorkPockets(Transform anchorRoot, UnityEngine.SceneManagement.Scene scene)
+        {
+            Physics2D.SyncTransforms();
+            bool PocketIsClear(Vector3 point)
+            {
+                var center = (Vector2)point + new Vector2(0f, (128f / 234f) * 0.5f);
+                foreach (var collider in Physics2D.OverlapBoxAll(center, new Vector2(0.79f, 0.64f), 0f))
+                {
+                    if (collider == null || collider.isTrigger || collider.attachedRigidbody != null ||
+                        collider.GetComponentInParent<NpcDweller>() != null ||
+                        collider.GetComponentInParent<HouseDoorInteractable>() != null) continue;
+                    return false;
+                }
+                return true;
+            }
+
+            var dwellers = new Dictionary<string, NpcDweller>(System.StringComparer.Ordinal);
+            foreach (var root in scene.GetRootGameObjects())
+            foreach (var dweller in root.GetComponentsInChildren<NpcDweller>(true))
+                if (dweller != null && !string.IsNullOrWhiteSpace(dweller.NpcId)) dwellers[dweller.NpcId] = dweller;
+
+            foreach (var anchor in anchorRoot.GetComponentsInChildren<NpcScheduleAnchor>(true))
+            {
+                if (anchor == null || !anchor.AnchorId.EndsWith("_" + NpcScheduleBlockResolver.WorkAnchorSuffix,
+                        System.StringComparison.Ordinal) || PocketIsClear(anchor.GetPosition())) continue;
+                var original = anchor.GetPosition();
+                var resolved = original;
+                var found = false;
+                for (var ring = 1; ring <= 2 && !found; ring++)
+                for (var y = -ring; y <= ring && !found; y++)
+                for (var x = -ring; x <= ring; x++)
+                {
+                    if (Mathf.Max(Mathf.Abs(x), Mathf.Abs(y)) != ring) continue;
+                    var candidate = original + new Vector3(x * 0.5f, y * 0.5f, 0f);
+                    if (!PocketIsClear(candidate)) continue;
+                    resolved = candidate;
+                    found = true;
+                    break;
+                }
+                if (!found)
+                {
+                    Debug.LogError($"[TOWN.N1] No clear final work pocket for {anchor.NpcId} near {original}.");
+                    continue;
+                }
+                anchor.transform.position = resolved;
+                if (dwellers.TryGetValue(anchor.NpcId, out var dweller)) dweller.transform.position = resolved;
+                Debug.Log($"[TOWN.N1] Final work pocket npc={anchor.NpcId} anchor={anchor.AnchorId} " +
+                          $"from={original} to={resolved} distance={Vector2.Distance(original, resolved):F2}u.");
+            }
+            Physics2D.SyncTransforms();
         }
 
         // Preservation audit: proves the 76×64 relayout dropped no materialized element. The baseline is
@@ -752,8 +827,8 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
 
             // IDs stay frozen; both arrivals now use the wide south avenue.
-            var defaultSpawn = CreateSpawnPoint(parent.transform, "town_default", new Vector3(0f, -24f, 0f));
-            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", new Vector3(0f, -(TownDistrictLayout.HalfHeight - 5f), 0f));
+            var defaultSpawn = CreateSpawnPoint(parent.transform, "town_default", TownDistrictLayout.DefaultSpawn);
+            var fromFarmSpawn = CreateSpawnPoint(parent.transform, "town_from_farm", TownDistrictLayout.FromFarmSpawn);
 
             var installer = parent.AddComponent<SceneSpawnInstaller>();
             var serializedInstaller = new SerializedObject(installer);
@@ -804,7 +879,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateScenePortal(
                 portals.transform,
                 "Portal_Town_To_Farm",
-                new Vector3(0f, -(TownDistrictLayout.HalfHeight - 2f), 0f),
+                TownDistrictLayout.SouthPortal,
                 new Color(0.78f, 0.62f, 0.24f),
                 "FarmScene",
                 FarmScenePath,
@@ -862,29 +937,31 @@ namespace CindarsHope.Editor.SceneCreation
             plaza.transform.position = Vector3.zero;
             var plazaCenter = new Vector3(TownCityLayout.CentralPlazaCenter.x, TownCityLayout.CentralPlazaCenter.y, 0f);
 
-            // Plaza floor (large light slab under the statue, sorting below everything else)
+            // Plaza octogonal: o contorno arredondado quebra a antiga leitura de laje quadrada.
             var floor = new GameObject("PlazaFloor");
             floor.transform.SetParent(plaza.transform);
-            floor.transform.position = plazaCenter;
-            var floorRenderer = floor.AddComponent<SpriteRenderer>();
-            var plazaTile = WorldSpriteLibrary.Ground("ground_cobble");
-            if (plazaTile != null)
+            floor.transform.position = Vector3.zero;
+            WorldTilemapGround.PaintPolygon(
+                floor.transform,
+                "PlazaGrid",
+                "PlazaCobble",
+                2,
+                "ground_cobble",
+                BuildRegularPolygon(TownCityLayout.CentralPlazaCenter, TownCityLayout.CentralPlazaRadius, 16));
+
+            // A contrasting paved annulus is the plaza's visual organizer. Four radial openings
+            // align with the district paths, so the garden never reads as a closed decorative disk.
+            var plazaRingSprite = WorldSpriteLibrary.Ground("ground_path_dirt") ?? WorldSpriteLibrary.Ground("ground_cobble");
+            if (plazaRingSprite != null)
             {
-                floor.transform.localScale = Vector3.one;
-                floorRenderer.sprite = plazaTile;
-                floorRenderer.color = Color.white;
-                floorRenderer.drawMode = SpriteDrawMode.Tiled;
-                floorRenderer.tileMode = SpriteTileMode.Continuous;
-                floorRenderer.size = TownCityLayout.CentralPlazaSize;
+                float ringCell = WorldTilemapGround.SpriteWorldSize(plazaRingSprite);
+                var ring = WorldTilemapGround.GetOrCreateLayer(floor.transform, "PlazaRingGrid", "CivicRing", ringCell, 3, "Ground");
+                PaintOrganicAnnulus(ring, plazaRingSprite, TownCityLayout.CentralPlazaCenter, 7.2f, 10.1f);
+                PaintOrganicPath(ring, plazaRingSprite, 3.2f, new[] { new Vector2(0f, -9f), new Vector2(0f, -5.5f) });
+                PaintOrganicPath(ring, plazaRingSprite, 3.2f, new[] { new Vector2(0f, 13.5f), new Vector2(0f, 17f) });
+                PaintOrganicPath(ring, plazaRingSprite, 3.2f, new[] { new Vector2(-13f, 4f), new Vector2(-9.3f, 4f) });
+                PaintOrganicPath(ring, plazaRingSprite, 3.2f, new[] { new Vector2(9.3f, 4f), new Vector2(13f, 4f) });
             }
-            else
-            {
-                floor.transform.localScale = new Vector3(TownCityLayout.CentralPlazaSize.x, TownCityLayout.CentralPlazaSize.y, 1f);
-                floorRenderer.sprite = GetBuiltinSprite();
-                floorRenderer.color = new Color(0.69f, 0.66f, 0.6f);
-            }
-            floorRenderer.sortingOrder = 2;
-            TrySetSortingLayer(floorRenderer, "Ground", floorRenderer.sortingOrder);
 
             var statue = new GameObject("WarriorStatue");
             statue.transform.SetParent(plaza.transform);
@@ -897,6 +974,8 @@ namespace CindarsHope.Editor.SceneCreation
             fountainCollider.isTrigger = false;
             fountainCollider.size = Vector2.one;
             CreateStatuePart(plaza.transform, "FountainWater", plazaCenter, new Vector3(3.6f, 2.6f, 1f), new Color(0.24f, 0.52f, 0.70f), 2);
+            CreateWorldAsset(plaza.transform, "FountainHeroArt", WorldSpriteLibrary.Prop("fonte_anya"),
+                plazaCenter + new Vector3(0f, 0.7f, 0f), 6.5f, 6, Color.white);
 
             // Pedestal (blocks movement)
             var pedestal = CreateStatuePart(statue.transform, "Pedestal", new Vector3(0f, -0.6f, 0f), new Vector3(2.2f, 0.9f, 1f), new Color(0.45f, 0.45f, 0.5f), 2);
@@ -951,6 +1030,36 @@ namespace CindarsHope.Editor.SceneCreation
                 TrySetSortingLayer(flowerRenderer, "World", flowerRenderer.sortingOrder);
             }
 
+            // Sebe/flor externa dá à praça o anel cívico inequívoco da keyart sem bloquear a faixa
+            // caminhável entre o jardim e a fonte.
+            const int civicGardenCount = 12;
+            const float civicGardenRadius = 10.4f;
+            for (int i = 0; i < civicGardenCount; i++)
+            {
+                float angle = Mathf.PI / 12f + i * Mathf.PI * 2f / civicGardenCount;
+                // Keep the four cardinal entrances wide and visually explicit.
+                if (Mathf.Abs(Mathf.Sin(angle)) < 0.24f || Mathf.Abs(Mathf.Cos(angle)) < 0.24f) continue;
+                var p = plazaCenter + new Vector3(Mathf.Cos(angle) * civicGardenRadius, Mathf.Sin(angle) * civicGardenRadius, 0f);
+                var sprite = (i & 1) == 0 ? WorldSpriteLibrary.Foliage("bush_leafy") : WorldSpriteLibrary.Foliage("flower_patch");
+                CreateWorldAsset(plaza.transform, $"CivicGarden_{i:00}", sprite, p, (i & 1) == 0 ? 2.8f : 2.4f, 1, Color.white);
+            }
+
+            // Low civic walls, benches and Kanthor standards make the ring read at full-map scale.
+            var lowWall = WorldSpriteLibrary.Prop("shore_bank_keyart_v1") ?? WorldSpriteLibrary.Prop("fence");
+            var plazaBench = WorldSpriteLibrary.Prop("bench");
+            var standards = new[]
+            {
+                new Vector3(-8.4f, 8.7f), new Vector3(8.4f, 8.7f),
+                new Vector3(-8.4f, -0.7f), new Vector3(8.4f, -0.7f),
+            };
+            for (int i = 0; i < standards.Length; i++)
+            {
+                CreateWorldAsset(plaza.transform, $"CivicLowWall_{i:00}", lowWall, plazaCenter + standards[i], 4.6f, 1, Color.white);
+                CreateWorldAsset(plaza.transform, $"CivicBenchArt_{i:00}", plazaBench,
+                    plazaCenter + standards[i] + new Vector3(0f, i < 2 ? -1.1f : 1.1f, 0f), 2.2f, 2, Color.white);
+                CreateKanthorStandard(plaza.transform, $"CivicStandard_{i:00}", plazaCenter + standards[i] + new Vector3(i % 2 == 0 ? -2.2f : 2.2f, 0.4f, 0f));
+            }
+
             // Anel externo: 6 bancos + 4 postes de luz em raio ~10.5 (dentro do raio ~13 da praça).
             const int outerBenchCount = 6;
             const float outerRingRadius = 10.5f;
@@ -1000,23 +1109,43 @@ namespace CindarsHope.Editor.SceneCreation
             festivalAnchor.AddComponent<CindarsHope.World.Events.FestivalStallAnchor>();
 
             // ── Tenda de mercado (prop), ao lado S do MarketHall (spec_town_layout_v9_organic) ──
-            CreateGroundSlab(parent.transform, "MarketSquare_Ground", MarketHallCenter + new Vector3(0f, -6.5f, 0f), new Vector2(12f, 3f), new Color(0.64f, 0.57f, 0.44f), 2);
-            float[] sx = { -4.5f, -1.5f, 1.5f, 4.5f };
-            for (int i = 0; i < sx.Length; i++)
+            WorldTilemapGround.PaintPolygon(parent.transform, "MarketSquareGrid", "MarketSquare_Ground", 2,
+                "ground_path_dirt", BuildRegularPolygon(new Vector2(-45f, 0f), 8f, 12));
+            var stallOffsets = new[]
             {
-                CreateMarketStall(parent.transform, $"MarketSquare_Stall_{i:00}", MarketHallCenter + new Vector3(sx[i], -6.5f, 0f), MarketAwningColor(i));
+                new Vector3(-5f, -10f, 0f), new Vector3(-1f, -10f, 0f), new Vector3(3f, -10f, 0f),
+                new Vector3(-5f, -13f, 0f), new Vector3(-1f, -13f, 0f), new Vector3(3f, -13f, 0f),
+            };
+            for (int i = 0; i < stallOffsets.Length; i++)
+            {
+                CreateMarketStall(parent.transform, $"MarketSquare_Stall_{i:00}", MarketHallCenter + stallOffsets[i], MarketAwningColor(i));
             }
-            CreateMarketStall(parent.transform, "MarketSquare_Stall_04", MarketHallCenter + new Vector3(-6f, -8.3f, 0f), MarketAwningColor(4));
-            CreateMarketStall(parent.transform, "MarketSquare_Stall_05", MarketHallCenter + new Vector3(6f, -8.3f, 0f), MarketAwningColor(5));
+
+            // Merchandise and shared tables visually bind the six stalls into one market cluster.
+            var crate = WorldSpriteLibrary.Prop("crate");
+            var bench = WorldSpriteLibrary.Prop("bench");
+            var marketProps = new[]
+            {
+                new Vector3(-53.0667f, 7.7333f), new Vector3(-39.0667f, 8.9778f), new Vector3(-36.9333f, 5.4933f),
+                new Vector3(-33.7333f, -8.4444f), new Vector3(-59.6f, 8.6044f), new Vector3(-50.4f, -15.2889f),
+            };
+            for (int i = 0; i < marketProps.Length; i++)
+            {
+                CreateWorldAsset(parent.transform, $"MarketGoods_{i:00}", crate, marketProps[i], 1.45f, 2, Color.white);
+            }
+            CreateWorldAsset(parent.transform, "MarketCommonsTable_W", bench, new Vector3(-61.0667f, 3.0044f), 2.8f, 2, Color.white);
+            CreateWorldAsset(parent.transform, "MarketCommonsTable_E", bench, new Vector3(-47.8667f, 2.88f), 2.8f, 2, Color.white);
+            CreateKanthorStandard(parent.transform, "MarketStandard_W", new Vector3(-61.3333f, 8.9778f, 0f));
+            CreateKanthorStandard(parent.transform, "MarketStandard_E", new Vector3(-39.6f, 12.3378f, 0f));
         }
 
         private static Color MarketAwningColor(int i)
         {
             var palette = new[]
             {
-                new Color(0.72f, 0.45f, 0.40f), new Color(0.45f, 0.60f, 0.50f),
-                new Color(0.50f, 0.52f, 0.70f), new Color(0.72f, 0.66f, 0.45f),
-                new Color(0.66f, 0.50f, 0.62f), new Color(0.50f, 0.66f, 0.66f),
+                new Color(0.82f, 0.24f, 0.18f), new Color(0.18f, 0.55f, 0.34f),
+                new Color(0.16f, 0.43f, 0.78f), new Color(0.88f, 0.62f, 0.16f),
+                new Color(0.62f, 0.25f, 0.68f), new Color(0.12f, 0.62f, 0.68f),
             };
             return palette[i % palette.Length];
         }
@@ -1031,7 +1160,7 @@ namespace CindarsHope.Editor.SceneCreation
             var counter = new GameObject("Counter");
             counter.transform.SetParent(stall.transform);
             counter.transform.localPosition = Vector3.zero;
-            counter.transform.localScale = new Vector3(2.0f, 0.6f, 1f);
+            counter.transform.localScale = new Vector3(2.8f, 0.8f, 1f);
             var counterRenderer = counter.AddComponent<SpriteRenderer>();
             counterRenderer.sprite = GetBuiltinSprite();
             counterRenderer.color = new Color(0.46f, 0.34f, 0.22f);
@@ -1044,13 +1173,64 @@ namespace CindarsHope.Editor.SceneCreation
 
             var awning = new GameObject("Awning");
             awning.transform.SetParent(stall.transform);
-            awning.transform.localPosition = new Vector3(0f, 0.7f, 0f);
-            awning.transform.localScale = new Vector3(2.3f, 0.5f, 1f);
+            awning.transform.localPosition = new Vector3(0f, 0.9f, 0f);
             var awningRenderer = awning.AddComponent<SpriteRenderer>();
-            awningRenderer.sprite = GetBuiltinSprite();
-            awningRenderer.color = awningColor;
-            awningRenderer.sortingOrder = 4;
-            TrySetSortingLayer(awningRenderer, "Roof", awningRenderer.sortingOrder);
+            int variantIndex = name[name.Length - 1] % ModularHouseVariants.Length;
+            var awningSprite = WorldSpriteLibrary.HouseModular($"roof_{ModularHouseVariants[variantIndex]}_aerial");
+            awning.transform.localPosition = new Vector3(0f, 1.05f, 0f);
+            if (awningSprite != null)
+            {
+                float awningScale = ModularScaleForWidth(awningSprite, 4.6f);
+                awning.transform.localScale = new Vector3(awningScale, awningScale, 1f);
+                awningRenderer.sprite = awningSprite;
+                awningRenderer.color = Color.Lerp(Color.white, awningColor, 0.55f);
+            }
+            else
+            {
+                awning.transform.localScale = new Vector3(4.4f, 1.55f, 1f);
+                awningRenderer.sprite = GetBuiltinSprite();
+                awningRenderer.color = awningColor;
+            }
+            awningRenderer.sortingOrder = 1;
+            awningRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(awningRenderer, "World", awningRenderer.sortingOrder);
+
+            var valance = new GameObject("ColoredValance");
+            valance.transform.SetParent(stall.transform);
+            valance.transform.localPosition = new Vector3(0f, 0.35f, 0f);
+            valance.transform.localScale = new Vector3(4.15f, 0.42f, 1f);
+            var valanceRenderer = valance.AddComponent<SpriteRenderer>();
+            valanceRenderer.sprite = GetBuiltinSprite();
+            valanceRenderer.color = awningColor;
+            valanceRenderer.sortingOrder = 3;
+            TrySetSortingLayer(valanceRenderer, "World", valanceRenderer.sortingOrder);
+
+            // Bold cream stripes remain readable in the fixed 1536x1024 capture; using the generic
+            // house roof here made the stalls look like six tiny residences.
+            for (int stripe = 0; stripe < 5; stripe++)
+            {
+                var panel = new GameObject($"AwningStripe_{stripe:00}");
+                panel.transform.SetParent(stall.transform);
+                panel.transform.localPosition = new Vector3(-1.76f + stripe * 0.88f, 1.145f, 0f);
+                panel.transform.localScale = new Vector3(0.44f, 1.40f, 1f);
+                var stripeRenderer = panel.AddComponent<SpriteRenderer>();
+                stripeRenderer.sprite = GetBuiltinSprite();
+                stripeRenderer.color = (stripe & 1) == 0 ? new Color(0.96f, 0.87f, 0.68f) : Color.Lerp(awningColor, Color.white, 0.08f);
+                stripeRenderer.sortingOrder = 2;
+                TrySetSortingLayer(stripeRenderer, "World", stripeRenderer.sortingOrder);
+            }
+            for (int pole = -1; pole <= 1; pole += 2)
+            {
+                var post = new GameObject(pole < 0 ? "CanopyPost_L" : "CanopyPost_R");
+                post.transform.SetParent(stall.transform);
+                post.transform.localPosition = new Vector3(pole * 1.95f, 0.15f, 0f);
+                post.transform.localScale = new Vector3(0.18f, 2.25f, 1f);
+                var postRenderer = post.AddComponent<SpriteRenderer>();
+                postRenderer.sprite = GetBuiltinSprite();
+                postRenderer.color = new Color(0.38f, 0.24f, 0.14f);
+                postRenderer.sortingOrder = 0;
+                TrySetSortingLayer(postRenderer, "World", postRenderer.sortingOrder);
+            }
         }
 
         private static GameObject CreateStatuePart(Transform parent, string name, Vector3 localPosition, Vector3 scale, Color color, int sortingOrder)
@@ -1108,7 +1288,7 @@ namespace CindarsHope.Editor.SceneCreation
                     // Collider está no MESMO GameObject: transform moveu para a base, então o collider
                     // (offset relativo ao transform) precisa do offset OPOSTO para continuar cobrindo o
                     // centro visual do caixote (mesma cobertura física de antes da mudança de pivot).
-                    counterColliderOffsetY = -baseOffsetY;
+                    counterColliderOffsetY = -baseOffsetY / counter.transform.localScale.y;
                 }
                 else
                 {
@@ -1195,8 +1375,20 @@ namespace CindarsHope.Editor.SceneCreation
             switch (houseName)
             {
                 case "House_Temple": return "temple";
-                case "House_Chamber": return "town_hall";
                 case "House_Blacksmith": return "blacksmith";
+                default: return null;
+            }
+        }
+
+        private static Sprite GetExistingBuildingHeroSprite(string houseName)
+        {
+            switch (houseName)
+            {
+                case "House_Inn": return WorldSpriteLibrary.Building("farmhouse");
+                case "House_Bakery": return WorldSpriteLibrary.Building("cheese_hut");
+                case "House_AlchemyLab": return WorldSpriteLibrary.Building("greenhouse");
+                case "House_Tannery": return WorldSpriteLibrary.Building("barrel_shed");
+                case "House_AnimalYard": return WorldSpriteLibrary.Building("barn");
                 default: return null;
             }
         }
@@ -1234,8 +1426,8 @@ namespace CindarsHope.Editor.SceneCreation
         // v9 organic relayout: MarketHallCenter segue House_MarketHall (-44,12); EventsPlazaCenter
         // realocada para o vão livre entre Inn/lago/Residential_4 (o antigo (0,-17) caía em cima da
         // avenida N-S e da fileira residencial sul, que agora ocupam aquele espaço).
-        private static readonly Vector3 MarketHallCenter = new Vector3(-44f, 12f, 0f);
-        private static readonly Vector3 EventsPlazaCenter = new Vector3(-20f, -14f, 0f);
+        private static Vector3 MarketHallCenter => TownCityLayout.TryGetBuilding("House_MarketHall",out var lot) ? (Vector3)lot.Center : throw new System.InvalidOperationException("Market lot missing.");
+        private static readonly Vector3 EventsPlazaCenter = new Vector3(-34f, -15f, 0f);
 
         // Compatibility projection consumed by the existing house/home helpers. TownCityLayout is
         // the sole placement source; this tuple array preserves the generator's established API.
@@ -1258,6 +1450,8 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateHouses()
         {
+            if (!TownKeyartDoorClassification.Validate(out var classificationError))
+                throw new System.InvalidOperationException("Town door classification contract failed: " + classificationError);
             var parent = new GameObject("TownHouses");
             parent.transform.position = Vector3.zero;
 
@@ -1307,6 +1501,8 @@ namespace CindarsHope.Editor.SceneCreation
                     $"[town-layout] {name}: local '{landmarkId}' sem sprite em " +
                     $"locations/{landmarkId}/{landmarkId}.png — usando kit genérico até a arte existir.");
             }
+            heroSprite ??= TownKeyartBuildingArt.Resolve(name);
+            heroSprite ??= GetExistingBuildingHeroSprite(name);
             bool isHero = heroSprite != null;
 
             float hw = size.x * 0.5f;
@@ -1330,6 +1526,8 @@ namespace CindarsHope.Editor.SceneCreation
                 case TownDoorSide.East: doorLocalPosition = new Vector3(wallX, 0f, 0f); break;
                 default: doorLocalPosition = new Vector3(0f, -wallY, 0f); break;
             }
+            if (horizontalDoor && TownCityLayout.TryGetBuilding(name, out var authoredLot))
+                doorLocalPosition.x = authoredLot.DoorTangentOffset;
 
             // Chão (andável — SEM collider). Cobre o FOOTPRINT INTEIRO do lote (não o interiorSize
             // menor): as paredes ficam na layer World, ACIMA do chão (layer Ground), então o chão passa
@@ -1341,7 +1539,7 @@ namespace CindarsHope.Editor.SceneCreation
             var floor = new GameObject("Floor");
             floor.transform.SetParent(house.transform);
             var floorRenderer = floor.AddComponent<SpriteRenderer>();
-            var floorTile = WorldSpriteLibrary.Ground("ground_deck");
+            var floorTile = WorldSpriteLibrary.Ground(name == "House_AnimalYard" ? "ground_grass" : "ground_deck");
             if (floorTile != null)
             {
                 floor.transform.localScale = Vector3.one;
@@ -1414,13 +1612,13 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 CreateInteriorWall(house.transform, "Wall_Left", new Vector3(-wallX, 0f, 0f), new Vector2(WallThickness, size.y), showWallStone);
                 CreateInteriorWall(house.transform, "Wall_Right", new Vector3(wallX, 0f, 0f), new Vector2(WallThickness, size.y), showWallStone);
-                float sideWidth = (size.x - DoorGapWidth) * 0.5f;
-                float sideCenter = (DoorGapWidth + sideWidth) * 0.5f;
+                float leftWidth = hw + doorLocalPosition.x - DoorGapWidth * .5f;
+                float rightWidth = hw - doorLocalPosition.x - DoorGapWidth * .5f;
                 string doorWall = doorSide == TownDoorSide.South ? "Bottom" : "Top";
                 float oppositeY = -doorLocalPosition.y;
                 CreateInteriorWall(house.transform, $"Wall_{(doorSide == TownDoorSide.South ? "Top" : "Bottom")}", new Vector3(0f, oppositeY, 0f), new Vector2(size.x, WallThickness), showWallStone);
-                CreateInteriorWall(house.transform, $"Wall_{doorWall}L", new Vector3(-sideCenter, doorLocalPosition.y, 0f), new Vector2(sideWidth, WallThickness), showWallStone);
-                CreateInteriorWall(house.transform, $"Wall_{doorWall}R", new Vector3(sideCenter, doorLocalPosition.y, 0f), new Vector2(sideWidth, WallThickness), showWallStone);
+                CreateInteriorWall(house.transform, $"Wall_{doorWall}L", new Vector3(-hw + leftWidth * .5f, doorLocalPosition.y, 0f), new Vector2(leftWidth, WallThickness), showWallStone);
+                CreateInteriorWall(house.transform, $"Wall_{doorWall}R", new Vector3(hw - rightWidth * .5f, doorLocalPosition.y, 0f), new Vector2(rightWidth, WallThickness), showWallStone);
             }
             else
             {
@@ -1461,7 +1659,7 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 // Núcleo doméstico obrigatório dentro dos 6x5 úteis: cozinha compacta na parede sul,
                 // fogão no canto e armário. São props caminháveis para não estreitar a circulação.
-                CreateInteriorProp(house.transform, "Furniture_KitchenCounter", new Vector3(-1.15f, -ihh + 0.45f, 0f), new Vector3(2.2f, 0.7f, 1f), new Color(0.54f, 0.38f, 0.22f));
+                CreateInteriorProp(house.transform, "Furniture_KitchenCounter", new Vector3(-ihw + 1.1f, -ihh + 0.45f, 0f), new Vector3(2.2f, 0.7f, 1f), new Color(0.54f, 0.38f, 0.22f));
                 CreateInteriorProp(house.transform, "Furniture_Stove", new Vector3(-ihw + 0.55f, -0.85f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.30f, 0.29f, 0.28f));
                 CreateInteriorProp(house.transform, "Furniture_Cupboard", new Vector3(ihw - 0.45f, 0.65f, 0f), new Vector3(0.7f, 1.3f, 1f), new Color(0.46f, 0.33f, 0.20f));
             }
@@ -1505,14 +1703,7 @@ namespace CindarsHope.Editor.SceneCreation
                 // Prédio hero: a sprite INTEIRA do prédio é a casca. Escala pela LARGURA do lote
                 // (+ beiral); a altura acompanha o aspecto (torre/telhado sobem acima do footprint).
                 // Base ancorada na borda frontal (sul, y=-hh) do lote, robusto ao pivot do sprite.
-                float heroSpriteWidth = heroSprite.bounds.size.x;
-                float heroScale = heroSpriteWidth > 0.0001f ? (size.x * LandmarkWidthOverhang) / heroSpriteWidth : 1f;
-                roof.transform.localScale = new Vector3(heroScale, heroScale, 1f);
-                roofRenderer.sprite = heroSprite;
-                roofRenderer.color = Color.white;
-                roofRenderer.drawMode = SpriteDrawMode.Simple;
-                float heroPivotYNorm = heroSprite.rect.height > 0.0001f ? heroSprite.pivot.y / heroSprite.rect.height : 0f;
-                roof.transform.localPosition = new Vector3(0f, -hh + heroPivotYNorm * heroSprite.bounds.size.y * heroScale, 0f);
+                TownKeyartBuildingArt.Fit(roofRenderer, name, heroSprite, doorLocalPosition, size);
             }
             else if (modularRoofSprite != null)
             {
@@ -1590,6 +1781,30 @@ namespace CindarsHope.Editor.SceneCreation
             // os adornos procedurais (cumeeira/beiral/chaminé) só existem nas casas SEM kit — a arte
             // roof_*_aerial do kit modular já traz cumeeira, beiral e chaminé embutidos.
             var roofRevealRenderers = new List<SpriteRenderer> { roofRenderer };
+            if (isHero && TownKeyartBuildingArt.TryGetModularParts(name, out var nativeRoofPart, out var nativeDoorLeafPart))
+            {
+                // The facade is fitted once above; modular roof and door assets inherit the exact
+                // same transform, PPU and door anchor. Both disappear with the hero shell on reveal.
+                var nativeRoofObject = new GameObject("NativeRoofPart");
+                nativeRoofObject.transform.SetParent(roof.transform, false);
+                var nativeRoofRenderer = nativeRoofObject.AddComponent<SpriteRenderer>();
+                nativeRoofRenderer.sprite = nativeRoofPart;
+                nativeRoofRenderer.color = Color.white;
+                nativeRoofRenderer.sortingOrder = roofRenderer.sortingOrder + 1;
+                nativeRoofRenderer.spriteSortPoint = roofRenderer.spriteSortPoint;
+                TrySetSortingLayer(nativeRoofRenderer, "World", nativeRoofRenderer.sortingOrder);
+                roofRevealRenderers.Add(nativeRoofRenderer);
+
+                var nativeDoorObject = new GameObject("NativeDoorLeaf");
+                nativeDoorObject.transform.SetParent(roof.transform, false);
+                var nativeDoorRenderer = nativeDoorObject.AddComponent<SpriteRenderer>();
+                nativeDoorRenderer.sprite = nativeDoorLeafPart;
+                nativeDoorRenderer.color = Color.white;
+                nativeDoorRenderer.sortingOrder = roofRenderer.sortingOrder + 2;
+                nativeDoorRenderer.spriteSortPoint = roofRenderer.spriteSortPoint;
+                TrySetSortingLayer(nativeDoorRenderer, "World", nativeDoorRenderer.sortingOrder);
+                roofRevealRenderers.Add(nativeDoorRenderer);
+            }
             bool hasModularKit = modularVariant != '\0';
 
             // Marcador de fachada semântica (âncora substituível para arte futura por prédio):
@@ -1673,7 +1888,22 @@ namespace CindarsHope.Editor.SceneCreation
             revealTrigger.isTrigger = true;
             revealTrigger.size = interiorSize;
             var reveal = revealObject.AddComponent<RoofRevealController>();
-            reveal.Configure(roofRevealRenderers.ToArray());
+            var interiorRenderers = new List<SpriteRenderer>();
+            if (isHero && name != "House_AnimalYard")
+            {
+                foreach (Transform child in house.transform)
+                {
+                    bool interior = child.name == "Floor" || child.name == "Bed" || child.name == "GuestBed_Inn" ||
+                        child.name == "Table" || child.name.StartsWith("Furniture_") || child.name.StartsWith("Wall_") ||
+                        child.name.StartsWith("Station_");
+                    if (interior) interiorRenderers.AddRange(child.GetComponentsInChildren<SpriteRenderer>(true));
+                }
+            }
+            // The existing reveal contract owns both halves; no per-frame town workaround.
+            reveal.Configure(name == "House_AnimalYard" ? System.Array.Empty<SpriteRenderer>() : roofRevealRenderers.ToArray(),
+                interiorRenderers: interiorRenderers.ToArray());
+            if (name != "House_AnimalYard")
+                reveal.ConfigureFeetOccupancy(revealTrigger);
             EditorUtility.SetDirty(reveal);
         }
 
@@ -1841,6 +2071,25 @@ namespace CindarsHope.Editor.SceneCreation
 
             var interactable = door.AddComponent<HouseDoorInteractable>();
             interactable.Configure(leaf.transform, blocker, leafClosedPos, leafOpenPos);
+            // Town opt-in: fixed-canvas artistic frames keep the reviewed shared runtime in charge
+            // of reversal, blocker timing and occupied-vane safety. The transform is refit to the
+            // authored opening so the canvas cannot alter the physical footprint.
+            var frameSprites = new[] {
+                WorldSpriteLibrary.Building("town_door_frame_00"),
+                WorldSpriteLibrary.Building("town_door_frame_01"),
+                WorldSpriteLibrary.Building("town_door_frame_02"),
+                WorldSpriteLibrary.Building("town_door_frame_03"),
+                WorldSpriteLibrary.Building("town_door_frame_04")
+            };
+            bool validFrames = true;
+            foreach (var frame in frameSprites) validFrames &= frame != null;
+            if (validFrames)
+            {
+                float frameWidth = frameSprites[0].bounds.size.x;
+                if (frameWidth > 0.0001f)
+                    leaf.transform.localScale = Vector3.one * (DoorGapWidth / frameWidth);
+                interactable.ConfigurePresentation(leafRenderer, frameSprites, 0.08f);
+            }
             EditorUtility.SetDirty(interactable);
         }
 
@@ -2069,10 +2318,12 @@ namespace CindarsHope.Editor.SceneCreation
         // Cemitério: movido para junto de House_Temple (spec_town_layout_v9_organic — região alvo
         // −52..−44, 26..38), reposicionado a −51.5/32.5 para não sobrepor o lote do Temple (x−46..−30)
         // nem furar a clearance de 3un da muralha oeste (x=−60).
-        private static readonly Vector3 CemeteryPosition = new Vector3(-51.5f, 32.5f, 0f);
-        private static readonly Vector3 CaveMouthPosition = new Vector3(57f, -4f, 0f);
-        private static readonly Vector3 NightMarketBackPosition = new Vector3(15f, -13f, 0f);
-        private static readonly Vector3 StatueGardenSleepPosition = new Vector3(-3f, -4f, 0f);    // praça — Liora
+        private static readonly Vector3 CemeteryPosition = new Vector3(-59.3333f, 32.6222f, 0f);
+        private static readonly Vector3 CaveMouthPosition = TownKeyartGeometry.EastArrival;
+        // Clear pocket behind the tent support; the tent itself remains at (15,-13).
+        private static readonly Vector3 NightMarketBackPosition = new Vector3(15f, -15.2f, 0f);
+        // Clear edge of the statue garden: (-3,-4) sits inside the decorative stone's body sweep.
+        private static readonly Vector3 StatueGardenSleepPosition = new Vector3(-2f, -4f, 0f);    // praça — Liora
 
         private readonly struct HomeAssignment
         {
@@ -2144,7 +2395,23 @@ namespace CindarsHope.Editor.SceneCreation
                 if (home.IsIndoor)
                 {
                     int hi = HouseIndexByName(home.HouseName);
-                    if (hi >= 0) return InteriorCenterForHouseIndex(hi) + new Vector3(0f, -0.6f, 0f);
+                    if (hi >= 0 && TownCityLayout.TryGetBuilding(home.HouseName, out var lot))
+                    {
+                        // The authored interior pocket is the canonical collision-cleared arrival
+                        // area just beyond the real doorway. Do not target the visual room centre:
+                        // beds, counters and dividers legitimately occupy that space in several
+                        // house families. Shared homes get deterministic tangent-separated slots.
+                        var residents = new List<string>();
+                        foreach (var pair in TownNpcHomes)
+                            if (pair.Value.IsIndoor && pair.Value.HouseName == home.HouseName)
+                                residents.Add(pair.Key);
+                        residents.Sort(System.StringComparer.Ordinal);
+                        var slot = residents.IndexOf(spec.NpcId);
+                        var offset = (slot - (residents.Count - 1) * 0.5f) * 0.55f;
+                        var outward = TownAccessMetrics.Outward(lot.DoorSide);
+                        var tangent = new Vector2(-outward.y, outward.x);
+                        return (Vector3)(TownAccessMetrics.InteriorPocket(lot).center + tangent * offset);
+                    }
                 }
                 else
                 {
@@ -2158,7 +2425,7 @@ namespace CindarsHope.Editor.SceneCreation
                 : spec.LayoutPosition;
         }
 
-        private static void CreateNpcScheduleAnchors()
+        private static Transform CreateNpcScheduleAnchors()
         {
             var parent = new GameObject("NpcScheduleAnchors");
             parent.transform.position = Vector3.zero;
@@ -2172,7 +2439,7 @@ namespace CindarsHope.Editor.SceneCreation
 
                 // Work = role-specific building frontage, desk, route or landmark.
                 CreateScheduleAnchor(parent.transform, spec.NpcId,
-                    NpcScheduleBlockResolver.WorkAnchorSuffix, spec.LayoutPosition);
+                    NpcScheduleBlockResolver.WorkAnchorSuffix, ResolveNpcWorkPocket(spec));
 
                 // Social = explicit role-appropriate hub; fallback preserves the prior archetype rule.
                 Vector3 socialLegacy = archetype == NpcScheduleArchetype.Night ? NightMarketAnchorLegacy
@@ -2196,6 +2463,417 @@ namespace CindarsHope.Editor.SceneCreation
 
             Debug.Log($"[fable_11] Created schedule anchors for {index} NPC(s) " +
                       $"({index * 3} anchors: work/social/home).");
+            return parent.transform;
+        }
+
+        private static Vector3 ResolveNpcWorkPocket(TownNpcSpec spec)
+        {
+            if (string.IsNullOrWhiteSpace(spec.ShopDataPath)) return spec.LayoutPosition;
+            // All authored shop counters are horizontal. The real vendor pocket is in front of the
+            // counter, with enough clearance for the 0.55u foot collider; it also becomes the work
+            // anchor so schedule departure never starts inside merchandise physics.
+            var stall = TownCityLayout.ResolveNpcStallPosition(spec.NpcId, spec.LayoutPosition + Vector3.up * 1.15f);
+            var away = (Vector2)(spec.LayoutPosition - stall);
+            if (away.sqrMagnitude < 0.01f) away = Vector2.down;
+            // Preserve the authored side of each role-specific stall (some are lateral to a door,
+            // others above/below it) while guaranteeing feet clearance from the horizontal counter.
+            return stall + (Vector3)(away.normalized * 1.7f);
+        }
+
+        /// <summary>
+        /// Materializes the runtime Town graph from final road geometry and schedule anchors. Only
+        /// plain node/edge data is serialized into the scene; runtime never references Editor layout
+        /// classes. Road endpoints are merged by position so every anchor gets a deterministic route
+        /// into the connected street network.
+        /// </summary>
+        private static void CreateNpcTownRouteGraph(Transform parent)
+        {
+            Physics2D.SyncTransforms();
+            var graphObject = new GameObject("NpcTownRouteGraph");
+            graphObject.transform.SetParent(parent, false);
+            var graph = graphObject.AddComponent<NpcTownRouteGraph>();
+            var nodes = new List<NpcTownRouteNode>();
+            var edges = new List<NpcTownRouteEdge>();
+            var positionIds = new Dictionary<string, string>(System.StringComparer.Ordinal);
+            var nodePositions = new Dictionary<string, Vector3>(System.StringComparer.Ordinal);
+            var roadIds = new List<string>();
+            var stallCounterBounds = new List<Rect>();
+            foreach (var counter in UnityEngine.Object.FindObjectsByType<BoxCollider2D>(
+                         FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                if (counter == null || counter.gameObject.scene != parent.gameObject.scene || counter.isTrigger ||
+                    counter.name != "Counter" || counter.transform.parent == null ||
+                    !counter.transform.parent.name.StartsWith("Stall_", System.StringComparison.Ordinal)) continue;
+                var bounds = counter.bounds;
+                stallCounterBounds.Add(new Rect((Vector2)bounds.min, (Vector2)bounds.size));
+            }
+
+            string PositionKey(Vector3 p) => $"{p.x:F3}:{p.y:F3}";
+            var graphFeetSize = new Vector2(0.79f, 0.64f);
+            var graphFeetOffset = new Vector2(0f, (128f / 234f) * 0.5f);
+            bool IsFinalPointClear(Vector3 point)
+            {
+                foreach (var collider in Physics2D.OverlapBoxAll((Vector2)point + graphFeetOffset,
+                             graphFeetSize, 0f))
+                {
+                    if (collider == null || collider.isTrigger || collider.attachedRigidbody != null ||
+                        collider.GetComponentInParent<NpcDweller>() != null ||
+                        collider.GetComponentInParent<HouseDoorInteractable>() != null) continue;
+                    return false;
+                }
+                return true;
+            }
+            bool ClearsFinalScene(Vector3 from, Vector3 to)
+            {
+                var delta = (Vector2)(to - from);
+                var distance = delta.magnitude;
+                if (!IsFinalPointClear(from) || !IsFinalPointClear(to)) return false;
+                if (distance <= 0.001f) return true;
+                // Box2D's same-frame BoxCast can miss a collider whose sprite pivot/offset was
+                // just refit. Keep a deterministic geometry audit for every role-stall counter;
+                // this is generic across NPC IDs and survives scene reload quantization.
+                foreach (var counterBounds in stallCounterBounds)
+                    if (TownKeyartGeometry.SegmentRectDistance(from, to, counterBounds.center,
+                            counterBounds.size) < 0.42f)
+                        return false;
+                // Audit the real generated feet body, including its positive pivot offset. A cast
+                // centred on the root misses overhead corners and serializes routes that later snag.
+                // Include 0.08u contact skin on each side so physics does not stall on a route
+                // that is mathematically clear but too tight for stable continuous movement.
+                // Generator keeps another 0.04u per-side reserve beyond the runtime validator to
+                // absorb Box2D contact skin and scene reload float quantization.
+                var hits = Physics2D.BoxCastAll((Vector2)from + graphFeetOffset, graphFeetSize, 0f,
+                    delta / distance, distance);
+                foreach (var hit in hits)
+                {
+                    var collider = hit.collider;
+                    if (collider == null || collider.isTrigger || collider.attachedRigidbody != null ||
+                        collider.GetComponentInParent<NpcDweller>() != null ||
+                        collider.GetComponentInParent<HouseDoorInteractable>() != null) continue;
+                    return false;
+                }
+                return true;
+            }
+            string EnsureRoadNode(Vector3 p)
+            {
+                var key = PositionKey(p);
+                if (positionIds.TryGetValue(key, out var existing)) return existing;
+                var id = $"town_road_{roadIds.Count:D3}";
+                positionIds[key] = id;
+                roadIds.Add(id);
+                nodePositions[id] = p;
+                nodes.Add(new NpcTownRouteNode { Id = id, Position = p, Safe = true });
+                return id;
+            }
+
+            var detourSerial = 0;
+            bool TryAddFinalPhysicsDetour(string fromId, Vector3 from, string toId, Vector3 to)
+            {
+                var start = new Vector2Int(Mathf.RoundToInt(from.x * 2f), Mathf.RoundToInt(from.y * 2f));
+                var queue = new Queue<Vector2Int>();
+                var previous = new Dictionary<Vector2Int, Vector2Int> { [start] = start };
+                queue.Enqueue(start);
+                var directions = new[]
+                {
+                    new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1),
+                    new Vector2Int(-1, -1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(1, 1)
+                };
+                Vector2Int goal = default;
+                var found = false;
+                while (queue.Count > 0 && previous.Count < 12000)
+                {
+                    var cell = queue.Dequeue();
+                    var point = (Vector2)cell * 0.5f;
+                    if (ClearsFinalScene(point, to)) { goal = cell; found = true; break; }
+                    foreach (var direction in directions)
+                    {
+                        var next = cell + direction;
+                        if (previous.ContainsKey(next) || Mathf.Abs(next.x) > TownDistrictLayout.HalfWidth * 2f ||
+                            Mathf.Abs(next.y) > TownDistrictLayout.HalfHeight * 2f) continue;
+                        var nextPoint = (Vector2)next * 0.5f;
+                        if (!ClearsFinalScene(point, nextPoint)) continue;
+                        previous[next] = cell;
+                        queue.Enqueue(next);
+                    }
+                }
+                if (!found) return false;
+                var cells = new List<Vector2Int>();
+                for (var cursor = goal; cursor != start; cursor = previous[cursor]) cells.Add(cursor);
+                cells.Reverse();
+                var priorId = fromId;
+                var priorPosition = from;
+                for (var i = 0; i < cells.Count; i++)
+                {
+                    var position = (Vector2)cells[i] * 0.5f;
+                    var id = $"town_detour_{detourSerial:D3}_{i:D3}";
+                    nodes.Add(new NpcTownRouteNode { Id = id, Position = position, Safe = true });
+                    nodePositions[id] = position;
+                    edges.Add(new NpcTownRouteEdge { From = priorId, To = id, Cost = Vector2.Distance(priorPosition, position) });
+                    priorId = id;
+                    priorPosition = position;
+                }
+                edges.Add(new NpcTownRouteEdge { From = priorId, To = toId, Cost = Vector2.Distance(priorPosition, to) });
+                detourSerial++;
+                return true;
+            }
+
+            foreach (var road in TownCityLayout.AllRoads)
+            {
+                var from = EnsureRoadNode(road.Start);
+                var to = EnsureRoadNode(road.End);
+                if (from != to)
+                {
+                    if (ClearsFinalScene(road.Start, road.End))
+                        edges.Add(new NpcTownRouteEdge { From = from, To = to, Cost = Vector2.Distance(road.Start, road.End) });
+                    else if (!TryAddFinalPhysicsDetour(from, road.Start, to, road.End))
+                        // Some authored road samples intentionally fall inside final decorative
+                        // solids. They are pruned after the retained component is rebuilt, so a
+                        // missing local detour is diagnostic rather than a generation failure.
+                        Debug.LogWarning($"[TOWN.N1] No final-physics detour for road edge {road.Id}; sample will be pruned.");
+                }
+            }
+
+            var roadCells = new Dictionary<Vector2Int, List<string>>();
+            foreach (var roadId in roadIds)
+            {
+                var p = nodePositions[roadId];
+                var cell = new Vector2Int(Mathf.RoundToInt(p.x * 2f), Mathf.RoundToInt(p.y * 2f));
+                if (!roadCells.TryGetValue(cell, out var idsAtCell)) roadCells[cell] = idsAtCell = new List<string>();
+                idsAtCell.Add(roadId);
+            }
+
+            bool TryCreateClearConnector(string connectorId, Vector3 target, HashSet<string> allowedRoadIds = null)
+            {
+                var start = new Vector2Int(Mathf.RoundToInt(target.x * 2f), Mathf.RoundToInt(target.y * 2f));
+                var queue = new Queue<Vector2Int>();
+                var previous = new Dictionary<Vector2Int, Vector2Int> { [start] = start };
+                queue.Enqueue(start);
+                var directions = new[]
+                {
+                    new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1),
+                    new Vector2Int(-1, -1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(1, 1)
+                };
+                Vector2Int goal = default;
+                string goalRoad = null;
+                while (queue.Count > 0 && previous.Count < 12000 && goalRoad == null)
+                {
+                    var cell = queue.Dequeue();
+                    var point = (Vector2)cell * 0.5f;
+                    for (var ox = -1; ox <= 1 && goalRoad == null; ox++)
+                    for (var oy = -1; oy <= 1 && goalRoad == null; oy++)
+                    {
+                        if (!roadCells.TryGetValue(cell + new Vector2Int(ox, oy), out var candidates)) continue;
+                        foreach (var candidate in candidates)
+                        {
+                            if (allowedRoadIds != null && !allowedRoadIds.Contains(candidate)) continue;
+                            var roadPoint = nodePositions[candidate];
+                            if (Vector2.Distance(point, roadPoint) <= 0.8f && ClearsFinalScene(point, roadPoint))
+                            {
+                                goal = cell;
+                                goalRoad = candidate;
+                                break;
+                            }
+                        }
+                    }
+                    if (goalRoad != null) break;
+                    foreach (var direction in directions)
+                    {
+                        var next = cell + direction;
+                        if (previous.ContainsKey(next) || Mathf.Abs(next.x) > TownDistrictLayout.HalfWidth * 2f ||
+                            Mathf.Abs(next.y) > TownDistrictLayout.HalfHeight * 2f) continue;
+                        var nextPoint = (Vector2)next * 0.5f;
+                        if (!ClearsFinalScene(point, nextPoint)) continue;
+                        previous[next] = cell;
+                        queue.Enqueue(next);
+                    }
+                }
+                if (goalRoad == null) return false;
+                var cells = new List<Vector2Int>();
+                for (var cursor = goal; cursor != start; cursor = previous[cursor]) cells.Add(cursor);
+                cells.Reverse();
+                var fromId = connectorId;
+                var fromPosition = target;
+                for (var i = 0; i < cells.Count; i++)
+                {
+                    var position = (Vector2)cells[i] * 0.5f;
+                    var id = $"{connectorId}__link_{i:D3}";
+                    nodes.Add(new NpcTownRouteNode { Id = id, Position = position, Safe = true });
+                    nodePositions[id] = position;
+                    edges.Add(new NpcTownRouteEdge { From = fromId, To = id, Cost = Vector2.Distance(fromPosition, position) });
+                    fromId = id;
+                    fromPosition = position;
+                }
+                edges.Add(new NpcTownRouteEdge { From = fromId, To = goalRoad, Cost = Vector2.Distance(fromPosition, nodePositions[goalRoad]) });
+                return true;
+            }
+
+            var anchors = parent.GetComponentsInChildren<NpcScheduleAnchor>(true);
+            foreach (var anchor in anchors)
+            {
+                if (anchor == null || string.IsNullOrWhiteSpace(anchor.AnchorId)) continue;
+                // An indoor home is a valid route destination but not a generic nearest/snap node:
+                // exterior actors must first use its explicit collision-cleared door approach.
+                nodes.Add(new NpcTownRouteNode { Id = anchor.AnchorId, Position = anchor.GetPosition(), Safe = !anchor.HasApproach });
+                var target = anchor.HasApproach ? anchor.ApproachPoint : anchor.GetPosition();
+                var connectorId = anchor.AnchorId;
+                if (anchor.HasApproach)
+                {
+                    connectorId = $"{anchor.AnchorId}__approach";
+                    nodes.Add(new NpcTownRouteNode { Id = connectorId, Position = anchor.ApproachPoint, Safe = true });
+                    edges.Add(new NpcTownRouteEdge
+                    {
+                        From = anchor.AnchorId,
+                        To = connectorId,
+                        Cost = Vector2.Distance(anchor.GetPosition(), anchor.ApproachPoint)
+                    });
+                }
+                string nearestId = null;
+                var nearestDistance = float.PositiveInfinity;
+                if (anchor.HasApproach)
+                {
+                    // The sensor waypoint intentionally sits closer to the real leaf than the
+                    // public DoorApproach. Join it to that same house's already-authored door lane;
+                    // choosing an arbitrary nearest road endpoint can cut diagonally through a
+                    // facade corner (notably House_Pip).
+                    TownBuildingLot? nearestDoorLot = null;
+                    var nearestDoorDistance = float.PositiveInfinity;
+                    foreach (var lot in TownCityLayout.AllBuildings)
+                    {
+                        var distance = Vector2.Distance(target, lot.DoorPosition);
+                        if (distance < nearestDoorDistance)
+                        {
+                            nearestDoorDistance = distance;
+                            nearestDoorLot = lot;
+                        }
+                    }
+                    if (nearestDoorLot != null && nearestDoorDistance <= 1.5f)
+                    {
+                        nearestId = EnsureRoadNode(nearestDoorLot.Value.DoorApproach);
+                        nearestDistance = Vector2.Distance(target, nearestDoorLot.Value.DoorApproach);
+                    }
+                }
+                foreach (var road in TownCityLayout.AllRoads)
+                {
+                    if (nearestId != null) break;
+                    var candidate = Vector2.Distance(target, road.Start) <= Vector2.Distance(target, road.End) ? road.Start : road.End;
+                    var distance = Vector2.Distance(target, candidate);
+                    if (distance < nearestDistance &&
+                        TownKeyartGeometry.ClearRoute(target, candidate, 0.45f, TownCityLayout.AllBuildings) &&
+                        ClearsFinalScene(target, candidate))
+                    {
+                        nearestDistance = distance;
+                        nearestId = EnsureRoadNode(candidate);
+                    }
+                }
+                if (nearestId == null)
+                {
+                    foreach (var road in TownCityLayout.AllRoads)
+                    {
+                        var candidate = Vector2.Distance(target, road.Start) <= Vector2.Distance(target, road.End) ? road.Start : road.End;
+                        var distance = Vector2.Distance(target, candidate);
+                        if (distance < nearestDistance && ClearsFinalScene(target, candidate))
+                        {
+                            nearestDistance = distance;
+                            nearestId = EnsureRoadNode(candidate);
+                        }
+                    }
+                }
+                if (nearestId != null)
+                {
+                    edges.Add(new NpcTownRouteEdge { From = connectorId, To = nearestId, Cost = nearestDistance });
+                }
+                else if (!TryCreateClearConnector(connectorId, target))
+                {
+                    Debug.LogError($"[TOWN.N1] No final-physics connector for anchor {anchor.AnchorId} at {target}.");
+                }
+            }
+
+            // Road geometry is authored as independent curves. Join its disconnected endpoint
+            // islands by the nearest pair so the serialized graph has one deterministic component;
+            // the physical clear-route checks above still decide normal anchor approaches.
+            var roadIndex = new Dictionary<string, int>(System.StringComparer.Ordinal);
+            for (var i = 0; i < roadIds.Count; i++) roadIndex[roadIds[i]] = i;
+            var parentSet = new int[roadIds.Count];
+            for (var i = 0; i < parentSet.Length; i++) parentSet[i] = i;
+            int FindSet(int x) { while (parentSet[x] != x) { parentSet[x] = parentSet[parentSet[x]]; x = parentSet[x]; } return x; }
+            void JoinSet(int a, int b) { a = FindSet(a); b = FindSet(b); if (a != b) parentSet[b] = a; }
+            foreach (var edge in edges)
+                if (roadIndex.TryGetValue(edge.From, out var fromIndex) && roadIndex.TryGetValue(edge.To, out var toIndex)) JoinSet(fromIndex, toIndex);
+            while (true)
+            {
+                var bestA = -1; var bestB = -1; var bestDistance = float.PositiveInfinity;
+                for (var a = 0; a < roadIds.Count; a++)
+                {
+                    for (var b = a + 1; b < roadIds.Count; b++)
+                    {
+                        if (FindSet(a) == FindSet(b)) continue;
+                        var pa = nodePositions[roadIds[a]];
+                        var pb = nodePositions[roadIds[b]];
+                        var distance = (pa - pb).sqrMagnitude;
+                        if (distance < bestDistance &&
+                            TownKeyartGeometry.ClearRoute(pa, pb, TownAccessMetrics.ActorBodyRadius, TownCityLayout.AllBuildings) &&
+                            ClearsFinalScene(pa, pb))
+                        {
+                            bestDistance = distance; bestA = a; bestB = b;
+                        }
+                    }
+                }
+                if (bestA < 0) break;
+                edges.Add(new NpcTownRouteEdge { From = roadIds[bestA], To = roadIds[bestB], Cost = Mathf.Sqrt(bestDistance) });
+                JoinSet(bestA, bestB);
+            }
+
+            // Final solids can make a few authored road fragments physically isolated. They are not
+            // valid navigation nodes: prune those islands, then reconnect every affected schedule
+            // anchor to the retained main component through a collision-cleared grid link.
+            var roadAdjacency = new Dictionary<string, List<string>>(System.StringComparer.Ordinal);
+            foreach (var id in roadIds) roadAdjacency[id] = new List<string>();
+            foreach (var edge in edges)
+                if (roadAdjacency.ContainsKey(edge.From) && roadAdjacency.ContainsKey(edge.To))
+                {
+                    roadAdjacency[edge.From].Add(edge.To);
+                    roadAdjacency[edge.To].Add(edge.From);
+                }
+            var mainRoads = new HashSet<string>(System.StringComparer.Ordinal);
+            var roadQueue = new Queue<string>();
+            if (roadIds.Count > 0) { mainRoads.Add(roadIds[0]); roadQueue.Enqueue(roadIds[0]); }
+            while (roadQueue.Count > 0)
+                foreach (var next in roadAdjacency[roadQueue.Dequeue()])
+                    if (mainRoads.Add(next)) roadQueue.Enqueue(next);
+            var prunedRoads = new HashSet<string>(roadIds, System.StringComparer.Ordinal);
+            prunedRoads.ExceptWith(mainRoads);
+            edges.RemoveAll(edge => prunedRoads.Contains(edge.From) || prunedRoads.Contains(edge.To));
+            nodes.RemoveAll(node => node != null && prunedRoads.Contains(node.Id));
+
+            var reachable = new HashSet<string>(mainRoads, System.StringComparer.Ordinal);
+            var reachQueue = new Queue<string>(mainRoads);
+            while (reachQueue.Count > 0)
+            {
+                var current = reachQueue.Dequeue();
+                foreach (var edge in edges)
+                {
+                    string next = null;
+                    if (edge.From == current) next = edge.To;
+                    else if (edge.To == current) next = edge.From;
+                    if (next != null && reachable.Add(next)) reachQueue.Enqueue(next);
+                }
+            }
+            foreach (var anchor in anchors)
+            {
+                if (anchor == null || reachable.Contains(anchor.AnchorId)) continue;
+                var connectorId = anchor.HasApproach ? $"{anchor.AnchorId}__approach" : anchor.AnchorId;
+                var target = anchor.HasApproach ? anchor.ApproachPoint : anchor.GetPosition();
+                if (!TryCreateClearConnector(connectorId, target, mainRoads))
+                    Debug.LogError($"[TOWN.N1] Anchor remains unreachable after island pruning: {anchor.AnchorId} at {target}.");
+            }
+
+            graph.Configure(nodes, edges);
+            Physics2D.SyncTransforms();
+            var prunedBlockedEdges = graph.PrunePhysicallyBlockedEdges();
+            if (prunedBlockedEdges > 0)
+                Debug.LogWarning($"[TOWN.N1] Pruned {prunedBlockedEdges} graph edge(s) blocked by final scene physics.");
+            EditorUtility.SetDirty(graph);
+            Debug.Log($"[TOWN.N1] Materialized route graph: nodes={nodes.Count}, edges={edges.Count}, anchors={anchors.Length}.");
         }
 
         private static void CreateScheduleAnchor(Transform parent, string npcId, string suffix, Vector3 position,
@@ -2238,8 +2916,11 @@ namespace CindarsHope.Editor.SceneCreation
                 return false;
             }
 
-            approach = lot.DoorApproach;
-            return TownCityLayout.IsPointOnRoad(approach, 0.4f);
+            // DoorPosition is the lot boundary while the real leaf sits half a wall-thickness inward.
+            // Offset 0.4u beyond the boundary (= 0.9u from the real leaf): clear of the blocker and
+            // robustly inside its real trigger, so proximity opens it before the interior segment.
+            approach = lot.DoorPosition + (Vector3)(TownAccessMetrics.Outward(lot.DoorSide) * 0.4f);
+            return true;
         }
 
         // (As casas agora são FÍSICAS percorríveis — ver CreateWalkInHouse. A antiga faixa off-field de
@@ -2358,6 +3039,16 @@ namespace CindarsHope.Editor.SceneCreation
             renderer.sortingOrder = 0;
             renderer.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
+            // Furniture bases are solid; rugs remain decorative and intentionally do not block
+            // the authored aisle. Keep the collider on the stable prop root so existing triggers
+            // (inn bed/crafting station) remain attached to the same object IDs.
+            if (name != "Furniture_Rug")
+            {
+                var solid = prop.AddComponent<BoxCollider2D>();
+                solid.isTrigger = false;
+                solid.size = new Vector2(Mathf.Max(0.35f, scale.x * 0.82f), Mathf.Max(0.30f, scale.y * 0.70f));
+                solid.offset = new Vector2(0f, -scale.y * 0.12f);
+            }
             return prop;
         }
 
@@ -2425,6 +3116,223 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 P($"Fence_{i}", "fence", new Vector3(-14f + i * 1.4f, -8.6f, 0f), 1.4f);
             }
+
+            CreateDistrictIdentityDetails(parent.transform);
+        }
+
+        private static void CreateDistrictIdentityDetails(Transform parent)
+        {
+            var bush = WorldSpriteLibrary.Foliage("bush_leafy");
+            var berries = WorldSpriteLibrary.Foliage("bush_berry");
+            var flowers = WorldSpriteLibrary.Foliage("flower_patch");
+            var fence = WorldSpriteLibrary.Prop("fence");
+            var lamp = WorldSpriteLibrary.Prop("streetlamp");
+            var bench = WorldSpriteLibrary.Prop("bench");
+            var crate = WorldSpriteLibrary.Prop("crate");
+            var hay = WorldSpriteLibrary.Prop("hay_bale");
+
+            int detailIndex = 0;
+            foreach (var lot in TownCityLayout.AllBuildings)
+            {
+                var candidates = new[]
+                {
+                    new Vector3(lot.MinX - 0.9f, lot.MaxY - 0.8f, 0f),
+                    new Vector3(lot.MaxX + 0.9f, lot.MaxY - 0.8f, 0f),
+                    new Vector3(lot.MinX - 0.8f, lot.Center.y, 0f),
+                    new Vector3(lot.MaxX + 0.8f, lot.Center.y, 0f),
+                };
+                for (int i = 0; i < candidates.Length; i++)
+                {
+                    if (TownCityLayout.IsPointOnRoad(candidates[i], 0.45f)) continue;
+                    var sprite = ((detailIndex + i) & 1) == 0 ? bush : berries;
+                    CreateWorldAsset(parent, $"LotShrub_{detailIndex:000}_{i}", sprite, candidates[i], 2.25f, 0, Color.white);
+                }
+
+                var flowerPosition = new Vector3(lot.Center.x, lot.MaxY + 0.7f, 0f);
+                if (!TownCityLayout.IsPointOnRoad(flowerPosition, 0.35f))
+                {
+                    CreateWorldAsset(parent, $"LotFlowers_{detailIndex:000}", flowers, flowerPosition, 2.6f, 0, Color.white);
+                }
+                detailIndex++;
+            }
+
+            // Bosquetes internos ocupam os vazios sem collider. O filtro deixa 2.5 unidades de cada
+            // lote/via e mantém a praça/lago abertos; assim a densidade visual cresce sem alterar pathing.
+            var treeSprites = new[]
+            {
+                WorldSpriteLibrary.Tree("tree_oak"), WorldSpriteLibrary.Tree("tree_apple"),
+                WorldSpriteLibrary.Tree("tree_pine"),
+            };
+            int groveIndex = 0;
+            for (float y = -38f; y <= 36f; y += 6.5f)
+            {
+                for (float x = -54f; x <= 54f; x += 6.5f)
+                {
+                    float px = x + ForestSignedNoise(Mathf.RoundToInt(x), Mathf.RoundToInt(y), 151) * 1.3f;
+                    float py = y + ForestSignedNoise(Mathf.RoundToInt(y), Mathf.RoundToInt(x), 157) * 1.1f;
+                    var p = new Vector2(px, py);
+                    if (!IsTownDetailClear(p, 2.5f)) continue;
+                    CreateWorldAsset(parent, $"InteriorGrove_{groveIndex:000}", treeSprites[groveIndex % treeSprites.Length],
+                        new Vector3(px, py, 0f), 4.8f + (groveIndex % 3) * 0.45f, -1, Color.white);
+                    groveIndex++;
+                }
+            }
+
+            // Iluminação rítmica nos eixos, semelhante aos postes dourados da keyart.
+            var lampPositions = new[]
+            {
+                new Vector3(-10f, 12f), new Vector3(10f, 12f), new Vector3(-11f, -5f), new Vector3(11f, -5f),
+                new Vector3(-30f, 7f), new Vector3(-39f, 7f), new Vector3(25f, 7f), new Vector3(37f, 7f),
+                new Vector3(-4f, 23f), new Vector3(10f, 24f), new Vector3(-3f, -18f), new Vector3(4f, -31f),
+                new Vector3(-4f, -41f), new Vector3(4f, -41f),
+            };
+            for (int i = 0; i < lampPositions.Length; i++)
+            {
+                CreateWorldAsset(parent, $"KeyartLamp_{i:00}", lamp, lampPositions[i], 1.15f, 1, Color.white);
+            }
+
+            // Mercado oeste: mobiliário de comércio e descanso, sem collider para não estreitar rotas.
+            for (int i = 0; i < 7; i++)
+            {
+                CreateWorldAsset(parent, $"MarketCrate_{i:00}", crate,
+                    new Vector3(-53f + i * 2.4f, -0.5f + (i & 1) * 1.4f, 0f), 1.25f, 0, Color.white);
+            }
+            CreateWorldAsset(parent, "InnBench_A", bench, new Vector3(-31f, -11f, 0f), 2.2f, 0, Color.white);
+            CreateWorldAsset(parent, "InnBench_B", bench, new Vector3(-18f, -11f, 0f), 2.2f, 0, Color.white);
+
+            // Authored pocket gardens occupy the remaining interior lawns. They are intentionally
+            // collider-free and offset from the audited road/lot network.
+            var pocketGardens = new[]
+            {
+                new Vector2(-16f, 17f), new Vector2(39f, 25f),
+                new Vector2(-19f, -9f), new Vector2(19.5f, -18f),
+                new Vector2(38f, -34f), new Vector2(-18f, -22f),
+            };
+            for (int garden = 0; garden < pocketGardens.Length; garden++)
+            {
+                CreatePocketGarden(parent, $"DistrictPocketGarden_{garden:00}", pocketGardens[garden],
+                    flowers, bush, fence, bench, garden % 3);
+            }
+
+            // Jardins residenciais: canteiros e cercas quebram os grandes vazios do sul.
+            var gardenCenters = new[]
+            {
+                new Vector2(-18f, -13f), new Vector2(-18f, -21f), new Vector2(-15.5f, -35f),
+                new Vector2(20f, -18f), new Vector2(22f, -33f), new Vector2(38f, -31f),
+            };
+            for (int garden = 0; garden < gardenCenters.Length; garden++)
+            {
+                var center = gardenCenters[garden];
+                for (int i = 0; i < 5; i++)
+                {
+                    float x = center.x + (i - 2) * 1.1f;
+                    CreateWorldAsset(parent, $"Garden_{garden:00}_{i:00}", flowers,
+                        new Vector3(x, center.y + ((i & 1) == 0 ? 0.35f : -0.35f), 0f), 1.35f, 0, Color.white);
+                }
+                CreateWorldAsset(parent, $"GardenFence_{garden:00}", fence,
+                    new Vector3(center.x, center.y - 1.6f, 0f), 5.8f, 0, Color.white);
+            }
+
+            // Curral no sudeste: deriving the presentation from the approved lot keeps the
+            // enclosure alive after a layout pass without drifting over a route or another lot.
+            if (TownCityLayout.TryGetBuilding("House_AnimalYard", out var animalLot))
+            {
+                float left = animalLot.MinX + 1.3f, right = animalLot.MaxX - 1.3f;
+                float north = animalLot.MaxY - 1.5f, south = animalLot.MinY + 1.5f;
+                int rails = Mathf.Max(3, Mathf.FloorToInt((right - left) / 2.3f));
+                for (int i = 0; i <= rails; i++)
+                {
+                    float x = Mathf.Lerp(left, right, i / (float)rails);
+                    CreateWorldAsset(parent, $"CorralFenceN_{i:00}", fence, new Vector3(x, north, 0f), 2.6f, 0, Color.white);
+                    if (i != rails / 2) CreateWorldAsset(parent, $"CorralFenceS_{i:00}", fence, new Vector3(x, south, 0f), 2.6f, 0, Color.white);
+                }
+                var cow = WorldSpriteLibrary.Animal("animal_4");
+                var sheep = WorldSpriteLibrary.Animal("animal_2");
+                CreateWorldAsset(parent, "CorralCow_A", cow, new Vector3(animalLot.Center.x - 3f, animalLot.Center.y + 2f, 0f), 2.5f, 0, Color.white);
+                CreateWorldAsset(parent, "CorralCow_B", cow, new Vector3(animalLot.Center.x + 3f, animalLot.Center.y - 2f, 0f), 2.3f, 0, Color.white);
+                CreateWorldAsset(parent, "CorralSheep_A", sheep, new Vector3(animalLot.Center.x - 4f, animalLot.Center.y - 3f, 0f), 1.8f, 0, Color.white);
+                CreateWorldAsset(parent, "CorralSheep_B", sheep, new Vector3(animalLot.Center.x + 4f, animalLot.Center.y + 3f, 0f), 1.8f, 0, Color.white);
+                CreateWorldAsset(parent, "CorralHay_A", hay, animalLot.Center + new Vector2(5f, -4f), 1.6f, 0, Color.white);
+            }
+
+            // Identidade dos ofícios: ferramentas e insumos visíveis do lado de fora.
+            CreateWorldAsset(parent, "ForgeOutdoor", WorldSpriteLibrary.Prop("forge"), new Vector3(23f, 12f, 0f), 3.6f, 0, Color.white);
+            CreateWorldAsset(parent, "WorkshopOutdoor", WorldSpriteLibrary.Prop("workbench"), new Vector3(23f, -8f, 0f), 3.8f, 0, Color.white);
+            CreateWorldAsset(parent, "AlchemyMushrooms", WorldSpriteLibrary.Foliage("mushroom_cluster"), new Vector3(46f, 10f, 0f), 2.1f, 0, Color.white);
+            CreateWorldAsset(parent, "TanneryHay", hay, new Vector3(46f, -8f, 0f), 1.8f, 0, Color.white);
+
+            var appleTree = WorldSpriteLibrary.Tree("tree_apple");
+            var eastOrchard = new[]
+            {
+                new Vector3(40f, -18f), new Vector3(46f, -18f), new Vector3(52f, -18f),
+                new Vector3(42f, -22f), new Vector3(49f, -22f),
+            };
+            for (int i = 0; i < eastOrchard.Length; i++)
+            {
+                CreateWorldAsset(parent, $"EastOrchard_{i:00}", appleTree, eastOrchard[i], 4.5f, -1, Color.white);
+                CreateWorldAsset(parent, $"EastOrchardFlowers_{i:00}", flowers, eastOrchard[i] + new Vector3(1.5f, -1f, 0f), 2.1f, 0, Color.white);
+            }
+
+            // Borda rochosa em massas assimétricas: mantém o bloqueio físico da muralha, mas elimina
+            // a aparência de moldura feita somente de copas repetidas.
+            var cliff = WorldSpriteLibrary.Prop("cliff_keyart_v1");
+            CreateWorldAsset(parent, "NorthCliff_W", cliff, new Vector3(-68f, TownDistrictLayout.HalfHeight, 0f), 14f, 1, Color.white);
+            CreateWorldAsset(parent, "NorthCliff_C", cliff, new Vector3(-1f, TownDistrictLayout.HalfHeight+3f, 0f), 15f, 1, Color.white);
+            CreateWorldAsset(parent, "NorthCliff_E", cliff, new Vector3(68f, TownDistrictLayout.HalfHeight-1f, 0f), 13f, 1, Color.white);
+            CreateWorldAsset(parent, "SouthCliff_W", cliff, new Vector3(-72f, -TownDistrictLayout.HalfHeight, 0f), 13f, 1, Color.white);
+            CreateWorldAsset(parent, "SouthCliff_E", cliff, new Vector3(72f, -TownDistrictLayout.HalfHeight+1f, 0f), 14f, 1, Color.white);
+            CreateWorldAsset(parent, "WestCliffLower", cliff, new Vector3(-81f, -37f, 0f), 12f, 1, Color.white);
+            CreateWorldAsset(parent, "EastCliffUpper", cliff, new Vector3(81f, 40f, 0f), 12f, 1, Color.white);
+            CreateWestWaterfall(parent);
+            CreateWorldAsset(parent, "NorthCaveLandmark", WorldSpriteLibrary.Prop("cave_entrance"),
+                new Vector3(0f, TownDistrictLayout.HalfHeight-2.5f, 0f), 7f, 0, Color.white);
+
+            // Portão sul com estandartes azuis de Kanthor; decoração sem collider, pois os postes
+            // sólidos e o vão físico continuam sendo os criados por CreateCityWall/CreateBounds.
+            var kanthorBlue = new Color(0.08f, 0.28f, 0.62f);
+            var kanthorGold = new Color(0.94f, 0.73f, 0.18f);
+            CreateDecoration(parent, "SouthBanner_W", new Vector3(-4.2f, -42.2f, 0f), new Vector3(1.1f, 3.2f, 1f), kanthorBlue);
+            CreateDecoration(parent, "SouthBanner_E", new Vector3(4.2f, -42.2f, 0f), new Vector3(1.1f, 3.2f, 1f), kanthorBlue);
+            CreateDecoration(parent, "SouthBannerGold_W", new Vector3(-4.2f, -42.15f, 0f), new Vector3(0.35f, 0.35f, 1f), kanthorGold);
+            CreateDecoration(parent, "SouthBannerGold_E", new Vector3(4.2f, -42.15f, 0f), new Vector3(0.35f, 0.35f, 1f), kanthorGold);
+
+            // Large flowering clearings replace the former continuous hedge at the authored gaps.
+            var meadowCenters = new[]
+            {
+                new Vector3(-42f, 41f), new Vector3(31f, 42f), new Vector3(-53f, -29f),
+                new Vector3(52f, 31f), new Vector3(43f, -42f),
+            };
+            for (int meadow = 0; meadow < meadowCenters.Length; meadow++)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    var offset = new Vector3((i - 2) * 1.5f, ((i + meadow) & 1) == 0 ? 0.6f : -0.5f, 0f);
+                    CreateWorldAsset(parent, $"BorderMeadow_{meadow:00}_{i:00}", flowers,
+                        meadowCenters[meadow] + offset, 2.2f, 2, Color.white);
+                }
+            }
+        }
+
+        private static bool IsTownDetailClear(Vector2 point, float clearance)
+        {
+            if (Vector2.Distance(point, TownCityLayout.CentralPlazaCenter) < TownCityLayout.CentralPlazaRadius + 1f)
+            {
+                return false;
+            }
+            var lake = (Vector2)TownDistrictLayout.LakeCenter;
+            if (Mathf.Abs(point.x - lake.x) < 11f && Mathf.Abs(point.y - lake.y) < 10f)
+            {
+                return false;
+            }
+            foreach (var lot in TownCityLayout.AllBuildings)
+            {
+                if (point.x >= lot.MinX - clearance && point.x <= lot.MaxX + clearance &&
+                    point.y >= lot.MinY - clearance && point.y <= lot.MaxY + clearance)
+                {
+                    return false;
+                }
+            }
+            return !TownCityLayout.IsPointOnRoad(new Vector3(point.x, point.y, 0f), clearance);
         }
 
         // Centro do interior FÍSICO da casa de índice i (coords finais, no MESMO lugar do exterior).
@@ -2503,48 +3411,7 @@ namespace CindarsHope.Editor.SceneCreation
         // ── fable_40: lake / park district (SW) — water body + park benches (new) ──
         private static void CreateLakeParkDistrict(Transform parent)
         {
-            var district = new GameObject("District_LakePark_SW");
-            district.transform.SetParent(parent);
-            district.transform.position = Vector3.zero;
-
-            // Water body (decorative, blue, large slab under the park). v9 organic relayout: ~14x8
-            // (spec target 14x10, tightened 2un to clear Inn/Residential_4 — see execution report).
-            var lakeSize = new Vector2(14f, 8f);
-            var lake = new GameObject("LakeWater");
-            lake.transform.SetParent(district.transform);
-            lake.transform.position = TownDistrictLayout.LakeCenter;
-            var lakeRenderer = lake.AddComponent<SpriteRenderer>();
-            var lakeTile = WorldSpriteLibrary.Ground("ground_water");
-            if (lakeTile != null)
-            {
-                lake.transform.localScale = Vector3.one;
-                lakeRenderer.sprite = lakeTile; lakeRenderer.color = Color.white;
-                lakeRenderer.drawMode = SpriteDrawMode.Tiled; lakeRenderer.tileMode = SpriteTileMode.Continuous;
-                lakeRenderer.size = lakeSize;
-            }
-            else
-            {
-                lake.transform.localScale = new Vector3(lakeSize.x, lakeSize.y, 1f);
-                lakeRenderer.sprite = GetBuiltinSprite(); lakeRenderer.color = new Color(0.27f, 0.45f, 0.62f);
-            }
-            lakeRenderer.sortingOrder = 0;
-            TrySetSortingLayer(lakeRenderer, "Ground", lakeRenderer.sortingOrder);
-
-            var lakeCollider = lake.AddComponent<BoxCollider2D>();
-            lakeCollider.isTrigger = false;
-            lakeCollider.size = lakeSize;
-
-            // Deque de pesca na borda LESTE do lago (spec_town_layout_v9_organic): ponto de leitura
-            // para Sael e aproximação segura sem entrar na água.
-            CreateDecoration(
-                district.transform,
-                "LakeDock_East",
-                TownDistrictLayout.LakeCenter + new Vector3(lakeSize.x * 0.5f + 1.2f, 0f, 0f),
-                new Vector3(1.4f, 4.0f, 1f),
-                new Color(0.46f, 0.34f, 0.22f));
-
-            CreateDecoration(district.transform, "ParkBench_W", TownDistrictLayout.LakeBenchWest, new Vector3(1.4f, 0.4f, 1f), new Color(0.5f, 0.38f, 0.26f));
-            CreateDecoration(district.transform, "ParkBench_E", TownDistrictLayout.LakeBenchEast, new Vector3(1.4f, 0.4f, 1f), new Color(0.5f, 0.38f, 0.26f));
+            TownKeyartSceneArt.CreateWaterDistrict(parent);
         }
 
         // ── fable_40: town hall district (NE) — building + mural on the wall (new) ──
@@ -2561,33 +3428,19 @@ namespace CindarsHope.Editor.SceneCreation
             hall.transform.SetParent(district.transform);
             hall.transform.position = TownDistrictLayout.TownHallCenter;
 
-            var hallVisual = new GameObject("Visual");
-            hallVisual.transform.SetParent(hall.transform);
-            var hallRenderer = hallVisual.AddComponent<SpriteRenderer>();
-            var hallTile = WorldSpriteLibrary.Building("wall_stone");
-            var hallTiledSize = new Vector2(4.5f, 3.2f);
-            if (hallTile != null)
+            var hallSprite = WorldSpriteLibrary.Location("town_hall");
+            var hallVisual = TownKeyartSceneArt.SpriteObject(hall.transform, "Visual", hallSprite, TownDistrictLayout.TownHallCenter, 24f);
+            if (hallVisual != null)
             {
-                hallVisual.transform.localScale = Vector3.one;
-                hallRenderer.sprite = hallTile; hallRenderer.color = Color.white;
-                hallRenderer.drawMode = SpriteDrawMode.Tiled; hallRenderer.tileMode = SpriteTileMode.Continuous;
-                hallRenderer.size = hallTiledSize;
-                // wall_stone agora importa com pivot BottomCenter: desloca o retângulo Tiled para baixo
-                // meia altura para manter a mesma cobertura simétrica de antes (pivot Center).
-                hallVisual.transform.localPosition = new Vector3(0f, -hallTiledSize.y * 0.5f, 0f);
+                var renderer = hallVisual.GetComponent<SpriteRenderer>();
+                TownKeyartBuildingArt.Fit(renderer, "TownHallBuilding", hallSprite,
+                    new Vector2(0f, -TownKeyartGeometry.HallFootprintSize.y * .5f + .5f), TownKeyartGeometry.HallFootprintSize);
             }
-            else
-            {
-                hallVisual.transform.localScale = new Vector3(hallTiledSize.x, hallTiledSize.y, 1f);
-                hallVisual.transform.localPosition = Vector3.zero;
-                hallRenderer.sprite = GetBuiltinSprite(); hallRenderer.color = new Color(0.6f, 0.58f, 0.52f);
-            }
-            hallRenderer.sortingOrder = 0;
-            hallRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(hallRenderer, "World", hallRenderer.sortingOrder);
+            var hallTiledSize = TownKeyartGeometry.HallFootprintSize;
             var hallCollider = hall.AddComponent<BoxCollider2D>();
             hallCollider.isTrigger = false;
-            hallCollider.size = Vector2.one;
+            hallCollider.size = hallTiledSize;
+            hallCollider.offset = Vector2.zero;
 
             // Mural on the south wall of the town hall (fable_34 — read-only announcements).
             CreateDecoration(district.transform, "TownHallMural", TownDistrictLayout.TownHallMural, new Vector3(3.2f, 0.9f, 1f), new Color(0.7f, 0.55f, 0.4f));
@@ -2641,10 +3494,12 @@ namespace CindarsHope.Editor.SceneCreation
         // vira uma pequena zona reservada (ReservedZones) para nenhuma casa cair em cima.
         private static readonly Vector3[] ScatteredTreePositions =
         {
-            new Vector3(-57f, -10f, 0f), new Vector3(-56f, -21f, 0f),
-            new Vector3(-45f, -6f, 0f), new Vector3(-38f, -8f, 0f),
-            new Vector3(-10f, 12f, 0f), new Vector3(10f, 12f, 0f),
-            new Vector3(-10f, -12f, 0f), new Vector3(10f, -12f, 0f),
+            // Keep the four path-adjacent trunks outside the authored work/market aprons.
+            // They remain inside the town footprint while preserving the eight-tree identity.
+            new Vector3(-40f, 27f, 0f), new Vector3(-32f, -20f, 0f),
+            new Vector3(-18f, 20f, 0f), new Vector3(18f, 23f, 0f),
+            new Vector3(-16f, -12f, 0f), new Vector3(21f, -29f, 0f),
+            new Vector3(35f, -31f, 0f), new Vector3(-28f, -35f, 0f),
         };
 
         // Floresta da borda: fica POR FORA da muralha. Seis faixas com jitter determinístico evitam
@@ -2664,6 +3519,7 @@ namespace CindarsHope.Editor.SceneCreation
 
             for (int band = 0; band < TownCityLayout.ExteriorForestBandCount; band++)
             {
+                // The configured band count is exactly the number materialized.
                 // Distâncias crescentes deixam a borda densa sem formar uma faixa geométrica uniforme.
                 float d = 1.0f + band * 1.85f + band * band * 0.08f;
                 float tx = wallX + d;
@@ -2676,11 +3532,16 @@ namespace CindarsHope.Editor.SceneCreation
                 {
                     float northX = baseX + ForestSignedNoise(band, horizontalIndex, 11) * 0.72f;
                     float northY = ty + ForestSignedNoise(band, horizontalIndex, 17) * 0.48f;
-                    list.Add(new Vector3(northX, northY, 0f));
+                    bool northClearing = (northX > -10f && northX < 10f) ||
+                                         (band == 1 && northX > 24f && northX < 39f) ||
+                                         (band == 2 && northX > -47f && northX < -30f);
+                    if (!northClearing) list.Add(new Vector3(northX, northY, 0f));
 
                     float southX = baseX + ForestSignedNoise(band, horizontalIndex, 23) * 0.72f;
                     float southY = -ty + ForestSignedNoise(band, horizontalIndex, 29) * 0.48f;
-                    if (Mathf.Abs(southX) > gateHalf)
+                    bool southClearing = (southX > -51f && southX < -37f && band != 0) ||
+                                         (southX > 35f && southX < 49f && band == 2);
+                    if (Mathf.Abs(southX) > gateHalf && !southClearing)
                     {
                         list.Add(new Vector3(southX, southY, 0f));
                     }
@@ -2694,8 +3555,12 @@ namespace CindarsHope.Editor.SceneCreation
                     float westY = baseY + ForestSignedNoise(band, verticalIndex, 37) * 0.72f;
                     float eastX = tx + ForestSignedNoise(band, verticalIndex, 41) * 0.48f;
                     float eastY = baseY + ForestSignedNoise(band, verticalIndex, 43) * 0.72f;
-                    list.Add(new Vector3(westX, westY, 0f));
-                    list.Add(new Vector3(eastX, eastY, 0f));
+                    bool westClearing = (westY > 4f && westY < 21f) ||
+                                        (band == 2 && westY > -37f && westY < -24f);
+                    bool eastClearing = (eastY > -7f && eastY < 9f && band != 0) ||
+                                        (band == 2 && eastY > 26f && eastY < 38f);
+                    if (!westClearing) list.Add(new Vector3(westX, westY, 0f));
+                    if (!eastClearing) list.Add(new Vector3(eastX, eastY, 0f));
                 }
             }
 
@@ -2722,6 +3587,7 @@ namespace CindarsHope.Editor.SceneCreation
             bool Blocked(float x, float y)
             {
                 var p = new Vector2(x, y);
+                if (TownKeyartGeometry.ContainsWater(p, 1.5f)) return true;
                 foreach (var lot in TownCityLayout.AllBuildings)
                 {
                     if (p.x >= lot.MinX - 1f && p.x <= lot.MaxX + 1f && p.y >= lot.MinY - 1f && p.y <= lot.MaxY + 1f)
@@ -2785,7 +3651,7 @@ namespace CindarsHope.Editor.SceneCreation
             var treeObject = new GameObject($"TownTree_{treeIndex:00}");
             treeObject.transform.SetParent(parent);
             // Variação determinística de escala e espécie: orgânica, mas estável entre regenerações.
-            float scale = 2.55f + (ForestSignedNoise(treeIndex % 7, treeIndex, 53) + 1f) * 0.38f;
+            float scale = 1f;
             treeObject.transform.localScale = new Vector3(scale, scale, 1f);
 
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
@@ -2795,16 +3661,21 @@ namespace CindarsHope.Editor.SceneCreation
             var townTreeSprite = WorldSpriteLibrary.Tree(townTreeSpecies[speciesIndex]);
             // trees/ agora importa com pivot BottomCenter: converte o centro visual pretendido (position,
             // já no footprint 120x90) para a position que produz o mesmo centro visual de antes.
-            float colliderCenterOffsetY = -0.34f / scale; // offset original, relativo ao centro visual antigo
+            float colliderCenterOffsetY = 0.25f / scale;
             if (townTreeSprite != null)
             {
+                // Measure the drawing, not import scale; crowns remain subordinate to civic buildings.
+                float targetHeight = 5.5f + (ForestSignedNoise(treeIndex % 7, treeIndex, 53) + 1f) * .8f;
+                scale = targetHeight / townTreeSprite.bounds.size.y;
+                treeObject.transform.localScale = new Vector3(scale, scale, 1f);
                 spriteRenderer.sprite = townTreeSprite; spriteRenderer.color = Color.white;
                 float visualHeight = townTreeSprite.bounds.size.y * scale;
                 treeObject.transform.position = WorldSpriteBasePlacement.BaseFromVisualCenter(position, visualHeight);
                 // A base do sprite (novo position) já fica perto do tronco; ainda assim preserva o
                 // épsilon original de -0.34/scale (relativo ao centro visual antigo) somado ao quanto o
                 // transform desceu, para o collider continuar cobrindo exatamente o mesmo ponto do tronco.
-                colliderCenterOffsetY -= visualHeight * 0.5f;
+                // Position is now the actual foot support; collider offsets stay LOCAL, not world units.
+                colliderCenterOffsetY = 0.25f / scale;
             }
             else
             {
@@ -2831,7 +3702,10 @@ namespace CindarsHope.Editor.SceneCreation
                 var collider = treeObject.AddComponent<BoxCollider2D>();
                 collider.isTrigger = false;
                 collider.size = new Vector2(0.65f / scale, 0.50f / scale);
-                collider.offset = new Vector2(0f, colliderCenterOffsetY);
+                // Align the physical trunk to the visible base for every imported species/pivot.
+                // A fixed local offset drifts when the source sprite has a non-zero opaque base.
+                float desiredWorldY = spriteRenderer.bounds.min.y + 0.25f;
+                collider.offset = new Vector2(0f, (desiredWorldY - treeObject.transform.position.y) / scale);
             }
         }
 
@@ -2876,9 +3750,9 @@ namespace CindarsHope.Editor.SceneCreation
 
             // Boca de gruta (E): duas rochas (com colisão) e a abertura escura no meio. Onde Zrix dorme.
             CreateBlocker(parent.transform, "CaveMouth_RockL",
-                new Vector3(CaveMouthPosition.x - 1.7f, CaveMouthPosition.y + 0.2f, 0f), new Vector2(1.6f, 2.4f), new Color(0.40f, 0.38f, 0.36f));
+                TownKeyartGeometry.CaveRockCenters[0], TownKeyartGeometry.CaveRockSize, new Color(0.40f, 0.38f, 0.36f));
             CreateBlocker(parent.transform, "CaveMouth_RockR",
-                new Vector3(CaveMouthPosition.x + 1.7f, CaveMouthPosition.y + 0.2f, 0f), new Vector2(1.6f, 2.4f), new Color(0.40f, 0.38f, 0.36f));
+                TownKeyartGeometry.CaveRockCenters[1], TownKeyartGeometry.CaveRockSize, new Color(0.40f, 0.38f, 0.36f));
             CreateDecoration(parent.transform, "CaveMouth_Dark",
                 CaveMouthPosition, new Vector3(2.2f, 2.6f, 1f), new Color(0.08f, 0.07f, 0.1f));
 
@@ -2918,18 +3792,77 @@ namespace CindarsHope.Editor.SceneCreation
         private static void CreateTownRoads()
         {
             var parent = new GameObject("TownRoads");
-            parent.transform.position = Vector3.zero;
-            var dirt = new Color(0.62f, 0.55f, 0.42f);
-            foreach (var road in TownCityLayout.AllRoads)
+            var cobble = TownKeyartSceneArt.CobbleSprite;
+            if (cobble == null) throw new System.InvalidOperationException("Town cobble missing.");
+            var roads = TownKeyartGround.Layer(parent.transform, "ConnectedPaths", 1);
+            var roadTile = TownKeyartGround.TileFor(cobble);
+            foreach (var route in TownCityLayout.AllRoads)
             {
-                CreateGroundSlab(
-                    parent.transform,
-                    $"Road_{road.Id}",
-                    new Vector3(road.Center.x, road.Center.y, 0f),
-                    road.Size,
-                    dirt,
-                    1,
-                    "ground_cobble");
+                TownKeyartGround.PaintRoad(roads,roadTile,route);
+            }
+            // Generous paved courts join the same passable routes; every pixel is clipped against lots.
+            TownKeyartSceneArt.PaintCourts(parent.transform, cobble);
+        }
+
+        private static void PaintOrganicPath(Tilemap tilemap, Sprite sprite, float width, IReadOnlyList<Vector2> points)
+        {
+            var tile = WorldTilemapGround.GetTile(sprite);
+            float cellSize = tilemap.layoutGrid != null ? tilemap.layoutGrid.cellSize.x : 0.5f;
+            float radius = width * 0.5f;
+            for (int segment = 0; segment < points.Count - 1; segment++)
+            {
+                Vector2 a = points[segment];
+                Vector2 b = points[segment + 1];
+                float distance = Vector2.Distance(a, b);
+                int samples = Mathf.Max(1, Mathf.CeilToInt(distance / (cellSize * 0.6f)));
+                for (int sample = 0; sample <= samples; sample++)
+                {
+                    Vector2 center = Vector2.Lerp(a, b, sample / (float)samples);
+                    PaintOrganicDisk(tilemap, tile, center, radius, cellSize);
+                }
+            }
+        }
+
+        private static void PaintOrganicDisk(Tilemap tilemap, Tile tile, Vector2 center, float radius, float cellSize)
+        {
+            int minX = Mathf.FloorToInt((center.x - radius) / cellSize);
+            int maxX = Mathf.CeilToInt((center.x + radius) / cellSize);
+            int minY = Mathf.FloorToInt((center.y - radius) / cellSize);
+            int maxY = Mathf.CeilToInt((center.y + radius) / cellSize);
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
+                    var world = new Vector2((x + 0.5f) * cellSize, (y + 0.5f) * cellSize);
+                    float edgeNoise = ForestSignedNoise(x, y, 101) * cellSize * 0.45f;
+                    if ((world - center).sqrMagnitude <= (radius + edgeNoise) * (radius + edgeNoise))
+                    {
+                        tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+                    }
+                }
+            }
+        }
+
+        private static void PaintOrganicAnnulus(Tilemap tilemap, Sprite sprite, Vector2 center, float innerRadius, float outerRadius)
+        {
+            var tile = WorldTilemapGround.GetTile(sprite);
+            float cellSize = tilemap.layoutGrid != null ? tilemap.layoutGrid.cellSize.x : 0.5f;
+            int minX = Mathf.FloorToInt((center.x - outerRadius) / cellSize);
+            int maxX = Mathf.CeilToInt((center.x + outerRadius) / cellSize);
+            int minY = Mathf.FloorToInt((center.y - outerRadius) / cellSize);
+            int maxY = Mathf.CeilToInt((center.y + outerRadius) / cellSize);
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
+                    var world = new Vector2((x + 0.5f) * cellSize, (y + 0.5f) * cellSize);
+                    float distance = Vector2.Distance(world, center);
+                    float noise = ForestSignedNoise(x, y, 181) * cellSize * 0.35f;
+                    if (distance >= innerRadius + noise && distance <= outerRadius + noise)
+                    {
+                        tilemap.SetTile(new Vector3Int(x, y, 0), tile);
+                    }
+                }
             }
         }
 
@@ -3448,13 +4381,14 @@ namespace CindarsHope.Editor.SceneCreation
 
             foreach (var spec in RefinedCanonicalTownNpcSpecs)
             {
+                var workPocket = ResolveNpcWorkPocket(spec);
                 GameObject npcObject;
                 if (!string.IsNullOrWhiteSpace(spec.ShopDataPath))
                 {
                     npcObject = CreateShopNpc(
                         parent.transform,
                         spec.ObjectName,
-                        spec.LayoutPosition,
+                        workPocket,
                         spec.Color,
                         spec.NpcDataPath,
                         spec.ShopDataPath,
@@ -3480,7 +4414,7 @@ namespace CindarsHope.Editor.SceneCreation
                     npcObject = CreateDialogueNpc(
                         parent.transform,
                         spec.ObjectName,
-                        spec.LayoutPosition,
+                        workPocket,
                         spec.Color,
                         spec.NpcDataPath,
                         modalManager,
@@ -3516,7 +4450,7 @@ namespace CindarsHope.Editor.SceneCreation
                 // Spawna como entidade separada, segue o Eiran via CompanionFollow.
                 if (spec.NpcId == "npc_eiran")
                 {
-                    SpawnCatCompanion(parent.transform, npcObject.transform, spec.LayoutPosition);
+                    SpawnCatCompanion(parent.transform, npcObject.transform, workPocket);
                 }
             }
 
@@ -3642,6 +4576,7 @@ namespace CindarsHope.Editor.SceneCreation
             body.gravityScale = 0f;
             body.constraints = RigidbodyConstraints2D.FreezeRotation;
             body.interpolation = RigidbodyInterpolation2D.Interpolate;
+            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             body.linearDamping = 4f;
             // Massa alta: o player ESBARRA no NPC (resistencia, pedido humano 2026-06-30) e nao consegue
             // empurra-lo de forma perceptivel; o NpcWanderer + damping mantem o NPC no lugar.
@@ -3660,7 +4595,9 @@ namespace CindarsHope.Editor.SceneCreation
             // offset negativo jogava a caixa pra BAIXO do sprite. Subimos meia-altura do personagem
             // (128px @ PPU 234 = 0.547u em escala 1 ⇒ meia = 0.273). localPosition escala pelo parent
             // (visualScale), entao o collider fica centrado no sprite de qualquer raca.
-            bodyObject.transform.localPosition = new Vector3(0f, (128f / 234f) * 0.5f, 0f);
+            // localPosition inherits the NPC visual scale too. Counter-scale the offset just like
+            // the collider itself so every race keeps the same 0.273u world-space feet centre.
+            bodyObject.transform.localPosition = new Vector3(0f, ((128f / 234f) * 0.5f) / visualScale, 0f);
             bodyObject.transform.localScale = new Vector3(1f / visualScale, 1f / visualScale, 1f);
             var solid = bodyObject.AddComponent<BoxCollider2D>();
             solid.isTrigger = false;
@@ -4124,6 +5061,103 @@ namespace CindarsHope.Editor.SceneCreation
 
             collider.size   = new Vector2(localBounds.size.x, localBounds.size.y);
             collider.offset = new Vector2(localBounds.center.x, localBounds.center.y);
+        }
+
+        private static IReadOnlyList<Vector2> BuildRegularPolygon(Vector2 center, float radius, int sides)
+        {
+            var points = new Vector2[sides];
+            float start = Mathf.PI * 0.5f;
+            for (int i = 0; i < sides; i++)
+            {
+                float angle = start + i * Mathf.PI * 2f / sides;
+                points[i] = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+            }
+            return points;
+        }
+
+        // Sprites de detalhe recebem largura em unidades de mundo; isso mantém PPU/densidade coerentes
+        // mesmo quando a fonte tem 64 px ou 1024 px. position é o centro visual desejado.
+        private static GameObject CreateWorldAsset(
+            Transform parent,
+            string name,
+            Sprite sprite,
+            Vector3 position,
+            float desiredWidth,
+            int sortingOrder,
+            Color color)
+        {
+            if (sprite == null) return null;
+            var go = new GameObject(name);
+            go.transform.SetParent(parent);
+            float scale = sprite.bounds.size.x > 0.0001f ? desiredWidth / sprite.bounds.size.x : 1f;
+            go.transform.localScale = new Vector3(scale, scale, 1f);
+            float visualHeight = sprite.bounds.size.y * scale;
+            go.transform.position = position - new Vector3(sprite.bounds.center.x * scale, sprite.bounds.center.y * scale, 0f);
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.color = color;
+            renderer.sortingOrder = sortingOrder;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", sortingOrder);
+            return go;
+        }
+
+        private static void CreateWestWaterfall(Transform parent)
+        {
+            var sprite = WorldSpriteLibrary.Prop("waterfall_keyart_v1");
+            if (sprite == null) throw new System.InvalidOperationException("Town waterfall source is missing.");
+            // Verified source: 887x1774. Pixel (570,1542), top-left origin, is the lower spillway.
+            // Anchor the visible outlet in the stream between the bridges; do not use the rock AABB as ground.
+            if (sprite.rect.width != 887 || sprite.rect.height != 1774)
+                throw new System.InvalidOperationException("Town waterfall source changed; recheck the spillway anchor.");
+            var waterfall = CreateWorldAsset(parent, "WestWaterfall", sprite, Vector3.zero, 5.5f, 0, Color.white);
+            Vector2 outletPixel = new Vector2(570f, 1774f - 1542f);
+            Vector3 localOutlet = (outletPixel - sprite.pivot) / sprite.pixelsPerUnit;
+            Vector3 riverOutlet = new Vector3(TownKeyartGeometry.RiverCenter(6f), 6f, 0f);
+            waterfall.transform.position += riverOutlet - waterfall.transform.TransformPoint(localOutlet);
+            var support = new GameObject("WestWaterfallOutflow");
+            support.transform.SetParent(waterfall.transform, false);
+            support.transform.localPosition = localOutlet;
+        }
+
+        private static void CreateKanthorStandard(Transform parent, string name, Vector3 position)
+        {
+            var standard = new GameObject(name);
+            standard.transform.SetParent(parent);
+            standard.transform.position = position;
+
+            CreateDecoration(standard.transform, "Pole", position,
+                new Vector3(0.16f, 2.8f, 1f), new Color(0.30f, 0.22f, 0.14f));
+            CreateDecoration(standard.transform, "Banner", position + new Vector3(0.48f, 0.72f, 0f),
+                new Vector3(0.9f, 1.35f, 1f), new Color(0.08f, 0.28f, 0.62f));
+            CreateDecoration(standard.transform, "StarGold", position + new Vector3(0.48f, 0.78f, 0f),
+                new Vector3(0.28f, 0.28f, 1f), new Color(0.94f, 0.73f, 0.18f));
+        }
+
+        private static void CreatePocketGarden(
+            Transform parent,
+            string name,
+            Vector2 center,
+            Sprite flowers,
+            Sprite bush,
+            Sprite fence,
+            Sprite bench,
+            int variant)
+        {
+            var garden = new GameObject(name);
+            garden.transform.SetParent(parent);
+            garden.transform.position = Vector3.zero;
+            for (int i = 0; i < 7; i++)
+            {
+                float angle = i * Mathf.PI * 2f / 7f + variant * 0.35f;
+                var p = center + new Vector2(Mathf.Cos(angle) * 3.2f, Mathf.Sin(angle) * 2.0f);
+                CreateWorldAsset(garden.transform, $"FlowerBed_{i:00}", (i & 1) == 0 ? flowers : bush,
+                    new Vector3(p.x, p.y, 0f), (i & 1) == 0 ? 2.2f : 2.5f, 1, Color.white);
+            }
+            CreateWorldAsset(garden.transform, "GardenFence_N", fence,
+                new Vector3(center.x, center.y + 2.5f, 0f), 6.8f, 0, Color.white);
+            CreateWorldAsset(garden.transform, "GardenBench", bench,
+                new Vector3(center.x, center.y - 0.2f, 0f), 2.3f, 2, Color.white);
         }
 
         private static void CreateDecoration(Transform parent, string name, Vector3 position, Vector3 scale, Color color)

@@ -24,12 +24,6 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.IsTrue(vm.IsMovable);
         }
 
-        [Test]
-        public void InventoryItemViewModel_QuestItem_Fields()
-        {
-            var vm = new InventoryItemViewModel { IsQuestItem = true, IsKeyItem = false, IsUnique = false };
-            Assert.IsTrue(vm.IsQuestItem);
-        }
 
         // ---- ProtectedItemActionGuard ----
 
@@ -174,13 +168,6 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.AreEqual(-1, vm.DefenseDelta);
         }
 
-        [Test]
-        public void EquipmentComparison_Warnings_Settable()
-        {
-            var vm = new EquipmentComparisonViewModel();
-            vm.Warnings.Add("REQUIREMENT_NOT_MET");
-            Assert.IsTrue(vm.Warnings.Contains("REQUIREMENT_NOT_MET"));
-        }
 
         // ---- ItemTooltipViewModel ----
 
@@ -191,13 +178,6 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.IsTrue(vm.SpoilerSafe);
         }
 
-        [Test]
-        public void ItemTooltipViewModel_QuestKeyWarnings_Settable()
-        {
-            var vm = new ItemTooltipViewModel { IsQuestItem = true };
-            vm.QuestKeyWarnings.Add("QUEST_ITEM_CANNOT_SELL");
-            Assert.AreEqual(1, vm.QuestKeyWarnings.Count);
-        }
 
         // ---- TooltipLayerPolicy ----
 

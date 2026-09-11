@@ -31,6 +31,7 @@ namespace CindarsHope.Player
         public int MaxMana => _maxMana;
         public int CurrentMana => _currentMana;
         public float ManaPercent => MaxMana > 0 ? (float)_currentMana / MaxMana : 0f;
+        public float BaseRegenPerSecond => Mathf.Max(0f, _manaRegenPerSecond);
 
         private void OnEnable()
         {
@@ -133,7 +134,12 @@ namespace CindarsHope.Player
             if (_modalManager is IModalStateProvider modalStateProvider && modalStateProvider.HasActiveModal)
                 return;
 
-            _regenAccumulator += _manaRegenPerSecond + Mathf.Max(0f, ExternalRegenBonus);
+            var player = PlayerController.ActiveInstance;
+            var world = player != null ? player.transform.position : transform.position;
+            float naturalMultiplier = NaturalSurvivalRateModifierProvider.Resolve(
+                NaturalSurvivalRateChannel.ManaRegen, world.x, world.y);
+            _regenAccumulator += (_manaRegenPerSecond + Mathf.Max(0f, ExternalRegenBonus))
+                * naturalMultiplier;
             if (_regenAccumulator >= 1f)
             {
                 int manaGain = Mathf.FloorToInt(_regenAccumulator);

@@ -32,24 +32,28 @@ namespace CindarsHope.Editor.SceneCreation
 
     public readonly struct TownRoadSegment
     {
-        public TownRoadSegment(string id, Vector2 center, Vector2 size)
+        public TownRoadSegment(string id, Vector2 start, Vector2 end, float width)
         {
             Id = id;
-            Center = center;
-            Size = size;
+            Start = start;
+            End = end;
+            Width = width;
         }
 
         public string Id { get; }
-        public Vector2 Center { get; }
-        public Vector2 Size { get; }
+        public Vector2 Start { get; }
+        public Vector2 End { get; }
+        public float Width { get; }
+        public Vector2 Center => (Start + End) * .5f;
+        // Broad-phase bounds only; the actual shape is a swept circular corridor.
+        public Vector2 Size => new Vector2(Mathf.Abs(End.x-Start.x)+Width, Mathf.Abs(End.y-Start.y)+Width);
         public float MinX => Center.x - Size.x * 0.5f;
         public float MaxX => Center.x + Size.x * 0.5f;
         public float MinY => Center.y - Size.y * 0.5f;
         public float MaxY => Center.y + Size.y * 0.5f;
 
         public bool Contains(Vector2 point, float tolerance = 0f) =>
-            point.x >= MinX - tolerance && point.x <= MaxX + tolerance &&
-            point.y >= MinY - tolerance && point.y <= MaxY + tolerance;
+            TownKeyartGeometry.PointSegmentDistance(point, Start, End) <= Width * .5f + tolerance;
     }
 
     public readonly struct TownBuildingLot
@@ -79,6 +83,8 @@ namespace CindarsHope.Editor.SceneCreation
         public TownDoorSide DoorSide { get; }
         public TownBuildingArchetype Archetype { get; }
         public Color Color { get; }
+        // The mill has an off-centre entry; the wheel is outside the walk-in shell.
+        public float DoorTangentOffset => Name == "House_Fishery" ? -2f : 0f;
         public float MinX => Center.x - Size.x * 0.5f;
         public float MaxX => Center.x + Size.x * 0.5f;
         public float MinY => Center.y - Size.y * 0.5f;
@@ -90,10 +96,10 @@ namespace CindarsHope.Editor.SceneCreation
             {
                 switch (DoorSide)
                 {
-                    case TownDoorSide.North: return new Vector3(Center.x, MaxY, 0f);
+                    case TownDoorSide.North: return new Vector3(Center.x + DoorTangentOffset, MaxY, 0f);
                     case TownDoorSide.West: return new Vector3(MinX, Center.y, 0f);
                     case TownDoorSide.East: return new Vector3(MaxX, Center.y, 0f);
-                    default: return new Vector3(Center.x, MinY, 0f);
+                    default: return new Vector3(Center.x + DoorTangentOffset, MinY, 0f);
                 }
             }
         }
@@ -105,10 +111,10 @@ namespace CindarsHope.Editor.SceneCreation
                 var door = DoorPosition;
                 switch (DoorSide)
                 {
-                    case TownDoorSide.North: return door + new Vector3(0f, 1.3f, 0f);
-                    case TownDoorSide.West: return door + new Vector3(-1.3f, 0f, 0f);
-                    case TownDoorSide.East: return door + new Vector3(1.3f, 0f, 0f);
-                    default: return door + new Vector3(0f, -1.3f, 0f);
+                    case TownDoorSide.North: return door + new Vector3(0f, 1.5f, 0f);
+                    case TownDoorSide.West: return door + new Vector3(-1.5f, 0f, 0f);
+                    case TownDoorSide.East: return door + new Vector3(1.5f, 0f, 0f);
+                    default: return door + new Vector3(0f, -1.5f, 0f);
                 }
             }
         }
@@ -126,8 +132,7 @@ namespace CindarsHope.Editor.SceneCreation
         private const float OverlapEpsilon = 0.001f;
 
         public bool Overlaps(TownRoadSegment road, float margin = 0f) =>
-            Mathf.Abs(Center.x - road.Center.x) < (Size.x + road.Size.x) * 0.5f + margin - OverlapEpsilon &&
-            Mathf.Abs(Center.y - road.Center.y) < (Size.y + road.Size.y) * 0.5f + margin - OverlapEpsilon;
+            TownKeyartGeometry.SegmentRectDistance(road.Start, road.End, Center, Size) < road.Width * .5f + margin - OverlapEpsilon;
     }
 
     public readonly struct TownNpcPlace
@@ -165,74 +170,20 @@ namespace CindarsHope.Editor.SceneCreation
         public const int BaselineHouseCount = 24;
         public const int BaselineNpcStallCount = 23;
         public const int BaselineMarketStallCount = 6;
-        public const int BaselineTreeCount = 497;
-        public const int ExteriorForestBandCount = 6;
+        public const int BaselineTreeCount = TownAccessMetrics.MinimumMaterializedTrees;
+        // Actual materialized bands; not six nominal bands while silently skipping half the loop.
+        public const int ExteriorForestBandCount = 3;
         public const float ExteriorForestStep = 2.25f;
         public const float ExteriorForestGateHalfClearance = 6f;
         public const float ExteriorForestGroundPadding = 30f;
 
-        // v9 organic relayout road network (spec_town_layout_v9_organic; spec_codex door-south +
-        // breathing-room pass). Hand-fit so every lot frontage touches exactly one segment without
-        // overlapping it (validated offline against lot-lot >=3un / lot-road >=2un / wall-clearance
-        // >=3un / door-reaches-road before being committed here; see AuditHouseOverlaps +
-        // AuditWallClearance in CreateMvpTownScene for the in-editor re-check).
-        //
-        // road_lake_link moved (-32.5,-15,9x3) -> (-35.5,-14.5,6x3): the original box was <2un from
-        // both House_Inn (north) and House_Residential_4 (east) once those switched to a south-facing
-        // door footprint; narrowing + shifting it toward House_Fishery keeps it functioning as the
-        // lake-district connector while clearing both neighbors by >=2un.
-        private static readonly TownRoadSegment[] Roads =
-        {
-            // Avenida N-S: portao sul (y=-45) ate a fachada civica (y=26).
-            new TownRoadSegment("road_main_ns", new Vector2(0f, -9.5f), new Vector2(6f, 71f)),
-            // Avenida E-W: tangencia a praca central.
-            new TownRoadSegment("road_main_ew", new Vector2(0f, 4f), new Vector2(100f, 5f)),
-            // Fachada civica: recebe as 4 fachadas do distrito norte (Temple/Chamber/Prison/Manor).
-            new TownRoadSegment("road_civic_frontage", new Vector2(0f, 26f), new Vector2(112f, 4f)),
-
-            // Distrito oeste / mercado.
-            new TownRoadSegment("road_market_ns", new Vector2(-35f, 4f), new Vector2(3f, 16f)),
-            new TownRoadSegment("road_lake_link", new Vector2(-35.5f, -14.5f), new Vector2(6f, 3f)),
-
-            // Distrito sul residencial.
-            new TownRoadSegment("road_south_spine", new Vector2(0f, -28f), new Vector2(66f, 3f)),
-            new TownRoadSegment("road_south_lane_w", new Vector2(-19f, -28f), new Vector2(3f, 20f)),
-            new TownRoadSegment("road_south_lane_e", new Vector2(20f, -28f), new Vector2(3f, 20f)),
-
-            // Fachadas dedicadas (frontage strips) tocando a borda SUL de cada lote (spec_codex:
-            // "todas as portas nascem no sul" — task 2). Cada segmento cobre o footprint do vao da
-            // porta + o ponto de aproximacao (TownBuildingLot.DoorApproach) com folga, tocando a
-            // borda MinY do lote (touch-not-overlap, ver OverlapEpsilon acima) sem precisar alcancar
-            // fisicamente uma avenida principal — o proprio segmento de frontage conta como via para
-            // IsPointOnRoad/AllRoads. Para as fileiras residenciais (row1: y=-21) a faixa cobre
-            // exatamente o vao remanescente ate road_south_spine (touch-touch, altura 2un); para a
-            // fileira row2 (y=-35) e demais lotes isolados a faixa e autocontida (2.6un) e o proprio
-            // ponto de aproximacao da porta cai dentro dela.
-            new TownRoadSegment("frontage_registry", new Vector2(17.5f, 12.7f), new Vector2(11f, 2.6f)),
-            new TownRoadSegment("frontage_archive", new Vector2(52.5f, 12.7f), new Vector2(6f, 2.6f)),
-            new TownRoadSegment("frontage_markethall", new Vector2(-46f, 7.5f), new Vector2(9f, 2f)),
-            new TownRoadSegment("frontage_bakery", new Vector2(-20f, 9.2f), new Vector2(12f, 2.6f)),
-            new TownRoadSegment("frontage_inn", new Vector2(-24f, -12.8f), new Vector2(6f, 2.6f)),
-            new TownRoadSegment("frontage_fishery", new Vector2(-46f, -20.8f), new Vector2(7f, 2.6f)),
-            new TownRoadSegment("frontage_blacksmith", new Vector2(29f, 7.5f), new Vector2(6f, 2f)),
-            new TownRoadSegment("frontage_alchemylab", new Vector2(40.5f, 7.5f), new Vector2(6.5f, 2f)),
-            new TownRoadSegment("frontage_workshop", new Vector2(29f, -13.8f), new Vector2(6f, 2.6f)),
-            new TownRoadSegment("frontage_tannery", new Vector2(40.5f, -13.8f), new Vector2(6.5f, 2.6f)),
-            new TownRoadSegment("frontage_residential4", new Vector2(-27f, -25.5f), new Vector2(6f, 2f)),
-            new TownRoadSegment("frontage_carvalhotorto", new Vector2(-27f, -39.8f), new Vector2(6f, 2.6f)),
-            new TownRoadSegment("frontage_residential1", new Vector2(-11.5f, -25.5f), new Vector2(6f, 2f)),
-            new TownRoadSegment("frontage_dagna", new Vector2(-11.5f, -39.8f), new Vector2(6f, 2.6f)),
-            new TownRoadSegment("frontage_residential2", new Vector2(12.5f, -25.5f), new Vector2(6f, 2f)),
-            new TownRoadSegment("frontage_pip", new Vector2(11f, -39.8f), new Vector2(6f, 2.6f)),
-            new TownRoadSegment("frontage_residential3", new Vector2(28f, -25.5f), new Vector2(6f, 2f)),
-            new TownRoadSegment("frontage_tovin", new Vector2(28f, -39.8f), new Vector2(6f, 2.6f)),
-            new TownRoadSegment("frontage_gatekeeper", new Vector2(19.5f, -43.3f), new Vector2(3.6f, 2.6f)),
-            new TownRoadSegment("frontage_animalyard", new Vector2(-43f, -39.3f), new Vector2(10f, 2.6f)),
-        };
+        // Materialized routes and lot geometry share one deterministic source. No legacy road grid.
+        private static TownRoadSegment[] s_roads;
+        private static TownRoadSegment[] Roads => s_roads ??= TownKeyartGeometry.BuildRoads(Buildings);
 
         // v9 organic relayout lots (spec_town_layout_v9_organic; spec_codex door-south + breathing-
         // room pass). Coordinates hand-fit around the spec's target table (tolerance +/-2un) to clear
-        // lot-lot overlap (>=3un edge-to-edge gap), lot-road overlap (>=2un edge-to-edge gap outside a
+        // lot-lot overlap (>=4un edge-to-edge gap), lot-road overlap (>=2un edge-to-edge gap outside a
         // lot's own frontage), >=3un wall clearance and door-reaches-road; every pairwise/road check
         // was re-verified with an offline audit script mirroring AuditHouseOverlaps before being
         // committed here (0 violations). See the spec's "Composicao-alvo" tables for intent and the
@@ -240,61 +191,62 @@ namespace CindarsHope.Editor.SceneCreation
         private static readonly TownBuildingLot[] Buildings =
         {
             // Distrito NORTE (civico/religioso) — fachadas com porta S tocando road_civic_frontage.
-            Lot("House_Temple", TownDistrictLayout.DistrictTempleNorth, -38f, 33.5f, 16f, 11f, TownDoorSide.South, TownBuildingArchetype.Temple, 0.72f, 0.76f, 0.82f),
-            Lot("House_Chamber", TownDistrictLayout.DistrictTempleNorth, -12f, 33f, 15f, 10f, TownDoorSide.South, TownBuildingArchetype.Civic, 0.28f, 0.29f, 0.32f),
-            Lot("House_Prison", TownDistrictLayout.DistrictTempleNorth, 8f, 32.5f, 12f, 9f, TownDoorSide.South, TownBuildingArchetype.Guard, 0.30f, 0.30f, 0.34f),
-            Lot("House_Manor", TownDistrictLayout.DistrictTempleNorth, 34f, 33f, 16f, 10f, TownDoorSide.South, TownBuildingArchetype.Noble, 0.42f, 0.52f, 0.66f),
+            Lot("House_Temple", TownDistrictLayout.DistrictTempleNorth, -32f, 24f, 16f, 11f, TownDoorSide.South, TownBuildingArchetype.Temple, 0.72f, 0.76f, 0.82f),
+            Lot("House_Chamber", TownDistrictLayout.DistrictTempleNorth, -57.5f, 42.5f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Civic, 0.28f, 0.29f, 0.32f),
+            Lot("House_Prison", TownDistrictLayout.DistrictTempleNorth, -14.5f, 41.5f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Guard, 0.30f, 0.30f, 0.34f),
+            Lot("House_Manor", TownDistrictLayout.DistrictTempleNorth, 62.5f, 39f, 9f, 8f, TownDoorSide.South, TownBuildingArchetype.Noble, 0.42f, 0.52f, 0.66f),
             // Registry: x 19->17.5 (clears the central-plaza AABB check), y 19->18 (>=2un from
             // road_civic_frontage on its north side; door/frontage stay south, unaffected).
-            Lot("House_Registry", TownDistrictLayout.DistrictCentralPlaza, 17.5f, 18f, 9f, 8f, TownDoorSide.South, TownBuildingArchetype.Civic, 0.55f, 0.58f, 0.66f),
-            // Archive: West->South (task 2). x 51->52.5, y 20->18 (task 3: >=3un from House_AlchemyLab
+            Lot("House_Registry", TownDistrictLayout.DistrictCentralPlaza, 17.5f, 41.5f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Civic, 0.55f, 0.58f, 0.66f),
+            // Archive: West->South (task 2). x 51->52.5, y 20->18 (task 3: >=4un from House_AlchemyLab
             // and >=2un from road_civic_frontage on its north side, now that both face south).
-            Lot("House_Archive", TownDistrictLayout.DistrictTempleNorth, 52.5f, 18f, 9f, 8f, TownDoorSide.South, TownBuildingArchetype.Noble, 0.43f, 0.30f, 0.58f),
+            Lot("House_Archive", TownDistrictLayout.DistrictTempleNorth, 65.5f, 20f, 9f, 8f, TownDoorSide.South, TownBuildingArchetype.Noble, 0.43f, 0.30f, 0.58f),
 
             // Distrito OESTE (comercio + parque).
             // MarketHall: East->South (task 2). x -44->-46, y 12->13.5 (task 3: >=2un from
             // road_market_ns and road_main_ew now that its frontage faces south).
-            Lot("House_MarketHall", TownDistrictLayout.DistrictMarketWest, -46f, 13.5f, 14f, 10f, TownDoorSide.South, TownBuildingArchetype.Market, 0.60f, 0.50f, 0.34f),
-            Lot("House_Bakery", TownDistrictLayout.DistrictMarketWest, -20f, 14f, 10f, 7f, TownDoorSide.South, TownBuildingArchetype.Bakery, 0.78f, 0.58f, 0.35f),
-            // Inn: East->South (task 2). y -4->-6 (task 3: >=2un from road_main_ew and the relocated
-            // road_lake_link now that its frontage faces south).
-            Lot("House_Inn", TownDistrictLayout.DistrictMarketWest, -24f, -6f, 14f, 11f, TownDoorSide.South, TownBuildingArchetype.Inn, 0.62f, 0.50f, 0.36f),
+            Lot("House_MarketHall", TownDistrictLayout.DistrictMarketWest, -57.5f, 16.5f, 9f, 8f, TownDoorSide.South, TownBuildingArchetype.Market, 0.60f, 0.50f, 0.34f),
+            Lot("House_Bakery", TownDistrictLayout.DistrictMarketWest, -29.5f, -1f, 10f, 7f, TownDoorSide.South, TownBuildingArchetype.Bakery, 0.78f, 0.58f, 0.35f),
+            // Inn: East->South (task 2). Mantida em y=-4 para liberar a margem norte do lago;
+            // o conector horizontal ao sul fecha a rota ate a avenida N-S.
+            Lot("House_Inn", TownDistrictLayout.DistrictMarketWest, -52f, -6f, 14f, 11f, TownDoorSide.South, TownBuildingArchetype.Inn, 0.62f, 0.50f, 0.36f),
             // Fishery: East->South (task 2); position/size unchanged (already clears its neighbors).
-            Lot("House_Fishery", TownDistrictLayout.DistrictLakeParkSouthwest, -46f, -15f, 11f, 9f, TownDoorSide.South, TownBuildingArchetype.Watermill, 0.42f, 0.55f, 0.64f),
+            Lot("House_Fishery", TownDistrictLayout.DistrictLakeParkSouthwest, -52f, -24f, 8f, 9f, TownDoorSide.South, TownBuildingArchetype.Watermill, 0.42f, 0.55f, 0.64f),
 
             // Distrito LESTE (oficios).
             // Blacksmith/AlchemyLab/Workshop/Tannery: West->South (task 2). Coluna leste reespacada em
-            // X (27/40 -> 29/40.5) para abrir >=3un contra House_Registry/House_Archive e entre si, e
+            // X (27/40 -> 29/40.5) para abrir >=4un contra House_Registry/House_Archive e entre si, e
             // >=2un de road_main_ew, agora que todos os quatro tem fachada sul.
-            Lot("House_Blacksmith", TownDistrictLayout.DistrictResidentialEast, 29f, 13f, 8f, 9f, TownDoorSide.South, TownBuildingArchetype.Forge, 0.34f, 0.30f, 0.28f),
-            Lot("House_AlchemyLab", TownDistrictLayout.DistrictResidentialEast, 40.5f, 13f, 9f, 9f, TownDoorSide.South, TownBuildingArchetype.Alchemy, 0.30f, 0.52f, 0.56f),
-            Lot("House_Workshop", TownDistrictLayout.DistrictResidentialEast, 29f, -8f, 8f, 9f, TownDoorSide.South, TownBuildingArchetype.Workshop, 0.56f, 0.46f, 0.30f),
-            Lot("House_Tannery", TownDistrictLayout.DistrictResidentialEast, 40.5f, -8f, 9f, 9f, TownDoorSide.South, TownBuildingArchetype.Tannery, 0.58f, 0.44f, 0.30f),
+            Lot("House_Blacksmith", TownDistrictLayout.DistrictResidentialEast, 59f, 0f, 12f, 9f, TownDoorSide.South, TownBuildingArchetype.Forge, 0.34f, 0.30f, 0.28f),
+            Lot("House_AlchemyLab", TownDistrictLayout.DistrictResidentialEast, 25.5f, 3.5f, 9f, 9f, TownDoorSide.South, TownBuildingArchetype.Alchemy, 0.30f, 0.52f, 0.56f),
+            Lot("House_Workshop", TownDistrictLayout.DistrictResidentialEast, 29.5f, -11f, 8f, 9f, TownDoorSide.South, TownBuildingArchetype.Workshop, 0.56f, 0.46f, 0.30f),
+            // Extra vertical breathing room keeps the south-facing blacksmith and tannery facades
+            // readable without moving the tannery onto the district road.
+            Lot("House_Tannery", TownDistrictLayout.DistrictResidentialEast, 57.5f, -16f, 9f, 9f, TownDoorSide.South, TownBuildingArchetype.Tannery, 0.58f, 0.44f, 0.30f),
 
             // Distrito SUL (residencial) — duas colunas ladeando a avenida N-S. Todas East/West->South
             // (task 2). Row1 (y=-22->-21) subida 1un para abrir >=2un contra road_south_spine; dentro
             // da row1, Residential_1/3 reespacadas em X (task 3: >=2un contra road_south_lane_w/e)
-            // preservando >=3un entre si; road_lake_link foi realocado (nao House_Residential_4) para
-            // abrir >=2un contra ela, ver comentario do Roads[]. AnimalYard/GateKeeper reposicionados
+            // preservando >=4un entre si. AnimalYard/GateKeeper reposicionados
             // (ver comentarios abaixo).
-            Lot("House_Residential_4", TownDistrictLayout.DistrictCorralSouth, -27f, -21f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.62f, 0.51f, 0.35f),
-            Lot("House_CarvalhoTorto", TownDistrictLayout.DistrictCorralSouth, -27f, -35f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.50f, 0.46f, 0.34f),
-            Lot("House_Residential_1", TownDistrictLayout.DistrictCorralSouth, -11.5f, -21f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Rural, 0.64f, 0.54f, 0.40f),
-            Lot("House_Dagna", TownDistrictLayout.DistrictCorralSouth, -11.5f, -35f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.52f, 0.44f, 0.40f),
-            Lot("House_Residential_2", TownDistrictLayout.DistrictCorralSouth, 12.5f, -21f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Market, 0.58f, 0.48f, 0.34f),
-            Lot("House_Pip", TownDistrictLayout.DistrictCorralSouth, 11f, -35f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.60f, 0.54f, 0.42f),
-            Lot("House_Residential_3", TownDistrictLayout.DistrictCorralSouth, 28f, -21f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Workshop, 0.45f, 0.56f, 0.48f),
-            Lot("House_Tovin", TownDistrictLayout.DistrictCorralSouth, 28f, -35f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.58f, 0.56f, 0.62f),
+            Lot("House_Residential_4", TownDistrictLayout.DistrictCorralSouth, -36f, -21f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.62f, 0.51f, 0.35f),
+            Lot("House_CarvalhoTorto", TownDistrictLayout.DistrictCorralSouth, -30.5f, -41f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.50f, 0.46f, 0.34f),
+            Lot("House_Residential_1", TownDistrictLayout.DistrictCorralSouth, -13.5f, -26f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Rural, 0.64f, 0.54f, 0.40f),
+            Lot("House_Dagna", TownDistrictLayout.DistrictCorralSouth, -10.5f, -46f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.52f, 0.44f, 0.40f),
+            Lot("House_Residential_2", TownDistrictLayout.DistrictCorralSouth, 14.5f, -21f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Market, 0.58f, 0.48f, 0.34f),
+            Lot("House_Pip", TownDistrictLayout.DistrictCorralSouth, 18.5f, -42f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.60f, 0.54f, 0.42f),
+            Lot("House_Residential_3", TownDistrictLayout.DistrictCorralSouth, 37.5f, -28.5f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Workshop, 0.45f, 0.56f, 0.48f),
+            Lot("House_Tovin", TownDistrictLayout.DistrictCorralSouth, 43f, -47f, 8f, 7f, TownDoorSide.South, TownBuildingArchetype.Residential, 0.58f, 0.56f, 0.62f),
             // GateKeeper: West->South. Reshaped from 8x4 to 3.6x2 and moved (10,-40)->(19.5,-41): the
             // corner between road_main_ns, House_Pip and the south wall is only ~7un wide once every
             // neighbor needs South clearance too, so a full 8x4 guard post cannot fit there with
-            // >=3un from Pip/Tovin, >=2un from road_main_ns, and >=3un wall clearance simultaneously;
+            // >=4un from Pip/Tovin, >=2un from road_main_ns, and >=3un wall clearance simultaneously;
             // 3.6x2 (tucked between House_Pip and House_Tovin, south of the row) is the largest
             // footprint that clears every constraint. Documented reshape, not silently shrunk.
-            Lot("House_GateKeeper", TownDistrictLayout.DistrictCorralSouth, 19.5f, -41f, 3.6f, 2f, TownDoorSide.South, TownBuildingArchetype.Guard, 0.42f, 0.46f, 0.56f),
+            Lot("House_GateKeeper", TownDistrictLayout.DistrictCorralSouth, 31f, -44f, 8f, 6f, TownDoorSide.South, TownBuildingArchetype.Guard, 0.42f, 0.46f, 0.56f),
             // AnimalYard: East->South. x -42->-43 (task 3: >=2un from road_south_spine now that its
             // frontage faces south); size/y unchanged (already clears CarvalhoTorto/Fishery).
-            Lot("House_AnimalYard", TownDistrictLayout.DistrictCorralSouth, -43f, -32f, 16f, 12f, TownDoorSide.South, TownBuildingArchetype.Warehouse, 0.44f, 0.32f, 0.20f),
+            Lot("House_AnimalYard", TownDistrictLayout.DistrictCorralSouth, 55f, -33f, 16f, 12f, TownDoorSide.South, TownBuildingArchetype.Warehouse, 0.44f, 0.32f, 0.20f),
         };
 
         // v9 organic relayout NPC anchors (spec_town_layout_v9_organic). Work = recalculated from
@@ -311,8 +263,8 @@ namespace CindarsHope.Editor.SceneCreation
             Npc("npc_sylveth", "sementes e horticultura", "House_Residential_1", -8f, -22f, -3f, 5f),
             Npc("npc_renko", "loja geral", "House_Residential_2", 9f, -22f, 4f, 5f),
             Npc("npc_mirela", "alfaiataria", "House_Residential_3", 21f, -22f, 8f, -1f),
-            Npc("npc_orlan", "estalagem", "House_Inn", -17.5f, -4f, -8f, 6.5f),
-            Npc("npc_gruta", "taverna e cozinha", "House_Inn", -14.5f, -4f, -6f, 6.5f),
+            Npc("npc_orlan", "estalagem", "House_Inn", -17.5f, -2f, -8f, 6.5f),
+            Npc("npc_gruta", "taverna e cozinha", "House_Inn", -14.5f, -2f, -6f, 6.5f),
             Npc("npc_brumdar", "ferreiro", "House_Blacksmith", 26f, 12.5f, 2f, 5f),
             Npc("npc_dagna", "mineração e estrada da pedreira", "House_Dagna", -8f, -34f, -19f, -28f),
             Npc("npc_hund", "guarda e construção", "House_CarvalhoTorto", -22.5f, -34f, -27f, -22f),
@@ -322,17 +274,17 @@ namespace CindarsHope.Editor.SceneCreation
             Npc("npc_nimble", "carpintaria", "House_Workshop", 26f, -6f, 8f, 5.5f),
             Npc("npc_gurd", "construção pesada", "House_CarvalhoTorto", -21.5f, -34f, -30f, -22f),
             Npc("npc_yael", "mercado noturno", null, 12f, -10.5f, 8f, -8f),
-            Npc("npc_maelor", "rota noturna e cemitério", null, -50f, 32f, -6f, 4f),
+            Npc("npc_maelor", "rota noturna e cemitério", null, -45f, 25f, -6f, 4f),
             Npc("npc_zrix", "estrada da caverna", null, 57f, -4f, 6f, 4.5f),
             Npc("npc_savra", "ervas e floresta", "House_Residential_4", -22f, -22f, 45f, -18f),
             Npc("npc_ozzra", "alquimia", "House_AlchemyLab", 40f, 7f, 4f, 5.5f),
-            Npc("npc_eiran", "animais e armazém", "House_AnimalYard", -33f, -32f, -14.5f, -4f),
+            Npc("npc_eiran", "animais e armazém", "House_AnimalYard", 46f, -40f, 14f, -6f),
             Npc("npc_liora", "música e jardim das estátuas", null, 3f, 3f, 3f, 3f),
-            Npc("npc_velorin", "liderança e conselho", "House_Chamber", -12f, 27f, -6f, 4f),
+            Npc("npc_velorin", "liderança e conselho", "House_Chamber", -12f, 27f, -8f, 2.5f),
             Npc("npc_sael", "pesca, moinho e cais", "House_Fishery", -39.5f, -15f, -46f, -21f),
             Npc("npc_mella", "padaria e moagem", "House_Bakery", -20f, 9.5f, -2f, 4f),
             Npc("npc_hess", "curtume", "House_Tannery", 40f, -11.5f, 40f, -1f),
-            Npc("npc_tibbet", "cemitério e sacristia", null, -50f, 30f, -50f, 27f),
+            Npc("npc_tibbet", "cemitério e sacristia", null, -43f, 23f, -45f, 27f),
         };
 
         public static IReadOnlyList<TownRoadSegment> AllRoads => Roads;
@@ -412,7 +364,7 @@ namespace CindarsHope.Editor.SceneCreation
             var p = new Vector2(point.x, point.y);
             for (var i = 0; i < Roads.Length; i++)
             {
-                if (Roads[i].Contains(p, tolerance))
+                if (Roads[i].Contains(p, tolerance) && IsRoadConnectedToMainNetwork(i))
                 {
                     return true;
                 }
@@ -421,13 +373,67 @@ namespace CindarsHope.Editor.SceneCreation
             return false;
         }
 
+        // Acesso fisico exige mais do que cair sobre um retangulo de caminho: o retangulo precisa
+        // tocar a malha que nasce na avenida principal. Busca iterativa pequena e deterministica,
+        // usada apenas no editor/gerador e nos testes de layout.
+        private static bool IsRoadConnectedToMainNetwork(int startIndex)
+        {
+            if (s_roadConnectivity != null) return s_roadConnectivity[startIndex];
+            var visited = new bool[Roads.Length];
+            var queue = new int[Roads.Length];
+            int head = 0;
+            int tail = 0;
+            visited[0] = true;
+            queue[tail++] = 0;
+
+            while (head < tail)
+            {
+                int current = queue[head++];
+                for (int candidate = 0; candidate < Roads.Length; candidate++)
+                {
+                    if (visited[candidate] || !RoadsTouch(Roads[current], Roads[candidate]))
+                    {
+                        continue;
+                    }
+
+                    visited[candidate] = true;
+                    queue[tail++] = candidate;
+                }
+            }
+
+            s_roadConnectivity = visited;
+            return visited[startIndex];
+        }
+
+        private static bool[] s_roadConnectivity;
+
+        private static bool RoadsTouch(TownRoadSegment a, TownRoadSegment b)
+        {
+            return TownKeyartGeometry.SegmentDistance(a.Start,a.End,b.Start,b.End) <= (a.Width+b.Width)*.5f+.02f;
+        }
+
         private static TownBuildingLot Lot(
             string name, string districtId, float x, float y, float width, float height,
             TownDoorSide side, TownBuildingArchetype archetype, float r, float g, float b) =>
             new TownBuildingLot(name, districtId, new Vector2(x, y), new Vector2(width, height), side, archetype, new Color(r, g, b));
 
         private static TownNpcPlace Npc(
-            string npcId, string role, string buildingName, float workX, float workY, float socialX, float socialY) =>
-            new TownNpcPlace(npcId, role, buildingName, new Vector2(workX, workY), new Vector2(socialX, socialY));
+            string npcId, string role, string buildingName, float workX, float workY, float socialX, float socialY)
+        {
+            var work = new Vector2(workX * (4f/3f), (workY - 4f) * (56f/45f) + 4f);
+            if(npcId=="npc_liora")work=new Vector2(7f,1f);
+            if (!string.IsNullOrWhiteSpace(buildingName) && TryGetBuilding(buildingName, out var lot))
+            {
+                float tangent = npcId == "npc_gruta" || npcId == "npc_hund" ? -1.6f : 1.6f;
+                // Work stays inside the reserved apron and clear of the central 1.4u entrance lane.
+                work = (Vector2)lot.DoorApproach + new Vector2(tangent, -.5f);
+            }
+            var social=new Vector2(socialX,socialY);
+            if(npcId=="npc_mirela")social=new Vector2(4f,-6f);
+            var fromBasin=social-CentralPlazaCenter;
+            if(Mathf.Abs(fromBasin.x)<5f&&Mathf.Abs(fromBasin.y)<3f)
+                social=CentralPlazaCenter+(fromBasin.sqrMagnitude<.1f?Vector2.right:fromBasin.normalized)*6f;
+            return new TownNpcPlace(npcId, role, buildingName, work, social);
+        }
     }
 }

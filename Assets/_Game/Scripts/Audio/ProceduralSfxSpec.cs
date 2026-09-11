@@ -169,6 +169,8 @@ namespace CindarsHope.Audio
                 // fish = splash (ruído curto)
                 case SfxCategory.Fish:
                     return new ProceduralSfxSpec(300f, 300f, 0.16f, WaveShape.Noise, 0.4f, 1);
+                case SfxCategory.Door:
+                    return new ProceduralSfxSpec(240f, 360f, 0.12f, WaveShape.Square, 0.42f, 2);
                 default:
                     return default;
             }
@@ -279,6 +281,7 @@ namespace CindarsHope.Audio
             yield return SfxCategory.Craft;
             yield return SfxCategory.Harvest;
             yield return SfxCategory.Fish;
+            yield return SfxCategory.Door;
         }
 
         /// <summary>Todos os estados de música.</summary>

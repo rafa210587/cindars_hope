@@ -4,9 +4,51 @@ using UnityEngine;
 
 namespace CindarsHope.Save.Migrations
 {
+    /// <summary>Owns save-file replacement and backup operations without interpreting the save schema.</summary>
+    /// <remarks>Callers serialize and validate contents. IO failures propagate from writing; Try operations return error details.</remarks>
     public static class SaveBackupService
     {
         private const string BackupSuffix = ".backup";
+
+        /// <summary>Writes through a temporary file and retains the previous contents as a backup.</summary>
+        /// <remarks>Replacement is atomic where File.Replace is supported. The legacy fallback keeps a safety backup but is not crash-atomic.</remarks>
+        public static void WriteTextSafely(string path, string contents)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            var tempPath = $"{path}.tmp";
+            File.WriteAllText(tempPath, contents);
+            if (!File.Exists(tempPath))
+            {
+                throw new IOException($"Temporary save file was not written: {tempPath}");
+            }
+
+            if (!File.Exists(path))
+            {
+                File.Move(tempPath, path);
+                return;
+            }
+
+            var backupPath = $"{path}{BackupSuffix}";
+            try
+            {
+                File.Replace(tempPath, path, backupPath, true);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                if (!TryCreateBackup(path, out _, out var backupError))
+                {
+                    throw new IOException($"Could not create safety backup before replacing save: {backupError}");
+                }
+
+                File.Delete(path);
+                File.Move(tempPath, path);
+            }
+        }
 
         public static bool TryCreateBackup(string originalPath, out string backupPath, out string errorMessage)
         {

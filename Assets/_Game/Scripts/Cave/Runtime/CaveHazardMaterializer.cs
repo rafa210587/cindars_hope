@@ -113,6 +113,8 @@ namespace CindarsHope.Cave.Runtime
                     hazardTile = hazardGO.AddComponent<CaveHazardTile>();
                 }
                 hazardTile.Configure(hazard.HazardId, hazard.Kind, spriteRenderer, hasCustomSprite);
+                TemporaryRevealTargetBehaviour.Attach(hazardGO, hazard.HazardId,
+                    CindarsHope.Foundation.TemporaryRevealKind.Hazard, isActive: () => hazardTile.isActiveAndEnabled);
 
                 materializedObjects.Add(hazardGO);
             }
@@ -184,6 +186,9 @@ namespace CindarsHope.Cave.Runtime
                 registerOpenedChest,
                 closedSprite,
                 openSprite);
+            TemporaryRevealTargetBehaviour.Attach(chestGO, treasure.ChestId,
+                CindarsHope.Foundation.TemporaryRevealKind.Interactable,
+                isExhausted: () => chest.IsOpened);
 
             materializedObjects.Add(chestGO);
             CombatLog.Log(

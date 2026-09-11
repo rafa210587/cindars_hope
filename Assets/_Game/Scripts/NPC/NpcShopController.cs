@@ -42,7 +42,7 @@ namespace CindarsHope.NPC
         private INpcSellPanel SellPanelPort => _sellPanel as INpcSellPanel;
         private IModalRuntime ModalRuntime => _modalManager as IModalRuntime;
 
-        private const string ThalindraQuestId = "quest_first_supplies_for_cindar";
+        private const string ThalindraQuestId = CindarsHope.Quests.Runtime.QuestRuntimeIds.SupplyQuestId;
         private readonly NpcShopInteractionSession _interaction = new NpcShopInteractionSession();
         // Built once in Awake (field initializers cannot call instance methods in C#). Holds only
         // closures over `this`, no Unity API calls, so constructing it early is safe.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -15,6 +16,8 @@ namespace CindarsHope.Editor.Art
     public static class WorldTilemapGround
     {
         private const string TileAssetDir = "Assets/_Game/Art/Generated/World/_TileAssets";
+
+        public enum TerrainTransitionKind { GrassToDirt, WaterToRock }
 
         /// <summary>Cria (ou reobtem) um Grid+Tilemap filho de parent. cellSize deve casar o tile em unidades.</summary>
         public static Tilemap GetOrCreateLayer(Transform parent, string gridName, string layerName,
@@ -170,6 +173,98 @@ namespace CindarsHope.Editor.Art
             PaintRect(tm, tileSprite, center, sizeUnits);
         }
 
+        /// <summary>Pinta as celulas cujo centro pertence ao poligono, sem preencher o bounding box.</summary>
+        public static void PaintPolygon(Transform parent, string gridName, string layerName, int sortingOrder,
+            string tileName, IReadOnlyList<Vector2> polygon)
+        {
+            var tileSprite = WorldSpriteLibrary.Ground(tileName);
+            if (tileSprite == null)
+            {
+                throw new InvalidOperationException("WorldTilemapGround: missing terrain tile '" + tileName + "' for polygon paint.");
+            }
+
+            var cellSize = SpriteWorldSize(tileSprite);
+            var tilemap = GetOrCreateLayer(parent, gridName, layerName, cellSize, sortingOrder, "Ground");
+            var tile = GetTile(tileSprite);
+            var cells = RasterizePolygonCells(polygon, cellSize);
+            for (var i = 0; i < cells.Count; i++) tilemap.SetTile(cells[i], tile);
+        }
+
+        /// <summary>
+        /// Paints a deterministic eight-neighbour transition ring outside the polygon. The current
+        /// world kit has no authored edge sprites yet; it deliberately uses the nearest existing
+        /// dirt/rock tiles so the missing edge art remains visible to the validator and report.
+        /// </summary>
+        public static void PaintTransitionRing(Transform parent, string gridName, string layerName, int sortingOrder,
+            IReadOnlyList<Vector2> polygon, TerrainTransitionKind kind)
+        {
+            var tileName = kind == TerrainTransitionKind.WaterToRock ? "ground_cliff_rock" : "ground_path_dirt";
+            var tileSprite = WorldSpriteLibrary.Ground(tileName);
+            if (tileSprite == null)
+            {
+                throw new InvalidOperationException("WorldTilemapGround: missing fallback tile '" + tileName + "' for " + kind + " transition.");
+            }
+
+            var cellSize = SpriteWorldSize(tileSprite);
+            var tilemap = GetOrCreateLayer(parent, gridName, layerName, cellSize, sortingOrder, "Ground");
+            var tile = GetTile(tileSprite);
+            var inside = new HashSet<Vector3Int>(RasterizePolygonCells(polygon, cellSize));
+            var ring = RasterizeTransitionRingCells(inside);
+            foreach (var cell in ring) tilemap.SetTile(cell, tile);
+        }
+
+        /// <summary>Pure deterministic polygon rasterizer used by the terrain painter and EditMode tests.</summary>
+        public static IReadOnlyList<Vector3Int> RasterizePolygonCells(IReadOnlyList<Vector2> polygon, float cellSize)
+        {
+            if (polygon == null) throw new ArgumentNullException(nameof(polygon));
+            if (polygon.Count < 3) throw new ArgumentException("A terrain polygon needs at least three points.", nameof(polygon));
+            if (cellSize <= 0f) throw new ArgumentOutOfRangeException(nameof(cellSize));
+
+            var min = polygon[0];
+            var max = min;
+            for (var i = 1; i < polygon.Count; i++)
+            {
+                min = Vector2.Min(min, polygon[i]);
+                max = Vector2.Max(max, polygon[i]);
+            }
+
+            var xmin = Mathf.FloorToInt(min.x / cellSize);
+            var xmax = Mathf.CeilToInt(max.x / cellSize);
+            var ymin = Mathf.FloorToInt(min.y / cellSize);
+            var ymax = Mathf.CeilToInt(max.y / cellSize);
+            var cells = new List<Vector3Int>();
+            for (var x = xmin; x < xmax; x++)
+            {
+                for (var y = ymin; y < ymax; y++)
+                {
+                    var center = new Vector2((x + 0.5f) * cellSize, (y + 0.5f) * cellSize);
+                    if (ContainsPoint(polygon, center)) cells.Add(new Vector3Int(x, y, 0));
+                }
+            }
+
+            return cells;
+        }
+
+        public static IReadOnlyCollection<Vector3Int> RasterizeTransitionRingCells(IReadOnlyCollection<Vector3Int> filledCells)
+        {
+            var filled = new HashSet<Vector3Int>(filledCells);
+            var ring = new HashSet<Vector3Int>();
+            foreach (var cell in filled)
+            {
+                for (var dx = -1; dx <= 1; dx++)
+                {
+                    for (var dy = -1; dy <= 1; dy++)
+                    {
+                        if (dx == 0 && dy == 0) continue;
+                        var neighbour = new Vector3Int(cell.x + dx, cell.y + dy, cell.z);
+                        if (!filled.Contains(neighbour)) ring.Add(neighbour);
+                    }
+                }
+            }
+
+            return ring;
+        }
+
         // Pinta um ANEL de margem (areia) ao redor de um retangulo de agua: o rect EXPANDIDO
         // (center, size + 2*ring) e pintado na layer "Shore" (sortingOrder 1, mesma ordem da agua).
         // O chamador deve pintar a agua DEPOIS (mesmo center/size do rect base, sem o ring) para que
@@ -191,6 +286,22 @@ namespace CindarsHope.Editor.Art
                 AssetDatabase.CreateFolder("Assets/_Game/Art/Generated", "World");
             }
             AssetDatabase.CreateFolder(parent, "_TileAssets");
+        }
+
+        private static bool ContainsPoint(IReadOnlyList<Vector2> polygon, Vector2 point)
+        {
+            var inside = false;
+            for (int i = 0, j = polygon.Count - 1; i < polygon.Count; j = i++)
+            {
+                var current = polygon[i];
+                var previous = polygon[j];
+                if ((current.y > point.y) == (previous.y > point.y)) continue;
+                var crossingX = (previous.x - current.x) * (point.y - current.y) /
+                                (previous.y - current.y) + current.x;
+                if (point.x < crossingX) inside = !inside;
+            }
+
+            return inside;
         }
 
         private static void TrySetSortingLayer(Renderer r, string layerName)

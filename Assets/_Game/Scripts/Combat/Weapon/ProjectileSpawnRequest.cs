@@ -4,6 +4,35 @@ using CindarsHope.Foundation;
 
 namespace CindarsHope.Combat.Weapon
 {
+    public readonly struct ProjectileImpactDamage
+    {
+        public int Damage { get; }
+        public bool IsCritical { get; }
+
+        public ProjectileImpactDamage(int damage, bool isCritical)
+        {
+            Damage = Mathf.Max(0, damage);
+            IsCritical = isCritical;
+        }
+    }
+
+    public readonly struct ProjectileImpactContext
+    {
+        public bool GuaranteedCritical { get; }
+        public string TargetInstanceId { get; }
+        public float TargetPositionX { get; }
+        public float TargetPositionY { get; }
+
+        public ProjectileImpactContext(bool guaranteedCritical, string targetInstanceId,
+            float targetPositionX, float targetPositionY)
+        {
+            GuaranteedCritical = guaranteedCritical;
+            TargetInstanceId = targetInstanceId ?? string.Empty;
+            TargetPositionX = targetPositionX;
+            TargetPositionY = targetPositionY;
+        }
+    }
+
     /// <summary>
     /// SPEC_06: Request object for projectile spawning.
     /// Contains all parameters needed to spawn and initialize a projectile.
@@ -37,6 +66,20 @@ namespace CindarsHope.Combat.Weapon
 
         /// <summary>How many enemies the projectile can hit before despawning (1 = no pierce).</summary>
         public int MaxHits { get; set; } = 1;
+        public IProjectileHitPolicy HitPolicy { get; set; }
+        public float PostureDamageMultiplier { get; set; }
+        public int SourceCasterRuntimeId { get; set; }
+        public bool StopOnSolidObstacle { get; set; }
+        public System.Func<bool, ProjectileImpactDamage> ImpactDamageResolver { get; set; }
+        public System.Func<ProjectileImpactContext, ProjectileImpactDamage>
+            TargetedImpactDamageResolver { get; set; }
+        public DamageSourceKind SourceKind { get; set; } = DamageSourceKind.None;
+        public SpellDiscipline SpellDiscipline { get; set; } = SpellDiscipline.None;
+        public string SourceInstanceId { get; set; } = string.Empty;
+        public string ActionToken { get; set; } = string.Empty;
+        public bool CanTriggerCapstones { get; set; }
+        public bool CanTriggerStatusEffects { get; set; } = true;
+        public bool CanTriggerReactions { get; set; } = true;
 
         /// <summary>
         /// Fracao da velocidade inicial atingida no fim do alcance (game-feel de desaceleracao).

@@ -93,6 +93,14 @@ namespace CindarsHope.Save
 
         // â”€â”€ Estado interno â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         private readonly HotbarState _hotbarState = new HotbarState();
+        private Skills.Runtime.SurvivalSkillState _survivalSkillState =
+            new Skills.Runtime.SurvivalSkillState();
+        private Skills.Runtime.CraftingPassiveRngState _craftingPassiveRngState =
+            new Skills.Runtime.CraftingPassiveRngState("save_slot_1");
+        private Skills.Runtime.CraftingSkillState _craftingSkillState =
+            new Skills.Runtime.CraftingSkillState();
+        private Skills.Runtime.CombatCapstoneState _combatCapstoneState =
+            new Skills.Runtime.CombatCapstoneState();
         private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
         {
             new InventorySlotsV1ToV2Migration(),
@@ -113,6 +121,10 @@ namespace CindarsHope.Save
         private ISaveSectionProvider _bestiaryProvider;
         private ISaveSectionProvider _activeSkillSlotsProvider;
         private ISaveSectionProvider _skillTreeProvider;
+        private SurvivalSkillSectionProvider _survivalSkillProvider;
+        private CraftingPassiveRngSectionProvider _craftingPassiveRngProvider;
+        private CraftingSkillSectionProvider _craftingSkillProvider;
+        private CombatCapstoneSectionProvider _combatCapstoneProvider;
         private ISaveSectionProvider _craftingProvider;
         private ISaveSectionProvider _economyProvider;
         private IShopStockRuntime _shopStockRuntime;
@@ -145,6 +157,11 @@ namespace CindarsHope.Save
 
         /// <summary>Estado do hotbar compartilhado com a HUD; persistido via HotbarSectionProvider.</summary>
         public HotbarState HotbarState => _hotbarState;
+
+        public Skills.Runtime.SurvivalSkillState SurvivalSkillState => _survivalSkillState;
+        public Skills.Runtime.CraftingPassiveRngState CraftingPassiveRngState => _craftingPassiveRngState;
+        public Skills.Runtime.CraftingSkillState CraftingSkillState => _craftingSkillState;
+        public Skills.Runtime.CombatCapstoneState CombatCapstoneState => _combatCapstoneState;
 
         /// <summary>
         /// Grid de tiles araveis da fazenda. Compartilhado com FarmTilledSoilService.
@@ -232,6 +249,22 @@ namespace CindarsHope.Save
             // Save|UI); Save não nomeia mais nenhum tipo de CindarsHope.Quests.
             _questProvider = new QuestSectionProvider();
             _caveRunProvider = new CaveRunSectionProvider();
+            _survivalSkillState = DomainManagerRegistry.Get<Skills.Runtime.SurvivalSkillState>()
+                ?? _survivalSkillState;
+            _survivalSkillProvider = new SurvivalSkillSectionProvider(_survivalSkillState);
+            DomainManagerRegistry.Register(_survivalSkillState);
+            _craftingPassiveRngState = DomainManagerRegistry.Get<Skills.Runtime.CraftingPassiveRngState>()
+                ?? _craftingPassiveRngState;
+            _craftingPassiveRngProvider = new CraftingPassiveRngSectionProvider(_craftingPassiveRngState);
+            DomainManagerRegistry.Register(_craftingPassiveRngState);
+            _craftingSkillState = DomainManagerRegistry.Get<Skills.Runtime.CraftingSkillState>()
+                ?? _craftingSkillState;
+            _craftingSkillProvider = new CraftingSkillSectionProvider(_craftingSkillState);
+            DomainManagerRegistry.Register(_craftingSkillState);
+            _combatCapstoneState = DomainManagerRegistry.Get<Skills.Runtime.CombatCapstoneState>()
+                ?? _combatCapstoneState;
+            _combatCapstoneProvider = new CombatCapstoneSectionProvider(_combatCapstoneState);
+            DomainManagerRegistry.Register(_combatCapstoneState);
 
             // â”€â”€ Lote 2: manager injetado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _playerProvider = new PlayerSectionProvider(
@@ -344,6 +377,10 @@ namespace CindarsHope.Save
                     Npcs = _npcsProvider?.Capture(existingSaveData) as NpcManagerSaveData,
                     ActiveSkillSlots = _activeSkillSlotsProvider?.Capture(existingSaveData) as ActiveSkillSlotsSaveData,
                     SkillTree = _skillTreeProvider?.Capture(existingSaveData) as Skills.SkillTreeSaveData,
+                    SurvivalSkills = _survivalSkillProvider?.Capture(existingSaveData) as Skills.Runtime.SurvivalSkillSaveData,
+                    CraftingPassiveRng = _craftingPassiveRngProvider?.Capture(existingSaveData) as Skills.Runtime.CraftingPassiveRngSaveData,
+                    CraftingSkills = _craftingSkillProvider?.Capture(existingSaveData) as Skills.Runtime.CraftingSkillSaveData,
+                    CombatCapstones = _combatCapstoneProvider?.Capture(existingSaveData) as Skills.Runtime.CombatCapstoneSaveData,
                     Bestiary = _bestiaryProvider?.Capture(existingSaveData) as BestiarySaveData,
                     Quests = _questProvider?.Capture(existingSaveData) as QuestStateSectionSaveData,
                     Fonte = _fonteProvider?.Capture(existingSaveData) as FonteSaveData,
@@ -367,7 +404,7 @@ namespace CindarsHope.Save
                 }
 
                 var json = JsonUtility.ToJson(saveData, true);
-                WriteTextSafely(savePath, json);
+                SaveBackupService.WriteTextSafely(savePath, json);
 
                 Debug.Log($"Game saved to {savePath}.", this);
                 PublishSaveResult(true, "Save complete.");
@@ -405,6 +442,7 @@ namespace CindarsHope.Save
                 }
 
                 var activeScene = SceneManager.GetActiveScene();
+                ValidateSkillSection(saveData);
                 if (!string.IsNullOrEmpty(saveData.CurrentSceneName) && saveData.CurrentSceneName != activeScene.name)
                 {
                     StartCoroutine(LoadSceneAndApplySaveData(saveData));
@@ -688,6 +726,10 @@ namespace CindarsHope.Save
         private void RegisterProviderDescriptors()
         {
             int order = 0;
+            _providerRegistry.Register<Skills.Runtime.SurvivalSkillSaveData>(_survivalSkillProvider, order++);
+            _providerRegistry.Register<Skills.Runtime.CraftingPassiveRngSaveData>(_craftingPassiveRngProvider, order++);
+            _providerRegistry.Register<Skills.Runtime.CraftingSkillSaveData>(_craftingSkillProvider, order++);
+            _providerRegistry.Register<Skills.Runtime.CombatCapstoneSaveData>(_combatCapstoneProvider, order++);
             _providerRegistry.Register<PlayerSaveData>(_playerProvider, order++);
             _providerRegistry.Register<InventorySaveData>(_inventoryProvider, order++);
             _providerRegistry.Register<HotbarSaveData>(_hotbarProvider, order++);
@@ -762,8 +804,15 @@ namespace CindarsHope.Save
         /// correspondente. A ordem respeita as dependÃªncias entre seÃ§Ãµes (ex: progressÃ£o
         /// antes de skill tree; Fonte antes de MainProgression).
         /// </summary>
+        private void ValidateSkillSection(GameSaveData saveData)
+        {
+            SkillTreeState.ValidateSaveLedger(saveData.SkillTree,
+                saveData.Progression?.UnspentSkillPoints ?? _progressionManager?.UnspentSkillPoints ?? 0);
+        }
+
         private void ApplySaveData(GameSaveData saveData)
         {
+            ValidateSkillSection(saveData);
             using var profilerScope = RestoreMarker.Auto();
 
             // â”€â”€ Dia / tempo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -777,7 +826,43 @@ namespace CindarsHope.Save
             }
 
             // â”€â”€ Jogador (HP, fome, mana, fadiga) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            _playerProvider?.Restore(saveData.Player);
+            bool restoresActiveCaveRun = saveData.CaveRun?.HasActiveRun == true;
+            string restoredRunId = restoresActiveCaveRun
+                ? saveData.CaveRun.RunId ?? string.Empty
+                : string.Empty;
+            int restoredCaveLevel = restoresActiveCaveRun
+                ? saveData.CaveRun.CurrentLevel
+                : 0;
+            if (!restoresActiveCaveRun)
+            {
+                var restoredScene = SceneManager.GetActiveScene();
+                restoredRunId = Skills.Runtime.SurvivalSkillRuntimeCoordinator.ComposeSceneScopeId(
+                    restoredScene.path, restoredScene.name);
+            }
+            _survivalSkillState.BeginRestore();
+            try
+            {
+                _survivalSkillProvider?.RestoreForContext(
+                    saveData.SurvivalSkills ?? new Skills.Runtime.SurvivalSkillSaveData(),
+                    restoredRunId,
+                    restoredCaveLevel);
+
+                // Survival state must exist before HP is applied so HPChanged subscribers can
+                // observe IsRestoreInProgress and never arm Last Breath from restored health.
+                _playerProvider?.Restore(saveData.Player);
+            }
+            finally
+            {
+                _survivalSkillState.EndRestore();
+            }
+
+            _craftingPassiveRngProvider?.Restore(saveData.CraftingPassiveRng);
+            _craftingSkillProvider?.Restore(saveData.CraftingSkills ??
+                new Skills.Runtime.CraftingSkillSaveData
+                {
+                    CurrentDayIndex = Math.Max(1, saveData.CurrentDay)
+                });
+            _craftingSkillState.ObserveDay(Math.Max(1, saveData.CurrentDay));
 
             // PosiÃ§Ã£o do player: mantida no SaveManager porque _playerTransform Ã© uma ref serializada
             // de cena que os providers nÃ£o devem conhecer diretamente.
@@ -812,6 +897,7 @@ namespace CindarsHope.Save
 
             // â”€â”€ Stamina / tempo de jogo / status effects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _staminaProvider?.Restore(saveData.Stamina);
+            _combatCapstoneProvider?.Restore(saveData.CombatCapstones);
             _gameTimeProvider?.Restore(saveData.GameTime);
             _playerStatusEffectsProvider?.Restore(saveData.PlayerStatusEffects);
 

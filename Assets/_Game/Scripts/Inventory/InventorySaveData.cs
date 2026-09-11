@@ -11,6 +11,7 @@ namespace CindarsHope.Inventory
     public class InventorySaveData
     {
         public int Capacity;
+        public long NextItemInstanceSequence = 1;
         public List<InventorySlotSaveData> Slots = new List<InventorySlotSaveData>();
         public List<InventoryItemSaveData> Items = new List<InventoryItemSaveData>();
     }
@@ -20,6 +21,7 @@ namespace CindarsHope.Inventory
     {
         public int SlotIndex;
         public string ItemId;
+        public string ItemInstanceId;
         public int Amount;
         public bool IsEquipped;
         public string EquipmentBindingId;

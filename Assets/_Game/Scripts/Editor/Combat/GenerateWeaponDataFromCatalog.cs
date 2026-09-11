@@ -104,6 +104,13 @@ namespace CindarsHope.EditorTools.Combat
                     generated.Add(weapon);
                 }
 
+                bool requiresTwoHands = RequiresTwoHands(type);
+                if (weapon.RequiresTwoHands != requiresTwoHands)
+                {
+                    weapon.RequiresTwoHands = requiresTwoHands;
+                    EditorUtility.SetDirty(weapon);
+                }
+
                 // Liga o item à arma (determinístico). Só escreve se mudou (idempotência).
                 if (item.WeaponId != weaponId)
                 {
@@ -111,6 +118,20 @@ namespace CindarsHope.EditorTools.Combat
                     EditorUtility.SetDirty(item);
                     itemsLinked++;
                 }
+            }
+
+            // Legacy weapons may predate item_weapon_* catalog entries. Handedness is a combat
+            // contract, so materialize it for every WeaponDataSO in the canonical directory.
+            foreach (var guid in AssetDatabase.FindAssets("t:WeaponDataSO", new[] { WeaponsDir }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var weapon = AssetDatabase.LoadAssetAtPath<WeaponDataSO>(path);
+                if (weapon == null) continue;
+                var type = weapon.Type != WeaponType.None ? weapon.Type : InferWeaponType(weapon.Id ?? path);
+                bool requiresTwoHands = RequiresTwoHands(type);
+                if (weapon.RequiresTwoHands == requiresTwoHands) continue;
+                weapon.RequiresTwoHands = requiresTwoHands;
+                EditorUtility.SetDirty(weapon);
             }
 
             int registered = RegisterInWeaponDatabase(generated);
@@ -160,6 +181,15 @@ namespace CindarsHope.EditorTools.Combat
             if (id.Contains("_wand_")) return WeaponType.Wand;
             if (id.Contains("_tool_")) return WeaponType.Tool;
             return WeaponType.Sword; // default seguro de arquétipo (melee 1-mão).
+        }
+
+        internal static bool RequiresTwoHands(WeaponType type)
+        {
+            return type == WeaponType.Spear
+                || type == WeaponType.Axe
+                || type == WeaponType.Hammer
+                || type == WeaponType.Bow
+                || type == WeaponType.Staff;
         }
 
         private static WeaponDataSO ResolveReference(

@@ -2,6 +2,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Player.Data;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player
@@ -22,9 +23,12 @@ namespace CindarsHope.Player
         private float _distanceAccumulator;
         private bool _criticalEventPublished;
         private bool _emptyEventPublished;
+        private float _fractionalDrainAccumulator;
 
         public int CurrentHunger { get; private set; }
         public int MaxHunger { get; private set; } = 1;
+        /// <summary>Crédito subunitário pendente; persiste para impedir perda por save/load.</summary>
+        public float FractionalDrainAccumulator => _fractionalDrainAccumulator;
         public bool IsEmpty => CurrentHunger <= 0;
         public bool IsCritical => CurrentHunger > 0 && CurrentHunger <= GetCriticalThreshold();
 
@@ -46,6 +50,10 @@ namespace CindarsHope.Player
                 _stepsPerHungerTick = 10;
                 _hungerLossPerTick = 1;
                 _hungerLossPerDay = 10;
+                _distanceAccumulator = 0f;
+                _fractionalDrainAccumulator = 0f;
+                _criticalEventPublished = IsCritical;
+                _emptyEventPublished = IsEmpty;
                 return;
             }
 
@@ -55,6 +63,7 @@ namespace CindarsHope.Player
             _hungerLossPerTick = Mathf.Max(1, _playerData.HungerLossPerTick);
             _hungerLossPerDay = Mathf.Max(0, _playerData.HungerLossPerDay);
             _distanceAccumulator = 0f;
+            _fractionalDrainAccumulator = 0f;
             _criticalEventPublished = IsCritical;
             _emptyEventPublished = IsEmpty;
 
@@ -89,12 +98,15 @@ namespace CindarsHope.Player
             GameEventBus.Publish(new HungerChangedEvent(delta, CurrentHunger, MaxHunger));
         }
 
-        public void RestoreFromSaveData(int currentHunger, int maxHunger)
+        public void RestoreFromSaveData(int currentHunger, int maxHunger,
+            float fractionalDrainAccumulator = 0f)
         {
             var previousHunger = CurrentHunger;
             MaxHunger = Mathf.Max(1, maxHunger);
             CurrentHunger = Mathf.Clamp(currentHunger, 0, MaxHunger);
             _distanceAccumulator = 0f;
+            _fractionalDrainAccumulator = NormalizeFractionalDrainAccumulator(
+                fractionalDrainAccumulator);
             _criticalEventPublished = IsCritical;
             _emptyEventPublished = IsEmpty;
 
@@ -179,10 +191,18 @@ namespace CindarsHope.Player
                 return;
             }
 
-            // F18: aplica a redução derivada preservando drain mínimo de 1 por tick.
-            if (DrainMultiplier < 1f)
+            var world = _playerTransform != null ? _playerTransform.position : transform.position;
+            float naturalMultiplier = NaturalSurvivalRateModifierProvider.Resolve(
+                NaturalSurvivalRateChannel.HungerDrain, world.x, world.y);
+            float finalMultiplier = ResolveFinalDrainMultiplier(
+                DrainMultiplier, naturalMultiplier);
+            float scaledAmount = amount * finalMultiplier;
+            _fractionalDrainAccumulator += Mathf.Max(0f, scaledAmount);
+            amount = Mathf.FloorToInt(_fractionalDrainAccumulator + .00001f);
+            _fractionalDrainAccumulator -= amount;
+            if (amount <= 0)
             {
-                amount = Mathf.Max(1, Mathf.CeilToInt(amount * Mathf.Clamp(DrainMultiplier, 0.25f, 1f)));
+                return;
             }
 
             var previousHunger = CurrentHunger;
@@ -207,6 +227,25 @@ namespace CindarsHope.Player
                 GameEventBus.Publish(new HungerEmptyEvent(CurrentHunger, MaxHunger));
                 ApplyHungerDamage(Mathf.Max(0, _hpLossWhenHungerEmpty), "Hunger reached zero");
             }
+        }
+
+        public static float ResolveFinalDrainMultiplier(float passiveMultiplier,
+            float contextualMultiplier)
+            => Mathf.Clamp(Mathf.Clamp01(passiveMultiplier) *
+                Mathf.Max(0f, contextualMultiplier), .25f, 1f);
+
+        /// <summary>
+        /// O acumulador representa somente a parte fracionária [0,1). Valores legados ausentes
+        /// chegam como zero; dados inválidos não podem gerar drain negativo ou não finito.
+        /// </summary>
+        public static float NormalizeFractionalDrainAccumulator(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value) || value <= 0f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Min(value - Mathf.Floor(value), .999999f);
         }
 
         private void ApplyHungerDamage(int damage, string reason)

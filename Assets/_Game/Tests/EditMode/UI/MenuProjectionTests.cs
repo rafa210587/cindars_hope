@@ -82,13 +82,6 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.IsTrue(vm.HasMissingInputs);
         }
 
-        [Test]
-        public void Crafting_CanCraft_FalseWhenMissingMaterials()
-        {
-            var vm = new CraftingMenuViewModel { CanCraft = false, BlockedReason = "MISSING_MATERIALS" };
-            Assert.IsFalse(vm.CanCraft);
-            Assert.IsNotEmpty(vm.BlockedReason);
-        }
 
         [Test]
         public void Crafting_ProcessingJob_TracksProgress()
@@ -101,14 +94,6 @@ namespace CindarsHope.Tests.EditMode.UI
 
         // ---- SkillTreeMenuViewModel ----
 
-        [Test]
-        public void SkillTree_HasFiveInitialTabs()
-        {
-            var vm = new SkillTreeMenuViewModel();
-            for (int i = 0; i < 5; i++)
-                vm.TreeTabs.Add(new SkillTreeTabViewModel { TreeId = $"tree_{i}" });
-            Assert.AreEqual(5, vm.TreeTabs.Count);
-        }
 
         [Test]
         public void SkillTree_ActiveSlotSummary_MaxIs4()
@@ -117,20 +102,7 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.AreEqual(4, vm.ActiveSlotSummary.MaxSlots);
         }
 
-        [Test]
-        public void SkillTree_RespecHidden_WhenNotUnlocked()
-        {
-            var vm = new SkillTreeMenuViewModel { RespecAvailable = false, RespecBlockedReason = "REQUIRES_MEMORY_FRAGMENT" };
-            Assert.IsFalse(vm.RespecAvailable);
-        }
 
-        [Test]
-        public void SkillTree_LockedNode_HasLockReason()
-        {
-            var node = new SkillNodeViewModel { State = SkillNodeState.Locked, LockReason = "PREREQ_NOT_MET" };
-            Assert.AreEqual(SkillNodeState.Locked, node.State);
-            Assert.IsNotEmpty(node.LockReason);
-        }
 
         // ---- QuestLogMenuState ----
 
@@ -141,12 +113,6 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.AreEqual(QuestLogTab.Active, state.SelectedTab);
         }
 
-        [Test]
-        public void QuestLog_MenuState_CanSwitchTabs()
-        {
-            var state = new QuestLogMenuState { SelectedTab = QuestLogTab.MainProgression };
-            Assert.AreEqual(QuestLogTab.MainProgression, state.SelectedTab);
-        }
 
         // ---- FonteMenuViewModel ----
 

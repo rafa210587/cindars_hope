@@ -17,6 +17,8 @@ namespace CindarsHope.Combat
 
         [Header("Identity")]
         public string FactionId;
+        [Tooltip("Canonical bestiary family (for example Construct, Beast or Undead).")]
+        public string CreatureFamily;
         public EnemyRole PrimaryRole = EnemyRole.Chaser;
         public EnemyRole[] SecondaryRoles = new EnemyRole[0];
         public int CaveBand = 1;

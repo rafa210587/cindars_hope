@@ -3,6 +3,7 @@ using CindarsHope.Combat.Weapon;
 using CindarsHope.Core.Data;
 using CindarsHope.DebugTools;
 using CindarsHope.Foundation;
+using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using UnityEngine;
 
@@ -48,7 +49,8 @@ namespace CindarsHope.Combat
             string weaponLookupId = equippedItemId;
             bool wentThroughItemDatabase = false;
 
-            if (_itemDatabase != null && _itemDatabase.TryGetById(equippedItemId, out itemData) && itemData != null)
+            var definitionItemId = ItemInstanceIdUtility.GetItemId(equippedItemId);
+            if (_itemDatabase != null && _itemDatabase.TryGetById(definitionItemId, out itemData) && itemData != null)
             {
                 wentThroughItemDatabase = true;
                 CombatLog.Log($"CombatLog: PlayerAttackResolveItemData. ItemInstanceId={equippedItemId}, ItemDataId={itemData.Id}, ItemType={itemData.Category}, WeaponId='{itemData.WeaponId}'");

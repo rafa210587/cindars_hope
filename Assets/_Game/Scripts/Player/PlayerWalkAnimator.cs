@@ -58,6 +58,12 @@ namespace CindarsHope.Player
 
         private SpriteRenderer _spriteRenderer;
         private PlayerController _playerController;
+        private Rigidbody2D _rigidbody;
+        private Vector2 _lastPhysicalFacing;
+        private bool _usingPhysicalMotion;
+        private Vector2 _previousPhysicalPosition;
+        private Vector2 _physicalVelocity;
+        private bool _hasPhysicalSample;
 
         // Frames cacheados por direcao — carregados uma vez em Awake.
         private readonly Sprite[][] _frames = new Sprite[DirCount][];
@@ -85,6 +91,7 @@ namespace CindarsHope.Player
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
             _playerController = GetComponent<PlayerController>();
+            _rigidbody = GetComponent<Rigidbody2D>();
 
             if (_playerController == null)
             {
@@ -128,12 +135,14 @@ namespace CindarsHope.Player
 
         private void OnEnable()
         {
+            ResetPhysicalMotionSampling();
             GameEventBus.Subscribe<PlayerMeleeSwingEvent>(OnMeleeSwing);
             GameEventBus.Subscribe<PlayerBowShootEvent>(OnBowShoot);
         }
 
         private void OnDisable()
         {
+            ResetPhysicalMotionSampling();
             GameEventBus.Unsubscribe<PlayerMeleeSwingEvent>(OnMeleeSwing);
             GameEventBus.Unsubscribe<PlayerBowShootEvent>(OnBowShoot);
             // Seguranca: nao deixar o player travado se desabilitar no meio do tiro.
@@ -222,6 +231,31 @@ namespace CindarsHope.Player
             return loaded;
         }
 
+        private void ResetPhysicalMotionSampling()
+        {
+            _hasPhysicalSample = false;
+            _physicalVelocity = Vector2.zero;
+            _usingPhysicalMotion = false;
+        }
+
+        private void FixedUpdate()
+        {
+            if (_playerController == null || _playerController.enabled || _rigidbody == null)
+            {
+                ResetPhysicalMotionSampling();
+                return;
+            }
+
+            // MovePosition may report zero linearVelocity after simulation. Sample the actual
+            // body's displacement; the first sample only establishes a framing/reset baseline.
+            var position = _rigidbody.position;
+            _physicalVelocity = _hasPhysicalSample && Time.fixedDeltaTime > 0f
+                ? (position - _previousPhysicalPosition) / Time.fixedDeltaTime
+                : Vector2.zero;
+            _previousPhysicalPosition = position;
+            _hasPhysicalSample = true;
+        }
+
         private void Update()
         {
             if (_missingController) return;
@@ -246,10 +280,18 @@ namespace CindarsHope.Player
                 EndOneShotRoot();
             }
 
-            Vector2 moveInput = _playerController.MoveInput;
+            bool physicalMotion = !_playerController.enabled;
+            if (!physicalMotion) ResetPhysicalMotionSampling();
+            if (physicalMotion && !_usingPhysicalMotion)
+                _lastPhysicalFacing = _playerController.LastFacingDirection;
+            _usingPhysicalMotion = physicalMotion;
+            Vector2 moveInput = physicalMotion
+                ? _physicalVelocity
+                : _playerController.MoveInput;
             bool isMoving = moveInput.sqrMagnitude > _moveThreshold * _moveThreshold;
-
-            Vector2 dirVec = isMoving ? moveInput : _playerController.LastFacingDirection;
+            if (physicalMotion && isMoving) _lastPhysicalFacing = moveInput;
+            Vector2 idleFacing = physicalMotion ? _lastPhysicalFacing : _playerController.LastFacingDirection;
+            Vector2 dirVec = isMoving ? moveInput : idleFacing;
             int newDir = GetDirectionBucket(dirVec);
 
             if (newDir != _currentDir)

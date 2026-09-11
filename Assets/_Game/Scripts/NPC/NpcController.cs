@@ -18,7 +18,7 @@ namespace CindarsHope.NPC
     public class NpcController : MonoBehaviour, IInteractable, INpcIdentity
     {
         private const string ThalindraNpcId = "npc_thalindra";
-        private const string FirstSuppliesQuestId = "quest_first_supplies_for_cindar";
+        private const string FirstSuppliesQuestId = CindarsHope.Quests.Runtime.QuestRuntimeIds.SupplyQuestId;
 
         [SerializeField] private NpcDataSO _npcData;
         // arch: quebra do par mutuo NPC|UI (2026-07-15) — campo vira MonoBehaviour + cast para a porta

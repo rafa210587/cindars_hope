@@ -4,10 +4,26 @@ namespace CindarsHope.Core.Events
     public readonly struct EnemyPostureBrokenEvent
     {
         public string EnemyId { get; }
+        public string EnemyInstanceId { get; }
+        public string SourceId { get; }
+        public string SourceInstanceId { get; }
+        public bool CausedByPlayer { get; }
+        public string ResolutionId { get; }
 
         public EnemyPostureBrokenEvent(string enemyId)
+            : this(enemyId, string.Empty, string.Empty, string.Empty, false, string.Empty)
         {
-            EnemyId = enemyId;
+        }
+
+        public EnemyPostureBrokenEvent(string enemyId, string enemyInstanceId, string sourceId,
+            string sourceInstanceId, bool causedByPlayer, string resolutionId)
+        {
+            EnemyId = enemyId ?? string.Empty;
+            EnemyInstanceId = enemyInstanceId ?? string.Empty;
+            SourceId = sourceId ?? string.Empty;
+            SourceInstanceId = sourceInstanceId ?? string.Empty;
+            CausedByPlayer = causedByPlayer;
+            ResolutionId = resolutionId ?? string.Empty;
         }
     }
 
@@ -27,11 +43,18 @@ namespace CindarsHope.Core.Events
     {
         public string SourceId { get; }
         public int NegatedDamage { get; }
+        public string ResolutionId { get; }
 
         public PlayerPerfectBlockEvent(string sourceId, int negatedDamage)
+            : this(sourceId, negatedDamage, string.Empty)
         {
-            SourceId = sourceId;
+        }
+
+        public PlayerPerfectBlockEvent(string sourceId, int negatedDamage, string resolutionId)
+        {
+            SourceId = sourceId ?? string.Empty;
             NegatedDamage = negatedDamage;
+            ResolutionId = resolutionId ?? string.Empty;
         }
     }
 

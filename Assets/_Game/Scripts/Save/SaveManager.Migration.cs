@@ -137,7 +137,7 @@ namespace CindarsHope.Save
             {
                 try
                 {
-                    WriteTextSafely(savePath, JsonUtility.ToJson(migratedSaveData, true));
+                    SaveBackupService.WriteTextSafely(savePath, JsonUtility.ToJson(migratedSaveData, true));
                 }
                 catch (Exception exception)
                 {
@@ -285,67 +285,12 @@ namespace CindarsHope.Save
             return true;
         }
 
-        /// <summary>
-        /// Escreve <paramref name="contents"/> em <paramref name="path"/> sem deixar uma janela
-        /// onde o arquivo final esta ausente. Se ja existir um arquivo em <paramref name="path"/>,
-        /// usa <see cref="File.Replace(string, string, string)"/> (atomico no NTFS/Mono/IL2CPP:
-        /// substitui o destino e move o conteudo antigo para <c>path + ".backup"</c> em uma unica
-        /// chamada - nunca ha um instante em que <paramref name="path"/> nao exista). Se
-        /// <paramref name="path"/> ainda nao existir, nao ha arquivo antigo a perder: basta mover
-        /// o temporario.
-        /// </summary>
-        private static void WriteTextSafely(string path, string contents)
-        {
-            var directory = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            var tempPath = $"{path}.tmp";
-            File.WriteAllText(tempPath, contents);
-
-            if (!File.Exists(tempPath))
-            {
-                throw new IOException($"Temporary save file was not written: {tempPath}");
-            }
-
-            if (!File.Exists(path))
-            {
-                // Sem arquivo antigo em `path`: nada a perder, basta mover o tmp.
-                File.Move(tempPath, path);
-                return;
-            }
-
-            var backupPath = $"{path}{SaveBackupSuffix}";
-            try
-            {
-                // Atomico: substitui `path` por `tempPath` e move o `path` antigo para
-                // `backupPath` em uma unica operacao do SO. Nao ha instante intermediario em
-                // que `path` esteja ausente.
-                File.Replace(tempPath, path, backupPath, true);
-            }
-            catch (PlatformNotSupportedException)
-            {
-                // Fallback manual seguro: cria backup do arquivo antigo ANTES de qualquer delete.
-                // So prossegue com delete+move se o backup foi confirmado - nunca perde o
-                // original sem garantir que uma copia ja existe em outro lugar.
-                if (!SaveBackupService.TryCreateBackup(path, out _, out var backupError))
-                {
-                    throw new IOException($"Could not create safety backup before replacing save: {backupError}");
-                }
-
-                File.Delete(path);
-                File.Move(tempPath, path);
-            }
-        }
-
         private const string SaveBackupSuffix = ".backup";
 
         /// <summary>
         /// Se <paramref name="path"/> estiver ausente ou seu conteudo nao puder ser
         /// deserializado como <see cref="GameSaveData"/> valido, tenta recuperar de
-        /// <c>path + ".backup"</c> (criado por <see cref="WriteTextSafely"/> ou por
+        /// <c>path + ".backup"</c> (criado por <see cref="SaveBackupService.WriteTextSafely"/> ou por
         /// <see cref="SaveBackupService"/>). Retorna true e loga a recuperacao se um backup valido
         /// foi restaurado; retorna false se nao havia backup ou se ele tambem e invalido - nesse
         /// caso o chamador deve seguir o comportamento existente (sem save = novo jogo / erro).

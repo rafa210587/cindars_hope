@@ -18,6 +18,8 @@ namespace CindarsHope.Inventory
         System.Collections.Generic.IReadOnlyList<Data.StartingItem> StartingItems { get; }
     }
 
+    /// <summary>Owns inventory state and adapts catalogs, bootstrap and gameplay events.</summary>
+    /// <remarks>Add/remove and split/move delegate to InventorySlotOperations; these mutations rebuild totals before publishing.</remarks>
     [DisallowMultipleComponent]
     public class InventoryManager : MonoBehaviour, IInventoryTransactionPort, IInventoryRuntime, IGameBootstrapRuntimeService
     {
@@ -27,6 +29,7 @@ namespace CindarsHope.Inventory
         private readonly Dictionary<string, int> _items = new Dictionary<string, int>();
         private readonly List<InventorySlot> _slots = new List<InventorySlot>(MaxCapacity);
         private ItemDatabaseSO _itemDatabase;
+        private long _nextItemInstanceSequence = 1;
 
         public bool IsInitialized { get; private set; }
         public bool HasItemDatabase => _itemDatabase != null;
@@ -318,7 +321,7 @@ namespace CindarsHope.Inventory
                 {
                     ItemId = slot.ItemId,
                     Amount = slot.Amount,
-                    ItemInstanceId = slot.EquipmentBindingId ?? string.Empty,
+                    ItemInstanceId = ResolveSnapshotInstanceId(slot),
                     DurabilityCurrent = 1f,
                     DurabilityMax = 1f,
                     IsBroken = false
@@ -333,7 +336,8 @@ namespace CindarsHope.Inventory
             RebuildAggregate();
             var saveData = new InventorySaveData
             {
-                Capacity = Capacity
+                Capacity = Capacity,
+                NextItemInstanceSequence = System.Math.Max(1, _nextItemInstanceSequence)
             };
 
             foreach (var slot in _slots)
@@ -347,6 +351,7 @@ namespace CindarsHope.Inventory
                 {
                     SlotIndex = slot.SlotIndex,
                     ItemId = slot.ItemId,
+                    ItemInstanceId = slot.ItemInstanceId,
                     Amount = slot.Amount,
                     IsEquipped = slot.IsEquipped,
                     EquipmentBindingId = slot.EquipmentBindingId
@@ -376,14 +381,18 @@ namespace CindarsHope.Inventory
 
             if (saveData == null)
             {
+                _nextItemInstanceSequence = 1;
                 return;
             }
 
+            _nextItemInstanceSequence = System.Math.Max(1, saveData.NextItemInstanceSequence);
             var capacity = saveData.Capacity > 0 ? saveData.Capacity : DefaultCapacity;
             EnsureCapacity(capacity);
 
             if (saveData.Slots != null && saveData.Slots.Count > 0)
             {
+                foreach (var savedSlot in saveData.Slots)
+                    AdvanceItemInstanceSequencePast(savedSlot?.ItemInstanceId);
                 RestoreSlots(saveData.Slots);
             }
             else if (saveData.Items != null)
@@ -407,7 +416,7 @@ namespace CindarsHope.Inventory
             }
 
             EnsureCapacity(DefaultCapacity);
-            return GetAvailableCapacityFor(itemId, Mathf.Max(1, itemData.MaxStack)) >= amount;
+            return InventorySlotOperations.GetAvailableCapacityFor(_slots, itemId, itemData.MaxStack) >= amount;
         }
 
         public InventoryAddResult TryAddItem(string itemId, int amount)
@@ -425,58 +434,78 @@ namespace CindarsHope.Inventory
 
             EnsureCapacity(DefaultCapacity);
             var previousAmount = GetAmount(itemId);
-            var remaining = amount;
-            var maxStack = Mathf.Max(1, itemData.MaxStack);
-            var available = GetAvailableCapacityFor(itemId, maxStack);
-            if (available < amount)
+            if (itemData.MaxStack == 1)
             {
-                return new InventoryAddResult(false, itemId, amount, 0);
-            }
+                var emptySlots = 0;
+                foreach (var slot in _slots)
+                    if (slot != null && slot.IsEmpty) emptySlots++;
+                if (emptySlots < amount)
+                    return new InventoryAddResult(false, itemId, amount, 0);
 
-            foreach (var slot in _slots)
-            {
-                if (remaining <= 0)
+                var remaining = amount;
+                foreach (var slot in _slots)
                 {
-                    break;
+                    if (slot == null || !slot.IsEmpty) continue;
+                    slot.ItemId = itemId;
+                    slot.ItemInstanceId = ReserveItemInstanceId(itemId);
+                    slot.Amount = 1;
+                    slot.IsEquipped = false;
+                    slot.EquipmentBindingId = string.Empty;
+                    if (--remaining == 0) break;
                 }
 
-                if (slot.IsEmpty || slot.ItemId != itemId || slot.Amount >= maxStack)
-                {
-                    continue;
-                }
-
-                var added = Mathf.Min(remaining, maxStack - slot.Amount);
-                slot.Amount += added;
-                remaining -= added;
+                RebuildAggregate();
+                GameEventBus.Publish(new InventoryChangedEvent(itemId, amount, previousAmount + amount));
+                return new InventoryAddResult(true, itemId, amount, amount);
             }
 
-            foreach (var slot in _slots)
-            {
-                if (remaining <= 0)
-                {
-                    break;
-                }
-
-                if (!slot.IsEmpty)
-                {
-                    continue;
-                }
-
-                var added = Mathf.Min(remaining, maxStack);
-                slot.ItemId = itemId;
-                slot.Amount = added;
-                remaining -= added;
-            }
-
-            var addedAmount = amount - remaining;
-            if (addedAmount <= 0)
-            {
-                return new InventoryAddResult(false, itemId, amount, 0);
-            }
+            var result = InventorySlotOperations.TryAddItem(_slots, itemId, amount, itemData.MaxStack);
+            if (!result.Success) return result;
 
             RebuildAggregate();
-            GameEventBus.Publish(new InventoryChangedEvent(itemId, addedAmount, previousAmount + addedAmount));
-            return new InventoryAddResult(remaining == 0, itemId, amount, addedAmount);
+            GameEventBus.Publish(new InventoryChangedEvent(itemId, result.AddedAmount, previousAmount + result.AddedAmount));
+            return result;
+        }
+
+        /// <summary>
+        /// Adds one individually tracked item. Instance ids are namespaced by their canonical item
+        /// id (`itemId#token`) so catalog consumers can resolve the definition without another
+        /// runtime registry. Ordinary stack additions remain identity-free.
+        /// </summary>
+        public InventoryAddResult TryAddItemInstance(string itemId, string itemInstanceId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId) || string.IsNullOrWhiteSpace(itemInstanceId)
+                || !ItemInstanceIdUtility.IsForItem(itemId, itemInstanceId)
+                || !TryGetItemData(itemId, out var itemData) || itemData.MaxStack != 1)
+            {
+                return new InventoryAddResult(false, itemId, 1, 0);
+            }
+
+            EnsureCapacity(DefaultCapacity);
+            for (var index = 0; index < _slots.Count; index++)
+            {
+                var existing = _slots[index];
+                if (existing != null && !existing.IsEmpty
+                    && string.Equals(existing.ItemInstanceId, itemInstanceId, System.StringComparison.Ordinal))
+                {
+                    return new InventoryAddResult(false, itemId, 1, 0);
+                }
+            }
+
+            var target = FindFirstEmptySlot();
+            if (target == null)
+                return new InventoryAddResult(false, itemId, 1, 0);
+
+            var previousAmount = GetAmount(itemId);
+            target.ItemId = itemId;
+            target.ItemInstanceId = itemInstanceId;
+            target.Amount = 1;
+            target.IsEquipped = false;
+            target.EquipmentBindingId = string.Empty;
+            AdvanceItemInstanceSequencePast(itemInstanceId);
+            RebuildAggregate();
+            GameEventBus.Publish(new InventoryChangedEvent(itemId, 1, previousAmount + 1));
+            return new InventoryAddResult(true, itemId, 1, 1);
         }
 
         public bool RemoveItem(string itemId, int amount)
@@ -492,24 +521,7 @@ namespace CindarsHope.Inventory
                 return false;
             }
 
-            var remaining = amount;
-            for (var index = _slots.Count - 1; index >= 0 && remaining > 0; index--)
-            {
-                var slot = _slots[index];
-                if (slot.IsEmpty || slot.ItemId != itemId)
-                {
-                    continue;
-                }
-
-                var removed = Mathf.Min(remaining, slot.Amount);
-                slot.Amount -= removed;
-                remaining -= removed;
-
-                if (slot.Amount <= 0)
-                {
-                    slot.Clear();
-                }
-            }
+            if (!InventorySlotOperations.TryRemoveItem(_slots, itemId, amount)) return false;
 
             RebuildAggregate();
             GameEventBus.Publish(new InventoryChangedEvent(itemId, -amount, currentAmount - amount));
@@ -524,15 +536,10 @@ namespace CindarsHope.Inventory
             }
 
             var target = FindFirstEmptySlot();
-            if (target == null)
+            if (!InventorySlotOperations.TrySplit(source, target))
             {
                 return false;
             }
-
-            var splitAmount = source.Amount / 2;
-            source.Amount -= splitAmount;
-            target.ItemId = source.ItemId;
-            target.Amount = splitAmount;
 
             RebuildAggregate();
             GameEventBus.Publish(new InventoryChangedEvent(source.ItemId, 0, GetAmount(source.ItemId)));
@@ -595,32 +602,9 @@ namespace CindarsHope.Inventory
 
             var sourceItemId = source.ItemId;
             var destinationItemId = destination.ItemId;
-            if (destination.IsEmpty)
+            if (!InventorySlotOperations.TryMoveOrMerge(source, destination, sourceItemData.MaxStack, out failureReason))
             {
-                CopySlotContents(source, destination);
-                source.Clear();
-            }
-            else if (sourceItemId == destinationItemId)
-            {
-                var maxStack = Mathf.Max(1, sourceItemData.MaxStack);
-                var available = maxStack - destination.Amount;
-                if (available <= 0)
-                {
-                    failureReason = "A pilha de destino ja esta cheia.";
-                    return false;
-                }
-
-                var transferred = Mathf.Min(source.Amount, available);
-                source.Amount -= transferred;
-                destination.Amount += transferred;
-                if (source.Amount <= 0)
-                {
-                    source.Clear();
-                }
-            }
-            else
-            {
-                SwapSlotContents(source, destination);
+                return false;
             }
 
             RebuildAggregate();
@@ -640,6 +624,46 @@ namespace CindarsHope.Inventory
             slot.Clear();
             RebuildAggregate();
             GameEventBus.Publish(new InventoryChangedEvent(itemId, -amount, GetAmount(itemId)));
+            return true;
+        }
+
+        /// <summary>Atomically replaces one identified item with salvage rewards.</summary>
+        public bool TryCommitSalvage(int slotIndex, string expectedItemId, string expectedInstanceId,
+            IReadOnlyList<SalvageReward> rewards, System.Func<bool> commitSideEffect, out string failureReason)
+        {
+            failureReason = string.Empty;
+            if (!TryGetSlot(slotIndex, out var source) || source.IsEmpty || source.IsEquipped || source.Amount != 1 ||
+                string.IsNullOrWhiteSpace(source.ItemInstanceId) ||
+                !string.Equals(source.ItemId, expectedItemId, System.StringComparison.Ordinal) ||
+                !string.Equals(source.ItemInstanceId, expectedInstanceId, System.StringComparison.Ordinal))
+            { failureReason = "Item indisponivel para salvage."; return false; }
+            if (rewards == null || rewards.Count == 0) { failureReason = "Salvage sem retorno valido."; return false; }
+
+            var copy = new List<InventorySlot>(_slots.Count);
+            foreach (var slot in _slots)
+                copy.Add(new InventorySlot { SlotIndex = slot.SlotIndex, ItemId = slot.ItemId,
+                    ItemInstanceId = slot.ItemInstanceId, Amount = slot.Amount, IsEquipped = slot.IsEquipped,
+                    EquipmentBindingId = slot.EquipmentBindingId });
+            copy[slotIndex].Clear();
+            foreach (var reward in rewards)
+            {
+                if (reward.Amount <= 0 || string.Equals(reward.ItemId, expectedItemId, System.StringComparison.Ordinal) ||
+                    !TryGetItemData(reward.ItemId, out var data) ||
+                    !InventorySlotOperations.TryAddItem(copy, reward.ItemId, reward.Amount, data.MaxStack).Success)
+                { failureReason = "Inventario sem espaco para o retorno."; return false; }
+            }
+            if (commitSideEffect == null || !commitSideEffect())
+            { failureReason = "Falha ao confirmar a transacao de salvage."; return false; }
+            for (var i = 0; i < _slots.Count; i++)
+            {
+                _slots[i].ItemId = copy[i].ItemId; _slots[i].ItemInstanceId = copy[i].ItemInstanceId;
+                _slots[i].Amount = copy[i].Amount; _slots[i].IsEquipped = copy[i].IsEquipped;
+                _slots[i].EquipmentBindingId = copy[i].EquipmentBindingId;
+            }
+            RebuildAggregate();
+            GameEventBus.Publish(new InventoryChangedEvent(expectedItemId, -1, GetAmount(expectedItemId)));
+            foreach (var reward in rewards)
+                GameEventBus.Publish(new InventoryChangedEvent(reward.ItemId, reward.Amount, GetAmount(reward.ItemId)));
             return true;
         }
 
@@ -747,8 +771,9 @@ namespace CindarsHope.Inventory
 
             var itemId = slot.ItemId;
             var amount = slot.Amount;
+            var itemInstanceId = slot.ItemInstanceId;
 
-            if (!spawner.TryDropItem(itemId, amount, dropPosition))
+            if (!spawner.TryDropItem(itemId, itemInstanceId, amount, dropPosition))
             {
                 Debug.LogWarning($"InventoryManager: Failed to drop item '{itemId}' x{amount}.", this);
                 return false;
@@ -763,6 +788,7 @@ namespace CindarsHope.Inventory
 
         private void RestoreSlots(List<InventorySlotSaveData> savedSlots)
         {
+            var restoredInstanceIds = new HashSet<string>(System.StringComparer.Ordinal);
             foreach (var savedSlot in savedSlots)
             {
                 if (savedSlot == null || string.IsNullOrWhiteSpace(savedSlot.ItemId) || savedSlot.Amount <= 0)
@@ -785,7 +811,16 @@ namespace CindarsHope.Inventory
                 if (_slots[slotIndex].IsEmpty)
                 {
                     var placed = Mathf.Min(remaining, maxStack);
+                    var instanceId = maxStack == 1 ? savedSlot.ItemInstanceId : string.Empty;
+                    if (maxStack == 1 && !ItemInstanceIdUtility.IsForItem(savedSlot.ItemId, instanceId))
+                        instanceId = ReserveItemInstanceId(savedSlot.ItemId);
+                    if (!string.IsNullOrWhiteSpace(instanceId) && !restoredInstanceIds.Add(instanceId))
+                    {
+                        Debug.LogWarning($"InventoryManager ignored duplicate saved item instance id '{instanceId}'.", this);
+                        continue;
+                    }
                     _slots[slotIndex].ItemId = savedSlot.ItemId;
+                    _slots[slotIndex].ItemInstanceId = instanceId ?? string.Empty;
                     _slots[slotIndex].Amount = placed;
                     _slots[slotIndex].IsEquipped = savedSlot.IsEquipped;
                     _slots[slotIndex].EquipmentBindingId = savedSlot.EquipmentBindingId ?? string.Empty;
@@ -829,26 +864,29 @@ namespace CindarsHope.Inventory
             return null;
         }
 
-        private static void CopySlotContents(InventorySlot source, InventorySlot destination)
+        private string ReserveItemInstanceId(string itemId)
         {
-            destination.ItemId = source.ItemId;
-            destination.Amount = source.Amount;
-            destination.IsEquipped = source.IsEquipped;
-            destination.EquipmentBindingId = source.EquipmentBindingId;
+            return $"{itemId}#inventory-{_nextItemInstanceSequence++}";
         }
 
-        private static void SwapSlotContents(InventorySlot first, InventorySlot second)
+        private void AdvanceItemInstanceSequencePast(string itemInstanceId)
         {
-            var firstItemId = first.ItemId;
-            var firstAmount = first.Amount;
-            var firstIsEquipped = first.IsEquipped;
-            var firstEquipmentBindingId = first.EquipmentBindingId;
+            if (string.IsNullOrWhiteSpace(itemInstanceId)) return;
+            const string marker = "#inventory-";
+            var markerIndex = itemInstanceId.LastIndexOf(marker, System.StringComparison.Ordinal);
+            if (markerIndex < 1) return;
+            if (long.TryParse(itemInstanceId.Substring(markerIndex + marker.Length), out var sequence)
+                && sequence >= _nextItemInstanceSequence)
+                _nextItemInstanceSequence = sequence + 1;
+        }
 
-            CopySlotContents(second, first);
-            second.ItemId = firstItemId;
-            second.Amount = firstAmount;
-            second.IsEquipped = firstIsEquipped;
-            second.EquipmentBindingId = firstEquipmentBindingId;
+        private string ResolveSnapshotInstanceId(InventorySlot slot)
+        {
+            if (slot == null || slot.IsEmpty) return string.Empty;
+            if (!string.IsNullOrWhiteSpace(slot.ItemInstanceId)) return slot.ItemInstanceId;
+            return TryGetItemData(slot.ItemId, out var itemData) && itemData.MaxStack == 1
+                ? slot.ItemId
+                : string.Empty;
         }
 
         private void PublishRefreshForAffectedItems(string firstItemId, string secondItemId)
@@ -862,24 +900,6 @@ namespace CindarsHope.Inventory
             {
                 GameEventBus.Publish(new InventoryChangedEvent(secondItemId, 0, GetAmount(secondItemId)));
             }
-        }
-
-        private int GetAvailableCapacityFor(string itemId, int maxStack)
-        {
-            var available = 0;
-            foreach (var slot in _slots)
-            {
-                if (slot.IsEmpty)
-                {
-                    available += maxStack;
-                }
-                else if (slot.ItemId == itemId && slot.Amount < maxStack)
-                {
-                    available += maxStack - slot.Amount;
-                }
-            }
-
-            return available;
         }
 
         private void EnsureCapacity(int requestedCapacity)

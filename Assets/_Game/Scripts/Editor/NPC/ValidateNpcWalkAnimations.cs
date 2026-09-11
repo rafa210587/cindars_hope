@@ -37,6 +37,51 @@ namespace CindarsHope.Editor.NPC
                                     $"sprites em Resources/{npcData.WalkAnimResourcesPath}, encontrado " +
                                     $"{(sprites != null ? sprites.Length : 0)}.");
                     errors++;
+                    continue;
+                }
+
+                // Contract checks beyond count: NpcWalkAnimator resolves deterministic row/column names,
+                // and the importer must preserve native pixel scale and nearest-neighbour rendering.
+                var names = new System.Collections.Generic.HashSet<string>();
+                foreach (var sprite in sprites)
+                {
+                    names.Add(sprite.name);
+                }
+                for (int row = 0; row < 5; row++)
+                {
+                    for (int col = 0; col < 5; col++)
+                    {
+                        string expected = $"{npcData.NpcId}_walk_r{row}_c{col}";
+                        if (!names.Contains(expected))
+                        {
+                            Debug.LogError($"[ValidateNpcWalkAnimations] {npcData.NpcId}: slice ausente '{expected}'.");
+                            errors++;
+                        }
+                    }
+                }
+
+                string assetPath = $"Assets/_Game/Resources/{npcData.WalkAnimResourcesPath}.png";
+                var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+                if (importer == null)
+                {
+                    Debug.LogError($"[ValidateNpcWalkAnimations] {npcData.NpcId}: TextureImporter ausente em {assetPath}.");
+                    errors++;
+                    continue;
+                }
+                bool settingsOk = importer.textureType == TextureImporterType.Sprite
+                    && importer.spriteImportMode == SpriteImportMode.Multiple
+                    && importer.spritePixelsPerUnit == 234f
+                    && importer.filterMode == FilterMode.Point
+                    && !importer.mipmapEnabled
+                    && importer.textureCompression == TextureImporterCompression.Uncompressed
+                    && importer.alphaIsTransparency;
+                if (!settingsOk)
+                {
+                    Debug.LogError($"[ValidateNpcWalkAnimations] {npcData.NpcId}: import settings invalidos " +
+                        $"(type={importer.textureType}, mode={importer.spriteImportMode}, ppu={importer.spritePixelsPerUnit}, " +
+                        $"filter={importer.filterMode}, mipmaps={importer.mipmapEnabled}, compression={importer.textureCompression}, " +
+                        $"alpha={importer.alphaIsTransparency}).");
+                    errors++;
                 }
             }
 

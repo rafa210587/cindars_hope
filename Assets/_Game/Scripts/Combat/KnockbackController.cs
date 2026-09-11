@@ -1,4 +1,6 @@
 using UnityEngine;
+using CindarsHope.Foundation;
+using CindarsHope.Player;
 
 namespace CindarsHope.Combat
 {
@@ -29,6 +31,11 @@ namespace CindarsHope.Combat
             {
                 _rigidbody = GetComponent<Rigidbody2D>();
             }
+
+            // Existing scene assets predate the opt-in flag. PlayerManager is the stable local
+            // marker for player-owned instances; enemy instances never carry it.
+            if (!_appliesAccessoryResist && GetComponent<PlayerManager>() != null)
+                _appliesAccessoryResist = true;
         }
 
         private void FixedUpdate()
@@ -68,6 +75,7 @@ namespace CindarsHope.Combat
             if (_appliesAccessoryResist)
             {
                 force = CindarsHope.Equipment.AccessoryEffectRouter.ApplyKnockbackResist(force);
+                force = PlayerControlResistanceProvider.ResolveKnockbackForce(force);
                 if (force <= 0f)
                 {
                     return;

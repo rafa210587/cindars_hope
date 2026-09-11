@@ -5,8 +5,10 @@ using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
+using CindarsHope.UI.Inventory;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Routing;
+using CindarsHope.Skills.Runtime;
 using UnityEngine;
 
 namespace CindarsHope.UI
@@ -27,6 +29,7 @@ namespace CindarsHope.UI
 
         private InventoryManager _inventoryManager;
         private EquipmentManager _equipmentManager;
+        private SalvageRuntimeService _salvageRuntime;
         // arch: Core|UI (2026-07-15) — tipado como IModalRuntime (porta) porque so consome
         // PushModal/TryPopModal, resolvidos via GameBootstrap.Instance.ModalManager.
         private IModalRuntime _modalManager;
@@ -38,7 +41,7 @@ namespace CindarsHope.UI
         private string _message = string.Empty;
         private EquipmentSlot _targetEquipmentSlot = EquipmentSlot.None;
         private Action<bool, string> _onEquipmentSelectionClosed;
-        private readonly string[] _actions = { "Use", "Equip", "Drop", "Destroy", "Mover/Mesclar", "Split", "Cancel" };
+        private readonly string[] _actions = { "Use", "Equip", "Drop", "Destroy", "Salvage", "Mover/Mesclar", "Split", "Cancel" };
 
         public static void Install(Transform owner)
         {
@@ -425,6 +428,10 @@ namespace CindarsHope.UI
                 case "Destroy":
                     _mode = PanelMode.DestroyConfirm;
                     break;
+                case "Salvage":
+                    ExecuteSalvage();
+                    _mode = PanelMode.Slots;
+                    break;
                 case "Mover/Mesclar":
                     _moveMergeSourceSlotIndex = _selectedSlotIndex;
                     _mode = PanelMode.MoveMergeDestination;
@@ -464,44 +471,36 @@ namespace CindarsHope.UI
 
         private void ExecuteUse()
         {
-            if (_inventoryManager == null || !_inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot) || slot.IsEmpty)
+            var readiness = GetSelectedUseReadiness(out var itemId, out var useManager);
+            if (readiness != InventoryItemUseBlockReason.None)
             {
-                _message = "Slot is empty.";
+                switch (readiness)
+                {
+                    case InventoryItemUseBlockReason.EmptySlot:
+                        _message = "Slot is empty.";
+                        break;
+                    case InventoryItemUseBlockReason.UseSystemUnavailable:
+                        _message = "Item use system not available.";
+                        break;
+                    default:
+                        _message = "This item cannot be used.";
+                        break;
+                }
                 _mode = PanelMode.Slots;
                 return;
             }
 
-            var useManager = ItemUseManager.Instance;
-            if (useManager == null)
-            {
-                _message = "Item use system not available.";
-                _mode = PanelMode.Slots;
-                return;
-            }
-
-            if (!useManager.CanUseItem(slot.ItemId))
-            {
-                _message = "This item cannot be used.";
-                _mode = PanelMode.Slots;
-                return;
-            }
-
+            // Consumption can clear the selected slot synchronously; feedback uses the captured ID.
             var player = GameBootstrap.Instance?.PlayerManager?.gameObject;
-            if (useManager.TryUseItem(slot.ItemId, player))
-            {
-                _message = $"Used {slot.ItemId}.";
-            }
-            else
-            {
-                _message = $"Failed to use {slot.ItemId}.";
-            }
-
+            _message = useManager.TryUseItem(itemId, player)
+                ? $"Used {itemId}."
+                : $"Failed to use {itemId}.";
             _mode = PanelMode.Slots;
         }
 
         private void ExecuteDrop()
         {
-            if (_inventoryManager == null || !_inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot) || slot.IsEmpty)
+            if (!TryGetSelectedItem(out _, out _))
             {
                 _message = "Slot is empty.";
                 _mode = PanelMode.Slots;
@@ -670,11 +669,28 @@ namespace CindarsHope.UI
 
         private bool CanUseSelectedItem()
         {
-            return _inventoryManager != null
-                && _inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot)
-                && !slot.IsEmpty
-                && ItemUseManager.Instance != null
-                && ItemUseManager.Instance.CanUseItem(slot.ItemId);
+            return GetSelectedUseReadiness(out _, out _) == InventoryItemUseBlockReason.None;
+        }
+
+        private InventoryItemUseBlockReason GetSelectedUseReadiness(out string itemId, out ItemUseManager useManager)
+        {
+            var hasSelection = TryGetSelectedItem(out itemId, out _);
+            useManager = ItemUseManager.Instance;
+            var canUse = hasSelection && useManager != null && useManager.CanUseItem(itemId);
+            return InventoryItemActionPolicy.EvaluateUse(hasSelection, useManager != null, canUse);
+        }
+
+        private bool TryGetSelectedItem(out string itemId, out int amount)
+        {
+            itemId = string.Empty;
+            amount = 0;
+            if (_inventoryManager == null
+                || !_inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot) || slot.IsEmpty)
+                return false;
+
+            itemId = slot.ItemId;
+            amount = slot.Amount;
+            return true;
         }
 
         private void DrawDestroyConfirmation()
@@ -694,6 +710,31 @@ namespace CindarsHope.UI
                 // concreto (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
                 _inventoryManager = GameBootstrap.Instance.InventoryManager as InventoryManager;
             }
+        }
+
+        private void ResolveSalvageRuntime()
+        {
+            ResolveInventoryManager();
+            if (_salvageRuntime != null || _inventoryManager == null) return;
+            var recipes = DomainManagerRegistry.Get<ISalvageRecipeProvider>();
+            var rng = DomainManagerRegistry.Get<CraftingPassiveRngState>();
+            if (recipes != null && rng != null)
+                _salvageRuntime = new SalvageRuntimeService(_inventoryManager, recipes, rng);
+        }
+
+        private void ExecuteSalvage()
+        {
+            ResolveSalvageRuntime();
+            if (_salvageRuntime == null)
+            {
+                _message = "Salvage indisponivel.";
+                return;
+            }
+
+            _message = _salvageRuntime.TrySalvage(
+                _selectedSlotIndex, SalvageSkillModifierProvider.CurrentChance, out var reason)
+                ? "Item reciclado."
+                : reason;
         }
 
         private void ResolveEquipmentManager()
@@ -822,7 +863,7 @@ namespace CindarsHope.UI
                 _inventoryManager.ClearEquippedBindingAtSlot(slotIndex);
             }
 
-            _equipmentManager.EquipItem(equipmentSlot, slot.ItemId);
+            _equipmentManager.EquipItem(equipmentSlot, slot.EffectiveItemInstanceId);
         }
 
         private bool IsCompatibleSlot(int slotIndex, EquipmentSlot equipmentSlot)

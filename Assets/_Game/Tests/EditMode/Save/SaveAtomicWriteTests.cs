@@ -2,18 +2,13 @@ using System;
 using System.IO;
 using System.Reflection;
 using CindarsHope.Save;
+using CindarsHope.Save.Migrations;
 using NUnit.Framework;
 
-/// <summary>
-/// Cobre spec_codex_10_save_atomic_write: WriteTextSafely n�o pode deixar uma janela em que o
-/// arquivo final está ausente, e o load deve recuperar automaticamente de um `.backup` quando o
-/// arquivo principal está ausente ou corrompido. WriteTextSafely e TryRecoverFromBackupIfNeeded
-/// s�o `private static` em SaveManager (partial class) � chamados via reflection para n�o abrir
-/// API p�blica nova apenas para teste (YAGNI). Todos os arquivos usados s�o criados em um
-/// diretório temporário isolado (Path.GetTempPath()), nunca tocando saves reais do usuário.
-/// </summary>
 namespace CindarsHope.Tests.EditMode.Save
 {
+    /// <summary>Tests safe file replacement directly and backup recovery through the SaveManager adapter.</summary>
+    /// <remarks>Every file is isolated in a temporary directory; only the private recovery adapter uses reflection.</remarks>
     public class SaveAtomicWriteTests
     {
         private string _tempDir;
@@ -36,19 +31,7 @@ namespace CindarsHope.Tests.EditMode.Save
 
         private static void InvokeWriteTextSafely(string path, string contents)
         {
-            var method = typeof(SaveManager).GetMethod(
-                "WriteTextSafely",
-                BindingFlags.NonPublic | BindingFlags.Static);
-            Assert.IsNotNull(method, "WriteTextSafely method not found via reflection.");
-
-            try
-            {
-                method.Invoke(null, new object[] { path, contents });
-            }
-            catch (TargetInvocationException exception) when (exception.InnerException != null)
-            {
-                throw exception.InnerException;
-            }
+            SaveBackupService.WriteTextSafely(path, contents);
         }
 
         private static bool InvokeTryRecoverFromBackupIfNeeded(string path)
@@ -124,6 +107,40 @@ namespace CindarsHope.Tests.EditMode.Save
             InvokeWriteTextSafely(path, "{\"SchemaVersion\":5,\"CurrentDay\":3}");
 
             Assert.IsTrue(File.Exists(path));
+        }
+
+        [Test]
+        public void WriteTextSafely_CreatesParentAndPreservesUnicodeContents()
+        {
+            var path = Path.Combine(_tempDir, "nested", "slot_1.json");
+            const string contents = "{\"name\":\"Cindar — esperança\"}";
+            InvokeWriteTextSafely(path, contents);
+            Assert.That(File.ReadAllText(path), Is.EqualTo(contents));
+            Assert.That(File.Exists(path + ".tmp"), Is.False);
+        }
+
+        [Test]
+        public void WriteTextSafely_RepeatedReplacementBacksUpImmediatelyPreviousContent()
+        {
+            var path = Path.Combine(_tempDir, "slot_1.json");
+            InvokeWriteTextSafely(path, "first");
+            InvokeWriteTextSafely(path, "second");
+            InvokeWriteTextSafely(path, "third");
+            Assert.That(File.ReadAllText(path), Is.EqualTo("third"));
+            Assert.That(File.ReadAllText(path + ".backup"), Is.EqualTo("second"));
+        }
+
+        [Test]
+        public void WriteTextSafely_TemporaryWriteFailurePreservesMainAndExistingBackup()
+        {
+            var path = Path.Combine(_tempDir, "slot_1.json");
+            File.WriteAllText(path, "original");
+            File.WriteAllText(path + ".backup", "previous");
+            Directory.CreateDirectory(path + ".tmp");
+
+            Assert.Catch<Exception>(() => InvokeWriteTextSafely(path, "replacement"));
+            Assert.That(File.ReadAllText(path), Is.EqualTo("original"));
+            Assert.That(File.ReadAllText(path + ".backup"), Is.EqualTo("previous"));
         }
 
         // -- Recupera��o de backup no load ---------------------------------------------------

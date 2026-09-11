@@ -33,6 +33,7 @@ namespace CindarsHope.Cave.Runtime
         public bool HasActiveRun;
         public string WorldSeed = string.Empty;
         public string RunSeed = string.Empty;
+        public string RunId = string.Empty;
         public int CurrentLevel = 1;
         public int DeepestLevel = 1;
         public List<int> UnlockedCheckpoints = new List<int>();
@@ -70,9 +71,10 @@ namespace CindarsHope.Cave.Runtime
 
             var data = new CaveRunSaveData
             {
-                HasActiveRun = true,
+                HasActiveRun = state.HasActiveRun,
                 WorldSeed = state.CaveWorldSeed ?? string.Empty,
                 RunSeed = state.CaveRunSeed ?? string.Empty,
+                RunId = state.CaveRunId ?? string.Empty,
                 CurrentLevel = Math.Max(1, state.CurrentCaveLevel),
                 DeepestLevel = Math.Max(1, state.DeepestLayerReached)
             };
@@ -133,15 +135,17 @@ namespace CindarsHope.Cave.Runtime
 
         public static CaveRuntimeState FromSaveData(CaveRunSaveData data)
         {
-            if (data == null || !data.HasActiveRun || string.IsNullOrWhiteSpace(data.RunSeed))
+            if (data == null || string.IsNullOrWhiteSpace(data.RunSeed))
             {
                 return null;
             }
 
             var state = new CaveRuntimeState
             {
+                HasActiveRun = data.HasActiveRun,
                 CaveWorldSeed = data.WorldSeed ?? string.Empty,
                 CaveRunSeed = data.RunSeed,
+                CaveRunId = data.HasActiveRun ? data.RunId ?? string.Empty : string.Empty,
                 CurrentCaveLevel = Math.Max(1, data.CurrentLevel),
                 DeepestLayerReached = Math.Max(1, data.DeepestLevel)
             };

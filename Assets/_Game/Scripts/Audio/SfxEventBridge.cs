@@ -178,6 +178,7 @@ namespace CindarsHope.Audio
             Add(GameEventBus.Subscribe<EnemyKilledEvent>(OnEnemyKilled));
             // GameSavedEvent: SFX de save.
             Add(GameEventBus.Subscribe<GameSavedEvent>(_ => PlayMapped<GameSavedEvent>()));
+            Add(GameEventBus.Subscribe<HouseDoorTransitionCompletedEvent>(_ => PlayMapped<HouseDoorTransitionCompletedEvent>()));
 
             // EMENDA V3 — derivação de MusicState (combate):
             Add(GameEventBus.Subscribe<EnemySpawnedEvent>(_ => OnEnemyEngaged()));
@@ -233,12 +234,23 @@ namespace CindarsHope.Audio
         private void Trigger(SfxCategory category)
         {
             float now = Time.unscaledTime;
-            if (!_cooldownGate.TryConsume(category, now))
+            if (!TryConsumeMappedCategory(_cooldownGate, category, now))
             {
                 return;
             }
 
             AudioManager.Instance?.PlaySfx(category);
+        }
+
+        /// <summary>Pure seam for verifying mapped event dispatch without an AudioSource.</summary>
+        public static bool TryConsumeMappedEvent<TEvent>(SfxCooldownGate gate, float nowSeconds)
+        {
+            return gate != null && TryConsumeMappedCategory(gate, SfxEventMap.CategoryFor<TEvent>(), nowSeconds);
+        }
+
+        private static bool TryConsumeMappedCategory(SfxCooldownGate gate, SfxCategory category, float nowSeconds)
+        {
+            return gate != null && gate.TryConsume(category, nowSeconds);
         }
 
         // --------------------------------------------------------------- MusicState

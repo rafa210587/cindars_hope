@@ -98,6 +98,31 @@ namespace CindarsHope.Tests.EditMode.Items
             Assert.AreEqual(28, carrotGold.BaseValue, "Carrot Gold must be 28 (14 x2.0).");
         }
 
+        [Test]
+        public void CommonMaterialBonusEligibility_RejectsQualityRareAndProgressionItems()
+        {
+            var rows = CanonicalItemCatalog.ExpandedRows().ToDictionary(row => row.Id, row => row);
+
+            Assert.IsTrue(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_crop_carrot"]));
+            Assert.IsFalse(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_crop_carrot_silver"]));
+            Assert.IsFalse(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_crop_carrot_gold"]));
+            Assert.IsTrue(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_material_wood"]));
+            Assert.IsFalse(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_material_arcane_crystal"]));
+            Assert.IsFalse(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_material_mithril_ore"]));
+            Assert.IsFalse(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_material_stabilized_blackstone"]));
+            Assert.IsFalse(CanonicalItemCatalog.IsCommonMaterialBonusEligible(rows["item_crop_alihana_tear"]));
+
+            foreach (var row in rows.Values.Where(row => row.Category == ItemCategory.Gem
+                         || row.Category == ItemCategory.Essence
+                         || row.Category == ItemCategory.Quest
+                         || row.Category == ItemCategory.KeyItem
+                         || row.Category == ItemCategory.MonsterDrop))
+            {
+                Assert.IsFalse(CanonicalItemCatalog.IsCommonMaterialBonusEligible(row),
+                    $"{row.Id} must not enter common-material skill bonuses.");
+            }
+        }
+
         // ── EMENDA V3.2: exactly 6 essences ──────────────────────────────────────────
         [Test]
         public void Essences_AreExactlySix()
@@ -187,8 +212,8 @@ namespace CindarsHope.Tests.EditMode.Items
         // canonical base is larger than 118 (>= the documented floor). The F30 ExpectedCount=118
         // is the pre-V3 figure and will surface a count WARN (never ERROR) — documented in the
         // execution report as the expected, honest divergence. These constants pin the real size.
-        public const int ExpectedBaseCount = 213;
-        public const int ExpectedExpandedCount = 245; // 213 base + 16 quality-variant rows x2 variants
+        public const int ExpectedBaseCount = 222;
+        public const int ExpectedExpandedCount = 254; // 222 base + 16 quality-variant rows x2 variants
 
         [Test]
         public void BaseCatalog_CountIsPinned_AndAtLeastDocumentedFloor()

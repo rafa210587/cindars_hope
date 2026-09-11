@@ -30,6 +30,9 @@ namespace CindarsHope.Skills.Runtime.Effects
                 case SkillEffectTargetType.NearestInteractable:
                     return ResolveCurrentInteractable();
 
+                case SkillEffectTargetType.WorldPointInFrontOfPlayer:
+                    return ResolveCurrentInteractable();
+
                 case SkillEffectTargetType.None:
                 case SkillEffectTargetType.DebugFixed:
                     return null;

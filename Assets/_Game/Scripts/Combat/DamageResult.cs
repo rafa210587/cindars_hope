@@ -21,6 +21,16 @@ namespace CindarsHope.Combat
         public bool WasVulnerable { get; set; }
         public string[] AppliedStatusIds { get; set; }
         public string DebugBreakdown { get; set; }
+        public DamageSourceKind SourceKind { get; set; }
+        public SpellDiscipline SpellDiscipline { get; set; }
+        public string SourceInstanceId { get; set; }
+        public string TargetInstanceId { get; set; }
+        public string ActionToken { get; set; }
+        public bool IsCritical { get; set; }
+        public bool IsPrimaryDamage { get; set; }
+        public bool CanTriggerCapstones { get; set; }
+        public bool CanTriggerStatusEffects { get; set; }
+        public bool CanTriggerReactions { get; set; }
 
         public DamageResult() { }
 
@@ -32,6 +42,16 @@ namespace CindarsHope.Combat
             AttributeBonus = request?.AttributeBonus ?? 0;
             SourceFlatBonus = request?.SourceFlatBonus ?? 0;
             DamageType = request?.DamageType ?? DamageType.Physical;
+            SourceKind = request?.SourceKind ?? DamageSourceKind.None;
+            SpellDiscipline = request?.SpellDiscipline ?? SpellDiscipline.None;
+            SourceInstanceId = request?.SourceInstanceId ?? string.Empty;
+            TargetInstanceId = request?.TargetInstanceId ?? string.Empty;
+            ActionToken = request?.ActionToken ?? string.Empty;
+            IsCritical = request?.IsCritical ?? false;
+            IsPrimaryDamage = request?.IsPrimaryDamage ?? true;
+            CanTriggerCapstones = request?.CanTriggerCapstones ?? false;
+            CanTriggerStatusEffects = request?.CanTriggerStatusEffects ?? true;
+            CanTriggerReactions = request?.CanTriggerReactions ?? true;
             FinalDamage = 0;
             WasImmune = false;
             WasVulnerable = false;

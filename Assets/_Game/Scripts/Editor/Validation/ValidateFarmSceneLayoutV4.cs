@@ -25,109 +25,121 @@ namespace CindarsHope.Editor.Validation
             var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(FarmScenePath);
             if (sceneAsset == null)
             {
-                Debug.LogWarning("[ValidateFarmSceneLayoutV4] FarmScene.unity nao encontrada em " + FarmScenePath +
+                Debug.LogError("[ValidateFarmSceneLayoutV4] FarmScene.unity nao encontrada em " + FarmScenePath +
                                  ". Rode CindarsHope/Inicializar Projeto primeiro.");
                 return;
             }
 
             // Abre a cena em modo additive para inspecionar objetos sem destruir a cena atual.
-            var scene = EditorSceneManager.OpenScene(FarmScenePath, OpenSceneMode.Additive);
+            var originalScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(FarmScenePath);
+            bool openedHere = !scene.isLoaded;
+            if (openedHere) scene = EditorSceneManager.OpenScene(FarmScenePath, OpenSceneMode.Additive);
 
             int passed = 0;
             int failed = 0;
 
-            void Check(bool condition, string label)
+            try
             {
-                if (condition)
+                void Check(bool condition, string label)
                 {
-                    passed++;
+                    if (condition)
+                    {
+                        passed++;
+                    }
+                    else
+                    {
+                        failed++;
+                        Debug.LogError($"[ValidateFarmSceneLayoutV4] FALHA: {label}");
+                    }
                 }
-                else
-                {
-                    failed++;
-                    Debug.LogError($"[ValidateFarmSceneLayoutV4] FALHA: {label}");
-                }
+
+                // ── Spawn points ───────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "Spawn_farm_default") != null,    "Spawn_farm_default presente");
+                Check(FindByName(scene, "Spawn_farm_from_town") != null,  "Spawn_farm_from_town presente");
+                Check(FindByName(scene, "Spawn_farm_from_cave") != null,  "Spawn_farm_from_cave presente");
+
+                // ── Portal ─────────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "Portal_Farm_To_Town") != null,   "Portal_Farm_To_Town presente");
+
+                // ── Casa WALK-IN v5 ────────────────────────────────────────────────────────────────
+                // v5: casa fisica percorrivel com Bed + BedLetter + FarmHouseChest dentro.
+                Check(FindByName(scene, "FarmHouse") != null,             "FarmHouse (walk-in) presente");
+                Check(FindByName(scene, "Bed") != null,                   "Bed (dentro da FarmHouse) presente");
+                Check(FindByName(scene, "BedLetter") != null,             "BedLetter (dentro da FarmHouse) presente");
+                Check(FindByName(scene, "FarmHouseChest") != null,        "FarmHouseChest (dentro da FarmHouse) presente");
+
+                // ── Quadro de Evolucoes (substitui lotes fable_41) ─────────────────────────────────
+                Check(FindComponentOfType<FarmEvolutionBoardInteractable>(scene) != null,
+                      "FarmEvolutionBoardInteractable presente");
+
+                // ── Caverna ────────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "CaveEntrance") != null,          "CaveEntrance presente");
+                Check(FindByName(scene, "Board_Zrix") != null,            "Board_Zrix presente");
+
+                // ── Zrix NPC (Fase 5) ──────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "NPC_Zrix_Farm") != null,         "NPC_Zrix_Farm (perambulador) presente");
+
+                // ── Areas de expansao v7 (nas bordas — Exp_North/NE/West) ─────────────────────────
+                Check(FindByName(scene, "Exp_North") != null,             "Exp_North presente (borda norte)");
+                Check(FindByName(scene, "Exp_NE") != null,                "Exp_NE presente (borda norte-leste)");
+                Check(FindByName(scene, "Exp_West") != null,              "Exp_West presente (borda oeste-sul)");
+
+                // ── Montanha ───────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "MountainBarrier") != null,       "MountainBarrier presente");
+
+                // ── Rio e ponte ────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "RiverAndBridge") != null,        "RiverAndBridge presente");
+                Check(FindByName(scene, "Bridge_01") != null,             "Bridge_01 presente");
+
+                // ── Veios de minerio ───────────────────────────────────────────────────────────────
+                var oreNodes = FindComponentsOfType<LockedOreNodeInteractable>(scene);
+                Check(oreNodes != null && oreNodes.Length >= 4,           "4 LockedOreNodeInteractable presentes");
+
+                // ── FarmSceneRuntimeBootstrap e FarmTillingInputController ─────────────────────────
+                Check(FindComponentOfType<FarmSceneRuntimeBootstrap>(scene) != null,
+                      "FarmSceneRuntimeBootstrap presente");
+                Check(FindComponentOfType<FarmTillingInputController>(scene) != null,
+                      "FarmTillingInputController presente");
+
+                // ── Construcoes ────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "Coop_01") != null,               "Coop_01 presente");
+                Check(FindByName(scene, "Barn_01") != null,               "Barn_01 presente");
+                Check(FindByName(scene, "Station_CheesePress") != null,   "Station_CheesePress presente");
+                Check(FindByName(scene, "Station_WineBarrel") != null,    "Station_WineBarrel presente");
+                Check(FindByName(scene, "Greenhouse") != null,            "Greenhouse presente");
+
+                // ── Crafting ───────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "CraftingStation_Workbench") != null,    "CraftingStation_Workbench presente");
+                Check(FindByName(scene, "CraftingStation_Forge") != null,        "CraftingStation_Forge presente");
+                Check(FindByName(scene, "CraftingStation_CookingStation") != null, "CraftingStation_CookingStation presente");
+
+                // ── Economy ────────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "ShippingBin_farm_shipping_bin_01") != null, "ShippingBin presente");
+                Check(FindByName(scene, "SellPoint") != null,             "SellPoint presente");
+
+                // ── Recursos ───────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "FishingSpot") != null,           "FishingSpot presente");
+                Check(FindByName(scene, "RockResource_01") != null,       "RockResource_01 presente");
+                Check(FindByName(scene, "FonteAnya") != null,             "FonteAnya presente");
+
+                // ── Forage ─────────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "FarmForagePoints") != null,      "FarmForagePoints (parent) presente");
+
+                // ── Bounds v6 (64x44) ──────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "Bounds") != null,                "Bounds presente");
+
+                // ── Arvores ────────────────────────────────────────────────────────────────────────
+                Check(FindByName(scene, "Trees") != null,                 "Trees (parent) presente");
+
             }
-
-            // ── Spawn points ───────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "Spawn_farm_default") != null,    "Spawn_farm_default presente");
-            Check(FindByName(scene, "Spawn_farm_from_town") != null,  "Spawn_farm_from_town presente");
-            Check(FindByName(scene, "Spawn_farm_from_cave") != null,  "Spawn_farm_from_cave presente");
-
-            // ── Portal ─────────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "Portal_Farm_To_Town") != null,   "Portal_Farm_To_Town presente");
-
-            // ── Casa WALK-IN v5 ────────────────────────────────────────────────────────────────
-            // v5: casa fisica percorrivel com Bed + BedLetter + FarmHouseChest dentro.
-            Check(FindByName(scene, "FarmHouse") != null,             "FarmHouse (walk-in) presente");
-            Check(FindByName(scene, "Bed") != null,                   "Bed (dentro da FarmHouse) presente");
-            Check(FindByName(scene, "BedLetter") != null,             "BedLetter (dentro da FarmHouse) presente");
-            Check(FindByName(scene, "FarmHouseChest") != null,        "FarmHouseChest (dentro da FarmHouse) presente");
-
-            // ── Quadro de Evolucoes (substitui lotes fable_41) ─────────────────────────────────
-            Check(FindComponentOfType<FarmEvolutionBoardInteractable>(scene) != null,
-                  "FarmEvolutionBoardInteractable presente");
-
-            // ── Caverna ────────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "CaveEntrance") != null,          "CaveEntrance presente");
-            Check(FindByName(scene, "Board_Zrix") != null,            "Board_Zrix presente");
-
-            // ── Zrix NPC (Fase 5) ──────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "NPC_Zrix_Farm") != null,         "NPC_Zrix_Farm (perambulador) presente");
-
-            // ── Areas de expansao v7 (nas bordas — Exp_North/NE/West) ─────────────────────────
-            Check(FindByName(scene, "Exp_North") != null,             "Exp_North presente (borda norte)");
-            Check(FindByName(scene, "Exp_NE") != null,                "Exp_NE presente (borda norte-leste)");
-            Check(FindByName(scene, "Exp_West") != null,              "Exp_West presente (borda oeste-sul)");
-
-            // ── Montanha ───────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "MountainBarrier") != null,       "MountainBarrier presente");
-
-            // ── Rio e ponte ────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "RiverAndBridge") != null,        "RiverAndBridge presente");
-            Check(FindByName(scene, "Bridge_01") != null,             "Bridge_01 presente");
-
-            // ── Veios de minerio ───────────────────────────────────────────────────────────────
-            var oreNodes = FindComponentsOfType<LockedOreNodeInteractable>(scene);
-            Check(oreNodes != null && oreNodes.Length >= 4,           "4 LockedOreNodeInteractable presentes");
-
-            // ── FarmSceneRuntimeBootstrap e FarmTillingInputController ─────────────────────────
-            Check(FindComponentOfType<FarmSceneRuntimeBootstrap>(scene) != null,
-                  "FarmSceneRuntimeBootstrap presente");
-            Check(FindComponentOfType<FarmTillingInputController>(scene) != null,
-                  "FarmTillingInputController presente");
-
-            // ── Construcoes ────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "Coop_01") != null,               "Coop_01 presente");
-            Check(FindByName(scene, "Barn_01") != null,               "Barn_01 presente");
-            Check(FindByName(scene, "Station_CheesePress") != null,   "Station_CheesePress presente");
-            Check(FindByName(scene, "Station_WineBarrel") != null,    "Station_WineBarrel presente");
-            Check(FindByName(scene, "Greenhouse") != null,            "Greenhouse presente");
-
-            // ── Crafting ───────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "CraftingStation_Workbench") != null,    "CraftingStation_Workbench presente");
-            Check(FindByName(scene, "CraftingStation_Forge") != null,        "CraftingStation_Forge presente");
-            Check(FindByName(scene, "CraftingStation_CookingStation") != null, "CraftingStation_CookingStation presente");
-
-            // ── Economy ────────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "ShippingBin_farm_shipping_bin_01") != null, "ShippingBin presente");
-            Check(FindByName(scene, "SellPoint") != null,             "SellPoint presente");
-
-            // ── Recursos ───────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "FishingSpot") != null,           "FishingSpot presente");
-            Check(FindByName(scene, "RockResource_01") != null,       "RockResource_01 presente");
-            Check(FindByName(scene, "FonteAnya") != null,             "FonteAnya presente");
-
-            // ── Forage ─────────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "FarmForagePoints") != null,      "FarmForagePoints (parent) presente");
-
-            // ── Bounds v6 (64x44) ──────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "Bounds") != null,                "Bounds presente");
-
-            // ── Arvores ────────────────────────────────────────────────────────────────────────
-            Check(FindByName(scene, "Trees") != null,                 "Trees (parent) presente");
-
-            EditorSceneManager.CloseScene(scene, true);
+            finally
+            {
+                if (originalScene.IsValid() && originalScene.isLoaded)
+                    UnityEngine.SceneManagement.SceneManager.SetActiveScene(originalScene);
+                if (openedHere && scene.IsValid() && scene.isLoaded)
+                    EditorSceneManager.CloseScene(scene, true);
+            }
 
             if (failed == 0)
             {

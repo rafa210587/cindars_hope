@@ -10,6 +10,7 @@ namespace CindarsHope.World
         public string PickupInstanceId;
         public string RuntimeGeneratedPickupId;
         public string ItemId;
+        public string ItemInstanceId;
         public int Amount;
         public Vector2 Position;
         public bool IsCollected;

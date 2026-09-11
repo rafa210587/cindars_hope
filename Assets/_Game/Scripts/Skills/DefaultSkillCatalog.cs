@@ -33,7 +33,61 @@ namespace CindarsHope.Skills
             ApplyEffectRoutes(nodes);
             ApplyCapstoneVariants(nodes);
             ApplyDormantActives(nodes);
+            ApplyRankCapsAndPrerequisites(nodes);
+            ApplyCraftingExecutionFlags(nodes);
             return nodes;
+        }
+
+        private static readonly HashSet<string> ThreeRankActiveNodeIds = new HashSet<string>
+        {
+            "melee_offhand_cut", "melee_whirl_cut", "melee_battle_dash", "melee_leap_attack",
+            "melee.avanco_aco", "melee.grito_desafio", "melee.investida_quebra_guarda",
+            "ranged_line_piercer", "ranged_bleeding_arrow", "ranged_marked_prey",
+            "magic.chama_breve", "magic_ice_bind", "magic.rajada_gelida", "magic_elemental_ward",
+            "survival.sinal_retirada", "survival.isca_improvisada",
+            "crafting_field_patch", "crafting_quick_repair", "crafting.irrigador_portatil",
+            "crafting.bomba_improvisada", "crafting.marca_eficiencia"
+        };
+
+        private static readonly HashSet<string> ThreeRankPassiveNodeIds = new HashSet<string>
+        {
+            "melee_guarded_stance", "melee_dual_wield_flow", "melee_dodge_training",
+            "ranged_long_sight", "ranged_quick_nock", "magic_quick_channel",
+            "survival_low_rations", "survival_status_recovery", "survival_safe_step",
+            "crafting_repair_care", "crafting_salvage_method", "crafting_durable_finish", "crafting_shop_sense"
+        };
+
+        private static readonly HashSet<string> OneRankPassiveNodeIds = new HashSet<string>
+        {
+            "crafting_pack_order"
+        };
+
+        private static void ApplyRankCapsAndPrerequisites(List<SkillNodeDataSO> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                node.AuthoredMaxRank = OneRankPassiveNodeIds.Contains(node.SkillNodeId)
+                    ? 1
+                    : node.IsCapstone
+                        || ThreeRankActiveNodeIds.Contains(node.SkillNodeId)
+                        || ThreeRankPassiveNodeIds.Contains(node.SkillNodeId)
+                        ? 3
+                        : 5;
+            }
+
+            ReplacePrerequisites(nodes, "ranged_marked_prey", "ranged_steady_hand");
+            ReplacePrerequisites(nodes, "melee_capstone_battle_rhythm", "melee_dodge_training", "melee.investida_quebra_guarda");
+            ReplacePrerequisites(nodes, "ranged_capstone_eagle_focus", "ranged_bleeding_arrow", "ranged_projectile_tuning");
+            ReplacePrerequisites(nodes, "magic_capstone_elemental_confluence", "magic_elemental_ward", "magic_slowing_sigils");
+            ReplacePrerequisites(nodes, "survival_capstone_caveborn", "survival_last_breath", "survival.campo_seguro");
+            ReplacePrerequisites(nodes, "crafting_capstone_master_artisan", "crafting_durable_finish", "crafting.marca_eficiencia");
+        }
+
+        private static void ReplacePrerequisites(List<SkillNodeDataSO> nodes, string nodeId, params string[] prerequisites)
+        {
+            var node = nodes.Find(candidate => candidate.SkillNodeId == nodeId);
+            if (node == null) return;
+            node.PrerequisiteNodeIds = new List<string>(prerequisites);
         }
 
         // ── fable_29: Tier assignment (SKILL_NUMERIC_ADDENDUM §2 tier column) ───────────────
@@ -88,14 +142,20 @@ namespace CindarsHope.Skills
         // (treeId, route, perRankPayload, tooltip) keyed by node id.
         private static void ApplyEffectRoutes(List<SkillNodeDataSO> nodes)
         {
-            Route(nodes, "crafting_shop_sense", SkillEffectRoute.GoldDropModifier, 0.05f,
-                "Efeito pendente: bonus de venda/compra sera consumido pela economia (F06).");
             Route(nodes, "crafting_material_eye", SkillEffectRoute.HarvestYieldModifier, 0.05f,
                 "Efeito pendente: bonus de coleta de recursos sera consumido pela fazenda/coleta (F17).");
             Route(nodes, "crafting_station_focus", SkillEffectRoute.CraftCostModifier, 0.05f,
                 "Efeito pendente: reducao de custo de craft sera consumida pelo craft (F31).");
-            Route(nodes, "crafting_salvage_method", SkillEffectRoute.ToolEfficiencyModifier, 0.05f,
-                "Efeito pendente: eficiencia de ferramentas/recursos sera consumida por F48/F49.");
+            MarkRouteImplemented(nodes, "crafting_material_eye");
+            MarkRouteImplemented(nodes, "crafting_station_focus");
+        }
+
+        private static void MarkRouteImplemented(List<SkillNodeDataSO> nodes, string id)
+        {
+            var node = nodes.Find(x => x.SkillNodeId == id);
+            if (node == null) return;
+            node.EffectPending = false;
+            node.EffectPendingTooltip = string.Empty;
         }
 
         private static void Route(List<SkillNodeDataSO> nodes, string id, SkillEffectRoute route,
@@ -129,6 +189,23 @@ namespace CindarsHope.Skills
                 magic.Description = "Capstone exclusivo: escolha Semente de Anya (suporte: -50% MP, +35% cura) "
                     + "OU Semente de Senya (ofensivo: +35% dano magico). A escolha bloqueia a outra ate respec.";
             }
+
+            var ranged = nodes.Find(x => x.SkillNodeId == "ranged_capstone_eagle_focus");
+            if (ranged != null)
+            {
+                ranged.CapstoneVariants = new List<string> { "alihana", "senya", "nyx" };
+                ranged.Description = "Capstone exclusivo: escolha Alihana (alcance e velocidade), "
+                    + "Senya (eco elemental) OU Nyx (critico por isolamento). A escolha bloqueia "
+                    + "as demais ate respec na Fonte.";
+            }
+
+            var shopSense = nodes.Find(x => x.SkillNodeId == "crafting_shop_sense");
+            if (shopSense != null)
+            {
+                shopSense.CapstoneVariants = new List<string> { "buy", "sell" };
+                shopSense.Description = "Escolha um foco comercial: Compra reduz precos em 5% por rank "
+                    + "OU Venda aumenta precos em 5% por rank (maximo 15%).";
+            }
         }
 
         // ── fable_29 (decision 1.5): dormant actives (feedback-only, NotYetExecutable) ─────
@@ -137,17 +214,12 @@ namespace CindarsHope.Skills
         // ActiveSkillExecutionController.RegisterFeedbackExecutors.
         private static readonly string[] DormantActiveNodeIds =
         {
-            "ranged_charged_shot",       // Disparo Carregado
-            "ranged_marked_prey",        // Marcador de Presa
             "ranged_multishot_fan",      // (multishot has executor; NOT dormant) — see filter below
-            "magic_elemental_ward",      // Selo de Protecao / ward
             // fable_70: magic_slowing_sigils agora executavel (SlowFieldSkillEffectExecutor) — removido daqui.
             // fable_70: survival_emergency_roll e crafting.mecanismo_campo CORTADOS (nao mais no catalogo).
             // survival_last_breath agora tem executor real (SelfRestore) — removido da lista dormente.
             "survival.sinal_retirada",
             "survival.isca_improvisada",
-            "crafting_field_patch",
-            "crafting_quick_repair",
             "crafting.irrigador_portatil",
             "crafting.marca_eficiencia",
         };
@@ -168,6 +240,31 @@ namespace CindarsHope.Skills
                 {
                     n.NotYetExecutable = true;
                 }
+            }
+        }
+
+        private static void ApplyCraftingExecutionFlags(List<SkillNodeDataSO> nodes)
+        {
+            var stationFocus = nodes.Find(x => x.SkillNodeId == "crafting_station_focus");
+            if (stationFocus != null)
+            {
+                stationFocus.EffectPending = false;
+                stationFocus.EffectPendingTooltip = string.Empty;
+            }
+
+            var shopSense = nodes.Find(x => x.SkillNodeId == "crafting_shop_sense");
+            if (shopSense != null)
+            {
+                shopSense.EffectRoute = SkillEffectRoute.None;
+                shopSense.RoutePayloadPerRank = 0f;
+                shopSense.EffectPending = false;
+                shopSense.EffectPendingTooltip = string.Empty;
+            }
+
+            var packOrder = nodes.Find(x => x.SkillNodeId == "crafting_pack_order");
+            if (packOrder != null)
+            {
+                packOrder.NotYetExecutable = true;
             }
         }
 
@@ -261,19 +358,19 @@ namespace CindarsHope.Skills
             Node("melee_iron_grip", "melee", "Pegada de Ferro",
                 "Attack +1 com armas melee.",
                 SkillNodeType.PassiveStat, SkillCategory.PassiveSkill,
-                mods: Mod(SkillModifierType.AttackFlat, 1f)),
+                mods: Mod(SkillModifierType.MeleeAttackFlat, 1f)),
 
             Node("melee_guarded_stance", "melee", "Postura Guardada",
-                "Defense +1.",
+                "Defense +1 por rank com arma melee e escudo valido.",
                 SkillNodeType.PassiveStat, SkillCategory.PassiveSkill,
                 prereq: "melee_iron_grip",
-                mods: Mod(SkillModifierType.DefenseFlat, 1f)),
+                mods: Mod(SkillModifierType.GuardedDefenseFlat, 1f)),
 
             Node("melee_dual_wield_flow", "melee", "Fluxo de Duas Lâminas",
-                "Bonus de AttackSpeed com dual wield.",
+                "Recovery melee +5% por rank com duas armas melee leves.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "melee_iron_grip",
-                mods: Mod(SkillModifierType.DualWieldAttackSpeedBonus, 0.1f)),
+                mods: Mod(SkillModifierType.DualWieldRecoverySpeed, 0.05f)),
 
             Node("melee_offhand_cut", "melee", "Corte da Mão Secundária",
                 "Ataque curto com offhand.",
@@ -282,10 +379,10 @@ namespace CindarsHope.Skills
                 unlockAction: "skill_melee_offhand_cut"),
 
             Node("melee_two_handed_momentum", "melee", "Ímpeto de Duas Mãos",
-                "Bonus de dano para armas two-handed.",
+                "Dano +5% por rank com arma de duas maos.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "melee_guarded_stance",
-                mods: Mod(SkillModifierType.TwoHandedDamageBonus, 1f)),
+                mods: Mod(SkillModifierType.TwoHandedDamageBonus, 0.05f)),
 
             // fable_70: melee_guarded_block CORTADO — Block segue como ability pura (Shift), nao ocupa slot.
 
@@ -308,7 +405,7 @@ namespace CindarsHope.Skills
                 unlockAction: "skill_melee_whirl_cut"),
 
             Node("melee_dodge_training", "melee", "Treino de Esquiva",
-                "Reduz custo/cooldown de dodge.",
+                "Reduz apenas o custo de Stamina do dodge em 10% por rank.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "melee_battle_dash",
                 mods: Mod(SkillModifierType.DodgeCostReduction, 0.1f)),
@@ -357,10 +454,10 @@ namespace CindarsHope.Skills
                 mods: Mod(SkillModifierType.BowRangeFlat, 0.5f)),
 
             Node("ranged_quick_nock", "ranged", "Encaixe Rápido",
-                "Melhora cooldown de arco.",
+                "Melhora o recovery do disparo em 8% por rank.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "ranged_steady_hand",
-                mods: Mod(SkillModifierType.AttackSpeedBonus, 0.1f)),
+                mods: Mod(SkillModifierType.BowRecoverySpeed, 0.08f)),
 
             Node("ranged_charged_shot", "ranged", "Disparo Carregado",
                 "Carrega antes de soltar para dano/range maior.",
@@ -387,10 +484,10 @@ namespace CindarsHope.Skills
                 unlockAction: "skill_ranged_bleeding_arrow"),
 
             Node("ranged_kiting_steps", "ranged", "Passos de Kiting",
-                "Pequeno bonus de MoveSpeed após disparo.",
+                "MoveSpeed +4% por rank por 2 s apos disparo, somente ao se afastar da ameaca.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "ranged_multishot_fan",
-                mods: Mod(SkillModifierType.MoveSpeedBonus, 0.05f)),
+                mods: Mod(SkillModifierType.KitingMoveSpeedBonus, 0.04f)),
 
             Node("ranged_marked_prey", "ranged", "Presa Marcada",
                 "Marca alvo; próximos disparos causam bonus.",
@@ -405,11 +502,10 @@ namespace CindarsHope.Skills
                 mods: Mod(SkillModifierType.BowProjectileSpeedFlat, 1f)),
 
             Node("ranged_capstone_eagle_focus", "ranged", "Foco da Águia",
-                "BowRange +1, ProjectileSpeed +1 e bonus em skills ranged.",
+                "Escolha uma bênção lunar para o primeiro alvo marcado de cada encontro.",
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
-                prereq: "ranged_projectile_tuning",
-                mods: new[] { Mod(SkillModifierType.BowRangeFlat, 1f), Mod(SkillModifierType.BowProjectileSpeedFlat, 1f) }),
+                prereq: "ranged_projectile_tuning"),
         };
 
         // ── MAGIC ──────────────────────────────────────────────────────────────
@@ -422,16 +518,16 @@ namespace CindarsHope.Skills
                 mods: Mod(SkillModifierType.MaxManaFlat, 10f)),
 
             Node("magic_quick_channel", "magic", "Canalização Rápida",
-                "ManaRegen +1/s.",
+                "ManaRegen base +8% por rank, sem escalar bonus externos.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "magic_mana_well",
-                mods: Mod(SkillModifierType.ManaRegenFlat, 1f)),
+                mods: Mod(SkillModifierType.ManaRegenBasePercent, 0.08f)),
 
             Node("magic_arcane_edge", "magic", "Fio Arcano",
                 "ArcaneDamage +1.",
                 SkillNodeType.PassiveStat, SkillCategory.PassiveSkill,
                 prereq: "magic_mana_well",
-                mods: Mod(SkillModifierType.AttackFlat, 1f)),
+                mods: Mod(SkillModifierType.MagicAttackFlat, 1f)),
 
             Node("magic_fire_spark", "magic", "Fagulha Ígnea",
                 "Spell Fire projectile.",
@@ -461,7 +557,7 @@ namespace CindarsHope.Skills
                 "Melhora ArcaneBolt.",
                 SkillNodeType.UpgradeSkillAction, SkillCategory.PassiveSkill,
                 prereq: "magic_arcane_edge",
-                mods: Mod(SkillModifierType.AttackFlat, 1f)),
+                mods: Mod(SkillModifierType.ArcaneBoltDamageFlat, 1f)),
 
             Node("magic_elemental_ward", "magic", "Guarda Elemental",
                 "Buff temporário de resistência elemental.",
@@ -476,11 +572,10 @@ namespace CindarsHope.Skills
                 unlockAction: "skill_magic_slowing_sigils"),
 
             Node("magic_capstone_elemental_confluence", "magic", "Confluência Elemental",
-                "Bonus em dano elemental e mana regen.",
+                "Acumula gasto mágico para armar uma semente de Anya ou Senya.",
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
-                prereq: "magic_slowing_sigils",
-                mods: new[] { Mod(SkillModifierType.AttackFlat, 1f), Mod(SkillModifierType.ManaRegenFlat, 1f) }),
+                prereq: "magic_slowing_sigils"),
 
             // ── MAGIC: Action Skill Balance Patch (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) ──
             // Adicionar sem remover. Nao altera IDs existentes.
@@ -514,7 +609,7 @@ namespace CindarsHope.Skills
                 mods: Mod(SkillModifierType.MaxHPFlat, 5f)),
 
             Node("survival_low_rations", "survival", "Rações Curtas",
-                "Reduz HungerDrain.",
+                "Reduz HungerDrain em 10% por rank.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "survival_cave_lungs",
                 mods: Mod(SkillModifierType.HungerDrainReduction, 0.1f)),
@@ -544,10 +639,10 @@ namespace CindarsHope.Skills
                 mods: Mod(SkillModifierType.StatusDurationReduction, 0.1f)),
 
             Node("survival_safe_step", "survival", "Passo Seguro",
-                "Reduz penalidade de terreno.",
+                "Recupera 15% da parcela perdida por penalidade de terreno por rank.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "survival_low_rations",
-                mods: Mod(SkillModifierType.MoveSpeedBonus, 0.05f)),
+                mods: Mod(SkillModifierType.TerrainPenaltyRecovery, 0.15f)),
 
             // fable_70: survival_emergency_roll CORTADO — Dodge segue como ability pura (Space), nao ocupa slot.
 
@@ -558,11 +653,10 @@ namespace CindarsHope.Skills
                 unlockAction: "skill_survival_last_breath"),
 
             Node("survival_capstone_caveborn", "survival", "Nascido da Caverna",
-                "Bonus em todas as resistências e MaxStamina.",
+                "Uma vez por expedição, reage a uma crise com mobilidade e resistência temporárias.",
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
-                prereq: "survival_last_breath",
-                mods: new[] { Mod(SkillModifierType.ToxicResistanceBonus, 1f), Mod(SkillModifierType.ColdResistanceBonus, 1f), Mod(SkillModifierType.HeatResistanceBonus, 1f), Mod(SkillModifierType.MaxStaminaFlat, 5f) }),
+                prereq: "survival_last_breath"),
 
             // ── SURVIVAL: Action Skill Balance Patch (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) ──
             // Adicionar sem remover. Nao altera IDs existentes.
@@ -603,18 +697,18 @@ namespace CindarsHope.Skills
         private static List<SkillNodeDataSO> BuildCraftingNodes() => new List<SkillNodeDataSO>
         {
             Node("crafting_fast_hands", "crafting", "Mãos Ágeis",
-                "CraftTime -10%.",
+                "Reduz o tempo de craft em 10% por rank; redução combinada limitada a 60%.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 mods: Mod(SkillModifierType.CraftTimeReductionPercent, 0.1f)),
 
             Node("crafting_repair_care", "crafting", "Cuidado no Reparo",
-                "RepairKit recupera mais.",
+                "Repair Kits restauram +10% de durabilidade por rank, até +30%; materiais não mudam.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "crafting_fast_hands",
                 mods: Mod(SkillModifierType.RepairEfficiencyBonus, 0.1f)),
 
             Node("crafting_material_eye", "crafting", "Olho de Material",
-                "Chance futura de bonus de recurso.",
+                "Cada rank dá 5% de chance de obter +1 material comum em uma coleta elegível; a tentativa é única por origem.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "crafting_fast_hands"),
 
@@ -625,13 +719,13 @@ namespace CindarsHope.Skills
                 unlockAction: "skill_crafting_field_patch"),
 
             Node("crafting_station_focus", "crafting", "Foco de Bancada",
-                "Bonus de craft em workstation.",
+                "Na estação correta, reduz em 5% por rank somente ingredientes comuns; mínimo 1 por ingrediente.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "crafting_material_eye",
-                mods: Mod(SkillModifierType.CraftTimeReductionPercent, 0.05f)),
+                mods: Mod(SkillModifierType.StationCommonMaterialReduction, 0.05f)),
 
             Node("crafting_pack_order", "crafting", "Mochila Ordenada",
-                "Hook para futura organização de inventário.",
+                "Requer preset e reserva de slots na futura UI de inventário.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "crafting_fast_hands"),
 
@@ -642,26 +736,25 @@ namespace CindarsHope.Skills
                 unlockAction: "skill_crafting_quick_repair"),
 
             Node("crafting_salvage_method", "crafting", "Método de Salvage",
-                "Melhor retorno ao salvage de item.",
+                "Recupera 40% dos materiais comuns de equipamento fabricado e dá 5% por rank (máximo 15%) de +1 material.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "crafting_station_focus"),
 
             Node("crafting_durable_finish", "crafting", "Acabamento Durável",
-                "Bonus de DurabilityMax para crafted gear.",
+                "Equipamento fabricado recebe +8% de durabilidade máxima por rank, até +24%, preservado por instância.",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "crafting_salvage_method"),
 
             Node("crafting_shop_sense", "crafting", "Senso de Mercado",
-                "Hook para bonus de venda/compra futuro.",
+                "Escolha um foco de compra ou venda, com bonus de 5% por rank (maximo 15%).",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
                 prereq: "crafting_pack_order"),
 
             Node("crafting_capstone_master_artisan", "crafting", "Mestre Artesão",
-                "Craft time menor e repair efficiency maior.",
+                "Forja Viva: uma vez por dia, escolha antes de fabricar. R1 melhora a qualidade funcional; R2 melhora a qualidade ou poupa um material comum; R3 concede +8% de durabilidade a equipamento ou +8% de potência a até cinco consumíveis. Variantes não recebem bônus de venda.",
                 SkillNodeType.Capstone, SkillCategory.CapstonePassive,
                 isCapstone: true, reqNodes: 8,
-                prereq: "crafting_durable_finish",
-                mods: new[] { Mod(SkillModifierType.CraftTimeReductionPercent, 0.15f), Mod(SkillModifierType.RepairEfficiencyBonus, 0.15f) }),
+                prereq: "crafting_durable_finish"),
 
             // ── CRAFTING: Action Skill Balance Patch (WAVE_INTEGRATION_11_ACTION_SKILL_BALANCE_PATCH) ──
             // Adicionar sem remover. crafting_quick_repair (ID existente "Reparo Rápido") nao duplicado.

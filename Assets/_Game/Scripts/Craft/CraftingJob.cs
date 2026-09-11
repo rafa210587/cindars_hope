@@ -19,6 +19,11 @@ namespace CindarsHope.Craft
         public string RecipeId { get; private set; }
         public string OutputItemId { get; private set; }
         public int OutputAmount { get; private set; }
+        public string OutputInstanceId { get; private set; }
+        public int OutputDurabilityMax { get; private set; }
+        public string LivingForgeReservationToken { get; private set; }
+        public int LivingForgeDayIndex { get; private set; }
+        public int LivingForgeChoice { get; private set; }
         public List<CraftingIngredientSaveData> IngredientsConsumed { get; private set; }
         public CraftingJobStatus Status { get; set; }
         public float RemainingSeconds { get; set; }
@@ -33,13 +38,35 @@ namespace CindarsHope.Craft
         /// no ÚNICO ponto de criação do job. 1f = sem alteração (caminho padrão/save-load).
         /// </summary>
         public CraftingJob(string stationInstanceId, RecipeDataSO recipe, float craftTimeMultiplier)
+            : this(stationInstanceId, recipe, craftTimeMultiplier, string.Empty, 0)
+        {
+        }
+
+        public CraftingJob(string stationInstanceId, RecipeDataSO recipe, float craftTimeMultiplier,
+            string outputInstanceId, int outputDurabilityMax)
+            : this(stationInstanceId, recipe, craftTimeMultiplier, outputInstanceId,
+                outputDurabilityMax, recipe != null ? recipe.OutputItemId : string.Empty,
+                string.Empty, 0, 0)
+        {
+        }
+
+        public CraftingJob(string stationInstanceId, RecipeDataSO recipe, float craftTimeMultiplier,
+            string outputInstanceId, int outputDurabilityMax, string outputItemId,
+            string livingForgeReservationToken, int livingForgeDayIndex, int livingForgeChoice)
         {
             JobId = Guid.NewGuid().ToString();
             StationInstanceId = stationInstanceId;
             Recipe = recipe;
             RecipeId = recipe.Id;
-            OutputItemId = recipe.OutputItemId;
+            OutputItemId = string.IsNullOrWhiteSpace(outputItemId)
+                ? recipe.OutputItemId
+                : outputItemId;
             OutputAmount = recipe.OutputAmount;
+            OutputInstanceId = outputInstanceId ?? string.Empty;
+            OutputDurabilityMax = Math.Max(0, outputDurabilityMax);
+            LivingForgeReservationToken = livingForgeReservationToken ?? string.Empty;
+            LivingForgeDayIndex = Math.Max(0, livingForgeDayIndex);
+            LivingForgeChoice = Math.Max(0, livingForgeChoice);
             IngredientsConsumed = CaptureIngredients(recipe.Ingredients);
             Status = CraftingJobStatus.InProgress;
             RemainingSeconds = UnityEngine.Mathf.Max(0f, recipe.CraftTimeSeconds * craftTimeMultiplier);
@@ -53,6 +80,11 @@ namespace CindarsHope.Craft
             RecipeId = saveData.RecipeId;
             OutputItemId = saveData.OutputItemId;
             OutputAmount = saveData.OutputAmount;
+            OutputInstanceId = saveData.OutputInstanceId ?? string.Empty;
+            OutputDurabilityMax = Math.Max(0, saveData.OutputDurabilityMax);
+            LivingForgeReservationToken = saveData.LivingForgeReservationToken ?? string.Empty;
+            LivingForgeDayIndex = Math.Max(0, saveData.LivingForgeDayIndex);
+            LivingForgeChoice = Math.Max(0, saveData.LivingForgeChoice);
             IngredientsConsumed = saveData.IngredientsConsumed ?? new List<CraftingIngredientSaveData>();
             Status = (CraftingJobStatus)saveData.Status;
             RemainingSeconds = saveData.RemainingSeconds;
@@ -94,6 +126,11 @@ namespace CindarsHope.Craft
                 RemainingSeconds = RemainingSeconds,
                 OutputItemId = OutputItemId,
                 OutputAmount = OutputAmount,
+                OutputInstanceId = OutputInstanceId,
+                OutputDurabilityMax = OutputDurabilityMax,
+                LivingForgeReservationToken = LivingForgeReservationToken,
+                LivingForgeDayIndex = LivingForgeDayIndex,
+                LivingForgeChoice = LivingForgeChoice,
                 IngredientsConsumed = new List<CraftingIngredientSaveData>(IngredientsConsumed)
             };
         }
@@ -135,6 +172,11 @@ namespace CindarsHope.Craft
         public float RemainingSeconds;
         public string OutputItemId;
         public int OutputAmount;
+        public string OutputInstanceId;
+        public int OutputDurabilityMax;
+        public string LivingForgeReservationToken;
+        public int LivingForgeDayIndex;
+        public int LivingForgeChoice;
         public List<CraftingIngredientSaveData> IngredientsConsumed = new List<CraftingIngredientSaveData>();
     }
 }

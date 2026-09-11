@@ -11,6 +11,8 @@ namespace CindarsHope.Skills
     public class SkillTreeState
     {
         private readonly Dictionary<string, int> _nodeRanks = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _spentByNode = new Dictionary<string, int>();
+        private readonly Dictionary<string, string> _treeByNode = new Dictionary<string, string>();
         // Points spent per tree id (drives tier gating + dynamic rank cap). Recomputed on every mutation.
         private readonly Dictionary<string, int> _pointsByTree = new Dictionary<string, int>();
         // Chosen capstone variant per node (e.g. melee capstone -> "kanthor").
@@ -58,6 +60,8 @@ namespace CindarsHope.Skills
         public void Purchase(string nodeId, int cost, string treeId)
         {
             _nodeRanks[nodeId] = 1;
+            _spentByNode[nodeId] = cost;
+            _treeByNode[nodeId] = treeId;
             AvailableSkillPoints -= cost;
             _spentPoints += cost;
             AccruePoints(treeId, cost);
@@ -68,6 +72,9 @@ namespace CindarsHope.Skills
         {
             int current = GetRank(nodeId);
             _nodeRanks[nodeId] = current < 1 ? 1 : current + 1;
+            _spentByNode.TryGetValue(nodeId, out var spent);
+            _spentByNode[nodeId] = spent + 1;
+            _treeByNode[nodeId] = treeId;
             AvailableSkillPoints -= 1;
             _spentPoints += 1;
             AccruePoints(treeId, 1);
@@ -153,6 +160,8 @@ namespace CindarsHope.Skills
         public void FullRespec(int restoredPoints)
         {
             _nodeRanks.Clear();
+            _spentByNode.Clear();
+            _treeByNode.Clear();
             _pointsByTree.Clear();
             _chosenVariants.Clear();
             for (int i = 0; i < _activeSlotSkillActionIds.Length; i++)
@@ -174,7 +183,7 @@ namespace CindarsHope.Skills
             foreach (var kvp in _nodeRanks)
             {
                 data.PurchasedNodeIds.Add(kvp.Key);                 // back-compat flat list
-                data.NodeRanks.Add(new SkillNodeRankEntry(kvp.Key, kvp.Value)); // fable_29 ranks
+                data.NodeRanks.Add(new SkillNodeRankEntry(kvp.Key, kvp.Value) { SpentPoints = _spentByNode[kvp.Key] });
             }
 
             foreach (var kvp in _chosenVariants)
@@ -197,7 +206,10 @@ namespace CindarsHope.Skills
             System.Func<string, string> nodeTreeResolver = null)
         {
             if (data == null) return;
+            if (data.Version > 3) throw new System.ArgumentException("Unsupported future skill save version.", nameof(data));
             _nodeRanks.Clear();
+            _spentByNode.Clear();
+            _treeByNode.Clear();
             _pointsByTree.Clear();
             _chosenVariants.Clear();
 
@@ -207,20 +219,23 @@ namespace CindarsHope.Skills
                 foreach (var entry in data.NodeRanks)
                 {
                     if (entry == null || string.IsNullOrEmpty(entry.NodeId)) continue;
-                    int rank = entry.Rank < 1 ? 1 : entry.Rank;
+                    int rank = System.Math.Max(1, System.Math.Min(SkillTierRules.AbsoluteRankCap, entry.Rank));
                     _nodeRanks[entry.NodeId] = rank;
+                    _spentByNode[entry.NodeId] = data.Version >= 3 && entry.SpentPoints >= rank
+                        ? entry.SpentPoints : rank;
                 }
             }
             else
             {
-                foreach (var id in data.PurchasedNodeIds)
-                    if (!string.IsNullOrEmpty(id)) _nodeRanks[id] = 1;
+                if (data.PurchasedNodeIds != null)
+                    foreach (var id in data.PurchasedNodeIds)
+                        if (!string.IsNullOrEmpty(id)) { _nodeRanks[id] = 1; _spentByNode[id] = 1; }
             }
 
             if (data.ChosenCapstoneVariants != null)
             {
                 foreach (var entry in data.ChosenCapstoneVariants)
-                    if (entry != null && !string.IsNullOrEmpty(entry.NodeId))
+                    if (entry != null && !string.IsNullOrEmpty(entry.NodeId) && _nodeRanks.ContainsKey(entry.NodeId))
                         _chosenVariants[entry.NodeId] = entry.Variant;
             }
 
@@ -228,21 +243,26 @@ namespace CindarsHope.Skills
             _spentPoints = 0;
             foreach (var kvp in _nodeRanks)
             {
-                _spentPoints += kvp.Value; // 1 point per rank
+                int spent = _spentByNode[kvp.Key];
+                if (spent > int.MaxValue - _spentPoints)
+                    throw new System.ArgumentException("Skill point total exceeds supported save range.", nameof(data));
+                _spentPoints += spent;
                 var treeId = nodeTreeResolver?.Invoke(kvp.Key);
-                AccruePoints(treeId, kvp.Value);
+                _treeByNode[kvp.Key] = treeId;
+                AccruePoints(treeId, spent);
             }
 
             AvailableSkillPoints = totalAvailablePoints - _spentPoints;
             if (AvailableSkillPoints < 0) AvailableSkillPoints = 0;
-            RespecCount = data.RespecCount;
+            RespecCount = System.Math.Max(0, data.RespecCount);
 
             for (int i = 0; i < _activeSlotSkillActionIds.Length; i++)
                 _activeSlotSkillActionIds[i] = null;
 
+            if (data.ActiveSkillSlots != null)
             foreach (var slot in data.ActiveSkillSlots)
             {
-                if (slot.SlotIndex >= 0 && slot.SlotIndex < _activeSlotSkillActionIds.Length)
+                if (slot != null && slot.SlotIndex >= 0 && slot.SlotIndex < _activeSlotSkillActionIds.Length)
                     _activeSlotSkillActionIds[slot.SlotIndex] = slot.SkillActionId;
             }
         }
@@ -255,10 +275,37 @@ namespace CindarsHope.Skills
                 return 0;
             _nodeRanks.Remove(nodeId);
             _chosenVariants.Remove(nodeId);
-            _spentPoints -= rank;
+            int refund = _spentByNode.TryGetValue(nodeId, out var spent) ? spent : rank;
+            _spentByNode.Remove(nodeId);
+            if (_treeByNode.TryGetValue(nodeId, out var treeId) && !string.IsNullOrEmpty(treeId))
+                _pointsByTree[treeId] = System.Math.Max(0, PointsSpentInTree(treeId) - refund);
+            _treeByNode.Remove(nodeId);
+            _spentPoints -= refund;
             if (_spentPoints < 0) _spentPoints = 0;
-            AvailableSkillPoints += rank; // lossless refund
-            return rank;
+            AvailableSkillPoints = checked(AvailableSkillPoints + refund);
+            return refund;
+        }
+
+        // Preflight the complete ledger before any save section or scene is restored.
+        public static void ValidateSaveLedger(SkillTreeSaveData data, int availablePoints)
+        {
+            if (data == null) return;
+            var candidate = new SkillTreeState();
+            candidate.LoadFromSaveData(data, 0);
+            if ((long)System.Math.Max(0, availablePoints) + candidate.SpentSkillPoints > int.MaxValue)
+                throw new System.ArgumentException("Skill point ledger exceeds supported save range.", nameof(data));
+        }
+
+        public SkillTreeState Copy()
+        {
+            var copy = new SkillTreeState(AvailableSkillPoints) { _spentPoints = _spentPoints, RespecCount = RespecCount };
+            foreach (var pair in _nodeRanks) copy._nodeRanks.Add(pair.Key, pair.Value);
+            foreach (var pair in _spentByNode) copy._spentByNode.Add(pair.Key, pair.Value);
+            foreach (var pair in _treeByNode) copy._treeByNode.Add(pair.Key, pair.Value);
+            foreach (var pair in _pointsByTree) copy._pointsByTree.Add(pair.Key, pair.Value);
+            foreach (var pair in _chosenVariants) copy._chosenVariants.Add(pair.Key, pair.Value);
+            System.Array.Copy(_activeSlotSkillActionIds, copy._activeSlotSkillActionIds, _activeSlotSkillActionIds.Length);
+            return copy;
         }
     }
 }

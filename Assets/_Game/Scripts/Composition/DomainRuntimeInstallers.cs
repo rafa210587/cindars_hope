@@ -25,6 +25,7 @@ using CindarsHope.Farm.Runtime;
 using CindarsHope.Farm.Shipping;
 using CindarsHope.Craft;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Items.Runtime;
@@ -34,6 +35,7 @@ using CindarsHope.Player;
 using CindarsHope.Player.Conditions;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Movement;
+using CindarsHope.Skills.Runtime;
 using UnityEngine;
 
 namespace CindarsHope.Composition
@@ -132,6 +134,8 @@ namespace CindarsHope.Composition
 
     internal static class ItemRuntimeInstaller
     {
+        private static ICommonHarvestItemPolicy _commonHarvestItemPolicy;
+
         public static void Install(Transform owner)
         {
             var itemUseManager = ItemUseManager.Install(owner);
@@ -140,6 +144,20 @@ namespace CindarsHope.Composition
             MagicItemRuntimeBootstrap.Install(owner);
             PlayerSpellbookRuntimeBootstrap.Install(owner);
             CraftingStationRuntimeBootstrap.Install(owner);
+
+            var bootstrap = GameBootstrap.Instance;
+            var itemDatabase = bootstrap != null ? bootstrap.ItemDatabase as ItemDatabaseSO : null;
+            if (itemDatabase != null)
+            {
+                _commonHarvestItemPolicy = new ItemDatabaseCommonHarvestItemPolicy(itemDatabase);
+                DomainManagerRegistry.Register<ICommonHarvestItemPolicy>(_commonHarvestItemPolicy);
+            }
+        }
+
+        public static void Uninstall()
+        {
+            DomainManagerRegistry.Unregister(_commonHarvestItemPolicy);
+            _commonHarvestItemPolicy = null;
         }
     }
 

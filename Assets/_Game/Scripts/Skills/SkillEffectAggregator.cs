@@ -67,7 +67,11 @@ namespace CindarsHope.Skills
                             foreach (var mod in node.PassiveModifiers)
                             {
                                 if (mod == null) continue;
-                                _activeModifiers.Add(new SkillPassiveModifier(mod.ModifierType, mod.Value * rank));
+                                _activeModifiers.Add(new SkillPassiveModifier(
+                                    mod.ModifierType,
+                                    mod.Value * rank,
+                                    node.SkillNodeId,
+                                    node.TreeId));
                             }
                         }
                     }

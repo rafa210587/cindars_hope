@@ -35,6 +35,7 @@ namespace CindarsHope.EditorTools.Magic
             public string Description;
             public SpellType Type;
             public DamageType DamageType;
+            public SpellDiscipline Discipline;
             public SpellShape Shape;
             public int BaseDamage;
             public int ManaCost;
@@ -87,6 +88,7 @@ namespace CindarsHope.EditorTools.Magic
                 asset.Description = spec.Description;
                 asset.Type = spec.Type;
                 asset.DamageType = spec.DamageType;
+                asset.Discipline = spec.Discipline;
                 asset.Shape = spec.Shape;
                 asset.BaseDamage = spec.BaseDamage;
                 asset.ManaCost = spec.ManaCost;
@@ -164,7 +166,7 @@ namespace CindarsHope.EditorTools.Magic
                 new ShapeSpellSpec
                 {
                     Id = "spell_ice_nova", SpellName = "Nova de Gelo", Description = "fable_08: explosao 360 que aplica Chill nos inimigos proximos.",
-                    Type = SpellType.IceSpike, DamageType = DamageType.Ice, Shape = SpellShape.Nova,
+                    Type = SpellType.IceSpike, DamageType = DamageType.Ice, Discipline = SpellDiscipline.Offensive, Shape = SpellShape.Nova,
                     BaseDamage = 14, ManaCost = 22, CooldownSeconds = 3f, CastTimeSeconds = 0.4f, Range = 3f,
                     NovaRadius = 3f, StatusEffectId = "status_chill", StatusApplyChance = 0.6f, BaseValue = 120,
                     MakeScroll = true, ScrollName = "Pergaminho: Nova de Gelo", ScrollBaseValue = 120
@@ -173,7 +175,7 @@ namespace CindarsHope.EditorTools.Magic
                 new ShapeSpellSpec
                 {
                     Id = "spell_minor_heal", SpellName = "Cura Menor", Description = "fable_08: cura com 1.2s de cast; cancela se tomar dano (reembolsa mana).",
-                    Type = SpellType.Heal, DamageType = DamageType.Arcane, Shape = SpellShape.SelfRestore,
+                    Type = SpellType.Heal, DamageType = DamageType.Arcane, Discipline = SpellDiscipline.Spiritual, Shape = SpellShape.SelfRestore,
                     BaseDamage = 0, ManaCost = 18, CooldownSeconds = 2f, CastTimeSeconds = 1.2f, Range = 0f,
                     RestoreHp = 30, RestoreStamina = 0, RestoreMana = 0, BaseValue = 80,
                     MakeScroll = true, ScrollName = "Pergaminho: Cura Menor", ScrollBaseValue = 80
@@ -182,7 +184,7 @@ namespace CindarsHope.EditorTools.Magic
                 new ShapeSpellSpec
                 {
                     Id = "spell_arcane_barrier", SpellName = "Barreira Arcana", Description = "fable_08: barreira que absorve N de dano por alguns segundos.",
-                    Type = SpellType.Buff, DamageType = DamageType.Arcane, Shape = SpellShape.Barrier,
+                    Type = SpellType.Buff, DamageType = DamageType.Arcane, Discipline = SpellDiscipline.Spiritual, Shape = SpellShape.Barrier,
                     BaseDamage = 0, ManaCost = 20, CooldownSeconds = 6f, CastTimeSeconds = 0.5f, Range = 0f,
                     BarrierAbsorb = 40, BarrierSeconds = 6f, BaseValue = 100,
                     MakeScroll = true, ScrollName = "Pergaminho: Barreira Arcana", ScrollBaseValue = 100
@@ -191,7 +193,7 @@ namespace CindarsHope.EditorTools.Magic
                 new ShapeSpellSpec
                 {
                     Id = "spell_flame_cone", SpellName = "Cone de Chamas", Description = "fable_08: leque de projeteis de fogo num arco curto.",
-                    Type = SpellType.Fireball, DamageType = DamageType.Fire, Shape = SpellShape.Cone,
+                    Type = SpellType.Fireball, DamageType = DamageType.Fire, Discipline = SpellDiscipline.Offensive, Shape = SpellShape.Cone,
                     BaseDamage = 10, ManaCost = 24, CooldownSeconds = 2.5f, CastTimeSeconds = 0.5f, Range = 5f,
                     ConeHalfAngleDegrees = 30f, ConeProjectileCount = 5, StatusEffectId = "status_burn", StatusApplyChance = 0.25f, BaseValue = 130,
                     MakeScroll = true, ScrollName = "Pergaminho: Cone de Chamas", ScrollBaseValue = 130
@@ -200,7 +202,7 @@ namespace CindarsHope.EditorTools.Magic
                 new ShapeSpellSpec
                 {
                     Id = "arcane_projectile", SpellName = "Projetil Arcano", Description = "fable_08 EMENDA 6.6-A: bolt arcano basico com auto-target no inimigo mais proximo/na mira.",
-                    Type = SpellType.Lightning, DamageType = DamageType.Arcane, Shape = SpellShape.Bolt,
+                    Type = SpellType.Lightning, DamageType = DamageType.Arcane, Discipline = SpellDiscipline.Offensive, Shape = SpellShape.Bolt,
                     BaseDamage = 12, ManaCost = 8, CooldownSeconds = 0.8f, CastTimeSeconds = 0.2f, Range = 5f,
                     AutoTarget = true, BaseValue = 60,
                     MakeScroll = true, ScrollName = "Pergaminho: Projetil Arcano", ScrollBaseValue = 60
@@ -212,7 +214,7 @@ namespace CindarsHope.EditorTools.Magic
                 new ShapeSpellSpec
                 {
                     Id = "anya_echo", SpellName = "Eco de Anya", Description = "fable_08 Tier 5 (EMENDA 6.6-A): suporte late — cura moderada + barreira curta (Direction MAGIC #29).",
-                    Type = SpellType.Heal, DamageType = DamageType.Arcane, Shape = SpellShape.SelfRestore,
+                    Type = SpellType.Heal, DamageType = DamageType.Arcane, Discipline = SpellDiscipline.Spiritual, Shape = SpellShape.SelfRestore,
                     BaseDamage = 0, ManaCost = 44, CooldownSeconds = 45f, CastTimeSeconds = 0.9f, Range = 3f,
                     RestoreHp = 60, RestoreMana = 0, BaseValue = 400,
                     MakeScroll = false
@@ -221,7 +223,7 @@ namespace CindarsHope.EditorTools.Magic
                 new ShapeSpellSpec
                 {
                     Id = "senya_rupture", SpellName = "Ruptura de Senya", Description = "fable_08 Tier 5 (EMENDA 6.6-A): burst ofensivo forte em area, alto custo/cooldown (Direction MAGIC #30).",
-                    Type = SpellType.Fireball, DamageType = DamageType.Fire, Shape = SpellShape.Nova,
+                    Type = SpellType.Fireball, DamageType = DamageType.Fire, Discipline = SpellDiscipline.Offensive, Shape = SpellShape.Nova,
                     BaseDamage = 55, ManaCost = 46, CooldownSeconds = 35f, CastTimeSeconds = 1.0f, Range = 2f,
                     NovaRadius = 2f, StatusEffectId = "status_burn", StatusApplyChance = 0.5f, BaseValue = 420,
                     MakeScroll = false
@@ -245,6 +247,7 @@ namespace CindarsHope.EditorTools.Magic
             if (spell != null)
             {
                 spell.DamageType = DamageType.Fire;
+                spell.Discipline = SpellDiscipline.Offensive;
                 spell.Shape = SpellShape.Bolt;
                 spell.AutoTarget = true;   // habilita perseguicao (homing ate o alcance) no runtime
                 spell.Range = 7f;          // 7 tiles

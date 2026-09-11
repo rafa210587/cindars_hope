@@ -25,7 +25,8 @@ namespace CindarsHope.Audio
         EnemyKilled = 12,
         Craft = 13,
         Harvest = 14,
-        Fish = 15
+        Fish = 15,
+        Door = 16
     }
 
     /// <summary>
@@ -49,6 +50,7 @@ namespace CindarsHope.Audio
         public const string Craft = "sfx_craft";
         public const string Harvest = "sfx_harvest";
         public const string Fish = "sfx_fish";
+        public const string Door = "sfx_door";
 
         /// <summary>Id estável para a categoria, ou string vazia para None/desconhecido.</summary>
         public static string ToStableId(SfxCategory category)
@@ -70,6 +72,7 @@ namespace CindarsHope.Audio
                 case SfxCategory.Craft: return Craft;
                 case SfxCategory.Harvest: return Harvest;
                 case SfxCategory.Fish: return Fish;
+                case SfxCategory.Door: return Door;
                 default: return string.Empty;
             }
         }

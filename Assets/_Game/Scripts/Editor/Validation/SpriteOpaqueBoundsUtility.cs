@@ -27,20 +27,10 @@ namespace CindarsHope.Editor.Validation
 
             if (!texture.isReadable)
             {
-                var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (importer == null) return TryGetRectLocalBounds(sprite, out bounds);
-
-                importer.isReadable = true;
-                importer.SaveAndReimport();
-                try
-                {
-                    return TryGetOpaquePixelBounds(sprite, alphaThreshold, out bounds);
-                }
-                finally
-                {
-                    importer.isReadable = false;
-                    importer.SaveAndReimport();
-                }
+                // Scene generation must never mutate source importer metadata just to calculate
+                // a collider. Reimporting here can fail while Unity owns a generated-art .meta.
+                // The full sprite rect is a safe conservative collider fallback.
+                return TryGetRectLocalBounds(sprite, out bounds);
             }
 
             return TryGetOpaquePixelBounds(sprite, alphaThreshold, out bounds);

@@ -9,7 +9,8 @@ namespace CindarsHope.Skills
         // fable_29: section version (additive). 1 = legacy (flat PurchasedNodeIds only),
         // 2 = with NodeRanks + ChosenCapstoneVariants. Old saves deserialize Version = 0/1 and
         // are migrated on load (ranks default to 1; unknown ids refunded).
-        public int Version = 2;
+        // 3 = actual per-node SpentPoints, preserving non-unit purchase costs on respec.
+        public int Version = 3;
 
         // Back-compat flat list (rank >= 1 nodes). Always written for older readers.
         public List<string> PurchasedNodeIds = new List<string>();
@@ -29,6 +30,8 @@ namespace CindarsHope.Skills
     {
         public string NodeId;
         public int Rank;
+        // v3: actual first-rank cost plus upgrades; zero uses the legacy one-point/rank rule.
+        public int SpentPoints;
 
         public SkillNodeRankEntry() { }
 

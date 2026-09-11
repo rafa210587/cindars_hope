@@ -11,7 +11,7 @@ namespace CindarsHope.Enemy
     [DisallowMultipleComponent]
     // arch: quebra do par mutuo Combat|Enemy — implementa IEnemyBrainController (Foundation) para
     // que Combat dispare stun/behavior-override via porta, sem nomear este tipo diretamente.
-    public class EnemyBrain : MonoBehaviour, IEnemyBrainController
+    public class EnemyBrain : MonoBehaviour, IEnemyBrainController, IEnemySkillReactionRuntime
     {
         [Header("Data")]
         [SerializeField] private EnemyDataSO _enemyData;
@@ -81,6 +81,9 @@ namespace CindarsHope.Enemy
         private float _externalSpeedUntil;
         private float _externalInvertUntil;
         private float _forcedRetreatUntil;
+        private float _skillPriorityUntil;
+        private Vector2 _temporaryAttractionPoint;
+        private float _temporaryAttractionUntil;
 
         // fable_24: named-elite affix (decided deterministically at spawn-plan time by the planner).
         private EliteAffix _eliteAffix = EliteAffix.None;
@@ -164,6 +167,12 @@ namespace CindarsHope.Enemy
 
         public EliteAffix CurrentEliteAffix => _eliteAffix;
         public bool IsElite => _eliteAffix != EliteAffix.None;
+        public bool HasEliteClassification => IsElite || (_enemyData != null && _enemyData.IsElite);
+        public EnemyDifficulty Difficulty => _enemyData != null ? _enemyData.baseDifficulty : EnemyDifficulty.Normal;
+        public bool IsInAttackRecovery => _currentState == EnemyBrainState.AttackRecover;
+        public float SkillPriorityUntil => _skillPriorityUntil;
+        public bool IsTargetingConflictRival => _conflict.IsTargetingRival;
+        public bool IsTemporarilyAttracted => Time.time < _temporaryAttractionUntil;
         public string ResolvedActionSetId => _actions.ActiveActionSet?.ActionSetId ?? string.Empty;
         public string ResolvedMovementProfileId => _movementProfile?.MovementProfileId ?? string.Empty;
         public string ResolvedVulnerabilityProfileId => _vulnerabilityProfile?.VulnerabilityProfileId ?? string.Empty;
@@ -268,6 +277,8 @@ namespace CindarsHope.Enemy
             _movement.PatrolDirectionTimer = 0f;
             _actions.ResetOnSpawn();
             _currentState = EnemyBrainState.Idle;
+            _skillPriorityUntil = 0f;
+            _temporaryAttractionUntil = 0f;
             _movement.SpawnAnchor = transform.position;
             _movement.IsLeaping = false;
             _blinkFlankSide = s_nextBlinkFlankSide;
@@ -310,7 +321,8 @@ namespace CindarsHope.Enemy
             // fable_83: reset de estado de assinatura/pathing ao (re)spawn.
             _movement.IsAvoidingObstacle = false;
 
-            _targeting.RefreshPlayerTarget();
+            if (!IsTemporarilyAttracted)
+                _targeting.RefreshPlayerTarget();
 
             // fable_78 / arch (corte do par mutuo Cave|Enemy): nada a re-resolver aqui — o bind da fonte
             // de conflito é empurrado pelo CaveConflictCombatant.OnEnable (que também refaz o bind em
@@ -362,12 +374,14 @@ namespace CindarsHope.Enemy
             // a cada frame até apontar para ele. Sem isto o target fica no PlayerManager (no _Bootstrap,
             // em (0,0,0)) e o inimigo mede distância até a origem do mundo — atacando o vazio, mas
             // roteando o dano ao player real longe dali (bug "dano invisível de bicho que não está perto").
-            _targeting.RefreshPlayerTarget();
+            if (!IsTemporarilyAttracted)
+                _targeting.RefreshPlayerTarget();
 
             // fable_78 (SLICE 4): targeting conflict-aware. Ramo ISOLADO — só roda quando este inimigo é um
             // conflict-combatant. Caso contrário, _rivalHealthTarget fica null e o caminho player-only é
             // intacto (o targeting já restaurou o alvo para o player visível).
-            _targeting.RefreshConflictTarget(_conflict);
+            if (!IsTemporarilyAttracted && Time.time >= _skillPriorityUntil)
+                _targeting.RefreshConflictTarget(_conflict);
 
             // fable_24: Volatile elites explode once when they die. Damage usually flows straight
             // through EnemyHealth (not EnemyBrain.TakeDamage), so detect the death transition here
@@ -435,7 +449,7 @@ namespace CindarsHope.Enemy
                 burrowEmergeDistance: _burrowEmergeDistance,
                 lowHealthRetreatThreshold: _lowHealthRetreatThreshold,
                 retreatEndTime: _retreatEndTime,
-                forcedRetreatUntil: _forcedRetreatUntil,
+                forcedRetreatUntil: Time.time < _skillPriorityUntil ? 0f : _forcedRetreatUntil,
                 stunUntil: _stunUntil,
                 currentHpFraction: (_health != null && _health.MaxHp > 0) ? (float)_health.CurrentHp / _health.MaxHp : float.NaN,
                 currentState: _currentState,
@@ -467,11 +481,13 @@ namespace CindarsHope.Enemy
                     if (output.ShouldTryAction) TryBeginAction(dist);
                     return;
                 }
+                if (string.IsNullOrWhiteSpace(_packId))
+                    GameEventBus.Publish(new EnemyLeashCompletedEvent(EnemyInstanceId));
             }
 
             _currentState = output.NextState;
 
-            if (output.ShouldTryAction)
+            if (output.ShouldTryAction && !IsTemporarilyAttracted)
                 TryBeginAction(dist);
         }
 
@@ -517,9 +533,13 @@ namespace CindarsHope.Enemy
             _movement.SetSubmergedVisual(submerged, _spriteRenderer, _spriteBaseAlpha);
         }
 
-        private float DistanceToPlayer() => _targeting.DistanceFrom(transform);
+        private float DistanceToPlayer() => IsTemporarilyAttracted
+            ? Vector2.Distance(transform.position, _temporaryAttractionPoint)
+            : _targeting.DistanceFrom(transform);
 
-        private Vector2 DirectionToPlayer() => _targeting.DirectionFrom(transform);
+        private Vector2 DirectionToPlayer() => IsTemporarilyAttracted
+            ? (_temporaryAttractionPoint - (Vector2)transform.position).normalized
+            : _targeting.DirectionFrom(transform);
 
         private float DetectionRange() => EnemyBrainTuningResolver.DetectionRange(_movementProfile, _enemyData);
         private float LeashRange() => EnemyBrainTuningResolver.LeashRange(_movementProfile, _enemyData);
@@ -772,6 +792,7 @@ namespace CindarsHope.Enemy
         // ─── fable_04: threat / pack coordination ─────────────────────────────
 
         public string PackId => _packId;
+        public string EnemyInstanceId => _health != null ? _health.EnemyInstanceId : string.Empty;
 
         /// <summary>Test/runtime hook: true while threat memory keeps this enemy engaged.</summary>
         public bool HasActiveThreat()
@@ -828,16 +849,55 @@ namespace CindarsHope.Enemy
             _movement.StopMovement();
         }
 
+        /// <summary>Prioritizes the player/caster threat for a bounded taunt window.</summary>
+        public void ApplyTemporaryTargetPriority(float sourceX, float sourceY, float seconds)
+        {
+            if (seconds <= 0f || _currentState == EnemyBrainState.Dead)
+                return;
+
+            _skillPriorityUntil = Mathf.Max(_skillPriorityUntil, Time.time + Mathf.Min(seconds, 10f));
+            _conflict.ClearRivalTarget();
+            _threatState.NoticeTarget(new Vector2(sourceX, sourceY), Time.time);
+            if (_currentState != EnemyBrainState.AttackWindup
+                && _currentState != EnemyBrainState.AttackRecover
+                && _currentState != EnemyBrainState.Stunned)
+            {
+                _currentState = EnemyBrainState.Alert;
+            }
+        }
+
+        public void ApplyTemporaryAttraction(float targetX, float targetY, float seconds)
+        {
+            if (seconds <= 0f || _currentState == EnemyBrainState.Dead)
+                return;
+
+            _temporaryAttractionPoint = new Vector2(targetX, targetY);
+            _temporaryAttractionUntil = Mathf.Max(_temporaryAttractionUntil,
+                Time.time + Mathf.Min(seconds, 10f));
+            _conflict.ClearRivalTarget();
+            _actions.PendingAction = null;
+            _telegraph?.EndTelegraph();
+            if (_currentState != EnemyBrainState.Stunned)
+                _currentState = EnemyBrainState.Alert;
+        }
+
+        public void CancelTemporaryAttraction()
+        {
+            _temporaryAttractionUntil = 0f;
+        }
+
         // First time this enemy detects the player, alert its pack so siblings engage together.
         private void AnnouncePackEngagementOnce()
         {
-            if (_packEngagedAnnounced || _packCoordinator == null || string.IsNullOrWhiteSpace(_packId))
+            if (_packEngagedAnnounced)
             {
                 return;
             }
 
             _packEngagedAnnounced = true;
-            _packCoordinator.Alert(_packId, _threatState.LastKnownPosition);
+            GameEventBus.Publish(new EnemyAggroStartedEvent(EnemyInstanceId, _packId));
+            if (_packCoordinator != null && !string.IsNullOrWhiteSpace(_packId))
+                _packCoordinator.Alert(_packId, _threatState.LastKnownPosition);
         }
 
         // Collective leash: only reset when the WHOLE pack is beyond leash. Resets to Patrol and
@@ -855,6 +915,8 @@ namespace CindarsHope.Enemy
             }
 
             ResetToAnchorAndHeal(_packCoordinator.GetAnchor(_packId));
+            GameEventBus.Publish(new EnemyPackLeashCompletedEvent(
+                _packId, _packCoordinator.GetActiveMemberIdsSorted(_packId)));
             return true;
         }
 

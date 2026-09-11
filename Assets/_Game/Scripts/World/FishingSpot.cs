@@ -27,6 +27,10 @@ namespace CindarsHope.World
         [SerializeField] private Vector2 _edgeInteractionOuterHalfExtents = new Vector2(0.45f, 0.45f);
         [SerializeField] private Vector2 _edgeInteractionInnerHalfExtents = new Vector2(0.35f, 0.35f);
 
+        [Header("Optional authored fishing stance")]
+        [SerializeField] private bool _useStanceZone;
+        [SerializeField] private BoxCollider2D _stanceZone;
+
         [Header("fable_50 — Pesca v2 (tabela/clima/minigame)")]
         [Tooltip("Tabela de pesca por contexto (FishingTableSO). Vazio/null = comportamento v1 (_fishItemId/_lootTable).")]
         [SerializeField] private FishingTableSO _fishingTable;
@@ -55,6 +59,7 @@ namespace CindarsHope.World
                 return false;
             }
 
+            if (_useStanceZone) return IsInteractorInStanceZone(interactor);
             return !_requireEdgeInteraction || IsInteractorOnEdge(interactor);
         }
 
@@ -67,6 +72,10 @@ namespace CindarsHope.World
                 Debug.LogWarning("FishingSpot cannot fish because InventoryManager is missing.", this);
                 return;
             }
+
+            // Authored spots must enforce the same position before starting a cast even when invoked directly.
+            // The legacy path is unchanged for every scene that has not opted in.
+            if (!_isFishing && _useStanceZone && !IsInteractorInStanceZone(interactor)) return;
 
             if (!HasRequiredTool())
             {
@@ -114,6 +123,22 @@ namespace CindarsHope.World
         public void RebindStaminaManager(MonoBehaviour staminaManagerRef)
         {
             _staminaManager = staminaManagerRef as StaminaManager;
+        }
+
+        /// <summary>Uses the existing actor-root foot reference; null restores legacy edge behavior.</summary>
+        public void ConfigureStanceZone(BoxCollider2D zone)
+        {
+            if (zone != null && (!zone.isTrigger || !zone.transform.IsChildOf(transform)))
+                throw new System.ArgumentException("Fishing stance must be a descendant trigger of this spot.", nameof(zone));
+            _stanceZone = zone;
+            _useStanceZone = zone != null;
+        }
+
+        private bool IsInteractorInStanceZone(GameObject interactor)
+        {
+            // The separate opt-in flag fails closed if an authored zone is missing or disabled.
+            return interactor != null && _stanceZone != null && _stanceZone.isTrigger &&
+                _stanceZone.isActiveAndEnabled && _stanceZone.OverlapPoint(interactor.transform.position);
         }
 
         private void OnValidate()

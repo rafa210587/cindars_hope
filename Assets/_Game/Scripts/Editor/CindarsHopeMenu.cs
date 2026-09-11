@@ -266,55 +266,85 @@ namespace CindarsHope.Editor
         [MenuItem("CindarsHope/Validar Projeto", priority = 2)]
         public static void ValidarProjeto()
         {
+            var report = ValidateProject();
+            ShowSummary("Validar Projeto", "[Validar]",
+                $"Erros: {report.ErrorCount}; avisos: {report.WarningCount}. Veja os detalhes no Console.");
+        }
+
+        /// <summary>Runs the read-only suite and exposes its result without a modal dialog.</summary>
+        public static EditorTools.Validation.ValidationReport ValidateProject()
+        {
             ResetCounters();
+            var aggregated = new EditorTools.Validation.ValidationReport();
+            bool allConfigured = true;
+
+            void ValidateStep(string description, Action validation)
+            {
+                Debug.Log($"[Passo] {description}");
+                var report = EditorTools.Validation.ProjectValidationRunner.RunLoggedValidation(description, validation);
+                aggregated.Issues.AddRange(report.Issues);
+                allConfigured &= report.IsConfigured;
+                if (report.Passed) s_ok++;
+                else s_fail++;
+            }
             Debug.Log("[Validar] INICIO — rodando validadores em modo SO-LEITURA (nao gera, nao repara, nao muta).");
 
-            RunStep("Validar registries (null/empty/duplicate Ids)",
+            ValidateStep("Validar registries (null/empty/duplicate Ids)",
                 () => CindarsHope.Editor.CindarsHopeProjectMaintenanceMenu.ValidateRegistries());
-            RunStep("Validar consistencia de catalogos (catalog consistency)",
+            ValidateStep("Validar consistencia de catalogos (catalog consistency)",
                 () => CindarsHope.Editor.Validation.ValidateCatalogConsistency.Run());
-            RunStep("Validar combat databases",
+            ValidateStep("Validar combat databases",
                 () => CindarsHope.EditorTools.Validation.CombatDatabaseValidationMenu.ValidateCombatDatabases());
-            RunStep("Validar contagem do catalogo de skills",
-                () => CindarsHope.Editor.Skills.GenerateCanonicalSkillCatalog.ValidateCounts(out _));
-            RunStep("Validar gift taste matrix",
+            ValidateStep("Validar contagem do catalogo de skills",
+                () => CindarsHope.Editor.Skills.GenerateCanonicalSkillCatalog.ValidateCountsMenu());
+            ValidateStep("Validar gift taste matrix",
                 () => CindarsHope.EditorTools.Validation.GiftTasteMatrixValidator.Run());
-            RunStep("Validar family loot tables",
+            ValidateStep("Validar family loot tables",
                 () => CindarsHope.Editor.Validation.ValidateFamilyLootTables.RunValidation());
-            RunStep("Validar status effect database",
+            ValidateStep("Validar status effect database",
                 () => CindarsHope.EditorTools.Combat.ValidateStatusEffectDatabase.ValidateAndReport());
-            RunStep("Validar projectile prefabs",
+            ValidateStep("Validar projectile prefabs",
                 () => CindarsHope.EditorTools.Validation.CombatValidationMenu.ValidateProjectilePrefabs());
-            RunStep("Validar shop price data",
-                () => CindarsHope.Editor.Validation.ValidateShopPriceData.Validate());
-            RunStep("Validar town shop catalog integrity",
-                () => CindarsHope.Editor.Validation.ValidateTownShopCatalogIntegrity.Validate());
-            RunStep("Validar high-tier gear fora das lojas",
-                () => CindarsHope.Editor.Validation.ValidateHighTierGearNotInShops.Validate());
-            RunStep("Validar scene transitions",
+            ValidateStep("Validar shop price data",
+                () => CindarsHope.Editor.Validation.ValidateShopPriceData.Run());
+            ValidateStep("Validar town shop catalog integrity",
+                () => CindarsHope.Editor.Validation.ValidateTownShopCatalogIntegrity.Run());
+            ValidateStep("Validar high-tier gear fora das lojas",
+                () => CindarsHope.Editor.Validation.ValidateHighTierGearNotInShops.Run());
+            ValidateStep("Validar scene transitions",
                 () => CindarsHope.Editor.Validation.ValidateSceneTransitions.ValidateAll());
-            RunStep("Validar layout FarmScene v4 (presenca dos elementos §32)",
+            ValidateStep("Validar layout FarmScene v4 (presenca dos elementos §32)",
                 () => CindarsHope.Editor.Validation.ValidateFarmSceneLayoutV4.Validate());
-            RunStep("Validar bindings de skin de inimigo (slugs existem; profiles cobertos)",
+            ValidateStep("Validar bindings de skin de inimigo (slugs existem; profiles cobertos)",
                 () => CindarsHope.Editor.EnemySkins.ValidateEnemySkinBindings.Validate());
-            RunStep("Validar animacoes de caminhada dos NPCs (25 sprites fatiados por NPC)",
+            ValidateStep("Validar animacoes de caminhada dos NPCs (25 sprites fatiados por NPC)",
                 () => CindarsHope.Editor.NPC.ValidateNpcWalkAnimations.Validate());
-            RunStep("Validar kits de ataque de inimigo (universo completo + variancias)",
+            ValidateStep("Validar kits de ataque de inimigo (universo completo + variancias)",
                 () => CindarsHope.Editor.Validation.ValidateEnemyAttackKits.RunValidation());
             // spec_cave_biome_art_profiles_runtime (CV01): read-only; campos de arte vazios = WARNING.
-            RunStep("Validar perfis de arte de bioma da caverna",
+            ValidateStep("Validar perfis de arte de bioma da caverna",
                 () => CindarsHope.Editor.Cave.ValidateCaveBiomeArtProfiles.Validate());
-            RunStep("Validar wiring de escala visual de atores/props",
+            ValidateStep("Validar wiring de escala visual de atores/props",
                 () => CindarsHope.Editor.Validation.ValidateActorScaleWiring.Run());
-            RunStep("Validar agenda/casas da cidade (fable_11)",
+            ValidateStep("Validar agenda/casas da cidade (fable_11)",
                 () => CindarsHope.Editor.Validation.ValidateFableCitySchedule.Validate());
-            RunStep("Validar ecossistema da caverna (fable_78)",
+            ValidateStep("Validar ecossistema da caverna (fable_78)",
                 () => CindarsHope.Editor.Validation.ValidateCaveEcosystem.Run());
-            RunStep("Validar ranges de preco das lojas (fable_76 T5)",
+            ValidateStep("Validar ranges de preco das lojas (fable_76 T5)",
                 () => CindarsHope.Editor.Validation.ValidateTownShopCatalogIntegrity.RunPriceRanges());
 
-            ShowSummary("Validar Projeto", "[Validar]",
-                "Veja o Console: cada validador loga PASS/FAIL e detalhes. Este comando NAO altera assets.");
+            aggregated.IsConfigured = allConfigured && s_ok + s_fail > 0;
+            var summary = aggregated.GetSummary("Validar Projeto");
+            if (aggregated.Passed) Debug.Log(summary);
+            else Debug.LogError(summary);
+            return aggregated;
+        }
+
+        public static void ValidateProjectBatch()
+        {
+            var report = ValidateProject();
+            if (!report.Passed)
+                throw new InvalidOperationException($"Project validation failed with {report.ErrorCount} error(s).");
         }
 
         // ─────────────────────────────────────────────────────────────────────────────────

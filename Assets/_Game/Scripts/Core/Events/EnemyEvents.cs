@@ -173,12 +173,49 @@ namespace CindarsHope.Core.Events
         public string PackId;
         public Vector2 Position;
         public int MemberCount;
+        public string[] MemberInstanceIds;
 
-        public EnemyPackAlertedEvent(string packId, Vector2 position, int memberCount)
+        public EnemyPackAlertedEvent(string packId, Vector2 position, int memberCount,
+            string[] memberInstanceIds = null)
         {
             PackId = packId ?? string.Empty;
             Position = position;
             MemberCount = memberCount;
+            MemberInstanceIds = memberInstanceIds ?? System.Array.Empty<string>();
+        }
+    }
+
+    public readonly struct EnemyPackLeashCompletedEvent
+    {
+        public readonly string PackId;
+        public readonly string[] MemberInstanceIds;
+
+        public EnemyPackLeashCompletedEvent(string packId, string[] memberInstanceIds = null)
+        {
+            PackId = packId ?? string.Empty;
+            MemberInstanceIds = memberInstanceIds ?? System.Array.Empty<string>();
+        }
+    }
+
+    public readonly struct EnemyAggroStartedEvent
+    {
+        public readonly string EnemyInstanceId;
+        public readonly string PackId;
+
+        public EnemyAggroStartedEvent(string enemyInstanceId, string packId)
+        {
+            EnemyInstanceId = enemyInstanceId ?? string.Empty;
+            PackId = packId ?? string.Empty;
+        }
+    }
+
+    public readonly struct EnemyLeashCompletedEvent
+    {
+        public readonly string EnemyInstanceId;
+
+        public EnemyLeashCompletedEvent(string enemyInstanceId)
+        {
+            EnemyInstanceId = enemyInstanceId ?? string.Empty;
         }
     }
 

@@ -14,8 +14,9 @@ namespace CindarsHope.Player.Movement
         [SerializeField] private PlayerController _playerController;
 
         private Coroutine _displacementRoutine;
+        private bool _isDisplacing;
 
-        public bool IsDisplacing => _displacementRoutine != null;
+        public bool IsDisplacing => _isDisplacing;
         public bool LastMoveHadNoColliderDebt { get; private set; }
 
         private void Awake()
@@ -26,23 +27,49 @@ namespace CindarsHope.Player.Movement
         }
 
         public bool TryDisplace(Vector2 direction, float distance, float duration, Action onComplete)
-        {
-            if (IsDisplacing || direction.sqrMagnitude < 0.001f || distance <= 0f || duration <= 0f)
-                return false;
+            => TryDisplace(direction, distance, duration, null, onComplete);
 
-            _displacementRoutine = StartCoroutine(DisplaceRoutine(direction.normalized, distance, duration, onComplete));
+        public bool TryDisplace(Vector2 direction, float distance, float duration,
+            Func<Collider2D, bool> shouldIgnoreCollider, Action onComplete)
+        {
+            if (!isActiveAndEnabled || IsDisplacing || (_playerController != null && _playerController.IsBeingDisplaced)
+                || direction.sqrMagnitude < 0.001f || distance <= 0f || duration <= 0f)
+                return false;
+            _isDisplacing = true;
+            var routine = StartCoroutine(DisplaceRoutine(
+                direction.normalized, distance, duration, shouldIgnoreCollider, onComplete));
+            if (_isDisplacing) _displacementRoutine = routine;
             return true;
         }
 
-        private IEnumerator DisplaceRoutine(Vector2 direction, float distance, float duration, Action onComplete)
+        private void OnDisable()
+        {
+            if (!_isDisplacing) return;
+            if (_displacementRoutine != null) StopCoroutine(_displacementRoutine);
+            ReleaseDisplacement();
+        }
+
+        private void ReleaseDisplacement()
+        {
+            if (_playerController != null && _isDisplacing)
+            {
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Displacement);
+                _playerController.IsBeingDisplaced = false;
+            }
+            _isDisplacing = false;
+            _displacementRoutine = null;
+        }
+
+        private IEnumerator DisplaceRoutine(Vector2 direction, float distance, float duration,
+            Func<Collider2D, bool> shouldIgnoreCollider, Action onComplete)
         {
             var origin = _rigidbody != null ? _rigidbody.position : (Vector2)transform.position;
-            var target = ResolveTarget(origin, direction, distance);
+            var target = ResolveTarget(origin, direction, distance, shouldIgnoreCollider);
 
             if ((target - origin).sqrMagnitude < 0.0001f)
             {
                 Debug.LogWarning($"[PlayerMovementDisplacementResolver] Displacement blocked at origin — target equals origin. direction={direction}", gameObject);
-                _displacementRoutine = null;
+                ReleaseDisplacement();
                 onComplete?.Invoke();
                 yield break;
             }
@@ -67,18 +94,14 @@ namespace CindarsHope.Player.Movement
             }
 
             MoveTo(target);
-
-            if (_playerController != null)
-            {
-                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.Displacement);
-                _playerController.IsBeingDisplaced = false;
-            }
-
-            _displacementRoutine = null;
+            // Let the physics step commit the final MovePosition before impact queries.
+            yield return new WaitForFixedUpdate();
+            ReleaseDisplacement();
             onComplete?.Invoke();
         }
 
-        private Vector2 ResolveTarget(Vector2 origin, Vector2 direction, float distance)
+        private Vector2 ResolveTarget(Vector2 origin, Vector2 direction, float distance,
+            Func<Collider2D, bool> shouldIgnoreCollider)
         {
             LastMoveHadNoColliderDebt = _collider == null;
             if (_collider == null)
@@ -99,7 +122,8 @@ namespace CindarsHope.Player.Movement
             {
                 var hit = hits[i];
                 if (hit.collider == null) continue;
-                if (ShouldIgnoreHit(hit)) continue;
+                if (ShouldIgnoreHit(hit)
+                    || (shouldIgnoreCollider != null && shouldIgnoreCollider(hit.collider))) continue;
 
                 if (hit.distance < nearestDistance)
                     nearestDistance = hit.distance;

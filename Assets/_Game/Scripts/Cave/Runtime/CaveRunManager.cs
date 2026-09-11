@@ -29,6 +29,7 @@ namespace CindarsHope.Cave.Runtime
         [SerializeField] private int _deepestLayerReached = 1;
         [SerializeField] private string _caveWorldSeed;
         [SerializeField] private string _caveRunSeed;
+        [SerializeField] private string _caveRunId;
         [SerializeField] private CaveBossGateRegistrySO _bossGateRegistry;
 
         private readonly CaveRuntimeState _state = new CaveRuntimeState();
@@ -37,6 +38,7 @@ namespace CindarsHope.Cave.Runtime
         public int DeepestLayerReached => _state.DeepestLayerReached;
         public string CaveWorldSeed => _state.CaveWorldSeed;
         public string CaveRunSeed => _state.CaveRunSeed;
+        public string CaveRunId => _state.CaveRunId;
         public CaveRuntimeState State => _state;
 
         private void Awake()
@@ -72,8 +74,13 @@ namespace CindarsHope.Cave.Runtime
         {
             if (evt.SourceSceneName == "CaveScene")
             {
+                if (evt.TargetSceneName != "CaveScene")
+                {
+                    EndActiveRun("surface_exit");
+                }
+
                 CacheCurrentStateInBootstrap();
-                Debug.Log($"CaveRunManager: saved state to bootstrap cache before leaving CaveScene. RunSeed={_state.CaveRunSeed}", this);
+                Debug.Log($"CaveRunManager: saved state to bootstrap cache before leaving CaveScene. RunSeed={_state.CaveRunSeed}, RunId={_state.CaveRunId}", this);
             }
         }
 
@@ -82,38 +89,58 @@ namespace CindarsHope.Cave.Runtime
             var cachedState = CaveRunStateCache.Take();
             if (cachedState != null)
             {
-                _state.CurrentCaveLevel = cachedState.CurrentCaveLevel;
-                _state.DeepestLayerReached = cachedState.DeepestLayerReached;
-                _state.CaveWorldSeed = cachedState.CaveWorldSeed;
-                _state.CaveRunSeed = cachedState.CaveRunSeed;
-                _state.UnlockedCheckpoints.Clear();
-                foreach (var cp in cachedState.UnlockedCheckpoints)
-                {
-                    _state.UnlockedCheckpoints.Add(cp);
-                }
-                _state.DepletedNodeIds.Clear();
-                foreach (var nodeId in cachedState.DepletedNodeIds)
-                {
-                    _state.DepletedNodeIds.Add(nodeId);
-                }
-                _state.VisitedLevelSnapshots.Clear();
-                foreach (var kvp in cachedState.VisitedLevelSnapshots)
-                {
-                    _state.VisitedLevelSnapshots[kvp.Key] = kvp.Value;
-                }
-                _state.BossDefeatStates.Clear();
-                foreach (var kvp in cachedState.BossDefeatStates)
-                {
-                    _state.BossDefeatStates[kvp.Key] = kvp.Value;
-                }
+                RestoreRuntimeState(cachedState);
 
-                _currentCaveLevel = _state.CurrentCaveLevel;
-                _deepestLayerReached = _state.DeepestLayerReached;
-                _caveWorldSeed = _state.CaveWorldSeed;
-                _caveRunSeed = _state.CaveRunSeed;
-
-                Debug.Log($"CaveRunManager: restored state from bootstrap cache. RunSeed={_state.CaveRunSeed}, Level={_state.CurrentCaveLevel}", this);
+                Debug.Log($"CaveRunManager: restored state from bootstrap cache. RunSeed={_state.CaveRunSeed}, RunId={_state.CaveRunId}, Level={_state.CurrentCaveLevel}", this);
             }
+        }
+
+        public void RestoreRuntimeState(CaveRuntimeState restoredState)
+        {
+            if (restoredState == null)
+            {
+                return;
+            }
+
+            _state.CurrentCaveLevel = restoredState.CurrentCaveLevel;
+            _state.HasActiveRun = restoredState.HasActiveRun;
+            _state.DeepestLayerReached = restoredState.DeepestLayerReached;
+            _state.CaveWorldSeed = restoredState.CaveWorldSeed;
+            _state.CaveRunSeed = restoredState.CaveRunSeed;
+            _state.CaveRunId = restoredState.CaveRunId;
+            _state.UnlockedCheckpoints.Clear();
+            foreach (var checkpoint in restoredState.UnlockedCheckpoints)
+            {
+                _state.UnlockedCheckpoints.Add(checkpoint);
+            }
+
+            _state.DepletedNodeIds.Clear();
+            foreach (var nodeId in restoredState.DepletedNodeIds)
+            {
+                _state.DepletedNodeIds.Add(nodeId);
+            }
+
+            _state.VisitedLevelSnapshots.Clear();
+            foreach (var snapshot in restoredState.VisitedLevelSnapshots)
+            {
+                _state.VisitedLevelSnapshots[snapshot.Key] = snapshot.Value;
+            }
+
+            _state.BossDefeatStates.Clear();
+            foreach (var bossState in restoredState.BossDefeatStates)
+            {
+                _state.BossDefeatStates[bossState.Key] = bossState.Value;
+            }
+
+            _currentCaveLevel = _state.CurrentCaveLevel;
+            _deepestLayerReached = _state.DeepestLayerReached;
+            _caveWorldSeed = _state.CaveWorldSeed;
+            _caveRunSeed = _state.CaveRunSeed;
+            _caveRunId = _state.HasActiveRun
+                ? string.IsNullOrWhiteSpace(_state.CaveRunId) ? CreateRunId() : _state.CaveRunId
+                : string.Empty;
+            SyncSerializedToState();
+            EnsureCheckpointOne();
         }
 
         private void CacheCurrentStateInBootstrap()
@@ -123,6 +150,7 @@ namespace CindarsHope.Cave.Runtime
 
         public void InitializeIfNeeded()
         {
+            bool startedRunIdentity = false;
             if (string.IsNullOrWhiteSpace(_caveWorldSeed))
             {
                 _caveWorldSeed = string.IsNullOrWhiteSpace(_defaultWorldSeed)
@@ -135,27 +163,74 @@ namespace CindarsHope.Cave.Runtime
                 _caveRunSeed = CreateRunSeed("initial");
             }
 
+            if (string.IsNullOrWhiteSpace(_caveRunId))
+            {
+                _caveRunId = CreateRunId();
+                startedRunIdentity = true;
+            }
+
             _currentCaveLevel = Mathf.Max(1, _currentCaveLevel);
             _deepestLayerReached = Mathf.Max(_currentCaveLevel, _deepestLayerReached);
             SyncSerializedToState();
             EnsureCheckpointOne();
+
+            if (startedRunIdentity)
+            {
+                GameEventBus.Publish(new CaveRunIdentityStartedEvent(
+                    _state.CaveRunId,
+                    _state.CaveRunSeed,
+                    _state.CurrentCaveLevel,
+                    "canonical_entry"));
+            }
         }
 
         public void EnterLevel(int caveLevel)
         {
             InitializeIfNeeded();
+            int previousLevel = _currentCaveLevel;
             _currentCaveLevel = Mathf.Max(1, caveLevel);
             _deepestLayerReached = Mathf.Max(_deepestLayerReached, _currentCaveLevel);
             SyncSerializedToState();
+
+            if (previousLevel != _state.CurrentCaveLevel)
+            {
+                GameEventBus.Publish(new CaveRunLevelChangedEvent(
+                    _state.CaveRunId,
+                    previousLevel,
+                    _state.CurrentCaveLevel));
+            }
         }
 
         public void GenerateNewRunSeed(string reason)
         {
             InitializeIfNeeded();
+            EndActiveRun(reason);
             _caveRunSeed = CreateRunSeed(reason);
+            _caveRunId = CreateRunId();
             SyncSerializedToState();
             GameEventBus.Publish(new CaveRunRegeneratedEvent(_state.CaveRunSeed, reason));
-            Debug.Log($"CaveRunManager: run regenerated. WorldSeed={_state.CaveWorldSeed}, RunSeed={_state.CaveRunSeed}, Reason={reason}.", this);
+            GameEventBus.Publish(new CaveRunIdentityStartedEvent(
+                _state.CaveRunId,
+                _state.CaveRunSeed,
+                _state.CurrentCaveLevel,
+                reason));
+            Debug.Log($"CaveRunManager: run regenerated. WorldSeed={_state.CaveWorldSeed}, RunSeed={_state.CaveRunSeed}, RunId={_state.CaveRunId}, Reason={reason}.", this);
+        }
+
+        public void EndActiveRun(string reason)
+        {
+            if (string.IsNullOrWhiteSpace(_caveRunId))
+            {
+                return;
+            }
+
+            string endedRunId = _caveRunId;
+            _caveRunId = string.Empty;
+            SyncSerializedToState();
+            GameEventBus.Publish(new CaveRunIdentityEndedEvent(
+                endedRunId,
+                _state.CurrentCaveLevel,
+                reason));
         }
 
         public CaveSaveData CaptureSaveData()
@@ -251,9 +326,13 @@ namespace CindarsHope.Cave.Runtime
         public void HandlePlayerDefeated()
         {
             InitializeIfNeeded();
-            GenerateNewRunSeed("PlayerDefeated");
+            EndActiveRun("PlayerDefeated");
+            _caveRunSeed = CreateRunSeed("PlayerDefeated");
+            _caveRunId = string.Empty;
+            SyncSerializedToState();
             _state.VisitedLevelSnapshots.Clear();
             _state.DepletedNodeIds.Clear();
+            GameEventBus.Publish(new CaveRunRegeneratedEvent(_state.CaveRunSeed, "PlayerDefeated"));
             Debug.Log($"CaveRunManager: player defeated. Snapshots cleared, new run seed generated. Checkpoints remain: {string.Join(",", _state.UnlockedCheckpoints)}.", this);
             GameEventBus.Publish(new CavePlayerDefeatedEvent(_state.CurrentCaveLevel));
         }
@@ -398,6 +477,8 @@ namespace CindarsHope.Cave.Runtime
             _state.DeepestLayerReached = Mathf.Max(_state.CurrentCaveLevel, _deepestLayerReached);
             _state.CaveWorldSeed = _caveWorldSeed ?? string.Empty;
             _state.CaveRunSeed = _caveRunSeed ?? string.Empty;
+            _state.CaveRunId = _caveRunId ?? string.Empty;
+            _state.HasActiveRun = !string.IsNullOrWhiteSpace(_state.CaveRunId);
         }
 
         private void EnsureCheckpointOne()
@@ -408,6 +489,11 @@ namespace CindarsHope.Cave.Runtime
         private static string CreateRunSeed(string reason)
         {
             return $"run_{DateTime.UtcNow:yyyyMMddHHmmssfff}_{reason}_{Guid.NewGuid():N}";
+        }
+
+        private static string CreateRunId()
+        {
+            return $"cave_run_{Guid.NewGuid():N}";
         }
     }
 }

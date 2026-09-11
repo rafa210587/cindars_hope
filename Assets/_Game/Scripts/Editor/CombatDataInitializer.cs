@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using CindarsHope.Combat.Magic;
 using CindarsHope.Combat.Weapon;
+using CindarsHope.Foundation;
 using UnityEditor;
 using UnityEngine;
 
@@ -66,14 +67,14 @@ namespace CindarsHope.Editor
         {
             var spells = new[]
             {
-                ("spell_fireball", "Fireball", SpellType.Fireball, 20, 25, 800, 4, 3),
-                ("spell_ice_spike", "Ice Spike", SpellType.IceSpike, 18, 20, 900, 3, 4),
-                ("spell_heal", "Heal", SpellType.Heal, 0, 30, 1200, 5, 5),
+                ("spell_fireball", "Fireball", SpellType.Fireball, SpellDiscipline.Offensive, 20, 25, 800, 4, 3),
+                ("spell_ice_spike", "Ice Spike", SpellType.IceSpike, SpellDiscipline.Offensive, 18, 20, 900, 3, 4),
+                ("spell_heal", "Heal", SpellType.Heal, SpellDiscipline.Spiritual, 0, 30, 1200, 5, 5),
             };
 
-            foreach (var (id, name, type, dmg, mana, cd, intel, will) in spells)
+            foreach (var (id, name, type, discipline, dmg, mana, cd, intel, will) in spells)
             {
-                CreateSpell(id, name, type, dmg, mana, cd, intel, will);
+                CreateSpell(id, name, type, discipline, dmg, mana, cd, intel, will);
             }
         }
 
@@ -98,24 +99,31 @@ namespace CindarsHope.Editor
             AssetDatabase.CreateAsset(asset, path);
         }
 
-        private static void CreateSpell(string id, string name, SpellType type, int dmg, int mana, int cd, int intel, int will)
+        private static void CreateSpell(string id, string name, SpellType type, SpellDiscipline discipline,
+            int dmg, int mana, int cd, int intel, int will)
         {
             var path = $"{SpellPath}{id}.asset";
-            if (AssetDatabase.LoadAssetAtPath<SpellDataSO>(path) != null)
-                return;
+            var asset = AssetDatabase.LoadAssetAtPath<SpellDataSO>(path);
+            if (asset == null)
+            {
+                asset = ScriptableObject.CreateInstance<SpellDataSO>();
+                asset.Id = id;
+                asset.SpellName = name;
+                asset.Description = $"Spell: {name}";
+                asset.Type = type;
+                asset.BaseDamage = dmg;
+                asset.ManaCost = mana;
+                asset.CooldownMs = cd;
+                asset.RequiredIntelligence = intel;
+                asset.RequiredWillpower = will;
+                AssetDatabase.CreateAsset(asset, path);
+            }
 
-            var asset = ScriptableObject.CreateInstance<SpellDataSO>();
-            asset.Id = id;
-            asset.SpellName = name;
-            asset.Description = $"Spell: {name}";
-            asset.Type = type;
-            asset.BaseDamage = dmg;
-            asset.ManaCost = mana;
-            asset.CooldownMs = cd;
-            asset.RequiredIntelligence = intel;
-            asset.RequiredWillpower = will;
-
-            AssetDatabase.CreateAsset(asset, path);
+            if (asset.Discipline != discipline)
+            {
+                asset.Discipline = discipline;
+                EditorUtility.SetDirty(asset);
+            }
         }
 
     }

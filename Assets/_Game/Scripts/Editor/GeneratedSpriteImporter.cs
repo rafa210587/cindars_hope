@@ -50,14 +50,20 @@ namespace CindarsHope.Editor
             var s = new TextureImporterSettings();
             imp.ReadTextureSettings(s);
             s.textureType = TextureImporterType.Sprite;
-            s.spriteMode = (int)SpriteImportMode.Single;
+            var isAnimalMotion = p == "Assets/_Game/Art/Generated/World/animals/chicken_motion_v18/chicken_v18.png"
+                || p == "Assets/_Game/Art/Generated/World/animals/herd_motion_v19/cow_v19.png"
+                || p == "Assets/_Game/Art/Generated/World/animals/herd_motion_v19/sheep_v19.png"
+                || p == "Assets/_Game/Art/Generated/World/animals/herd_motion_v19/goat_v19.png";
+            s.spriteMode = (int)(isAnimalMotion ? SpriteImportMode.Multiple : SpriteImportMode.Single);
             // Full Rect (nao Tight): necessario para SpriteRenderer.drawMode = Tiled (chao/paredes)
             // — Tight dispara "Sprite Tiling might not appear correctly ... not generated with Full Rect".
             s.spriteMeshType = SpriteMeshType.FullRect;
             var isCaveBiomeTile = p.StartsWith(CaveBiomeTilesRoot) && System.Array.Exists(
                 CaveBiomeTileFileNames, tileFileName => p.EndsWith("/" + tileFileName));
             s.spriteAlignment = isCaveBiomeTile ? (int)SpriteAlignment.Center : (int)SpriteAlignment.BottomCenter;
-            s.spritePixelsPerUnit = isCaveBiomeTile ? CaveBiomeTilePpu
+            s.spritePixelsPerUnit = isAnimalMotion ? 32f : isCaveBiomeTile ? CaveBiomeTilePpu
+                : p == "Assets/_Game/Art/Generated/World/tiles/ground_grass_contact_v16.png" ? 314f / (1254f / 128f)
+                : p == "Assets/_Game/Art/Generated/World/tiles/ground_path_contact_v16.png" ? 32f
                 : p.StartsWith(HousesModularRoot) ? HousesModularPpu : Ppu;
             s.filterMode = FilterMode.Point;
             s.mipmapEnabled = false;

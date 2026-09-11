@@ -92,9 +92,8 @@ namespace CindarsHope.UI.Locations
             int gold = playerMgr.CurrentGold;
             int level = progMgr.Level;
 
-            if (skillMgr.TryRespec(ref gold, level))
+            if (skillMgr.TryRespec(ref gold, level, playerMgr.SetGold))
             {
-                playerMgr.SetGold(gold);
                 RefreshRespecButton();
             }
         }

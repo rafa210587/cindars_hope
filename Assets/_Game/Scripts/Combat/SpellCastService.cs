@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using CindarsHope.Combat.Magic;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
@@ -15,6 +16,7 @@ namespace CindarsHope.Combat
 {
     public class SpellCastService
     {
+        private static int s_actionSequence;
         // F02: provider de stats derivados (setado pelo PlayerAttackController; null-safe).
         public PlayerCombatStatsProvider StatsProvider { get; set; }
 
@@ -117,6 +119,10 @@ namespace CindarsHope.Combat
             public Vector2 SpawnPosition;
             public int FinalDamage;
             public int ManaSpent;
+            public bool IsCritical;
+            public string ActionToken;
+            public SpellCastPreparation Preparation;
+            public SpellCastTransaction Transaction;
             public CindarsHope.Combat.StatusEffect.StatusEffectSO StatusEffect;
         }
 
@@ -135,8 +141,7 @@ namespace CindarsHope.Combat
 
             // fable_08: caminho legado (cast instantâneo). Spells com CastTimeSeconds>0 são resolvidas
             // pelo SpellCastRoutine, que chama ResolveCast após a janela (ou RefundCast se cancelar).
-            ResolveCast(plan);
-            return AttackResult.CreateSuccess();
+            return ResolveCast(plan);
         }
 
         /// <summary>
@@ -171,9 +176,16 @@ namespace CindarsHope.Combat
                 return AttackResult.CreateError("Cooldown");
             }
 
-            if (_manaManager != null && !_manaManager.TrySpendMana(spellData.ManaCost))
+            string actionToken = $"spell:{spellData.Id}:{Interlocked.Increment(ref s_actionSequence)}";
+            var preparation = SpellCastPreparationProvider.Prepare(
+                new SpellCastPreparationRequest(spellData.Id, actionToken,
+                    spellData.Discipline, spellData.ManaCost));
+            var transaction = new SpellCastTransaction(preparation);
+            if (!transaction.TryReserve(cost => cost <= 0 ||
+                    (_manaManager != null && _manaManager.TrySpendMana(cost))))
             {
-                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientMana, Slot={slot}, ManaCost={spellData.ManaCost}");
+                SpellCastPreparationProvider.Cancel(preparation);
+                CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=InsufficientMana, Slot={slot}, ManaCost={preparation.ManaCost}");
                 return AttackResult.CreateError("InsufficientMana");
             }
 
@@ -182,9 +194,13 @@ namespace CindarsHope.Combat
             CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = ResolveStatusEffect(spellData);
 
             // F02: dano final via stats derivados (projéteis disparam como golpe leve).
+            bool isCritical = false;
             var finalDamage = StatsProvider != null
-                ? StatsProvider.FinalDamage(spellData.BaseDamage, AttackWeight.Light, false, out _)
-                : spellData.BaseDamage;
+                ? StatsProvider.FinalSpellDamage(spellData.BaseDamage, spellData.Id, false,
+                    preparation.DirectDamageMultiplier, preparation.CriticalChanceBonus,
+                    out isCritical)
+                : Mathf.Max(0, Mathf.RoundToInt(spellData.BaseDamage *
+                    preparation.DirectDamageMultiplier));
 
             plan = new SpellCastPlan
             {
@@ -193,7 +209,11 @@ namespace CindarsHope.Combat
                 Direction = direction,
                 SpawnPosition = spawnPosition,
                 FinalDamage = finalDamage,
-                ManaSpent = _manaManager != null ? spellData.ManaCost : 0,
+                ManaSpent = _manaManager != null ? preparation.ManaCost : 0,
+                IsCritical = isCritical,
+                ActionToken = actionToken,
+                Preparation = preparation,
+                Transaction = transaction,
                 StatusEffect = statusEffect
             };
 
@@ -232,10 +252,20 @@ namespace CindarsHope.Combat
 
             if (result.Success)
             {
+                if (!PlayerMagicCastCommit.TryCommit(plan.Transaction,
+                        _manaManager != null ? _manaManager.MaxMana : 0,
+                        spell.DamageType.ToString()))
+                    return AttackResult.CreateError("CastTransactionNotReserved");
                 if (_equipmentManager != null)
                     _equipmentManager.RegisterEquipmentUsage();
                 GameEventBus.Publish(new SpellCastSucceededEvent(spell.Id));
+                if (spell.Shape != SpellShape.SelfRestore && spell.Shape != SpellShape.Barrier)
+                    GameEventBus.Publish(new PlayerOffensiveActionCommittedEvent(spell.Id, "Spell"));
                 CombatLog.Log($"CombatLog: SpellResolved. Slot={plan.Slot}, Spell={spell.Id}, Shape={spell.Shape}, Damage={plan.FinalDamage}, ManaCost={plan.ManaSpent}");
+            }
+            else
+            {
+                CancelReservation(plan);
             }
 
             return result;
@@ -249,13 +279,17 @@ namespace CindarsHope.Combat
                 return;
             }
 
-            if (_manaManager != null && plan.ManaSpent > 0)
-            {
-                _manaManager.RestoreMana(plan.ManaSpent);
-            }
+            CancelReservation(plan);
 
             CombatLog.Log($"CombatLog: SpellCastInterrupted. Spell={plan.Spell?.Id}, RefundedMana={plan.ManaSpent}");
             GameEventBus.Publish(new CindarsHope.Core.Events.SpellCastInterruptedEvent(plan.Spell?.Id, plan.ManaSpent));
+        }
+
+        private void CancelReservation(SpellCastPlan plan)
+        {
+            if (plan?.Transaction == null) return;
+            if (plan.Transaction.Cancel(amount => _manaManager?.RestoreMana(amount)))
+                SpellCastPreparationProvider.Cancel(plan.Preparation);
         }
 
         // ----------------------------------------------------------------- shape executors
@@ -292,6 +326,14 @@ namespace CindarsHope.Combat
                 statusApplyChance: spell.StatusApplyChance
             );
             spawnRequest.VisualStyle = ProjectileVisualStyle.MagicBolt;
+            spawnRequest.SourceKind = DamageSourceKind.PlayerMagic;
+            spawnRequest.SpellDiscipline = spell.Discipline;
+            spawnRequest.ActionToken = plan.ActionToken;
+            spawnRequest.CanTriggerCapstones = spell.Discipline == SpellDiscipline.Offensive;
+            spawnRequest.CanTriggerStatusEffects = true;
+            spawnRequest.CanTriggerReactions = true;
+            spawnRequest.ImpactDamageResolver = _ => new ProjectileImpactDamage(
+                plan.FinalDamage, plan.IsCritical);
             // Bolt com AutoTarget = projetil que PERSEGUE o inimigo mais proximo ate o alcance da magia
             // (ex.: Fire Wand -> bolinha de fogo que segue o oponente ate 7 tiles). Sem AutoTarget = reto.
             if (spell.AutoTarget)
@@ -365,7 +407,13 @@ namespace CindarsHope.Combat
                 {
                     DamageType = spell.DamageType,
                     SourcePosition = plan.SpawnPosition,
-                    KnockbackForce = _knockbackForce
+                    KnockbackForce = _knockbackForce,
+                    SourceKind = DamageSourceKind.PlayerMagic,
+                    SpellDiscipline = spell.Discipline,
+                    ActionToken = plan.ActionToken,
+                    IsCritical = plan.IsCritical,
+                    IsPrimaryDamage = true,
+                    CanTriggerCapstones = spell.Discipline == SpellDiscipline.Offensive
                 };
                 enemy.TakeDamage(damageRequest);
 
@@ -390,8 +438,9 @@ namespace CindarsHope.Combat
 
             if (spell.RestoreHp > 0 && PlayerManager != null)
             {
-                PlayerManager.RestoreHP(spell.RestoreHp);
-                hp = spell.RestoreHp;
+                hp = Mathf.Max(0, Mathf.RoundToInt(spell.RestoreHp *
+                    plan.Preparation.SpiritualOutputMultiplier));
+                PlayerManager.RestoreHP(hp);
             }
 
             if (spell.RestoreStamina > 0 && StaminaManager != null)
@@ -414,8 +463,10 @@ namespace CindarsHope.Combat
         private AttackResult ExecuteBarrier(SpellCastPlan plan)
         {
             var spell = plan.Spell;
-            PlayerBarrierState.Cast(spell.BarrierAbsorb, spell.BarrierSeconds, Time.time, spell.Id);
-            CombatLog.Log($"CombatLog: SpellBarrierCast. Spell={spell.Id}, Absorb={spell.BarrierAbsorb}, Seconds={spell.BarrierSeconds:F2}");
+            int absorb = Mathf.Max(0, Mathf.RoundToInt(spell.BarrierAbsorb *
+                plan.Preparation.SpiritualOutputMultiplier));
+            PlayerBarrierState.Cast(absorb, spell.BarrierSeconds, Time.time, spell.Id);
+            CombatLog.Log($"CombatLog: SpellBarrierCast. Spell={spell.Id}, Absorb={absorb}, Seconds={spell.BarrierSeconds:F2}");
             return AttackResult.CreateSuccess();
         }
 

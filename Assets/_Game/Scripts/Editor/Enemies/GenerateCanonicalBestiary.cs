@@ -90,6 +90,7 @@ namespace CindarsHope.Editor.Enemies
             so.xpReward = Mathf.Max(0, def.Xp);
 
             so.PrimaryRole = def.Role;
+            so.CreatureFamily = def.Family ?? string.Empty;
             so.MovementProfileId = MovementProfileIdFor(def.MovePrimary);
             so.MoveSecondary = def.MoveSecondary;
             so.SizeProfileId = SizeProfileIdFor(def.Size);

@@ -11,6 +11,7 @@ namespace CindarsHope.World
     {
         [SerializeField] private int _pickupIndex;
         [SerializeField] private string _itemId;
+        [SerializeField] private string _itemInstanceId;
         [SerializeField] private int _amount = 1;
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -19,13 +20,18 @@ namespace CindarsHope.World
         public string InteractionPrompt => "Pegar";
         public int PickupIndex => _pickupIndex;
         public string ItemId => _itemId;
+        public string ItemInstanceId => _itemInstanceId;
         public int Amount => _amount;
         public bool IsCollected { get; private set; }
 
         public void Configure(int pickupIndex, string itemId, int amount, InventoryManager inventoryManager)
+            => Configure(pickupIndex, itemId, string.Empty, amount, inventoryManager);
+
+        public void Configure(int pickupIndex, string itemId, string itemInstanceId, int amount, InventoryManager inventoryManager)
         {
             _pickupIndex = pickupIndex;
             _itemId = itemId;
+            _itemInstanceId = itemInstanceId ?? string.Empty;
             _amount = Mathf.Max(1, amount);
             _inventoryManager = inventoryManager;
             EnsureComponents();
@@ -38,6 +44,7 @@ namespace CindarsHope.World
             {
                 PickupIndex = _pickupIndex,
                 ItemId = _itemId,
+                ItemInstanceId = _itemInstanceId,
                 Amount = _amount,
                 Position = transform.position,
                 IsCollected = IsCollected
@@ -54,6 +61,7 @@ namespace CindarsHope.World
 
             _pickupIndex = saveData.PickupIndex;
             _itemId = string.IsNullOrWhiteSpace(saveData.ItemId) ? string.Empty : saveData.ItemId;
+            _itemInstanceId = saveData.ItemInstanceId ?? string.Empty;
             _amount = Mathf.Max(1, saveData.Amount);
             transform.position = saveData.Position;
             SetCollected(saveData.IsCollected);
@@ -100,7 +108,10 @@ namespace CindarsHope.World
                 return;
             }
 
-            if (!_inventoryManager.AddItem(_itemId, _amount))
+            var added = string.IsNullOrWhiteSpace(_itemInstanceId)
+                ? _inventoryManager.AddItem(_itemId, _amount)
+                : _amount == 1 && _inventoryManager.TryAddItemInstance(_itemId, _itemInstanceId).Success;
+            if (!added)
             {
                 Debug.LogWarning($"{nameof(ItemPickup)} could not add '{_itemId}' x{_amount} to inventory.", this);
                 return;

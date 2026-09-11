@@ -8,6 +8,9 @@ namespace CindarsHope.Core.Data
         [Header("Stamina Regen Rates")]
         [SerializeField] private float _baseStaminaRegenRate = 15f;
 
+        [Header("Health Regen")]
+        [SerializeField] private float _baseNaturalHealthRegenPerSecond = 1f;
+
         [Header("Hunger Ranges and Stamina Regen Modifiers")]
         [SerializeField] private int _sufficientHungerMin = 70;
         [SerializeField] private float _sufficientHungerRegenModifier = 1.0f;
@@ -26,6 +29,8 @@ namespace CindarsHope.Core.Data
         [SerializeField] private float _zeroHungerDamagePerSecond = 1f;
 
         public float BaseStaminaRegenRate => _baseStaminaRegenRate;
+        public float BaseNaturalHealthRegenPerSecond =>
+            Mathf.Max(0f, _baseNaturalHealthRegenPerSecond);
 
         public int SufficientHungerMin => _sufficientHungerMin;
         public float SufficientHungerRegenModifier => _sufficientHungerRegenModifier;

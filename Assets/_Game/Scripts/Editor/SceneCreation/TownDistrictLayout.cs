@@ -20,10 +20,13 @@ namespace CindarsHope.Editor.SceneCreation
         // ── Canonical materialized footprint (120×90 tiles) ────────────────────────────
         // Kept stable by spec_city_preservation_first_coherent_relayout / spec_town_layout_v9_organic.
         // Buildings are placed by TownCityLayout lots; this class remains the bounds/district/stable-ID contract.
-        public const float HalfWidth = 60f;
-        public const float HalfHeight = 45f;
+        public const float HalfWidth = 80f;
+        public const float HalfHeight = 56f;
         public const float WidthTiles = HalfWidth * 2f;
         public const float HeightTiles = HalfHeight * 2f;
+        public static readonly Vector3 DefaultSpawn = new Vector3(0f, -25f, 0f);
+        public static readonly Vector3 FromFarmSpawn = new Vector3(0f, -51f, 0f);
+        public static Vector3 SouthPortal => new Vector3(0f, -(HalfHeight - 2f), 0f);
 
         // Legacy interior half-extents the existing element coordinates were authored against.
         // Used only to derive the relayout scale; not a runtime value.
@@ -98,17 +101,17 @@ namespace CindarsHope.Editor.SceneCreation
             // Praça central (estátua + fonte), r~13 em (0,4).
             new District(DistrictCentralPlaza, TownCityLayout.CentralPlazaCenter, TownCityLayout.CentralPlazaSize),
             // Mercado / comercial + parque — oeste (MarketHall, Bakery, Inn).
-            new District(DistrictMarketWest, new Vector2(-33f, 4.5f), new Vector2(36f, 28f)),
+            new District(DistrictMarketWest, new Vector2(-44f, 5f), new Vector2(48f, 35f)),
             // Ofícios — leste (Blacksmith, AlchemyLab, Workshop, Tannery).
-            new District(DistrictResidentialEast, new Vector2(35.5f, 3.25f), new Vector2(18f, 28f)),
+            new District(DistrictResidentialEast, new Vector2(47f, 0f), new Vector2(48f, 36f)),
             // Cívico/religioso — norte (Temple, Chamber, Prison, Manor, Registry, Archive).
-            new District(DistrictTempleNorth, new Vector2(5f, 28f), new Vector2(104f, 24f)),
+            new District(DistrictTempleNorth, new Vector2(5f, 36f), new Vector2(145f, 30f)),
             // Residencial + curral — sul (as 10 casas da fileira sul + AnimalYard + GateKeeper).
-            new District(DistrictCorralSouth, new Vector2(-10f, -30.25f), new Vector2(80f, 24f)),
+            new District(DistrictCorralSouth, new Vector2(0f, -38f), new Vector2(152f, 32f)),
             // Prefeitura + mural — canto nordeste (landmark; câmara real ficou no distrito norte).
-            new District(DistrictTownHallNortheast, new Vector2(50f, 36f), new Vector2(10f, 8f)),
+            new District(DistrictTownHallNortheast, new Vector2(43.5f, 31f), new Vector2(38f, 38f)),
             // Lago / parque — sudoeste (House_Fishery + o lago orgânico).
-            new District(DistrictLakeParkSouthwest, new Vector2(-42f, -15.5f), new Vector2(22f, 15f)),
+            new District(DistrictLakeParkSouthwest, new Vector2(-59f, -38f), new Vector2(40f, 34f)),
         };
 
         public static IReadOnlyList<District> AllDistricts => Districts;
@@ -133,12 +136,12 @@ namespace CindarsHope.Editor.SceneCreation
         // the elements city_rules Rule 1/Rule 8 say did not exist before fable_40.
         // v9 organic relayout: o lago fica no lado leste do distrito (perto da porta E da Fishery,
         // "moinho ao lado"), deixando a doca/cais entre os dois — ver spec_town_layout_v9_organic.
-        public static Vector3 LakeCenter => ToVec3(DistrictLakeParkSouthwest, 9f, 1.8f);
-        public static Vector3 LakeBenchWest => ToVec3(DistrictLakeParkSouthwest, 2f, -3.2f);
-        public static Vector3 LakeBenchEast => ToVec3(DistrictLakeParkSouthwest, 16f, -3.2f);
-        public static Vector3 TownHallCenter => ToVec3(DistrictTownHallNortheast, 0f, 0f);
+        public static Vector3 LakeCenter => ToVec3(DistrictLakeParkSouthwest, 0f, -2f);
+        public static Vector3 LakeBenchWest => ToVec3(DistrictLakeParkSouthwest, -13f, -10f);
+        public static Vector3 LakeBenchEast => ToVec3(DistrictLakeParkSouthwest, 16f, -3f);
+        public static Vector3 TownHallCenter => new Vector3(TownKeyartGeometry.HallFootprintCenter.x, TownKeyartGeometry.HallFootprintCenter.y, 0f);
         // Mural lives on the town-hall south wall (the public board moves to the plaza per CA-3).
-        public static Vector3 TownHallMural => ToVec3(DistrictTownHallNortheast, 0f, -2.1f);
+        public static Vector3 TownHallMural => TownHallCenter + new Vector3(0f, -4.8f, 0f);
 
         private static Vector3 ToVec3(string districtId, float offsetX, float offsetY)
         {

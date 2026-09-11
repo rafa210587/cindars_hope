@@ -18,6 +18,7 @@ namespace CindarsHope.World
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private StaminaManager _staminaManager;
+        [SerializeField] private Color _healthyTint = new Color(0.24f, 0.48f, 0.22f);
 
         public int HitsTaken { get; private set; }
         public int CurrentHp { get; private set; }
@@ -25,12 +26,15 @@ namespace CindarsHope.World
         public int RegrowthRemainingDays { get; private set; }
         public string InteractionPrompt => IsChopped ? "Cortada" : "Cortar";
 
-        public void Configure(int treeIndex, TreeDataSO treeData, InventoryManager inventoryManager, SpriteRenderer spriteRenderer)
+        /// <summary>Optional visual tint preserves authored art; omitted tint keeps the serialized legacy default.</summary>
+        public void Configure(int treeIndex, TreeDataSO treeData, InventoryManager inventoryManager, SpriteRenderer spriteRenderer,
+            Color? healthyTint = null)
         {
             _treeIndex = treeIndex;
             _treeData = treeData;
             _inventoryManager = inventoryManager;
             _spriteRenderer = spriteRenderer;
+            if (healthyTint.HasValue) _healthyTint = healthyTint.Value;
             CurrentHp = GetMaxHp();
             UpdateVisual();
         }
@@ -211,7 +215,7 @@ namespace CindarsHope.World
             var hitRatio = _treeData == null || _treeData.RequiredHits <= 0
                 ? 0f
                 : Mathf.Clamp01((float)HitsTaken / _treeData.RequiredHits);
-            _spriteRenderer.color = Color.Lerp(new Color(0.24f, 0.48f, 0.22f), new Color(0.58f, 0.42f, 0.24f), hitRatio);
+            _spriteRenderer.color = Color.Lerp(_healthyTint, new Color(0.58f, 0.42f, 0.24f), hitRatio);
         }
 
         private static bool HasRequiredTool()

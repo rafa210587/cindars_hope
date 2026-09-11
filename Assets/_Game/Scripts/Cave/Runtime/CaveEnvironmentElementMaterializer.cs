@@ -377,6 +377,8 @@ namespace CindarsHope.Cave.Runtime
             }
 
             ConfigureResourceNodeWithData(resourceNode, nodeData, element.ElementId, gridPos);
+            TemporaryRevealTargetBehaviour.Attach(resourceNode.gameObject, element.ElementId,
+                CindarsHope.Foundation.TemporaryRevealKind.Resource, () => resourceNode.IsDepleted);
 
             lastResourceNodeSnapshots.Add(new CaveResourceNodeSnapshotEntry
             {

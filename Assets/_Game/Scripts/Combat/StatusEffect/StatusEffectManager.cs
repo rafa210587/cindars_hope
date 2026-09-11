@@ -7,18 +7,24 @@ namespace CindarsHope.Combat.StatusEffect
     {
         private List<ActiveStatusEffect> _activeEffects = new List<ActiveStatusEffect>();
 
-        public void ApplyStatusEffect(StatusEffectSO statusEffect)
+        public void ApplyStatusEffect(StatusEffectSO statusEffect, string sourceId = null)
         {
             if (statusEffect == null)
                 return;
 
-            var active = new ActiveStatusEffect(statusEffect.Id, statusEffect.DurationTurns);
+            var active = new ActiveStatusEffect(statusEffect.Id, statusEffect.DurationTurns, sourceId);
             _activeEffects.Add(active);
         }
 
         public void RemoveStatusEffect(string statusEffectId)
         {
             _activeEffects.RemoveAll(e => e.StatusEffectId == statusEffectId);
+        }
+
+        public void RemoveStatusEffect(string statusEffectId, string sourceId)
+        {
+            _activeEffects.RemoveAll(e => e.StatusEffectId == statusEffectId
+                && e.SourceId == (sourceId ?? string.Empty));
         }
 
         public void RemoveAllStatusEffects()

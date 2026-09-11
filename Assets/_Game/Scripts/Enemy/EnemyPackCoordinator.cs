@@ -87,6 +87,21 @@ namespace CindarsHope.Enemy
             return _packs.TryGetValue(packId, out var record) ? record.Members.Count : 0;
         }
 
+        public string[] GetActiveMemberIdsSorted(string packId)
+        {
+            var memberIds = new List<string>();
+            if (!_packs.TryGetValue(packId, out var record)) return memberIds.ToArray();
+            for (int i = 0; i < record.Members.Count; i++)
+            {
+                var member = record.Members[i];
+                if (member != null && member.isActiveAndEnabled &&
+                    !string.IsNullOrWhiteSpace(member.EnemyInstanceId))
+                    memberIds.Add(member.EnemyInstanceId);
+            }
+            memberIds.Sort(System.StringComparer.Ordinal);
+            return memberIds.ToArray();
+        }
+
         /// <summary>
         /// Put every living member of a pack on alert toward <paramref name="position"/>.
         /// Used when one member first detects the player or when a member dies. Alert does NOT
@@ -110,7 +125,8 @@ namespace CindarsHope.Enemy
                 member.OnPackAlert(position);
             }
 
-            GameEventBus.Publish(new EnemyPackAlertedEvent(packId, position, record.Members.Count));
+            GameEventBus.Publish(new EnemyPackAlertedEvent(
+                packId, position, record.Members.Count, GetActiveMemberIdsSorted(packId)));
         }
 
         /// <summary>Deterministic pack anchor = centroid of the members' spawn positions.</summary>

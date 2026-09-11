@@ -74,6 +74,11 @@
     {
         public CindarsHope.Combat.DamageResult DamageResult { get; }
         public UnityEngine.Vector3 TargetPosition { get; }
+        public string ActionToken => DamageResult?.ActionToken ?? string.Empty;
+        public CindarsHope.Foundation.DamageSourceKind SourceKind =>
+            DamageResult?.SourceKind ?? CindarsHope.Foundation.DamageSourceKind.None;
+        public bool IsPrimaryDamage => DamageResult?.IsPrimaryDamage ?? false;
+        public bool CanTriggerCapstones => DamageResult?.CanTriggerCapstones ?? false;
 
         public DamageAppliedEvent(CindarsHope.Combat.DamageResult result, UnityEngine.Vector3 targetPosition = default)
         {

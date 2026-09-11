@@ -18,6 +18,16 @@ namespace CindarsHope.Combat
         // Null/vazio => sem bônus de material (neutro). Não muda chamadores legados.
         public string[] WeaponMaterialTags { get; set; }
         public bool IsDamageOverTimeTick { get; set; }
+        public DamageSourceKind SourceKind { get; set; } = DamageSourceKind.None;
+        public SpellDiscipline SpellDiscipline { get; set; } = SpellDiscipline.None;
+        public string SourceInstanceId { get; set; } = string.Empty;
+        public string TargetInstanceId { get; set; } = string.Empty;
+        public string ActionToken { get; set; } = string.Empty;
+        public bool IsCritical { get; set; }
+        public bool IsPrimaryDamage { get; set; } = true;
+        public bool CanTriggerCapstones { get; set; }
+        public bool CanTriggerStatusEffects { get; set; } = true;
+        public bool CanTriggerReactions { get; set; } = true;
         public int Amount => BaseDamage;
         public float KnockbackForce { get; set; }
         public UnityEngine.Vector3 SourcePosition { get; set; }

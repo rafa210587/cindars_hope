@@ -7,6 +7,7 @@ using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
 using CindarsHope.Economy;
+using CindarsHope.Editor.Art;
 using CindarsHope.Enemy;
 using CindarsHope.Equipment;
 using CindarsHope.Farm;
@@ -40,7 +41,6 @@ using CindarsHope.UI.Modal;
 using CindarsHope.UI.Routing;
 using CindarsHope.Editor.Validation;
 using CindarsHope.Editor.ScaleSystem;
-using CindarsHope.Editor.Art;
 using CindarsHope.NPC;
 
 namespace CindarsHope.Editor.SceneCreation
@@ -58,6 +58,10 @@ namespace CindarsHope.Editor.SceneCreation
         private const string WeaponDatabasePath = "Assets/_Game/Data/Combat/WeaponDatabase.asset";
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
+        private const int FarmGrassBaseWeight = 85;
+        private const int FarmGrassFlowerWeight = 10;
+        private const int FarmGrassPebbleWeight = 5;
+        private const float ShippingBinVisualTargetHeight = 2.55f;
 
         public static void CreateSceneFromMenu()
         {
@@ -102,7 +106,7 @@ namespace CindarsHope.Editor.SceneCreation
             var craftingModal = CreateCraftingUi(craftingRuntime, modalManager);
             CreateCraftingStations(craftingRuntime, craftingModal);
             CreateFarmPortals();
-            CreateFishingSpot(inventoryManager);
+            CreateFishingSpot(inventoryManager, playerTransform);
             CreateFarmSceneFoundationZones();
             CreateFarmGroundTexture();  // chao base texturizado (grama tiled) atras de tudo — antes so cinza
             CreateCaveEntrance();
@@ -126,11 +130,17 @@ namespace CindarsHope.Editor.SceneCreation
                 playerTransform.GetComponent<InteractionSystem>(),
                 timeManager,
                 saveManager);
-            CreateBounds();
+            // Permanent natural collision is materialized with its scenery by the perimeter composer.
             CreateMountainBarrier();    // spec_farm_scene_relayout_v4: montanha (colisao N) + backdrop
             CreateRiverAndBridge();     // spec_farm_scene_relayout_v4: rio (colisao) + ponte andavel
+            MaterializeFarmSpatialCollision();
             CreateFarmPathNetworks();   // terreno: caminhos de terra ligando os marcos (visual, sem collider)
             CreateLockedOreNodes();     // spec_farm_scene_relayout_v4: 4 veios de minerio bloqueados
+            CreateLandmarkVisualComposition(); // visual-only children under existing functional roots
+            CreateFarmDecoration(); // deterministic visual-only clutter after terrain and landmark roots
+            FarmSettlementVisualComposer.Create(RequireSceneRoot("FarmDecoration"));
+            FarmSettlementPhysicsComposer.Create();
+            FarmPerimeterVisualComposer.Create(RequireSceneRoot("FarmDecoration"));
             CreateMainCamera(playerTransform);
             CreateFarmSceneRuntimeBootstrap();
             CreateFarmTillingInputController(playerTransform, bootstrap.GetComponent<EquipmentManager>(),
@@ -143,6 +153,15 @@ namespace CindarsHope.Editor.SceneCreation
                 bootstrap);
 
             ConfigureBootstrap(bootstrap, playerTransform, farmPlotRegistry, treeRegistry, itemPickupRegistry);
+
+            var ambientReport = FarmAmbientAnimationAuthoring.Apply(scene);
+            var captureOutput = System.Environment.GetEnvironmentVariable("CINDARS_FARM_CAPTURE_OUTPUT");
+            if (!string.IsNullOrEmpty(captureOutput))
+            {
+                System.IO.Directory.CreateDirectory(captureOutput);
+                System.IO.File.WriteAllText(System.IO.Path.Combine(captureOutput, "ambient-validation.json"),
+                    JsonUtility.ToJson(ambientReport, true));
+            }
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -419,6 +438,8 @@ namespace CindarsHope.Editor.SceneCreation
         private static Transform CreatePlayer()
         {
             var player = new GameObject("Player");
+            // Door occupancy and roof reveal identify the physical actor by the built-in Player tag.
+            player.tag = "Player";
             player.transform.position = Vector3.zero;
             // spec_codex_13: layer de gameplay para queries de combate (ContactFilter2D).
             CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
@@ -554,10 +575,10 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
 
             // v7 spawn anchors — IDs mantidos (spec_farm_scene_relayout_v4 §15.5 v7).
-            // Coords 64x44: farm_default (24,3) homestead, from_town (29,-1) junto portal, from_cave (-23,15).
-            var defaultSpawn = CreateSceneSpawnPoint(parent.transform, "farm_default", new Vector3(24f, 3f, 0f));
-            var fromTownSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_town", new Vector3(29f, -1f, 0f));
-            var fromCaveSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_cave", new Vector3(-23f, 15f, 0f));
+            // Farm arrivals use canonical layout anchors, including the exterior cave return.
+            var defaultSpawn = CreateSceneSpawnPoint(parent.transform, "farm_default", new Vector3(16f, 3f, 0f));
+            var fromTownSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_town", new Vector3(FarmLevel1LayoutContract.SpawnFromTownX, FarmLevel1LayoutContract.SpawnFromTownY, 0f));
+            var fromCaveSpawn = CreateSceneSpawnPoint(parent.transform, "farm_from_cave", new Vector3(FarmLevel1LayoutContract.SpawnFromCaveX, FarmLevel1LayoutContract.SpawnFromCaveY, 0f));
 
             var installer = parent.AddComponent<SceneSpawnInstaller>();
             var serializedInstaller = new SerializedObject(installer);
@@ -610,7 +631,7 @@ namespace CindarsHope.Editor.SceneCreation
             CreateScenePortal(
                 portals.transform,
                 "Portal_Farm_To_Town",
-                new Vector3(31f, -1f, 0f),
+                new Vector3(FarmLevel1LayoutContract.CityExitX, FarmLevel1LayoutContract.CityExitY, 0f),
                 new Color(0.29f, 0.43f, 0.67f),
                 "TownScene",
                 "Assets/_Game/Scenes/TownScene.unity",
@@ -634,26 +655,14 @@ namespace CindarsHope.Editor.SceneCreation
             var portalObject = new GameObject(name);
             portalObject.transform.SetParent(parent);
             portalObject.transform.position = position;
-            if (!ScaleProfileLibrary.AttachApplicator(portalObject, EntityScaleCategory.CheckpointPortal))
-            {
-                portalObject.transform.localScale = new Vector3(1f, 1.35f, 1f);
-            }
-
-            var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = 0;
-            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
-
-            if (spriteRenderer.sprite == null)
-            {
-                Debug.LogWarning($"{name} placeholder SpriteRenderer was created without a sprite. Replace it with portal art in a future art PR.");
-            }
-
+            // The measured boundary fence is the visible gate. Keep the interaction root unscaled;
+            // a generic colored portal rectangle would conceal the physical support and road.
+            portalObject.transform.localScale = Vector3.one;
+            var region = FarmEntrancePhysicsContract.TownInteractionTrigger;
             var collider = portalObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
-            collider.size = Vector2.one;
+            collider.offset = region.Center - (Vector2)position;
+            collider.size = region.Size;
 
             var portal = portalObject.AddComponent<ScenePortal>();
             var serializedPortal = new SerializedObject(portal);
@@ -695,7 +704,7 @@ namespace CindarsHope.Editor.SceneCreation
             var sellPointObject = new GameObject("SellPoint");
             // v7: homestead leste (spec_farm_scene_relayout_v4 §15.5 v7).
             // Coord 64x44: (24, 5).
-            sellPointObject.transform.position = new Vector3(24f, 5f, 0f);
+            sellPointObject.transform.position = new Vector3(FarmLevel1LayoutContract.SellPointStartX, FarmLevel1LayoutContract.SellPointStartY, 0f);
             if (!ScaleProfileLibrary.AttachApplicator(sellPointObject, EntityScaleCategory.FarmObject))
             {
                 sellPointObject.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
@@ -704,7 +713,16 @@ namespace CindarsHope.Editor.SceneCreation
             // TODO arte: banca de venda / sell point (sem match na biblioteca de mundo atual).
             var spriteRenderer = sellPointObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetBuiltinSprite();
-            spriteRenderer.color = new Color(0.25f, 0.75f, 0.85f);
+            spriteRenderer.enabled = false;
+            var stall = CreateVisualRoot(sellPointObject.transform, "Visual_SalesCounter", Vector3.zero);
+            var stallSprite = WorldSpriteLibrary.Prop("stall_keyart_v4");
+            var stallRenderer = stall.gameObject.AddComponent<SpriteRenderer>();
+            stallRenderer.sprite = stallSprite;
+            stallRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(stallRenderer, "World", 0);
+            ApplyKnownOpaqueHeightScale(stall, stallSprite, 2.6f, 48f / 75f);
+            AlignSpriteSupport(stall, stallSprite, sellPointObject.transform.position, new Vector2(37f, 16f));
+            CreateContractSolidBase(sellPointObject.transform, "SolidCounter", FarmSettlementPhysicsContract.SalesCounter);
             spriteRenderer.sortingOrder = 0;
             spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
@@ -770,31 +788,23 @@ namespace CindarsHope.Editor.SceneCreation
             // v8: respiro para a casa (keyart) — crafts afastados da fachada para o patio de terra ao
             // sul, homestead leste (X mantidos, Y de 1 -> -4). Coords 64x44: Workbench (23,-4),
             // Forge (27,-4), CookingStation (31,-4).
-            CreateCraftingStation("Workbench", "farm_workbench_01", WorkshopType.Workbench, new Vector3(23f, -4f, 0f), new Color(0.58f, 0.36f, 0.18f), craftingRuntime, craftingModal);
-            CreateCraftingStation("Forge", "farm_forge_01", WorkshopType.Forge, new Vector3(27f, -4f, 0f), new Color(0.58f, 0.23f, 0.16f), craftingRuntime, craftingModal);
-            CreateCraftingStation("CookingStation", "farm_cooking_01", WorkshopType.CookingStation, new Vector3(31f, -4f, 0f), new Color(0.77f, 0.55f, 0.22f), craftingRuntime, craftingModal);
+            CreateCraftingStation("Workbench", "farm_workbench_01", WorkshopType.Workbench, new Vector3(12f, -1f, 0f), new Color(0.58f, 0.36f, 0.18f), craftingRuntime, craftingModal);
+            CreateCraftingStation("Forge", "farm_forge_01", WorkshopType.Forge, new Vector3(16f, -1f, 0f), new Color(0.58f, 0.23f, 0.16f), craftingRuntime, craftingModal);
+            CreateCraftingStation("CookingStation", "farm_cooking_01", WorkshopType.CookingStation, new Vector3(20f, -1f, 0f), new Color(0.77f, 0.55f, 0.22f), craftingRuntime, craftingModal);
 
-            // Patio de terra sob a area dos crafts (visual, sem collider) — ~x[21,33] y[-5.5,-1.5].
-            var craftYardRoot = new GameObject("CraftYardGround");
-            craftYardRoot.transform.position = Vector3.zero;
-            WorldTilemapGround.PaintTile(craftYardRoot.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
-                new Vector2(27f, -3.5f), new Vector2(12f, 4f));
+            // Craft approaches are part of the shared path network, not an isolated rectangular plaza.
+
         }
 
         private static void CreateCraftingStation(string label, string stationId, WorkshopType stationType, Vector3 position, Color color, CraftingRuntime craftingRuntime, CraftingModal craftingModal)
         {
             var craftingObject = new GameObject($"CraftingStation_{label}");
             craftingObject.transform.position = position;
-            var stationCategory = stationType switch
-            {
-                WorkshopType.Forge => EntityScaleCategory.Forge,
-                WorkshopType.CookingStation => EntityScaleCategory.CookingStation,
-                _ => EntityScaleCategory.Workbench,
-            };
-            if (!ScaleProfileLibrary.AttachApplicator(craftingObject, stationCategory))
-            {
-                craftingObject.transform.localScale = new Vector3(0.95f, 0.95f, 1f);
-            }
+            // spec_farm_scene_keyart_visual_corrections_v1: NAO anexar VisualScaleApplicator aqui.
+            // O applicator reaplica profile.VisualScale (uniforme, ~1.3x o tamanho NATIVO do sprite)
+            // em runtime no Awake, sobrescrevendo a escala do editor — no Play os crafts ficavam ~3u
+            // (gigantes, maiores que o personagem). A escala correta e por ALTURA-ALVO
+            // (ApplyUniformBespokeScale abaixo), que fica identica no editor e no runtime.
 
             var craftingPropName = stationType switch
             {
@@ -802,7 +812,9 @@ namespace CindarsHope.Editor.SceneCreation
                 WorkshopType.CookingStation => "cooking_station",
                 _ => "workbench",
             };
-            var spriteRenderer = craftingObject.AddComponent<SpriteRenderer>();
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(craftingObject.transform, false);
+            var spriteRenderer = visual.AddComponent<SpriteRenderer>();
             var craftingBespokeSprite = WorldSpriteLibrary.Prop(craftingPropName);
             spriteRenderer.sprite = craftingBespokeSprite != null ? craftingBespokeSprite : GetBuiltinSprite();
             spriteRenderer.color = craftingBespokeSprite != null ? Color.white : color;
@@ -811,7 +823,8 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
             if (craftingBespokeSprite != null)
             {
-                ApplyUniformBespokeScale(craftingObject.transform, craftingBespokeSprite, 3f);
+                ApplyUniformBespokeScale(visual.transform, craftingBespokeSprite,
+                    FarmSceneCompositionContract.CraftingVisualTargetHeight);
             }
 
             if (spriteRenderer.sprite == null)
@@ -821,19 +834,34 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = craftingObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
-            collider.size = Vector2.one;
+            // Preserve the existing world-space interaction/body footprint while the renderer shrinks.
+            var previousRootScale = craftingBespokeSprite != null ? 2.1f / craftingBespokeSprite.bounds.size.y : 1f;
+            collider.size = new Vector2(previousRootScale, 1.7f);
+
+            // Interaction stays on the trigger root. The physical mass is a separate child so
+            // the player cannot walk through the craft while still receiving the CraftingPoint.
+            var solidBody = new GameObject("SolidBody");
+            solidBody.transform.SetParent(craftingObject.transform);
+            solidBody.transform.localPosition = new Vector3(0f,
+                (craftingBespokeSprite != null ? 8f / craftingBespokeSprite.rect.height * FarmSceneCompositionContract.CraftingVisualTargetHeight : 0f) +
+                FarmSceneCompositionContract.CraftingSolidColliderHeight * visual.transform.localScale.y * 0.5f, 0f);
+            solidBody.transform.localScale = Vector3.one;
+            var solidCollider = solidBody.AddComponent<BoxCollider2D>();
+            solidCollider.isTrigger = false;
+            solidCollider.size = new Vector2(FarmSceneCompositionContract.CraftingSolidColliderWidth,
+                FarmSceneCompositionContract.CraftingSolidColliderHeight) * visual.transform.localScale.y;
 
             var craftingPoint = craftingObject.AddComponent<CraftingPoint>();
             craftingPoint.Configure(stationId, stationType, craftingRuntime, craftingModal);
             EditorUtility.SetDirty(craftingPoint);
         }
 
-        private static void CreateFishingSpot(InventoryManager inventoryManager)
+        private static void CreateFishingSpot(InventoryManager inventoryManager, Transform playerTransform)
         {
             var fishingObject = new GameObject("FishingSpot");
             // v7: margem oeste do lago SE (spec_farm_scene_relayout_v4 §15.5 v7).
             // Coord 64x44: (8, -9).
-            fishingObject.transform.position = new Vector3(8f, -9f, 0f);
+            fishingObject.transform.position = new Vector3(FarmLevel1LayoutContract.FishingSpotX, FarmLevel1LayoutContract.FishingSpotY, 0f);
             var lakeScaleConfig = AssetDatabase.LoadAssetAtPath<GameScaleConfigSO>(GameScaleConfigPath);
             var lakeScale = lakeScaleConfig != null ? lakeScaleConfig.LakeScale : 6f;
             fishingObject.transform.localScale = new Vector3(lakeScale, lakeScale, 1f);
@@ -843,6 +871,7 @@ namespace CindarsHope.Editor.SceneCreation
             spriteRenderer.sprite = fishingWaterSprite != null ? fishingWaterSprite : GetBuiltinSprite();
             spriteRenderer.color = fishingWaterSprite != null ? Color.white : new Color(0.18f, 0.42f, 0.85f);
             spriteRenderer.sortingOrder = 0;
+            spriteRenderer.enabled = false;
             TrySetSortingLayer(spriteRenderer, "Ground", spriteRenderer.sortingOrder);
 
             if (spriteRenderer.sprite == null)
@@ -850,22 +879,67 @@ namespace CindarsHope.Editor.SceneCreation
                 Debug.LogWarning("FishingSpot placeholder SpriteRenderer was created without a sprite. Replace it with water/fishing art in a future art PR.");
             }
 
-            var blockingCollider = fishingObject.AddComponent<BoxCollider2D>();
-            blockingCollider.isTrigger = false;
-            FitLakeBlockingCollider(blockingCollider, spriteRenderer);
-
             var fishingSpot = fishingObject.AddComponent<FishingSpot>();
             var serializedFishing = new SerializedObject(fishingSpot);
+            serializedFishing.FindProperty("_fishingSpotId").stringValue = FarmLevel1LayoutContract.FishingSpotId;
             SetReference(serializedFishing, "_inventoryManager", inventoryManager);
-            serializedFishing.FindProperty("_edgeInteractionOuterHalfExtents").vector2Value = new Vector2(0.16f, 0.16f);
-            serializedFishing.FindProperty("_edgeInteractionInnerHalfExtents").vector2Value = new Vector2(0.055f, 0.055f);
             serializedFishing.ApplyModifiedPropertiesWithoutUndo();
+            var body = playerTransform.GetComponent<BoxCollider2D>();
+            var priorScale = playerTransform.localScale;
+            var priorSize = body.size;
+            Bounds runtimeBody;
+            try
+            {
+                // Awake applies this profile in Play, after the creator's temporary visual scale.
+                var scale = playerTransform.GetComponent<VisualScaleApplicator>();
+                if (scale != null) scale.Apply();
+                Physics2D.SyncTransforms();
+                runtimeBody = body.bounds;
+            }
+            finally
+            {
+                playerTransform.localScale = priorScale;
+                body.size = priorSize;
+                Physics2D.SyncTransforms();
+            }
+            const float clearance = 0.12f;
+            const float stanceHeight = 0.4f;
+            var footBottomOffset = runtimeBody.min.y - playerTransform.position.y;
+            var stanceBottom = FarmSceneSpatialContract.DockDeckSouthY + clearance - footBottomOffset;
+            var availableHalfWidth = (FarmSceneSpatialContract.DockDeckEastX - FarmSceneSpatialContract.DockDeckWestX) * 0.5f
+                - runtimeBody.extents.x - clearance;
+            if (availableHalfWidth <= 0f) throw new System.InvalidOperationException("Player body cannot fit dock tip.");
+            var stance = new GameObject("FishingStanceZone");
+            stance.transform.SetParent(fishingObject.transform, false);
+            stance.transform.position = new Vector3(FarmLevel1LayoutContract.FishingSpotX, stanceBottom + stanceHeight * 0.5f, 0f);
+            var stanceCollider = stance.AddComponent<BoxCollider2D>();
+            stanceCollider.isTrigger = true;
+            stanceCollider.size = new Vector2(Mathf.Min(0.55f, availableHalfWidth) * 2f / fishingObject.transform.lossyScale.x,
+                stanceHeight / fishingObject.transform.lossyScale.y);
+            fishingSpot.ConfigureStanceZone(stanceCollider);
             EditorUtility.SetDirty(fishingSpot);
 
-            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Top", new Vector3(0f, 0.085f, 0f), new Vector2(0.18f, 0.025f));
-            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Bottom", new Vector3(0f, -0.085f, 0f), new Vector2(0.18f, 0.025f));
-            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Left", new Vector3(-0.085f, 0f, 0f), new Vector2(0.025f, 0.18f));
-            CreateLakeEdgeTrigger(fishingObject.transform, "LakeEdgeInteractionTrigger_Right", new Vector3(0.085f, 0f, 0f), new Vector2(0.025f, 0.18f));
+            // The north gangway meets land; the canonical lake notch opens only the wooden deck.
+            var dock = CreateVisualRoot(fishingObject.transform, "Visual_FishingDock", Vector3.zero);
+            var dockSprite = WorldSpriteLibrary.Prop("dock_keyart_v4");
+            var dockRenderer = dock.gameObject.AddComponent<SpriteRenderer>();
+            dockRenderer.sprite = dockSprite;
+            dockRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            dockRenderer.sortingOrder = 4;
+            TrySetSortingLayer(dockRenderer, "Ground", 4);
+            //38 source pixels connect land entry to deck center, matching the existing2u approach.
+            ApplyKnownOpaqueHeightScale(dock, dockSprite, 1.10f * 117f / 19f, 117f / 137f);
+            AlignSpriteSupport(dock, dockSprite,
+                new Vector3(FarmLevel1LayoutContract.DockEntranceX, FarmLevel1LayoutContract.DockEntranceY, 0f),
+                new Vector2(48f, 101f));
+            var boat = CreateVisualRoot(fishingObject.transform, "Visual_MooredBoat", Vector3.zero);
+            var boatSprite = WorldSpriteLibrary.Prop("boat_keyart_v17");
+            var boatRenderer = boat.gameObject.AddComponent<SpriteRenderer>();
+            boatRenderer.sprite = boatSprite;
+            boatRenderer.sortingOrder = 5;
+            TrySetSortingLayer(boatRenderer, "Ground", 5);
+            ApplyKnownOpaqueHeightScale(boat, boatSprite, 32f / 18.3f, 32f / 68f);
+            AlignSpriteSupport(boat, boatSprite, new Vector3(17.4f, -9.1f, 0f), new Vector2(35f, 24f));
         }
 
         private static void CreateLakeEdgeTrigger(Transform parent, string name, Vector3 localPosition, Vector2 size)
@@ -888,26 +962,39 @@ namespace CindarsHope.Editor.SceneCreation
 
             // v7 (spec_farm_scene_relayout_v4 §15.5 v7): disposicao 64x44 borda aberta.
             // Spawn padrao no homestead leste (24,3).
-            CreateFarmSceneZone(parent.transform, "Zone_PlayerSpawn", FarmSceneZoneType.PlayerSpawn, "farm_zone_player_spawn", new Vector3(24f, 3f, 0f), new Vector2(1.4f, 1.4f), new Color(0.2f, 0.45f, 0.95f, 0.65f));
+            CreateFarmSceneZone(parent.transform, "Zone_PlayerSpawn", FarmSceneZoneType.PlayerSpawn, "farm_zone_player_spawn", new Vector3(16f, 3f, 0f), new Vector2(1.4f, 1.4f), new Color(0.2f, 0.45f, 0.95f, 0.65f));
             // Solo aravel — CropField cobre o MIOLO central (x[-18,16] y[-15,16]).
-            CreateFarmSceneZone(parent.transform, "Zone_CropField", FarmSceneZoneType.CropField, "farm_zone_crop_field", new Vector3(-1f, 0.5f, 0f), new Vector2(34f, 31f), new Color(0.35f, 0.22f, 0.12f, 0.25f));
+            CreateFarmSceneZoneFromFootprint(parent.transform, "Zone_CropField", FarmSceneZoneType.CropField, "farm_zone_crop_field", FarmSceneSpatialContract.CropField, new Color(0.35f, 0.22f, 0.12f, 0.25f));
             // Bosque DENSO borda oeste (x[-32,-22] y[0,17]).
             CreateFarmSceneZone(parent.transform, "Zone_ResourceTrees", FarmSceneZoneType.ResourceTrees, "farm_zone_resource_trees", new Vector3(-27f, 8.5f, 0f), new Vector2(10f, 17f), new Color(0.14f, 0.48f, 0.18f, 0.35f));
             CreateFarmSceneZone(parent.transform, "Zone_ResourceRocks", FarmSceneZoneType.ResourceRocks, "farm_zone_resource_rocks", new Vector3(-31f, 6f, 0f), new Vector2(2f, 2f), new Color(0.42f, 0.42f, 0.42f, 0.55f));
             // Forage cluster borda oeste (v7: 6 pontos em (-31,-4)(-29,-4)etc).
             CreateFarmSceneZone(parent.transform, "Zone_Forage", FarmSceneZoneType.Forage, "farm_zone_forage", new Vector3(-30f, -4f, 0f), new Vector2(4f, 6f), new Color(0.45f, 0.64f, 0.25f, 0.4f));
             // Lago SE v7 (x[5,31] y[-20,-6]).
-            CreateFarmSceneZone(parent.transform, "Zone_LakeFishing", FarmSceneZoneType.LakeFishing, "farm_zone_lake_fishing", new Vector3(18f, -13f, 0f), new Vector2(26f, 14f), new Color(0.18f, 0.44f, 0.82f, 0.5f));
+            CreateFarmSceneZoneFromFootprint(parent.transform, "Zone_LakeFishing", FarmSceneZoneType.LakeFishing, "farm_zone_lake_fishing", FarmSceneSpatialContract.Lake, new Color(0.18f, 0.44f, 0.82f, 0.5f));
             // Envio + venda homestead leste (v7: ShippingBin 28,4 / SellPoint 24,5).
-            CreateFarmSceneZone(parent.transform, "Zone_ShippingSellpoint", FarmSceneZoneType.ShippingSellpoint, "farm_zone_shipping_sellpoint", new Vector3(26f, 4.5f, 0f), new Vector2(8f, 3f), new Color(0.85f, 0.62f, 0.18f, 0.65f));
+            CreateFarmSceneZone(parent.transform, "Zone_ShippingSellpoint", FarmSceneZoneType.ShippingSellpoint, "farm_zone_shipping_sellpoint", new Vector3(16f, 3f, 0f), new Vector2(8f, 3f), new Color(0.85f, 0.62f, 0.18f, 0.65f));
             // Construcoes BORDA SUL (v7: coop -22,-19 / barn -13,-19 / cheese -28,-19 / wine -8,-19).
-            CreateFarmSceneZone(parent.transform, "Zone_Construction", FarmSceneZoneType.Construction, "farm_zone_construction", new Vector3(-18f, -19f, 0f), new Vector2(24f, 5f), new Color(0.58f, 0.45f, 0.32f, 0.45f));
+            CreateFarmSceneZoneFromFootprint(parent.transform, "Zone_Construction", FarmSceneZoneType.Construction, "farm_zone_construction", FarmSceneSpatialContract.AnimalBuildings, new Color(0.58f, 0.45f, 0.32f, 0.45f));
             // Casa walk-in a leste (v7: centro 28,9, footprint ~7x6).
-            CreateFarmSceneZone(parent.transform, "Zone_HouseEntrance", FarmSceneZoneType.HouseEntrance, "farm_zone_house_entrance", new Vector3(28f, 9f, 0f), new Vector2(7f, 6f), new Color(0.62f, 0.36f, 0.25f, 0.65f));
+            CreateFarmSceneZoneFromFootprint(parent.transform, "Zone_HouseEntrance", FarmSceneZoneType.HouseEntrance, "farm_zone_house_entrance", FarmSceneSpatialContract.House, new Color(0.62f, 0.36f, 0.25f, 0.65f));
             // Portal da cidade na extrema direita (v7: 31, -1).
-            CreateFarmSceneZone(parent.transform, "Zone_TownExit", FarmSceneZoneType.TownExit, "farm_zone_town_exit", new Vector3(31f, -1f, 0f), new Vector2(2f, 3f), new Color(0.82f, 0.82f, 0.25f, 0.55f));
+            CreateFarmSceneZoneFromFootprint(parent.transform, "Zone_TownExit", FarmSceneZoneType.TownExit, "farm_zone_town_exit", FarmSceneSpatialContract.TownExit, new Color(0.82f, 0.82f, 0.25f, 0.55f));
             // Caverna canto NO da montanha (v7: -28, 18.5) — MAIOR ~5x4.
-            CreateFarmSceneZone(parent.transform, "Zone_CaveEntrance", FarmSceneZoneType.CaveEntrance, "farm_zone_cave_entrance", new Vector3(-28f, 18.5f, 0f), new Vector2(5f, 4f), new Color(0.35f, 0.28f, 0.5f, 0.65f));
+            CreateFarmSceneZoneFromFootprint(parent.transform, "Zone_CaveEntrance", FarmSceneZoneType.CaveEntrance, "farm_zone_cave_entrance", FarmSceneSpatialContract.CaveMouth, new Color(0.35f, 0.28f, 0.5f, 0.65f));
+        }
+
+        private static void CreateFarmSceneZoneFromFootprint(Transform parent, string name,
+            FarmSceneZoneType zoneType, string stableId, string footprintId, Color color)
+        {
+            if (!FarmSceneSpatialContract.TryGet(footprintId, out var footprint))
+            {
+                throw new System.InvalidOperationException("Farm spatial footprint is missing: " + footprintId);
+            }
+
+            var bounds = footprint.Bounds;
+            CreateFarmSceneZone(parent, name, zoneType, stableId,
+                new Vector3(bounds.center.x, bounds.center.y, 0f), bounds.size, color);
         }
 
         private static void CreateFarmSceneZone(
@@ -940,27 +1027,19 @@ namespace CindarsHope.Editor.SceneCreation
             EditorUtility.SetDirty(marker);
         }
 
-        // Chao base texturizado. As zonas de fundacao NAO renderizam (gizmo-only), entao sem isto
-        // o mundo aparece cinza. Adiciona um unico SpriteRenderer de grama em modo Tiled cobrindo o
-        // footprint da fazenda (64x44 + margem), atras de tudo. Arte via WorldSpriteLibrary
-        // (Art/Generated/World/tiles/ground_grass). Se ausente, loga wiring-error e nao cria (nao mascara).
+        // The farm-only grid keeps the authored grass clusters readable at native sprite density.
         private static void CreateFarmGroundTexture()
         {
-            var grass = WorldSpriteLibrary.Ground("ground_grass");
+            var grass = WorldSpriteLibrary.Ground("ground_grass_contact_v16");
             if (grass == null)
-            {
-                Debug.LogWarning("CreateMvpFarmScene: 'ground_grass' ausente — chao texturizado NAO criado " +
-                                 "(mundo permanece sem base). Rode art/world_gpt/_stage_world_to_assets.py e reimporte em Unity.");
-                return;
-            }
+                throw new System.InvalidOperationException("Farm grass keyart v2 asset is missing.");
 
-            // Chao via TILEMAP (best practice) — nao SpriteRenderer Tiled (estoura mesh) nem esticado.
-            // Ver skill tilemap-world-rendering. A tile de grama e seamless, entao o Tilemap da campo
-            // uniforme sem grade nem erro de 9-slice. Rule Tiles/variacao = passo futuro (2D Extras).
             var ground = new GameObject("FarmGround");
-            ground.transform.position = Vector3.zero;
-            // Grama COM VARIACAO (base + variantes esparsas) via Tilemap — quebra a repeticao.
-            WorldTilemapGround.PaintGrass(ground.transform, "WorldGrid", 0, "Ground", new Vector2(-1f, -1f), new Vector2(72f, 52f));
+            float cellSize = WorldTilemapGround.SpriteWorldSize(grass);
+            var tilemap = WorldTilemapGround.GetOrCreateLayer(ground.transform, "WorldGrid", "Ground", cellSize, 0, "Ground");
+            tilemap.tileAnchor = new Vector3(0.5f, 0f, 0f);
+            tilemap.color = new Color(0.8f, 0.85f, 0.78f);
+            WorldTilemapGround.PaintRect(tilemap, grass, new Vector2(-1f, -1f), new Vector2(112f, 80f));
         }
 
         private static ItemPickupRegistry CreateItemPickups(InventoryManager inventoryManager)
@@ -972,7 +1051,7 @@ namespace CindarsHope.Editor.SceneCreation
             var pickups = new ItemPickup[1];
             // v7: perto do spawn homestead (spec_farm_scene_relayout_v4 §15.5 v7).
             // Coord 64x44: (22, 1) — homestead leste, acessivel ao sair da casa.
-            pickups[0] = CreateItemPickup(parent.transform, 0, "seed_carrot", 1, new Vector3(22f, 1f, 0f), inventoryManager);
+            pickups[0] = CreateItemPickup(parent.transform, 0, "seed_carrot", 1, new Vector3(13f, 2f, 0f), inventoryManager);
             registry.Configure(pickups);
             EditorUtility.SetDirty(registry);
             return registry;
@@ -1073,14 +1152,14 @@ namespace CindarsHope.Editor.SceneCreation
             var fonteRoot = new GameObject("FonteAnya");
             // v7: borda oeste, clareira do bosque — marco cenico + respawn (preservar wiring _anyaFountain).
             // Coord 64x44 (spec_farm_scene_relayout_v4 §15.5 v7): (-24, 4).
-            fonteRoot.transform.position = new Vector3(-24f, 4f, 0f);
+            fonteRoot.transform.position = new Vector3(FarmLevel1LayoutContract.FonteAnchorX, FarmLevel1LayoutContract.FonteAnchorY, 0f);
 
             // Sprite bespoke unico (substitui Pedestal+Bacia+Agua esticados). Escala aplicada num
             // child "Visual" (fonteRoot fica em scale 1) para nao afetar o BoxCollider2D do root.
             var fonteVisual = new GameObject("Visual");
             fonteVisual.transform.SetParent(fonteRoot.transform);
             fonteVisual.transform.localPosition = Vector3.zero;
-            var fonteSprite = WorldSpriteLibrary.Prop("fonte_anya");
+            var fonteSprite = WorldSpriteLibrary.Prop("fountain_keyart_v3");
             var fonteRenderer = fonteVisual.AddComponent<SpriteRenderer>();
             fonteRenderer.sprite = fonteSprite != null ? fonteSprite : GetBuiltinSprite();
             fonteRenderer.color = Color.white;
@@ -1089,18 +1168,64 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(fonteRenderer, "World", 0);
             if (fonteSprite != null)
             {
-                ApplyUniformBespokeScale(fonteVisual.transform, fonteSprite, 3.2f);
+                ApplyKnownOpaqueHeightScale(fonteVisual.transform, fonteSprite, 7f, 137f / 159f);
+                AlignSpriteSupport(fonteVisual.transform, fonteSprite, fonteRoot.transform.position, new Vector2(85f, 43f));
             }
             else
             {
                 fonteVisual.transform.localScale = new Vector3(1.6f, 0.55f, 1f);
             }
 
+            var depthGroup = new GameObject("FountainDepthGroup");
+            depthGroup.transform.SetParent(fonteRoot.transform, false);
+            var sortingGroup = depthGroup.AddComponent<UnityEngine.Rendering.SortingGroup>();
+            sortingGroup.sortingLayerName = "World";
+            sortingGroup.sortingOrder = 0;
+            fonteVisual.transform.SetParent(depthGroup.transform, true);
+
+            // spec_farm_scene_keyart_visual_corrections_v1: anel de flores brancas em volta da
+            // fonte (raio ~3u), como na keyart. Apenas SpriteRenderer — sem collider novo.
+            var fonteClearingFlowerLocalPositions = new[]
+            {
+                new Vector3(-3f, 0f, 0f),
+                new Vector3(3f, 0f, 0f),
+                new Vector3(-1.5f, 2.6f, 0f),
+                new Vector3(1.5f, 2.6f, 0f),
+                new Vector3(-1.5f, -2.6f, 0f),
+                new Vector3(1.5f, -2.6f, 0f),
+            };
+            var fonteFlowerSprite = WorldSpriteLibrary.Foliage("wildflowers_keyart_v4");
+            if (fonteFlowerSprite != null)
+            {
+                for (var fi = 0; fi < fonteClearingFlowerLocalPositions.Length; fi++)
+                {
+                    var flowerVisual = CreateVisualRoot(fonteRoot.transform, $"Visual_ClearingFlower_{fi + 1:00}",
+                        fonteClearingFlowerLocalPositions[fi]);
+                    flowerVisual.localScale = new Vector3(0.8f, 0.8f, 1f);
+                    var flowerRenderer = flowerVisual.gameObject.AddComponent<SpriteRenderer>();
+                    flowerRenderer.sprite = fonteFlowerSprite;
+                    flowerRenderer.color = Color.white;
+                    flowerRenderer.sortingOrder = 1;
+                    flowerRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                    TrySetSortingLayer(flowerRenderer, "World", flowerRenderer.sortingOrder);
+                }
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("[FonteAnya] wiring-warning: foliage/flower_patch nao carregou — clareira sem anel de flores.");
+            }
+
             var collider = fonteRoot.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
-            collider.size = new Vector2(1.8f, 1.2f);
+            collider.size = new Vector2(5.8f, 2.4f);
+            CreateContractSolidBase(fonteRoot.transform, "SolidBasin", FarmSettlementPhysicsContract.FountainBasin);
+            foreach (var foot in FarmSettlementPhysicsContract.FountainColumnFeet)
+                CreateContractSolidBase(fonteRoot.transform, foot.Id, foot);
 
-            var fountain = fonteRoot.AddComponent<CindarsHope.Core.Respawn.AnyaFountain>();
+            var respawn = new GameObject("RespawnPoint");
+            respawn.transform.SetParent(fonteRoot.transform, false);
+            respawn.transform.localPosition = new Vector3(0f, -1.3f, 0f);
+            var fountain = respawn.AddComponent<CindarsHope.Core.Respawn.AnyaFountain>();
             fonteRoot.AddComponent<CindarsHope.Fonte.FonteInteractable>();
 
             if (bootstrap != null)
@@ -1128,14 +1253,17 @@ namespace CindarsHope.Editor.SceneCreation
         // Padrao replicado de CreateMvpTownScene.CreateWalkInHouse (proibido editar aquele arquivo).
         private static void CreateFarmWalkInHouse()
         {
-            const float cx = 28f;
-            const float cy = 9f;
-            const float w  = 7f;
-            const float h  = 6f;
+            const float cx = FarmLevel1LayoutContract.HouseStartX;
+            const float cy = FarmLevel1LayoutContract.HouseStartY;
+            const float w  = FarmLevel1LayoutContract.HouseWidth;
+            const float h  = FarmLevel1LayoutContract.HouseHeight;
             float hw = w * 0.5f;
             float hh = h * 0.5f;
-            // Porta ao sul: doorY = -hh.
-            float doorY = -hh;
+            // The physical door meets the leaf; the approved exterior staircase stays below it.
+            float doorY = FarmHouseDoorArtAuthoring.DoorGroundY - cy;
+            float northY = hh;
+            float interiorHeight = northY - doorY;
+            float interiorCenterY = (northY + doorY) * 0.5f;
 
             var house = new GameObject("FarmHouse");
             house.transform.position = new Vector3(cx, cy, 0f);
@@ -1143,22 +1271,26 @@ namespace CindarsHope.Editor.SceneCreation
             // Chao andavel (sem collider — jogador anda sobre ele). Tilado (nao esticado).
             var floor = new GameObject("Floor");
             floor.transform.SetParent(house.transform);
-            floor.transform.localPosition = Vector3.zero;
+            floor.transform.localPosition = new Vector3(0f, -hh, 0f);
             floor.transform.localScale = Vector3.one;
             var floorSr = floor.AddComponent<SpriteRenderer>();
-            var houseFloorSprite = WorldSpriteLibrary.Ground("ground_soil");
+            var houseFloorSprite = WorldSpriteLibrary.Building("wall_plank");
             floorSr.sprite = houseFloorSprite != null ? houseFloorSprite : GetBuiltinSprite();
             floorSr.color = houseFloorSprite != null ? Color.white : new Color(0.78f, 0.72f, 0.62f); // fallback piso madeira claro
             floorSr.drawMode = SpriteDrawMode.Tiled;
-            floorSr.size = new Vector2(w, h);
+            floorSr.size = new Vector2(w, interiorHeight);
+            // Tiled bounds are pivot-dependent; align the rendered floor to the useful room.
+            var floorPivot = floorSr.sprite.pivot / floorSr.sprite.rect.size;
+            floor.transform.localPosition = new Vector3((floorPivot.x - 0.5f) * w,
+                interiorCenterY + (floorPivot.y - 0.5f) * interiorHeight, 0f);
             floorSr.sortingOrder = 5;
             TrySetSortingLayer(floorSr, "Ground", 5);
 
             // Paredes solidas (3 inteiras + vao da porta dividido em 2 laterais).
-            CreateFarmInteriorWall(house.transform, "Wall_Left",  new Vector3(-hw, 0f, 0f), new Vector2(FarmWallThickness, h));
-            CreateFarmInteriorWall(house.transform, "Wall_Right", new Vector3( hw, 0f, 0f), new Vector2(FarmWallThickness, h));
+            CreateFarmInteriorWall(house.transform, "Wall_Left",  new Vector3(-hw, interiorCenterY, 0f), new Vector2(FarmWallThickness, interiorHeight));
+            CreateFarmInteriorWall(house.transform, "Wall_Right", new Vector3( hw, interiorCenterY, 0f), new Vector2(FarmWallThickness, interiorHeight));
             // Parede oposta a porta (norte): inteira.
-            CreateFarmInteriorWall(house.transform, "Wall_Top",   new Vector3(0f, -doorY, 0f), new Vector2(w, FarmWallThickness));
+            CreateFarmInteriorWall(house.transform, "Wall_Top",   new Vector3(0f, northY, 0f), new Vector2(w, FarmWallThickness));
             // Parede do lado da porta (sul): dividida ao redor do vao.
             float sideWidth  = (w - FarmDoorGapWidth) * 0.5f;
             float sideCenter = (FarmDoorGapWidth + sideWidth) * 0.5f;
@@ -1166,31 +1298,17 @@ namespace CindarsHope.Editor.SceneCreation
             CreateFarmInteriorWall(house.transform, "Wall_BottomR", new Vector3( sideCenter, doorY, 0f), new Vector2(sideWidth, FarmWallThickness));
 
             // Porta funcional no vao (HouseDoorInteractable — [E] abre/fecha).
-            CreateFarmHouseDoor(house.transform, doorY);
+            var door = CreateFarmHouseDoor(house.transform, doorY);
 
-            // Moveis DENTRO do interior (sem collider — andaveis).
-            // Cama — canto NW do comodo (posicao relativa ao centro da casa em world).
-            var bedObj = new GameObject("Bed");
-            bedObj.transform.SetParent(house.transform);
-            bedObj.transform.localPosition = new Vector3(-hw + 1.2f, hh - 1.1f, 0f);
-            bedObj.transform.localScale = new Vector3(1.2f, 0.7f, 1f);
-            var bedSr = bedObj.AddComponent<SpriteRenderer>();
-            var houseBedSprite = WorldSpriteLibrary.Interior("bed");
-            bedSr.sprite = houseBedSprite != null ? houseBedSprite : GetBuiltinSprite();
-            bedSr.color = houseBedSprite != null ? Color.white : new Color(0.55f, 0.30f, 0.45f);
-            bedSr.sortingOrder = 0;
-            bedSr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(bedSr, "World", 0);
-            var bedCol = bedObj.AddComponent<BoxCollider2D>();
-            bedCol.isTrigger = true;
-            bedCol.size = Vector2.one;
-            bedObj.AddComponent<CindarsHope.World.BedInteractable>();
-            EditorUtility.SetDirty(bedObj);
+            // Furniture roots retain interaction identity; only their visuals are scaled.
+            FarmHouseInteriorAuthoring.CreateFurniture<CindarsHope.World.BedInteractable>(
+                house.transform, "Bed", WorldSpriteLibrary.Interior("bed"),
+                new Vector2(12.7f, 14f), 2.2f, new Vector2(1.75f, 1.4f), 0.08f);
 
             // BedLetter — ao lado da cama.
             var letterObj = new GameObject("BedLetter");
             letterObj.transform.SetParent(house.transform);
-            letterObj.transform.localPosition = new Vector3(-hw + 2.6f, hh - 1.1f, 0f);
+            letterObj.transform.localPosition = new Vector3(14.35f - cx, 14.2f - cy, 0f);
             letterObj.transform.localScale = new Vector3(0.45f, 0.45f, 1f);
             var letterSr = letterObj.AddComponent<SpriteRenderer>();
             letterSr.sprite = GetBuiltinSprite();
@@ -1204,22 +1322,10 @@ namespace CindarsHope.Editor.SceneCreation
             letterObj.AddComponent<CindarsHope.World.LetterInteractable>();
             EditorUtility.SetDirty(letterObj);
 
-            // FarmHouseChest — canto NE do comodo.
-            var chestObj = new GameObject("FarmHouseChest");
-            chestObj.transform.SetParent(house.transform);
-            chestObj.transform.localPosition = new Vector3(hw - 1.2f, hh - 1.1f, 0f);
-            chestObj.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
-            var chestSr = chestObj.AddComponent<SpriteRenderer>();
-            chestSr.sprite = GetBuiltinSprite();
-            chestSr.color = new Color(0.52f, 0.38f, 0.18f);
-            chestSr.sortingOrder = 0;
-            chestSr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(chestSr, "World", 0);
-            var chestCol = chestObj.AddComponent<BoxCollider2D>();
-            chestCol.isTrigger = true;
-            chestCol.size = Vector2.one;
-            chestObj.AddComponent<CindarsHope.World.FarmHouseChestInteractable>();
-            EditorUtility.SetDirty(chestObj);
+            FarmHouseInteriorAuthoring.CreateFurniture<CindarsHope.World.FarmHouseChestInteractable>(
+                house.transform, "FarmHouseChest", AssetDatabase.LoadAssetAtPath<Sprite>(
+                    "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_closed.png"),
+                new Vector2(18.1f, 15.1f), 1.1f, new Vector2(1f, 0.48f), 0.04f);
 
             // Exterior/telhado: UM sprite bespoke (Building("farmhouse")) cobrindo o footprint da
             // casa (fachada frontal + telhado). RoofRevealController some ao entrar (mesmo objeto
@@ -1229,26 +1335,23 @@ namespace CindarsHope.Editor.SceneCreation
             roof.transform.SetParent(house.transform);
             roof.transform.localPosition = Vector3.zero;
             var roofSr = roof.AddComponent<SpriteRenderer>();
-            var houseRoofSprite = WorldSpriteLibrary.Building("farmhouse");
+            var houseRoofSprite = FarmHouseDoorArtAuthoring.FacadeAtDoorDepth();
             roofSr.sprite = houseRoofSprite != null ? houseRoofSprite : GetBuiltinSprite();
             roofSr.color = houseRoofSprite != null ? Color.white : new Color(0.42f, 0.20f, 0.14f); // vermelho-telha
             roofSr.spriteSortPoint = SpriteSortPoint.Pivot;
-            roofSr.sortingOrder = 20;
-            TrySetSortingLayer(roofSr, "Roof", 20);
+            roofSr.sortingOrder = 0;
+            TrySetSortingLayer(roofSr, "World", 0);
             if (houseRoofSprite != null)
             {
                 roofSr.drawMode = SpriteDrawMode.Simple;
-                // Com Simple, o sprite ja renderiza no tamanho nativo (px/PPU). A escala e UNIFORME
-                // calculada a partir do tamanho nativo p/ a largura alvo (cobre footprint + beiral),
-                // preservando o aspect do sprite. NUNCA usar localScale = tamanho-em-unidades aqui
-                // (multiplicaria pelo nativo e a casa fica gigante).
-                var nat = roofSr.sprite.bounds.size; // unidades no scale 1
-                float targetW = w + 4f;              // ~11u: footprint (7) + beiral; casa dominante
-                float sc = nat.x > 0.01f ? targetW / nat.x : 1f;
-                roof.transform.localScale = new Vector3(sc, sc, 1f);
-                // Pivo bottom-center: alinha a base do sprite a parede sul do footprint (porta),
-                // pra casa "crescer" pra cima e a fachada/porta baterem com o vao andavel.
-                roof.transform.localPosition = new Vector3(0f, -hh, 0f);
+                // Direct keyart extraction: alpha x[21,198), y[12,192) in the212x205 source.
+                // The stair support, rather than the canvas center, meets the existing door gap.
+                const float targetOpaqueWidth = FarmSceneCompositionContract.HomesteadRoofTargetWidth;
+                const float opaqueWidthRatio = 177f / 212f;
+                var scale = targetOpaqueWidth / (houseRoofSprite.bounds.size.x * opaqueWidthRatio);
+                roof.transform.localScale = new Vector3(scale, scale, 1f);
+                AlignSpriteSupport(roof.transform, houseRoofSprite,
+                    new Vector3(cx, cy - hh, 0f), new Vector2(122f, 13f));
             }
             else
             {
@@ -1259,12 +1362,26 @@ namespace CindarsHope.Editor.SceneCreation
             // Trigger de revelacao do telhado.
             var revealObj = new GameObject("RoofReveal");
             revealObj.transform.SetParent(house.transform);
-            revealObj.transform.localPosition = Vector3.zero;
+            revealObj.transform.localPosition = new Vector3(0f, interiorCenterY, 0f);
             var revealTrigger = revealObj.AddComponent<BoxCollider2D>();
             revealTrigger.isTrigger = true;
-            revealTrigger.size = new Vector2(w, h);
+            revealTrigger.size = new Vector2(w - FarmWallThickness, interiorHeight - FarmWallThickness);
             var reveal = revealObj.AddComponent<RoofRevealController>();
-            reveal.Configure(new[] { roofSr });
+            var interiorRenderers = new List<SpriteRenderer>();
+            var exteriorRenderers = new List<SpriteRenderer> { roofSr };
+            foreach (var interiorRenderer in house.GetComponentsInChildren<SpriteRenderer>())
+            {
+                if (interiorRenderer == roofSr) continue;
+                if (interiorRenderer.transform.IsChildOf(door.transform))
+                {
+                    // Leaf remains visible from either side, controlled only by its current pose.
+                    if (interiorRenderer.gameObject.name == "Threshold") exteriorRenderers.Add(interiorRenderer);
+                    continue;
+                }
+                interiorRenderers.Add(interiorRenderer);
+            }
+            reveal.Configure(exteriorRenderers.ToArray(), interiorRenderers: interiorRenderers.ToArray());
+            reveal.ConfigureFeetOccupancy(revealTrigger);
             EditorUtility.SetDirty(reveal);
 
             EditorUtility.SetDirty(house);
@@ -1284,7 +1401,8 @@ namespace CindarsHope.Editor.SceneCreation
             col.size = size;
 
             // Visual simples de pedra, TILADO (nao esticado) — localScale fica 1, sr.size cobre a parede.
-            var sr = wall.AddComponent<SpriteRenderer>();
+            var visual = CreateVisualRoot(wall.transform, "Visual", new Vector3(0f, -size.y * 0.5f, 0f));
+            var sr = visual.gameObject.AddComponent<SpriteRenderer>();
             var interiorWallSprite = WorldSpriteLibrary.Building("wall_stone");
             sr.sprite = interiorWallSprite != null ? interiorWallSprite : GetBuiltinSprite();
             sr.color = interiorWallSprite != null ? Color.white : new Color(0.50f, 0.46f, 0.40f); // cinza-pedra
@@ -1302,52 +1420,26 @@ namespace CindarsHope.Editor.SceneCreation
         // doorY = posicao Y local da porta (negativo = sul, positivo = norte).
         private const float FarmDoorPivotEpsilon = 0.01f;
 
-        private static void CreateFarmHouseDoor(Transform house, float doorY)
+        private static HouseDoorInteractable CreateFarmHouseDoor(Transform house, float doorY)
         {
             var door = new GameObject("Door");
-            door.transform.SetParent(house);
-            door.transform.localPosition = new Vector3(0f, doorY - FarmDoorPivotEpsilon, 0f);
-
-            // Umbral escuro (abertura) — visivel quando a folha desliza.
+            door.transform.SetParent(house, false);
+            door.transform.localPosition = new Vector3(0f, doorY, 0f);
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                door, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
             var threshold = new GameObject("Threshold");
-            threshold.transform.SetParent(door.transform);
-            threshold.transform.localPosition = Vector3.zero;
-            threshold.transform.localScale = new Vector3(FarmDoorGapWidth, FarmWallThickness * 1.2f, 1f);
-            var thrSr = threshold.AddComponent<SpriteRenderer>();
-            thrSr.sprite = GetBuiltinSprite();
-            thrSr.color = new Color(0.10f, 0.08f, 0.07f);
-            thrSr.sortingOrder = 0;
-            thrSr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(thrSr, "World", 0);
-
-            // Folha de madeira (desliza ao abrir).
+            threshold.transform.SetParent(door.transform, false);
             var leaf = new GameObject("Leaf");
-            leaf.transform.SetParent(door.transform);
-            var closedLocalPos = Vector3.zero;
-            var openLocalPos   = new Vector3(FarmDoorGapWidth * 0.92f, 0f, 0f);
-            leaf.transform.localPosition = closedLocalPos;
-            leaf.transform.localScale = new Vector3(FarmDoorGapWidth, FarmWallThickness * 2.0f, 1f);
-            var leafSr = leaf.AddComponent<SpriteRenderer>();
-            var doorLeafSprite = WorldSpriteLibrary.Building("door_wood");
-            leafSr.sprite = doorLeafSprite != null ? doorLeafSprite : GetBuiltinSprite();
-            leafSr.color = doorLeafSprite != null ? Color.white : new Color(0.38f, 0.24f, 0.14f); // madeira
-            leafSr.sortingOrder = 0;
-            leafSr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(leafSr, "World", 0);
-
-            // Collider solido que tranca o vao (desligado quando aberta).
+            leaf.transform.SetParent(door.transform, false);
             var blocker = door.AddComponent<BoxCollider2D>();
-            blocker.isTrigger = false;
             blocker.size = new Vector2(FarmDoorGapWidth, FarmWallThickness);
-
-            // Trigger de interacao (sempre ligado).
             var interact = door.AddComponent<BoxCollider2D>();
             interact.isTrigger = true;
-            interact.size = new Vector2(FarmDoorGapWidth + 0.6f, FarmWallThickness + 1.4f);
-
+            interact.size = new Vector2(FarmDoorGapWidth + 0.6f, FarmWallThickness + 2f);
             var interactable = door.AddComponent<HouseDoorInteractable>();
-            interactable.Configure(leaf.transform, blocker, closedLocalPos, openLocalPos);
+            FarmHouseDoorArtAuthoring.Configure(interactable, leaf.transform, threshold.transform, blocker);
             EditorUtility.SetDirty(interactable);
+            return interactable;
         }
 
         // F16: cama dentro da casa v4 — dormir voluntario com confirmacao.
@@ -1444,7 +1536,7 @@ namespace CindarsHope.Editor.SceneCreation
             }
 
             var parent = new GameObject("FarmPlots");
-            parent.transform.position = new Vector3(1f, -2.25f, 0f);
+            parent.transform.position = Vector3.zero;
             var registry = parent.AddComponent<FarmPlotRegistry>();
 
             // spec_farm_scene_relayout_v4 (Desvio 1 corrigido 2026-06-26):
@@ -1507,89 +1599,11 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
             var registry = parent.AddComponent<TreeRegistry>();
 
-            // v7: bosque DENSO borda oeste (~40 arvores x[-32,-22] y[0,17]) + ~28 espalhadas no miolo = ~68 total.
-            // (spec_farm_scene_relayout_v4 §15.5 v7 / §32). Sprites MAIORES via treeScaleBoost.
-            // Bosque OESTE: regiao x in [-32,-22], y in [0,17]. Total bosque = 40 arvores.
-            // Miolo espalhado: x in [-17,15], y in [-14,15], evitando lago/rio/construcoes. Total = 28.
-            var trees = new TreeNode[68];
-            // -- Bosque OESTE DENSO (40 arvores, grid irregular ~2 tiles de espaco) --
-            // Faixa Y 0-2
-            trees[0]  = CreateTree(parent.transform, 0,  new Vector3(-32f,  0.5f, 0f), treeData, inventoryManager);
-            trees[1]  = CreateTree(parent.transform, 1,  new Vector3(-30f,  0.5f, 0f), treeData, inventoryManager);
-            trees[2]  = CreateTree(parent.transform, 2,  new Vector3(-28f,  1.0f, 0f), treeData, inventoryManager);
-            trees[3]  = CreateTree(parent.transform, 3,  new Vector3(-26f,  0.5f, 0f), treeData, inventoryManager);
-            trees[4]  = CreateTree(parent.transform, 4,  new Vector3(-24f,  1.0f, 0f), treeData, inventoryManager);
-            trees[5]  = CreateTree(parent.transform, 5,  new Vector3(-22f,  0.5f, 0f), treeData, inventoryManager);
-            // Faixa Y 3-5
-            trees[6]  = CreateTree(parent.transform, 6,  new Vector3(-32f,  3.5f, 0f), treeData, inventoryManager);
-            trees[7]  = CreateTree(parent.transform, 7,  new Vector3(-30f,  3.0f, 0f), treeData, inventoryManager);
-            trees[8]  = CreateTree(parent.transform, 8,  new Vector3(-28f,  3.5f, 0f), treeData, inventoryManager);
-            trees[9]  = CreateTree(parent.transform, 9,  new Vector3(-26f,  3.0f, 0f), treeData, inventoryManager);
-            trees[10] = CreateTree(parent.transform, 10, new Vector3(-24f,  3.5f, 0f), treeData, inventoryManager);
-            trees[11] = CreateTree(parent.transform, 11, new Vector3(-22f,  3.0f, 0f), treeData, inventoryManager);
-            // Faixa Y 6-8
-            trees[12] = CreateTree(parent.transform, 12, new Vector3(-32f,  6.5f, 0f), treeData, inventoryManager);
-            trees[13] = CreateTree(parent.transform, 13, new Vector3(-30f,  6.0f, 0f), treeData, inventoryManager);
-            trees[14] = CreateTree(parent.transform, 14, new Vector3(-28f,  6.5f, 0f), treeData, inventoryManager);
-            trees[15] = CreateTree(parent.transform, 15, new Vector3(-26f,  6.0f, 0f), treeData, inventoryManager);
-            trees[16] = CreateTree(parent.transform, 16, new Vector3(-24f,  6.5f, 0f), treeData, inventoryManager);
-            trees[17] = CreateTree(parent.transform, 17, new Vector3(-22f,  6.0f, 0f), treeData, inventoryManager);
-            // Faixa Y 9-11
-            trees[18] = CreateTree(parent.transform, 18, new Vector3(-32f,  9.5f, 0f), treeData, inventoryManager);
-            trees[19] = CreateTree(parent.transform, 19, new Vector3(-30f,  9.0f, 0f), treeData, inventoryManager);
-            trees[20] = CreateTree(parent.transform, 20, new Vector3(-28f,  9.5f, 0f), treeData, inventoryManager);
-            trees[21] = CreateTree(parent.transform, 21, new Vector3(-26f,  9.0f, 0f), treeData, inventoryManager);
-            trees[22] = CreateTree(parent.transform, 22, new Vector3(-24f,  9.5f, 0f), treeData, inventoryManager);
-            trees[23] = CreateTree(parent.transform, 23, new Vector3(-22f,  9.0f, 0f), treeData, inventoryManager);
-            // Faixa Y 12-14
-            trees[24] = CreateTree(parent.transform, 24, new Vector3(-32f, 12.5f, 0f), treeData, inventoryManager);
-            trees[25] = CreateTree(parent.transform, 25, new Vector3(-30f, 12.0f, 0f), treeData, inventoryManager);
-            trees[26] = CreateTree(parent.transform, 26, new Vector3(-28f, 12.5f, 0f), treeData, inventoryManager);
-            trees[27] = CreateTree(parent.transform, 27, new Vector3(-26f, 12.0f, 0f), treeData, inventoryManager);
-            trees[28] = CreateTree(parent.transform, 28, new Vector3(-24f, 12.5f, 0f), treeData, inventoryManager);
-            trees[29] = CreateTree(parent.transform, 29, new Vector3(-22f, 12.0f, 0f), treeData, inventoryManager);
-            // Faixa Y 15-17
-            trees[30] = CreateTree(parent.transform, 30, new Vector3(-32f, 15.5f, 0f), treeData, inventoryManager);
-            trees[31] = CreateTree(parent.transform, 31, new Vector3(-30f, 15.0f, 0f), treeData, inventoryManager);
-            trees[32] = CreateTree(parent.transform, 32, new Vector3(-28f, 15.5f, 0f), treeData, inventoryManager);
-            trees[33] = CreateTree(parent.transform, 33, new Vector3(-26f, 15.0f, 0f), treeData, inventoryManager);
-            trees[34] = CreateTree(parent.transform, 34, new Vector3(-24f, 15.5f, 0f), treeData, inventoryManager);
-            trees[35] = CreateTree(parent.transform, 35, new Vector3(-22f, 15.0f, 0f), treeData, inventoryManager);
-            // 4 extras para preencher o bosque (variacao de x/y para densificar)
-            trees[36] = CreateTree(parent.transform, 36, new Vector3(-31f,  2.0f, 0f), treeData, inventoryManager);
-            trees[37] = CreateTree(parent.transform, 37, new Vector3(-27f,  5.0f, 0f), treeData, inventoryManager);
-            trees[38] = CreateTree(parent.transform, 38, new Vector3(-25f, 11.0f, 0f), treeData, inventoryManager);
-            trees[39] = CreateTree(parent.transform, 39, new Vector3(-23f, 14.0f, 0f), treeData, inventoryManager);
-            // -- Arvores ESPALHADAS no MIOLO (28 — limpáveis, harvestable) --
-            // Miolo x in [-17,15], y in [-14,15]. Evitar: lago (x[5,31] y[-20,-6]), rio borda leste, montanha.
-            trees[40] = CreateTree(parent.transform, 40, new Vector3(-17f,  1.0f, 0f), treeData, inventoryManager);
-            trees[41] = CreateTree(parent.transform, 41, new Vector3(-14f,  3.0f, 0f), treeData, inventoryManager);
-            trees[42] = CreateTree(parent.transform, 42, new Vector3(-11f,  6.0f, 0f), treeData, inventoryManager);
-            trees[43] = CreateTree(parent.transform, 43, new Vector3( -8f,  2.0f, 0f), treeData, inventoryManager);
-            trees[44] = CreateTree(parent.transform, 44, new Vector3( -5f,  8.0f, 0f), treeData, inventoryManager);
-            trees[45] = CreateTree(parent.transform, 45, new Vector3( -2f,  4.0f, 0f), treeData, inventoryManager);
-            trees[46] = CreateTree(parent.transform, 46, new Vector3(  1f, 11.0f, 0f), treeData, inventoryManager);
-            trees[47] = CreateTree(parent.transform, 47, new Vector3(  5f,  6.0f, 0f), treeData, inventoryManager);
-            trees[48] = CreateTree(parent.transform, 48, new Vector3(  9f, 13.0f, 0f), treeData, inventoryManager);
-            trees[49] = CreateTree(parent.transform, 49, new Vector3( 13f,  8.0f, 0f), treeData, inventoryManager);
-            trees[50] = CreateTree(parent.transform, 50, new Vector3(-15f, -1.0f, 0f), treeData, inventoryManager);
-            trees[51] = CreateTree(parent.transform, 51, new Vector3(-12f, -4.0f, 0f), treeData, inventoryManager);
-            trees[52] = CreateTree(parent.transform, 52, new Vector3( -9f, -7.0f, 0f), treeData, inventoryManager);
-            trees[53] = CreateTree(parent.transform, 53, new Vector3( -6f,-11.0f, 0f), treeData, inventoryManager);
-            trees[54] = CreateTree(parent.transform, 54, new Vector3( -3f, -3.0f, 0f), treeData, inventoryManager);
-            trees[55] = CreateTree(parent.transform, 55, new Vector3(  0f, -8.0f, 0f), treeData, inventoryManager);
-            trees[56] = CreateTree(parent.transform, 56, new Vector3(  4f,-13.0f, 0f), treeData, inventoryManager);
-            trees[57] = CreateTree(parent.transform, 57, new Vector3( -7f, 14.0f, 0f), treeData, inventoryManager);
-            trees[58] = CreateTree(parent.transform, 58, new Vector3( -4f, 10.0f, 0f), treeData, inventoryManager);
-            trees[59] = CreateTree(parent.transform, 59, new Vector3( -1f,  7.0f, 0f), treeData, inventoryManager);
-            trees[60] = CreateTree(parent.transform, 60, new Vector3(  3f,  2.0f, 0f), treeData, inventoryManager);
-            trees[61] = CreateTree(parent.transform, 61, new Vector3(  7f, -5.0f, 0f), treeData, inventoryManager);
-            trees[62] = CreateTree(parent.transform, 62, new Vector3(-13f,  9.0f, 0f), treeData, inventoryManager);
-            trees[63] = CreateTree(parent.transform, 63, new Vector3(-16f, -6.0f, 0f), treeData, inventoryManager);
-            trees[64] = CreateTree(parent.transform, 64, new Vector3( -6f,  0.0f, 0f), treeData, inventoryManager);
-            trees[65] = CreateTree(parent.transform, 65, new Vector3(  2f, -5.0f, 0f), treeData, inventoryManager);
-            trees[66] = CreateTree(parent.transform, 66, new Vector3( 10f,  5.0f, 0f), treeData, inventoryManager);
-            trees[67] = CreateTree(parent.transform, 67, new Vector3( 15f, -2.0f, 0f), treeData, inventoryManager);
+            // Stable IDs survive the visual relayout; positions form irregular forest patches.
+            var positions = FarmDecorationPlanner.PlanFarmTreePositions();
+            var trees = new TreeNode[positions.Count];
+            for (var index = 0; index < trees.Length; index++)
+                trees[index] = CreateTree(parent.transform, index, positions[index], treeData, inventoryManager);
 
             registry.Configure(trees);
             EditorUtility.SetDirty(registry);
@@ -1621,16 +1635,20 @@ namespace CindarsHope.Editor.SceneCreation
             var index = 200;
 
             // -- Borda SUL (y≈-21): x=-30 ate 30, espacadas ~4u. Abaixo da fileira de animais (y-19). --
-            for (var x = -30f; x <= 30f; x += 4f)
+            for (var x = -31f; x <= -24f; x += 3f)
             {
+                // spec_farm_scene_keyart_visual_corrections_v1: pular o trecho ao SUL do lago
+                // (x[4,30]) — senao esta fileira bloqueia o anel andavel recem-aberto entre o lago
+                // (borda sul agora y-18) e a parede do mapa (y-22): "dar a volta no lago".
+                if (x >= 4f && x <= 30f) continue;
                 CreateTree(parent.transform, index++, new Vector3(x, -21f, 0f), treeData, inventoryManager);
             }
 
-            // -- Borda LESTE (x≈31): y=0 ate 16, espacadas ~4u. Pula y[-20,-6]/rio (ja e agua = borda). --
-            for (var y = 0f; y <= 16f; y += 4f)
-            {
-                CreateTree(parent.transform, index++, new Vector3(31f, y, 0f), treeData, inventoryManager);
-            }
+            // spec_farm_scene_keyart_visual_corrections_v1: borda LESTE (x=31) REMOVIDA — plantava
+            // pinheiros DENTRO do footprint da casa (tree em (31,8)/(31,12) caia em House x[24.5,31.5]
+            // y[6,12]) e encostava nos crafts (y=-4) e na estufa, lendo como arvore "dentro" dos
+            // predios. A borda leste ja e delimitada pelo rio/lago + limite do mapa; nao precisa de
+            // treeline. A borda SUL (acima) permanece.
         }
 
         // v7 FASE 3: ~12 pedras no miolo central (x[-17,15] y[-14,15]).
@@ -1647,18 +1665,18 @@ namespace CindarsHope.Editor.SceneCreation
             // 12 pedras no miolo (x[-17,15] y[-14,15]) — evitar lago/rio/construcoes/montanha
             var posPedras = new[]
             {
-                new Vector3(-16f,  5.0f, 0f),
-                new Vector3(-13f, -2.0f, 0f),
-                new Vector3(-10f,  3.0f, 0f),
-                new Vector3( -8f, 12.0f, 0f),
-                new Vector3( -5f, -5.0f, 0f),
-                new Vector3( -2f, -1.0f, 0f),
-                new Vector3(  1f,  9.0f, 0f),
-                new Vector3(  4f,  5.0f, 0f),
-                new Vector3(  7f, -9.0f, 0f),
-                new Vector3( 10f,  1.0f, 0f),
-                new Vector3( 13f, -6.0f, 0f),
-                new Vector3( -4f,  6.0f, 0f),
+                new Vector3(-30.0f, -10.0f, 0f),
+                new Vector3(-27.6f, -10.0f, 0f),
+                new Vector3(-25.2f, -10.0f, 0f),
+                new Vector3(-22.8f, -10.0f, 0f),
+                new Vector3(-20.4f, -10.0f, 0f),
+                new Vector3(-30.0f, -7.8f, 0f),
+                new Vector3(-27.6f, -7.8f, 0f),
+                new Vector3(-25.2f, -7.8f, 0f),
+                new Vector3(-22.8f, -7.8f, 0f),
+                new Vector3(-20.4f, -7.8f, 0f),
+                new Vector3(-30.0f, -5.6f, 0f),
+                new Vector3(-27.6f, -5.6f, 0f),
             };
             foreach (var pos in posPedras)
             {
@@ -1675,16 +1693,16 @@ namespace CindarsHope.Editor.SceneCreation
             // 10 moitas no miolo — IDs distintos dos forage da borda oeste (farm_forage_07..16)
             var posMoitas = new[]
             {
-                new Vector3(-15f,  7.0f, 0f),
-                new Vector3(-11f,  0.0f, 0f),
-                new Vector3( -9f, -3.0f, 0f),
-                new Vector3( -6f,  5.0f, 0f),
-                new Vector3( -3f, 13.0f, 0f),
-                new Vector3(  0f,  3.0f, 0f),
-                new Vector3(  3f, -7.0f, 0f),
-                new Vector3(  6f, 10.0f, 0f),
-                new Vector3( 11f,  4.0f, 0f),
-                new Vector3( 14f,-12.0f, 0f),
+                new Vector3(-25.2f, -5.6f, 0f),
+                new Vector3(-22.8f, -5.6f, 0f),
+                new Vector3(-20.4f, -5.6f, 0f),
+                new Vector3(-30.0f, -3.4f, 0f),
+                new Vector3(-27.6f, -3.4f, 0f),
+                new Vector3(-25.2f, -3.4f, 0f),
+                new Vector3(-22.8f, -3.4f, 0f),
+                new Vector3(-20.4f, -3.4f, 0f),
+                new Vector3(-30.0f, -1.2f, 0f),
+                new Vector3(-27.6f, -1.2f, 0f),
             };
             for (var i = 0; i < posMoitas.Length; i++)
             {
@@ -1695,7 +1713,21 @@ namespace CindarsHope.Editor.SceneCreation
 
         // v5: boost visual das arvores do bosque NO (spec_farm_scene_relayout_v4 §15.3 item 5).
         // Multiplica o TreeScale por este fator para que o bosque fique visivelmente mais denso.
-        private const float TreeScaleBoostV5 = 1.35f;
+        // spec_farm_scene_keyart_visual_corrections_v1: altura-alvo do canopy da arvore em unidades
+        // de mundo (~tiles). A arte nova ja e ~4u nativa; escalamos por esta altura em vez de por um
+        // multiplicador cego, para as arvores lerem como na keyart (nao dominarem o mapa).
+        private const float TreeVisualTargetHeight = 4.6f;
+
+        // spec_farm_scene_keyart_visual_corrections_v1 Fase E (código): a keyart é dominada por
+        // pinheiros no bosque oeste, com macieiras nas clareiras. Ciclo de 8 ponderado em vez de
+        // 1:1:1:1 — pinheiro aparece o dobro das outras especies (bosque oeste = indices 0-39,
+        // onde este peso realmente e visivel); miolo/perimetro seguem o mesmo ciclo por simplicidade
+        // (sem sistema de bioma novo — reusa o indice existente, so muda a tabela).
+        private static readonly string[] TreeSpeciesWeightedCycle =
+        {
+            "tree_pine", "tree_pine", "tree_oak", "tree_pine",
+            "tree_pine", "tree_apple", "tree_pine", "tree_pine"
+        };
 
         private static TreeNode CreateTree(
             Transform parent,
@@ -1704,25 +1736,43 @@ namespace CindarsHope.Editor.SceneCreation
             TreeDataSO treeData,
             InventoryManager inventoryManager)
         {
+            // Fase B: nunca materializar arvore sobre o poligono real de agua (Lake/River) + buffer.
+            if (FarmDecorationPlanner.IsOverWater(new Vector2(position.x, position.y)))
+            {
+                Debug.LogWarning($"CreateTree: TreeNode_{treeIndex:00} at {position} skipped — position is over water.");
+                return null;
+            }
+
             var treeObject = new GameObject($"TreeNode_{treeIndex:00}");
             treeObject.transform.SetParent(parent);
             treeObject.transform.position = position;
-            var treeScaleConfig = AssetDatabase.LoadAssetAtPath<GameScaleConfigSO>(GameScaleConfigPath);
-            var baseTreeScale = treeScaleConfig != null ? treeScaleConfig.TreeScale : 3f;
-            // v5: sprites de arvore MAIORES para o bosque denso NO (boost 1.35x sobre TreeScale).
-            var treeScale = baseTreeScale * TreeScaleBoostV5;
-            treeObject.transform.localScale = new Vector3(treeScale, treeScale, 1f);
 
             var spriteRenderer = treeObject.AddComponent<SpriteRenderer>();
-            // Varia a especie por indice para quebrar a repeticao visual do bosque/miolo.
-            var treeSpeciesNames = new[] { "tree_oak", "tree_pine", "tree_apple", "tree_willow" };
-            var treeSpecies = treeSpeciesNames[treeIndex % treeSpeciesNames.Length];
-            var treeSprite = WorldSpriteLibrary.Tree(treeSpecies);
+            // Varia a especie por indice (ciclo ponderado — pinheiro em dobro, fiel a keyart).
+            var treeSpecies = TreeSpeciesWeightedCycle[treeIndex % TreeSpeciesWeightedCycle.Length];
+            var treeSprite = treeSpecies == "tree_pine" || treeSpecies == "tree_oak"
+                ? GetFarmResourceTreeSprite(treeSpecies) : WorldSpriteLibrary.Tree(treeSpecies);
             spriteRenderer.sprite = treeSprite != null ? treeSprite : GetBuiltinSprite();
             spriteRenderer.color = treeSprite != null ? Color.white : new Color(0.24f, 0.48f, 0.22f);
             spriteRenderer.sortingOrder = 0;
             spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
+
+            // spec_farm_scene_keyart_visual_corrections_v1: a arte nova de arvore ja e grande
+            // nativamente (~4u de altura a 128 PPU). O antigo TreeScale(3) x boost(1.35) = ~4x
+            // produzia arvores de ~15 tiles que engoliam o mapa. Agora escalamos por ALTURA-ALVO
+            // (robusto ao tamanho da arte): canopy ~ TreeVisualTargetHeight tiles, como na keyart.
+            var treeScale = 1f;
+            if (treeSprite != null)
+            {
+                var nativeHeight = treeSprite.rect.size.y / treeSprite.pixelsPerUnit;
+                if (nativeHeight > 0.01f)
+                {
+                    treeScale = (TreeVisualTargetHeight + ((treeIndex * 13) % 9) * 0.19f) / nativeHeight;
+                    if (treeSpecies == "tree_oak") treeScale *= 0.8f;
+                }
+            }
+            treeObject.transform.localScale = new Vector3(treeScale, treeScale, 1f);
 
             if (spriteRenderer.sprite == null)
             {
@@ -1731,7 +1781,11 @@ namespace CindarsHope.Editor.SceneCreation
 
             var collider = treeObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = false;
-            FitBoxColliderToOpaqueSprite(collider, spriteRenderer);
+            // spec_farm_scene_keyart_visual_corrections_v1: collider so no TRONCO (caixa baixa no
+            // centro-base), nao na copa inteira — antes FitBoxColliderToOpaqueSprite cobria toda a
+            // folhagem, entao o jogador esbarrava a metros do tronco e nao conseguia andar por entre
+            // as arvores. Agora a copa e so visual (Y-sort) e a colisao e o tronco.
+            FitTreeTrunkCollider(collider, spriteRenderer);
 
             var treeNode = treeObject.AddComponent<TreeNode>();
             var serializedTree = new SerializedObject(treeNode);
@@ -1740,9 +1794,30 @@ namespace CindarsHope.Editor.SceneCreation
             SetReference(serializedTree, "_spriteRenderer", spriteRenderer);
             serializedTree.ApplyModifiedPropertiesWithoutUndo();
 
-            treeNode.Configure(treeIndex, treeData, inventoryManager, spriteRenderer);
+            // Broadleaf highlights are warmer than the conifers; a farm-local tint balances the meadow palette.
+            var healthyTint = treeSpecies == "tree_pine" ? Color.white : new Color(0.9f, 0.94f, 0.85f);
+            treeNode.Configure(treeIndex, treeData, inventoryManager, spriteRenderer, healthyTint: healthyTint);
             EditorUtility.SetDirty(treeNode);
             return treeNode;
+        }
+
+        private static Sprite GetFarmResourceTreeSprite(string species)
+        {
+            // Persistent sprite slices align the visible trunk with existing resource roots.
+            //32PPU keeps root scales in the existing contract; PNGs and other scenes stay intact.
+            var pine = species == "tree_pine";
+            var path = "Assets/_Game/Art/Generated/World/trees/" + species + "_keyart_v4_resource.asset";
+            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (existing != null) return existing;
+            var source = pine ? WorldSpriteLibrary.Tree("tree_pine_keyart_v4")
+                : WorldSpriteLibrary.Foliage("tree_keyart_v4_01");
+            if (source == null) throw new System.InvalidOperationException("Missing farm resource tree source: " + species);
+            var rect = pine ? new Rect(10f, 23f, 66f, 117f) : new Rect(19f, 8f, 84f, 105f);
+            var pivot = pine ? new Vector2(0.5f, 0f) : new Vector2(40f / 84f, 3f / 105f);
+            var sprite = Sprite.Create(source.texture, rect, pivot, 32f, 0, SpriteMeshType.FullRect);
+            sprite.name = species + "_keyart_v4_resource";
+            AssetDatabase.CreateAsset(sprite, path);
+            return sprite;
         }
 
         private static void FitBoxColliderToOpaqueSprite(BoxCollider2D collider, SpriteRenderer spriteRenderer)
@@ -1763,6 +1838,32 @@ namespace CindarsHope.Editor.SceneCreation
             collider.offset = new Vector2(localBounds.center.x, localBounds.center.y);
         }
 
+        // spec_farm_scene_keyart_visual_corrections_v1: collider de TRONCO para arvore — caixa baixa
+        // e estreita no centro-base do sprite (nao a copa). Valores em unidades LOCAIS (o transform da
+        // arvore aplica o treeScale por cima). Assim o jogador anda colado/atras da arvore e a copa
+        // vira so profundidade visual (Y-sort por pivot).
+        private static void FitTreeTrunkCollider(BoxCollider2D collider, SpriteRenderer spriteRenderer)
+        {
+            if (collider == null || spriteRenderer == null || spriteRenderer.sprite == null)
+            {
+                Debug.LogWarning("FitTreeTrunkCollider: cannot fit collider — collider, renderer, or sprite is null.");
+                return;
+            }
+
+            if (!SpriteOpaqueBoundsUtility.TryGetOpaqueLocalBounds(spriteRenderer.sprite, 0.05f, out var localBounds))
+            {
+                Debug.LogWarning($"FitTreeTrunkCollider: could not determine bounds for '{spriteRenderer.sprite.name}'.");
+                return;
+            }
+
+            // Tronco ~24% da largura da copa, ~16% da altura, encostado na base do sprite.
+            var trunkWidth = localBounds.size.x * 0.24f;
+            var trunkHeight = localBounds.size.y * 0.16f;
+            var baseY = localBounds.center.y - localBounds.size.y * 0.5f;
+            collider.size = new Vector2(trunkWidth, trunkHeight);
+            collider.offset = new Vector2(localBounds.center.x, baseY + trunkHeight * 0.5f);
+        }
+
         private static void FitLakeBlockingCollider(BoxCollider2D collider, SpriteRenderer spriteRenderer)
         {
             const float lakeColliderScale = 0.92f;
@@ -1778,35 +1879,6 @@ namespace CindarsHope.Editor.SceneCreation
             collider.size = new Vector2(fitSize.x, fitSize.y);
         }
 
-        private static void CreateBounds()
-        {
-            var bounds = new GameObject("Bounds");
-            bounds.transform.position = Vector3.zero;
-
-            // v6: Farm bounds 64x44 (origem centrada: x in [-32,32], y in [-22,22]).
-            // A montanha ao norte (faixa y in [18,22]) ja bloqueia; estes bounds sao as bordas externas.
-            CreateBound("Top", bounds.transform, new Vector2(0f, 22f), new Vector2(64f, 1f));
-            CreateBound("Bottom", bounds.transform, new Vector2(0f, -22f), new Vector2(64f, 1f));
-            CreateBound("Left", bounds.transform, new Vector2(-32f, 0f), new Vector2(1f, 44f));
-            CreateBound("Right", bounds.transform, new Vector2(32f, 0f), new Vector2(1f, 44f));
-        }
-
-        private static void CreateBound(string name, Transform parent, Vector2 position, Vector2 size)
-        {
-            var bound = new GameObject(name);
-            bound.transform.SetParent(parent);
-            bound.transform.position = position;
-
-            var collider = bound.AddComponent<BoxCollider2D>();
-            collider.size = size;
-
-            // Bordas naturais (treeline via CreateFarmPerimeterTreeline + montanha via
-            // CreateMountainBarrier + agua a leste) substituem a cerca-trilho visual antiga —
-            // a keyart usa bordas naturais, nao cerca tilada. O BoxCollider2D acima permanece
-            // intacto para TODOS os bounds (Top/Bottom/Left/Right); apenas o SpriteRenderer de
-            // cerca foi removido.
-        }
-
         private static void CreateMainCamera(Transform playerTransform)
         {
             var cameraObject = new GameObject("Main Camera");
@@ -1815,6 +1887,9 @@ namespace CindarsHope.Editor.SceneCreation
 
             var camera = cameraObject.AddComponent<UnityEngine.Camera>();
             camera.orthographic = true;
+            camera.transparencySortMode = TransparencySortMode.CustomAxis;
+            camera.transparencySortAxis = Vector3.up;
+            cameraObject.AddComponent<CindarsHope.Camera.CameraTransparencySort2D>();
             camera.orthographicSize = 8.5f; // calibrate in Play Mode with CameraScaleConfigSO
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.627451f, 0.5772549f, 0.4329412f);
@@ -1854,12 +1929,12 @@ namespace CindarsHope.Editor.SceneCreation
             CreateAnimalHousing(
                 parent.transform, inventoryManager,
                 "Coop_01", "coop_01", AnimalHousingBuildingType.Coop, 4,
-                new Vector3(-22f, -19f, 0f), new Color(0.78f, 0.66f, 0.42f));
+                new Vector3(FarmLevel1LayoutContract.CoopX, FarmLevel1LayoutContract.CoopY, 0f), new Color(0.78f, 0.66f, 0.42f));
 
             CreateAnimalHousing(
                 parent.transform, inventoryManager,
                 "Barn_01", "barn_01", AnimalHousingBuildingType.Barn, 4,
-                new Vector3(-13f, -19f, 0f), new Color(0.62f, 0.34f, 0.28f));
+                new Vector3(FarmLevel1LayoutContract.BarnX, FarmLevel1LayoutContract.BarnY, 0f), new Color(0.62f, 0.34f, 0.28f));
         }
 
         private static void CreateAnimalHousing(
@@ -1882,8 +1957,9 @@ namespace CindarsHope.Editor.SceneCreation
             var housingVisual = new GameObject("Visual");
             housingVisual.transform.SetParent(root.transform);
             housingVisual.transform.localPosition = Vector3.zero;
-            var housingSpriteName = housingType == AnimalHousingBuildingType.Coop ? "coop" : "barn";
-            var housingTargetHeight = housingType == AnimalHousingBuildingType.Coop ? 5f : 7f;
+            var housingSpriteName = housingType == AnimalHousingBuildingType.Coop ? "coop_keyart_v4" : "barn_keyart_v4";
+            var housingTargetHeight = housingType == AnimalHousingBuildingType.Coop
+                ? FarmSceneCompositionContract.CoopVisualTargetHeight : FarmSceneCompositionContract.BarnVisualTargetHeight;
             var housingSr = housingVisual.AddComponent<SpriteRenderer>();
             var housingSprite = WorldSpriteLibrary.Building(housingSpriteName);
             housingSr.sprite = housingSprite != null ? housingSprite : GetBuiltinSprite();
@@ -1893,7 +1969,11 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(housingSr, "World", 0);
             if (housingSprite != null)
             {
-                ApplyUniformBespokeScale(housingVisual.transform, housingSprite, housingTargetHeight);
+                var isCoop = housingType == AnimalHousingBuildingType.Coop;
+                ApplyKnownOpaqueHeightScale(housingVisual.transform, housingSprite, housingTargetHeight,
+                    isCoop ? 91f / 146f : 126f / 166f);
+                AlignSpriteSupport(housingVisual.transform, housingSprite, root.transform.position,
+                    isCoop ? new Vector2(57f, 51f) : new Vector2(63f, 35f));
             }
             else
             {
@@ -1904,8 +1984,24 @@ namespace CindarsHope.Editor.SceneCreation
             col.isTrigger = true;
             col.size = new Vector2(2.2f, 1.8f);
 
+            CreateBuildingBase(root.transform, "SolidBase", new Vector2(0f, 1f),
+                new Vector2(housingType == AnimalHousingBuildingType.Coop ? 3.2f : 4.3f, 1.2f));
+
             var releaseHandler = root.AddComponent<AnimalReleaseHandler>();
             releaseHandler.Configure(housingId, housingType, capacity, null, inventoryManager);
+            var chickenMotion = AssetDatabase.LoadAssetAtPath<CindarsHope.Farm.Animals.AnimalMotionProfileSO>(
+                CindarsHope.Editor.Farm.FarmAnimalMotionAuthoring.ChickenProfilePath);
+            var cowMotion = AssetDatabase.LoadAssetAtPath<CindarsHope.Farm.Animals.AnimalMotionProfileSO>(
+                CindarsHope.Editor.Farm.FarmAnimalMotionAuthoring.CowProfilePath);
+            var sheepMotion = AssetDatabase.LoadAssetAtPath<CindarsHope.Farm.Animals.AnimalMotionProfileSO>(
+                CindarsHope.Editor.Farm.FarmAnimalMotionAuthoring.SheepProfilePath);
+            var goatMotion = AssetDatabase.LoadAssetAtPath<CindarsHope.Farm.Animals.AnimalMotionProfileSO>(
+                CindarsHope.Editor.Farm.FarmAnimalMotionAuthoring.GoatProfilePath);
+            releaseHandler.SetMotionProfiles(chickenMotion, cowMotion, sheepMotion, goatMotion);
+            if (housingType == AnimalHousingBuildingType.Coop)
+                releaseHandler.SetPenBounds(new Vector2(-0.4f, -2.6f), new Vector2(2.2f, -1.0f));
+            else
+                releaseHandler.SetPenBounds(new Vector2(-2.4f, -3.4f), new Vector2(1.1f, -1.3f));
         }
 
         // fable_55: 2 estações de processamento físicas (queijaria/barril) + estufa mínima com 4
@@ -1931,16 +2027,36 @@ namespace CindarsHope.Editor.SceneCreation
                 root.transform, service,
                 "Station_CheesePress", "Queijaria",
                 CindarsHope.Farm.Processing.ProcessingRecipeCatalog.StationCheesePressId,
-                new Vector3(-28f, -19f, 0f), new Color(0.92f, 0.86f, 0.55f));
+                new Vector3(FarmLevel1LayoutContract.ProcessingAX, FarmLevel1LayoutContract.ProcessingAY, 0f), new Color(0.92f, 0.86f, 0.55f));
 
             // Estacao 2 — Barril de Vinho.
             CreateProcessingStation(
                 root.transform, service,
                 "Station_WineBarrel", "Barril de Vinho",
                 CindarsHope.Farm.Processing.ProcessingRecipeCatalog.StationWineBarrelId,
-                new Vector3(-8f, -19f, 0f), new Color(0.55f, 0.18f, 0.22f));
+                new Vector3(FarmLevel1LayoutContract.ProcessingBX, FarmLevel1LayoutContract.ProcessingBY, 0f), new Color(0.55f, 0.18f, 0.22f));
 
             CreateGreenhouse(root.transform, inventoryManager, staminaManager);
+        }
+
+        private static void CreateBuildingBase(Transform parent, string name, Vector2 offset, Vector2 size)
+        {
+            var body = new GameObject(name);
+            body.transform.SetParent(parent, false);
+            body.transform.localPosition = offset;
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                body, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
+            body.AddComponent<BoxCollider2D>().size = size;
+        }
+
+        private static void CreateBuildingBaseWorldSpace(Transform parent, string name, Vector2 worldOffset, Vector2 worldSize)
+        {
+            var scale = parent.lossyScale;
+            if (Mathf.Abs(scale.x) <= 0.0001f || Mathf.Abs(scale.y) <= 0.0001f)
+                throw new System.InvalidOperationException("Cannot create building base under zero scale: " + parent.name);
+            CreateBuildingBase(parent, name,
+                new Vector2(worldOffset.x / scale.x, worldOffset.y / scale.y),
+                new Vector2(worldSize.x / Mathf.Abs(scale.x), worldSize.y / Mathf.Abs(scale.y)));
         }
 
         private static void CreateProcessingStation(
@@ -1959,8 +2075,10 @@ namespace CindarsHope.Editor.SceneCreation
 
             // Cheese hut (queijaria) ou barrel shed (barril de vinho), detectado pelo nome do objeto.
             var isCheeseStation = objectName.Contains("Cheese");
-            var processingSpriteName = isCheeseStation ? "cheese_hut" : "barrel_shed";
-            var sr = obj.AddComponent<SpriteRenderer>();
+            var processingSpriteName = isCheeseStation ? "cheese_shed_keyart_v4" : "wine_shed_keyart_v4";
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(obj.transform, false);
+            var sr = visual.AddComponent<SpriteRenderer>();
             var processingSprite = WorldSpriteLibrary.Building(processingSpriteName);
             sr.sprite = processingSprite != null ? processingSprite : GetBuiltinSprite();
             sr.color = processingSprite != null ? Color.white : bodyColor;
@@ -1969,12 +2087,22 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(sr, "World", 0);
             if (processingSprite != null)
             {
-                ApplyUniformBespokeScale(obj.transform, processingSprite, 5.5f);
+                // Keep the functional root and its trigger at their previous scale.
+                ApplyUniformBespokeScale(obj.transform,
+                    WorldSpriteLibrary.Building(isCheeseStation ? "cheese_hut" : "barrel_shed"), 5.5f);
+                ApplyKnownOpaqueHeightScale(visual.transform, processingSprite,
+                    FarmSceneCompositionContract.SouthProcessingVisualTargetHeight,
+                    isCheeseStation ? 124f / 149f : 128f / 154f);
+                AlignSpriteSupport(visual.transform, processingSprite, obj.transform.position,
+                    isCheeseStation ? new Vector2(54f, 16f) : new Vector2(62f, 16f));
             }
 
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
             col.size = new Vector2(1.4f, 1.4f);
+
+            CreateBuildingBaseWorldSpace(obj.transform, "SolidBase", new Vector2(0f, 0.8f),
+                new Vector2(isCheeseStation ? 3.2f : 3.5f, 1.1f));
 
             var interactable = obj.AddComponent<CindarsHope.Farm.Processing.ProcessingStationInteractable>();
             var serializedInteractable = new SerializedObject(interactable);
@@ -1998,23 +2126,41 @@ namespace CindarsHope.Editor.SceneCreation
 
             var greenhouseRoot = new GameObject("Greenhouse");
             greenhouseRoot.transform.SetParent(parent);
-            // v7: estufa homestead leste (spec_farm_scene_relayout_v4 §15.5 v7).
-            // Coord 64x44: centro (24, 10).
-            greenhouseRoot.transform.position = new Vector3(24f, 10f, 0f);
+            // spec_farm_scene_keyart_visual_corrections_v1: a posicao (30.5,3) ficava espremida entre a
+            // casa e a borda leste do mapa (x=32) E atras dos pinheiros do perimetro leste — "num lugar
+            // que nao faz sentido". Nova posicao: ao lado OESTE da casa, na faixa limpa entre o rio
+            // (borda direita ~x17.5 em y8) e a casa (borda esquerda x24.5), mesma latitude da casa —
+            // le como "casa + estufa" voltadas pro campo. Footprint sincronizado em
+            // FarmSceneSpatialContract.Greenhouse (x[19,24] y[5.75,10.25]).
+            greenhouseRoot.transform.position = new Vector3(23.2f, 12.8f, 0f);
 
             // Piso/estrutura da estufa (visual placeholder translúcido).
             var floor = new GameObject("GreenhouseFloor");
             floor.transform.SetParent(greenhouseRoot.transform);
-            floor.transform.localPosition = Vector3.zero;
+            floor.transform.localPosition = new Vector3(0f, -2f, 0f);
             floor.transform.localScale = new Vector3(5f, 4f, 1f);
             var floorSr = floor.AddComponent<SpriteRenderer>();
-            var greenhouseSprite = WorldSpriteLibrary.Building("greenhouse");
+            var greenhouseSprite = WorldSpriteLibrary.Building("greenhouse_keyart_v4");
             floorSr.sprite = greenhouseSprite != null ? greenhouseSprite : GetBuiltinSprite();
             floorSr.color = greenhouseSprite != null ? Color.white : new Color(0.70f, 0.90f, 0.80f, 0.45f);
             floorSr.sortingOrder = 0;
             floorSr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(floorSr, "Ground", floorSr.sortingOrder);
-            ApplyUniformBespokeScale(floor.transform, greenhouseSprite, 5.5f);
+            TrySetSortingLayer(floorSr, "World", floorSr.sortingOrder);
+            ApplyKnownOpaqueHeightScale(floor.transform, greenhouseSprite,
+                FarmSceneCompositionContract.GreenhouseVisualTargetHeight, 142f / 158f);
+            AlignSpriteSupport(floor.transform, greenhouseSprite, new Vector3(22.8f, 10.2f, 0f), new Vector2(58f, 10f));
+
+            // Physical bases and the tilling exception share the same exact usable interior.
+            var interior = FarmSettlementPhysicsContract.GreenhouseInteriorBounds;
+            var thickness = FarmSettlementPhysicsContract.GreenhouseSideBaseThickness;
+            var sideHeight = interior.height + thickness;
+            var sideY = interior.yMin + sideHeight * 0.5f;
+            CreateContractSolidBase(greenhouseRoot.transform, "SolidWestBase", new FarmSolidRect("GreenhouseWest",
+                new Vector2(interior.xMin - thickness * 0.5f, sideY), new Vector2(thickness, sideHeight)));
+            CreateContractSolidBase(greenhouseRoot.transform, "SolidEastBase", new FarmSolidRect("GreenhouseEast",
+                new Vector2(interior.xMax + thickness * 0.5f, sideY), new Vector2(thickness, sideHeight)));
+            CreateContractSolidBase(greenhouseRoot.transform, "SolidNorthBase", new FarmSolidRect("GreenhouseNorth",
+                new Vector2(interior.center.x, interior.yMax + thickness * 0.5f), new Vector2(interior.width + thickness, thickness)));
 
             const int greenhouseBaseIndex = 200;
             var plotIds = new string[4];
@@ -2071,6 +2217,38 @@ namespace CindarsHope.Editor.SceneCreation
             if (nativeHeight <= 0.0001f) return;
             var scale = targetHeightUnits / nativeHeight;
             target.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        private static void ApplyUniformOpaqueHeightScale(Transform target, Sprite sprite, float targetWorldHeight)
+        {
+            if (target == null || sprite == null) return;
+            if (!SpriteOpaqueBoundsUtility.TryGetOpaqueLocalBounds(sprite, 0.05f, out var opaqueBounds) ||
+                opaqueBounds.size.y <= 0.0001f)
+                throw new System.InvalidOperationException("Cannot measure visible building pixels: " + sprite.name);
+            var parentScale = target.parent != null ? Mathf.Abs(target.parent.lossyScale.y) : 1f;
+            if (parentScale <= 0.0001f) throw new System.InvalidOperationException("Invalid building parent scale: " + target.name);
+            var scale = targetWorldHeight / (opaqueBounds.size.y * parentScale);
+            target.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        private static void CreateContractSolidBase(Transform parent, string name, FarmSolidRect body)
+        {
+            var localCenter = parent.InverseTransformPoint(body.Center);
+            CreateBuildingBase(parent, name, localCenter, new Vector2(body.Size.x / parent.lossyScale.x, body.Size.y / parent.lossyScale.y));
+        }
+
+        private static void ApplyKnownOpaqueHeightScale(Transform visual, Sprite sprite, float worldHeight, float opaqueRatio)
+        {
+            // Ratios are measured from the authored PNG alpha, independent of runtime Read/Write.
+            var scale = worldHeight / (sprite.bounds.size.y * opaqueRatio);
+            visual.localScale = new Vector3(scale / visual.parent.lossyScale.x, scale / visual.parent.lossyScale.y, 1f);
+        }
+
+        private static void AlignSpriteSupport(Transform visual, Sprite sprite, Vector3 worldSupport, Vector2 sourcePixelSupport)
+        {
+            var localSupport = sprite.bounds.min + new Vector3(sourcePixelSupport.x / sprite.pixelsPerUnit,
+                sourcePixelSupport.y / sprite.pixelsPerUnit, 0f);
+            visual.position = worldSupport - Vector3.Scale(localSupport, visual.lossyScale);
         }
 
         private static void CreateSceneRuntimeInstaller(
@@ -2140,8 +2318,8 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var entrance = new GameObject("CaveEntrance");
             // v7: canto NO da montanha embutida — MAIOR ~5x4 (spec_farm_scene_relayout_v4 §15.5 v7).
-            // Coord 64x44: (-28, 18.5).
-            entrance.transform.position = new Vector3(-28f, 18.5f, 0f);
+            // Exterior cave anchor follows FarmLevel1LayoutContract.
+            entrance.transform.position = new Vector3(FarmLevel1LayoutContract.CaveEntranceX, FarmLevel1LayoutContract.CaveEntranceY, 0f);
 
             // Sprite bespoke unico (substitui RockFrame+CaveMouth esticados). Escala aplicada num
             // child "Visual" (entrance fica em scale 1) para nao afetar o BoxCollider2D/trigger do root.
@@ -2157,7 +2335,8 @@ namespace CindarsHope.Editor.SceneCreation
             TrySetSortingLayer(caveRenderer, "World", caveRenderer.sortingOrder);
             if (caveSprite != null)
             {
-                ApplyUniformBespokeScale(caveVisual.transform, caveSprite, 4.5f);
+                ApplyKnownOpaqueHeightScale(caveVisual.transform, caveSprite, FarmEntrancePhysicsContract.CaveOpaqueHeight,
+                    FarmEntrancePhysicsContract.CaveOpaqueHeightPixels / FarmEntrancePhysicsContract.CaveCanvasHeightPixels);
             }
             else
             {
@@ -2166,7 +2345,21 @@ namespace CindarsHope.Editor.SceneCreation
 
             var trigger = entrance.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
-            trigger.size = new Vector2(4f, 3.5f); // v6: trigger proporcional a boca maior
+            var region = FarmEntrancePhysicsContract.CaveInteractionTrigger;
+            trigger.offset = region.Center - (Vector2)entrance.transform.position;
+            trigger.size = region.Size;
+
+            foreach (var measuredBase in FarmEntrancePhysicsContract.CaveSideBases)
+            {
+                var body = new GameObject("Solid_" + measuredBase.Id);
+                body.transform.SetParent(entrance.transform, false);
+                body.transform.position = measuredBase.Center;
+                CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                    body, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
+                var bodyCollider = body.AddComponent<BoxCollider2D>();
+                bodyCollider.isTrigger = false;
+                bodyCollider.size = measuredBase.Size;
+            }
 
             var interactable = entrance.AddComponent<CaveEntranceInteractable>();
             var serializedInteractable = new SerializedObject(interactable);
@@ -2186,19 +2379,29 @@ namespace CindarsHope.Editor.SceneCreation
             // v5: mural de contratos perto da caverna NO (spec_farm_scene_relayout_v4 §15.2 v5).
             // Coord 56x40: (-21, 15).
             // v7: mural de contratos perto da caverna NO (spec_farm_scene_relayout_v4 §15.5 v7).
-            // Coord 64x44: (-22, 16) — junto a entrada da caverna a (-28,18.5).
-            board.transform.position = new Vector3(-22f, 16f, 0f);
+            // The board occupies the east side of the canonical cave clearing.
+            board.transform.position = new Vector3(FarmLevel1LayoutContract.CaveBoardX, FarmLevel1LayoutContract.CaveBoardY, 0f);
 
-            // TODO arte: quadro do Zrix (contract board) — sem match na biblioteca de mundo atual.
-            var sign = board.AddComponent<SpriteRenderer>();
-            sign.sprite = GetBuiltinSprite();
-            sign.color = new Color(0.30f, 0.22f, 0.42f); // draconato-purple board
-            sign.sortingOrder = 2;
-            TrySetSortingLayer(sign, "Roof", sign.sortingOrder);
             if (!ScaleProfileLibrary.AttachApplicator(board, EntityScaleCategory.ContractBoard))
             {
                 board.transform.localScale = new Vector3(0.9f, 1.1f, 1f);
             }
+
+            var visual = CreateVisualRoot(board.transform, "Visual", Vector3.zero);
+            var sign = visual.gameObject.AddComponent<SpriteRenderer>();
+            var boardSprite = WorldSpriteLibrary.Prop("notice_board_keyart_v1");
+            if (boardSprite == null)
+                throw new System.InvalidOperationException("Farm contract board sprite is missing.");
+            sign.sprite = boardSprite;
+            sign.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(sign, "World", 0);
+            // Measured alpha support in the approved1254px canvas; retain the functional root scale.
+            var visualScale = 3.51f / (boardSprite.bounds.size.y * (1182f / 1254f));
+            var support = boardSprite.bounds.min + new Vector3(boardSprite.bounds.size.x * (627.5f / 1254f),
+                boardSprite.bounds.size.y * (186f / 1254f), 0f);
+            visual.localScale = new Vector3(visualScale / board.transform.lossyScale.x,
+                visualScale / board.transform.lossyScale.y, 1f);
+            visual.position = board.transform.position - support * visualScale;
 
             var trigger = board.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
@@ -2381,6 +2584,8 @@ namespace CindarsHope.Editor.SceneCreation
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
             col.size = size;
+            foreach (var debugRenderer in obj.GetComponentsInChildren<Renderer>())
+                debugRenderer.enabled = false;
         }
 
         private static void CreateExpansionBorder(Transform parent, string name, Vector3 localPos, Vector3 localScale)
@@ -2405,7 +2610,7 @@ namespace CindarsHope.Editor.SceneCreation
             // Coord 64x44: (-31, 6).
             CreateRockResource(parent.transform, inventoryManager, new Vector3(-31f, 6f, 0f));
             // v7: TreeResource_01 absorvido pelo bosque oeste (posicionado dentro do cluster).
-            CreateTreeResource(parent.transform, inventoryManager, new Vector3(-28f, 5f, 0f));
+            CreateTreeResource(parent.transform, inventoryManager, new Vector3(-30f, 14f, 0f));
             // LakeFishing: FishingSpot at (7.8, -2.8) already implements IInteractable (prompt: "Pescar")
             // No additional FarmResourceInteractable needed for the lake.
         }
@@ -2438,6 +2643,14 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateForagePoint(Transform parent, string spawnId, Vector3 position)
         {
+            // Fase B (spec_farm_scene_keyart_visual_corrections_v1): nunca materializar decoracao
+            // (moita/mato) sobre o poligono real de agua (Lake/River) + buffer.
+            if (FarmDecorationPlanner.IsOverWater(new Vector2(position.x, position.y)))
+            {
+                Debug.LogWarning($"CreateForagePoint: {spawnId} at {position} skipped — position is over water.");
+                return;
+            }
+
             var obj = new GameObject($"ForagePoint_{spawnId}");
             obj.transform.SetParent(parent);
             obj.transform.position = position;
@@ -2485,9 +2698,10 @@ namespace CindarsHope.Editor.SceneCreation
         private static void CreateShippingBin()
         {
             var obj = new GameObject("ShippingBin_farm_shipping_bin_01");
-            // v7: homestead leste (spec_farm_scene_relayout_v4 §15.5 v7).
-            // Coord 64x44: (28, 4).
-            obj.transform.position = new Vector3(28f, 4f, 0f);
+            // spec_farm_scene_keyart_visual_corrections_v1: (28,4) ficava a 2u da porta da casa
+            // (entrada sul em ~(28,6)), bloqueando a entrada — movido para o patio sudoeste, longe
+            // da porta e da estufa (21.5,8), perto do SellPoint (24,5). Coord 64x44: (24, 1).
+            obj.transform.position = new Vector3(9.6f, 6f, 0f);
             CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
                 obj, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.Interactable);
             if (!ScaleProfileLibrary.AttachApplicator(obj, EntityScaleCategory.ShippingBin))
@@ -2495,22 +2709,32 @@ namespace CindarsHope.Editor.SceneCreation
                 obj.transform.localScale = new Vector3(1.4f, 1.1f, 1f);
             }
 
-            var sr = obj.AddComponent<SpriteRenderer>();
             var shippingBinSprite = WorldSpriteLibrary.Prop("shipping_bin");
+            var visual = obj;
+            if (shippingBinSprite != null)
+            {
+                visual = new GameObject("Visual");
+                visual.transform.SetParent(obj.transform, false);
+                float rootScale = obj.transform.lossyScale.y;
+                if (float.IsNaN(rootScale) || float.IsInfinity(rootScale) || rootScale <= 0f)
+                {
+                    throw new System.InvalidOperationException($"CreateMvpFarmScene: ShippingBin '{obj.name}' " +
+                                                               $"tem escala raiz invalida ({rootScale}).");
+                }
+                // O perfil reaplica somente a raiz no Awake; a compensacao do filho permanece valida.
+                ApplyUniformBespokeScale(visual.transform, shippingBinSprite, ShippingBinVisualTargetHeight / rootScale);
+            }
+            var sr = visual.AddComponent<SpriteRenderer>();
             sr.sprite = shippingBinSprite != null ? shippingBinSprite : GetBuiltinSprite();
             sr.color = shippingBinSprite != null ? Color.white : new Color(0.78f, 0.58f, 0.22f);
             sr.sortingOrder = 0;
             sr.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(sr, "World", 0);
-            if (shippingBinSprite != null)
-            {
-                ApplyUniformBespokeScale(obj.transform, shippingBinSprite, 2f);
-            }
-
             var col = obj.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
             col.size = new Vector2(1.3f, 1.1f);
 
+            CreateContractSolidBase(obj.transform, "SolidShippingCounter", FarmSettlementPhysicsContract.ShippingCounter);
             var interactable = obj.AddComponent<CindarsHope.Farm.Shipping.ShippingBinInteractable>();
             var serializedI = new SerializedObject(interactable);
             serializedI.FindProperty("_interactionPrompt").stringValue = "Depositar para envio";
@@ -2580,6 +2804,14 @@ namespace CindarsHope.Editor.SceneCreation
 
         private static void CreateRockResource(Transform parent, InventoryManager inventoryManager, Vector3 position)
         {
+            // Fase B (spec_farm_scene_keyart_visual_corrections_v1): nunca materializar decoracao
+            // (pedra) sobre o poligono real de agua (Lake/River) + buffer.
+            if (FarmDecorationPlanner.IsOverWater(new Vector2(position.x, position.y)))
+            {
+                Debug.LogWarning($"CreateRockResource: at {position} skipped — position is over water.");
+                return;
+            }
+
             // Mesmo padrão de CreateTreeResource: obj/collider/AttachApplicator intocados; sprite visual
             // num child "Visual" reposicionado pela base (props/ agora importa com pivot BottomCenter).
             var obj = new GameObject("RockResource_01");
@@ -2650,13 +2882,21 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var obj = new GameObject("FarmEvolutionBoard");
             // v7 Coord 64x44: (30, 4) — homestead leste (spec_farm_scene_relayout_v4 §15.5 v7).
-            obj.transform.position = new Vector3(30f, 4f, 0f);
-            obj.transform.localScale = new Vector3(1.1f, 1.4f, 1f);
+            obj.transform.position = new Vector3(FarmLevel1LayoutContract.EvolutionBoardX, FarmLevel1LayoutContract.EvolutionBoardY, 0f);
+            obj.transform.localScale = Vector3.one;
 
-            // TODO arte: quadro de evolucoes — sem match na biblioteca de mundo atual.
+            // Keep the interaction root; the measured reference board is a separate visual.
             var sr = obj.AddComponent<SpriteRenderer>();
             sr.sprite = GetBuiltinSprite();
-            sr.color = new Color(0.55f, 0.38f, 0.22f);
+            sr.enabled = false;
+            var sign = CreateVisualRoot(obj.transform, "Visual_EvolutionSign", Vector3.zero);
+            var signSprite = WorldSpriteLibrary.Prop("noticeboard_keyart_v4");
+            var signRenderer = sign.gameObject.AddComponent<SpriteRenderer>();
+            signRenderer.sprite = signSprite;
+            signRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(signRenderer, "World", 0);
+            ApplyKnownOpaqueHeightScale(sign, signSprite, 2.85f, 52f / 69f);
+            AlignSpriteSupport(sign, signSprite, obj.transform.position, new Vector2(39f, 8f));
             sr.sortingOrder = 0;
             sr.spriteSortPoint = SpriteSortPoint.Pivot;
             TrySetSortingLayer(sr, "World", 0);
@@ -2665,6 +2905,7 @@ namespace CindarsHope.Editor.SceneCreation
             col.isTrigger = true;
             col.size = new Vector2(1.2f, 1.6f);
 
+            CreateContractSolidBase(obj.transform, "SolidEvolutionBoard", FarmSettlementPhysicsContract.EvolutionBoard);
             obj.AddComponent<FarmEvolutionBoardInteractable>();
             EditorUtility.SetDirty(obj);
         }
@@ -2676,25 +2917,7 @@ namespace CindarsHope.Editor.SceneCreation
             var root = new GameObject("MountainBarrier");
             root.transform.position = new Vector3(0f, 20f, 0f); // centro da faixa y[18,22]
 
-            // Colisao solida na base da montanha (nao e trigger — bloqueia o jogador em y >= 18).
-            var barrier = new GameObject("MountainCollider");
-            barrier.transform.SetParent(root.transform);
-            barrier.transform.localPosition = Vector3.zero;
-            var col = barrier.AddComponent<BoxCollider2D>();
-            col.isTrigger = false;
-            col.size = new Vector2(64f, 4f);
-
-            // Muralha de rocha de verdade (substitui a faixa chapada de ground_cliff_rock que lia
-            // como estrada + o MountainBackdrop builtin). Tile ground_cliff_wall cobre y[17,22]
-            // (layer "Cliff", sortingOrder 2). MountainCollider acima ja bloqueia (y[18,22]) — a
-            // rocha visual pode descer um pouco mais que o collider (borda mais alta/imponente,
-            // alinhada a keyart). Isto e puramente visual.
-            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Cliff", 2, "ground_cliff_wall",
-                new Vector2(0f, 19.5f), new Vector2(64f, 5f));
-
-            // Transicao grama->rocha na borda sul da montanha, y[16,17] (layer "CliffTop").
-            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "CliffTop", 2, "ground_cliff_top",
-                new Vector2(0f, 16.5f), new Vector2(64f, 1f));
+            FarmLandscapeVisualComposer.CreateNorthCliff(root.transform);
         }
 
         // spec_farm_scene_relayout_v4 v7: Rio BORDA LESTE — nascente (22,18) → borda leste → lago SE.
@@ -2705,18 +2928,28 @@ namespace CindarsHope.Editor.SceneCreation
         private static void CreateRiverAndBridge()
         {
             // Cor de agua v7 — azul suave tipo Stardew.
-            var waterColor   = new Color(0.42f, 0.62f, 0.85f, 0.80f);
-            var waterColorSr = new Color(0.42f, 0.62f, 0.85f, 0.72f); // um pouco mais translucido p/ visuais
-
             var root = new GameObject("RiverAndBridge");
             root.transform.position = Vector3.zero;
+            // spec_farm_scene_keyart_visual_corrections_v1: o rio passa CONTINUO sob a ponte (agua,
+            // como um rio de verdade — nada de barro no vao). A colisao continua com um corredor
+            // (RiverAbove/BelowBridgeCollisionPath) para o jogador cruzar, e o SPRITE da ponte cobre
+            // esse corredor: o jogador anda sobre o deck de madeira, com a agua correndo por baixo.
+            PaintWaterFootprint(root.transform, FarmSceneSpatialContract.River);
+            PaintWaterFootprint(root.transform, FarmSceneSpatialContract.Lake);
+            FarmLandscapeVisualComposer.CreateWaterBank(root.transform, FarmSceneSpatialContract.Lake);
+            FarmLandscapeVisualComposer.CreateWaterBank(root.transform, FarmSceneSpatialContract.River);
+            var waterfall = CreateVisualRoot(root.transform, "Visual_NorthWaterfall", new Vector3(28.5f, 19.5f, 0f));
+            var waterfallSprite = WorldSpriteLibrary.Prop("waterfall_keyart_v4");
+            var waterfallRenderer = waterfall.gameObject.AddComponent<SpriteRenderer>();
+            waterfallRenderer.sprite = waterfallSprite;
+            waterfallRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            waterfallRenderer.sortingOrder = 5;
+            TrySetSortingLayer(waterfallRenderer, "Ground", 5);
+            ApplyKnownOpaqueHeightScale(waterfall, waterfallSprite, 6f, 109f / 125f);
+            AlignSpriteSupport(waterfall, waterfallSprite, new Vector3(28.5f, 20f, 0f), new Vector2(40f, 43f));
 
             // ── Acude / Nascente v7 — (22,18) na base da montanha norte ──────────────────────────
             // Largura levemente maior que os segmentos do rio (nascente = bacia mais aberta).
-            CreateRiverSegment(root.transform, "Acude_Nascente",
-                new Vector3(16f, 18f, 0f),
-                new Vector2(5f, 4f),
-                waterColor);
 
             // ── Segmentos do rio (rota v7 — borda leste, NUNCA cruza o miolo) ───────────────────
             // PONTE v7 em (21,3): vao sem colisor y∈(2,4) para o jogador atravessar a pe.
@@ -2724,70 +2957,52 @@ namespace CindarsHope.Editor.SceneCreation
             // Largura alargada de 1.8 → 4.0 (rio de verdade, a ponte deixa de "flutuar" sobre um fio dagua).
 
             // Seg_N v7: (22,18)→(21,8). x≈21.5, y in [8,18]. COM colisor.
-            CreateRiverSegment(root.transform, "RiverSeg_N",
-                new Vector3(15.5f, 13f, 0f),
-                new Vector2(4f, 10f),
-                waterColor);
 
             // Seg_C_Upper v7: acima da ponte. x≈21, y in [4,8]. COM colisor.
-            CreateRiverSegment(root.transform, "RiverSeg_C",
-                new Vector3(15f, 6f, 0f),
-                new Vector2(4f, 4f),
-                waterColor);
 
             // Vao da ponte v7: agua VISUAL sob a ponte, SEM colisor (passagem livre). x≈21, y in [2,4].
-            CreateRiverSegment(root.transform, "RiverCrossing_Bridge",
-                new Vector3(15f, 3f, 0f),
-                new Vector2(4f, 2f),
-                waterColor,
-                withCollider: false);
 
             // Seg_C_Lower v7: abaixo da ponte. x≈20, y in [-2,2]. COM colisor.
-            CreateRiverSegment(root.transform, "RiverSeg_S",
-                new Vector3(14f, 0f, 0f),
-                new Vector2(4f, 4f),
-                waterColor);
 
             // Seg_Lower2 v7: x≈19.5, y in [-8,-2]. COM colisor.
-            CreateRiverSegment(root.transform, "RiverSeg_Lower2",
-                new Vector3(13.5f, -5f, 0f),
-                new Vector2(4f, 6f),
-                waterColor);
 
             // Seg_Delta v7: foz (19,-8)→borda N do lago (~(19,-6)). x≈19, y in [-8,-6]. COM colisor.
             // Funde na borda N do lago — sem terminar no nada.
-            CreateRiverSegment(root.transform, "RiverSeg_Delta",
-                new Vector3(13f, -7f, 0f),
-                new Vector2(4f, 2f),
-                waterColor);
 
             // ── Ponte v7 ─────────────────────────────────────────────────────────────────────────
             // Centro v7: (21,3); footprint ~4.6×2 (alargado para cobrir o rio agora com 4.0 de largura
             // + margem/shore, sem flutuar sobre as bordas); sortingOrder superior ao rio.
             var bridge = new GameObject("Bridge_01");
             bridge.transform.SetParent(root.transform);
-            bridge.transform.position = new Vector3(15f, 3f, 0f);
-            bridge.transform.localScale = new Vector3(4.6f, 2f, 1f);
-            var bridgeSr = bridge.AddComponent<SpriteRenderer>();
-            var bridgeSprite = WorldSpriteLibrary.Prop("bridge");
+            bridge.transform.position = new Vector3(27f, 3f, 0f);
+            bridge.transform.localScale = FarmSceneCompositionContract.BridgeVisualLocalScale;
+            var bridgeVisual = CreateVisualRoot(bridge.transform, "Visual", Vector3.zero);
+            var bridgeSr = bridgeVisual.gameObject.AddComponent<SpriteRenderer>();
+            const string bridgeAssetPath = "Assets/_Game/Art/Generated/World/props/bridge_keyart_v3.png";
+            if (AssetImporter.GetAtPath(bridgeAssetPath) is TextureImporter bridgeImporter && bridgeImporter.maxTextureSize < 4096)
+            {
+                bridgeImporter.maxTextureSize = 4096;
+                bridgeImporter.SaveAndReimport();
+            }
+            var bridgeSprite = WorldSpriteLibrary.Prop("bridge_keyart_v3");
             bridgeSr.sprite = bridgeSprite != null ? bridgeSprite : GetBuiltinSprite();
             bridgeSr.color = bridgeSprite != null ? Color.white : new Color(0.68f, 0.52f, 0.32f); // madeira clara
-            bridgeSr.sortingOrder = 0;
+            bridgeSr.sortingOrder = 5;
             bridgeSr.spriteSortPoint = SpriteSortPoint.Pivot;
-            TrySetSortingLayer(bridgeSr, "World", 0);
-            // Ponte cobre o vao sem colisor (2u x 3u ja definido acima) — mantido esticado para
-            // cobrir exatamente a largura/altura do vao do rio, sem child Visual (sem collider aqui).
+            TrySetSortingLayer(bridgeSr, "Ground", 5);
+            if (bridgeSprite != null)
+            {
+                if (!SpriteOpaqueBoundsUtility.TryGetOpaqueLocalBounds(bridgeSprite, 0.05f, out var opaqueBridge))
+                    throw new System.InvalidOperationException("Cannot measure keyart bridge alpha.");
+                var scale = 5.1f / (bridgeSprite.bounds.size.x * (94f / 105f));
+                bridgeVisual.localScale = new Vector3(scale / bridge.transform.lossyScale.x,
+                    scale / bridge.transform.lossyScale.y, 1f);
+                AlignSpriteSupport(bridgeVisual, bridgeSprite, new Vector3(27f, 2.5f, 0f), new Vector2(53f, 29f));
+            }
+            // The root retains its spatial anchor; the child carries only deck alignment and drawing.
 
             // ── Lago organico SE v7 (~26x14) ─────────────────────────────────────────────────────
             // Centro v7: (18,-13). spans x[5,31] y[-20,-6]; foz do rio funde na borda N (~19,-6).
-            CreateLakeBody(root.transform, "LakeBody_Main",
-                new Vector3(18f, -13f, 0f), new Vector3(20f, 10f, 1f), waterColorSr, -2);
-            CreateLakeBody(root.transform, "LakeBody_NE",
-                new Vector3(26f, -9f, 0f), new Vector3(10f, 6f, 1f), waterColorSr, -2); // Borda NE
-            CreateLakeBody(root.transform, "LakeBody_N",
-                new Vector3(18f, -7f, 0f), new Vector3(16f, 4f, 1f), waterColorSr, -2); // Borda N — funde com foz do rio
-            CreateLakeBody(root.transform, "LakeBody_SE",
-                new Vector3(24f, -17f, 0f), new Vector3(14f, 6f, 1f), waterColorSr, -2);
         }
 
         // Caminhos de terra ligando os marcos da fazenda — antes so grama pelada entre predios/crafts
@@ -2799,66 +3014,108 @@ namespace CindarsHope.Editor.SceneCreation
             var root = new GameObject("FarmPaths");
             root.transform.position = Vector3.zero;
 
-            // Homestead (spawn ~24,3) <-> ponte (21,3): faixa horizontal y≈3, x de 18 a 26.
-            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
-                new Vector2(22f, 3f), new Vector2(8f, 3f));
+            foreach (var polygon in FarmDecorationPlanner.AuthoredPaths)
+                PaintPath(root.transform, polygon);
+            // Backdrop continuation only: the town portal and map wall remain unchanged.
+            PaintPath(root.transform, new[] { new Vector2(29f, 2f), new Vector2(36f, 2f), new Vector2(36f, 4f), new Vector2(29f, 4f) });
+            FarmPathPalette.FinishEdges(root.transform.Find("VisualPathGrid/Path").GetComponent<UnityEngine.Tilemaps.Tilemap>());
 
-            // Homestead <-> Fonte da Anya (-24,4) e caverna (-28,18): faixa horizontal larga no
-            // miolo, y≈2..4, x de -28 a 20.
-            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
-                new Vector2(-4f, 3f), new Vector2(48f, 2f));
-
-            // Miolo <-> lago (18,-13): faixa vertical x≈2, y de -12 a 2.
-            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
-                new Vector2(2f, -5f), new Vector2(3f, 14f));
-
-            // Miolo <-> fileira sul de animais (y-19): faixa vertical x≈-18, y de -18 a 0.
-            WorldTilemapGround.PaintTile(root.transform, "WorldGrid", "Path", 2, "ground_path_dirt",
-                new Vector2(-18f, -9f), new Vector2(3f, 18f));
         }
 
-        // Corpo de lago — agua real via Tilemap (WorldTilemapGround.PaintWater), OPACA, sem
-        // SpriteRenderer esticado nem tint alpha. "color" e "order" preservados na assinatura por
-        // compatibilidade dos chamadores (nao usados — a tile de agua e pintada tal como e; a
-        // profundidade e decidida por Y-sort/sortingOrder do layer Water, nao por overrides por-corpo).
-        // Sem collider (mantido — lago nao bloqueava antes).
-        private static void CreateLakeBody(Transform parent, string name, Vector3 pos, Vector3 scale, Color color, int order)
+        private static void PaintWaterFootprint(Transform parent, string footprintId)
         {
-            _ = name; _ = color; _ = order;
-            // Margem de areia (Shore) ANTES da agua — o rect expandido pinta a borda, a agua
-            // pintada em seguida cobre o miolo e a areia so fica visivel na faixa externa.
-            WorldTilemapGround.PaintShoreRing(parent, "WorldGrid", "ground_sand_shore",
-                new Vector2(pos.x, pos.y), new Vector2(scale.x, scale.y), ringUnits: 1f);
-            WorldTilemapGround.PaintWater(parent, "WorldGrid", new Vector2(pos.x, pos.y), new Vector2(scale.x, scale.y));
+            if (!FarmSceneSpatialContract.TryGet(footprintId, out var footprint))
+                throw new System.InvalidOperationException("Farm terrain footprint not found: " + footprintId);
+
+            WorldTilemapGround.PaintTransitionRing(parent, "WorldGrid", "WaterTransition", 2, footprint.Polygon,
+                WorldTilemapGround.TerrainTransitionKind.WaterToRock);
+            WorldTilemapGround.PaintPolygon(parent, "WorldGrid", "Water", 3, "ground_water", footprint.Polygon);
+            TintFarmTerrain(parent, "Water", new Color(0.29f, 0.54f, 0.51f));
+            TintFarmTerrain(parent, "WaterTransition", new Color(0.68f, 0.70f, 0.60f, 0f));
+            FarmLandscapeVisualComposer.ApplyCalmWater(parent);
         }
 
-        // waterColor: nao usado mais (agua real via Tilemap nao leva tint) — preservado na assinatura
-        // por compatibilidade dos chamadores.
-        // withCollider: false = água apenas VISUAL (sob a ponte) — não bloqueia o jogador.
-        private static void CreateRiverSegment(Transform parent, string segmentName, Vector3 position, Vector2 colliderSize,
-            Color waterColor = default, bool withCollider = true)
+        private static void PaintWaterPolygon(Transform parent, IReadOnlyList<Vector2> polygon)
         {
-            _ = waterColor;
+            WorldTilemapGround.PaintTransitionRing(parent, "WorldGrid", "WaterTransition", 2, polygon,
+                WorldTilemapGround.TerrainTransitionKind.WaterToRock);
+            WorldTilemapGround.PaintPolygon(parent, "WorldGrid", "Water", 3, "ground_water", polygon);
+        }
 
-            // Margem de areia (Shore) ANTES da agua — mesmo padrao de CreateLakeBody.
-            WorldTilemapGround.PaintShoreRing(parent, "WorldGrid", "ground_sand_shore",
-                new Vector2(position.x, position.y), colliderSize, ringUnits: 1f);
-
-            // Agua real (tile) cobrindo o footprint do segmento — substitui o SpriteRenderer esticado.
-            WorldTilemapGround.PaintWater(parent, "WorldGrid", new Vector2(position.x, position.y), colliderSize);
-
-            // Colisao solida (água bloqueia) — EXCETO no vão da ponte (withCollider:false).
-            // O footprint do collider deve casar o retangulo pintado; sem sprite, usa col.size direto
-            // (sem depender de localScale, que agora fica Vector3.one).
-            if (withCollider)
+        private static void PaintPath(Transform parent, IReadOnlyList<Vector2> polygon)
+        {
+            const float visualCellSize = 0.125f;
+            var tilemap = WorldTilemapGround.GetOrCreateLayer(parent, "VisualPathGrid", "Path",
+                visualCellSize, 2, "Ground");
+            tilemap.tileAnchor = new Vector3(0.5f, 0f, 0f);
+            tilemap.color = Color.white;
+            foreach (var cell in WorldTilemapGround.RasterizePolygonCells(polygon, visualCellSize))
             {
-                var seg = new GameObject(segmentName);
-                seg.transform.SetParent(parent);
-                seg.transform.position = position;
-                var col = seg.AddComponent<BoxCollider2D>();
-                col.isTrigger = false;
-                col.size = colliderSize;
+                tilemap.SetTile(cell, FarmPathPalette.At(cell));
+                tilemap.SetTileFlags(cell, UnityEngine.Tilemaps.TileFlags.None);
+                tilemap.SetTransformMatrix(cell, Matrix4x4.identity);
             }
+        }
+
+        private static void TintFarmTerrain(Transform parent, string layer, Color color)
+        {
+            var tilemap = parent.Find("WorldGrid/" + layer)?.GetComponent<UnityEngine.Tilemaps.Tilemap>();
+            if (tilemap != null) tilemap.color = color;
+        }
+
+        private static void MaterializeFarmSpatialCollision()
+        {
+            var root = new GameObject("FarmSpatialCollision");
+            root.transform.position = Vector3.zero;
+
+            for (var i = 0; i < FarmSceneSpatialContract.All.Count; i++)
+            {
+                var footprint = FarmSceneSpatialContract.All[i];
+                if (footprint.Id == FarmSceneSpatialContract.Mountain || !FarmSceneNavigationPolicy.RequiresMaterializedTerrainCollider(footprint)) continue;
+
+                var collision = new GameObject("Collision_" + footprint.Id);
+                collision.transform.SetParent(root.transform);
+                if (footprint.Id == FarmSceneSpatialContract.River)
+                {
+                    AddRiverColliderWithBridgeCorridor(collision);
+                    continue;
+                }
+
+                var polygon = collision.AddComponent<PolygonCollider2D>();
+                polygon.isTrigger = false;
+                polygon.points = CopyPolygon(footprint.Id == FarmSceneSpatialContract.Lake
+                    ? FarmSceneSpatialContract.LakeCollisionPath : footprint.Polygon);
+            }
+        }
+
+        private static void AddRiverColliderWithBridgeCorridor(GameObject collision)
+        {
+            // spec_farm_scene_keyart_visual_corrections_v1: DOIS PolygonCollider2D SEPARADOS (um por
+            // filho), nao um unico collider com pathCount=2. Um collider multipath, dependendo do
+            // winding dos paths, pode NAO abrir o vao (a fisica preenchia o corredor y[2,4] e o jogador
+            // nao conseguia cruzar a ponte). Colliders independentes garantem o corredor real. Bonus:
+            // o capture de debug desenha o AABB (bounds) de cada collider — com um multipath o AABB
+            // cobria o rio inteiro (parecia solido); com dois, os AABBs mostram o vao entre eles.
+            var above = new GameObject("RiverCollider_AboveBridge");
+            above.transform.SetParent(collision.transform);
+            above.transform.localPosition = Vector3.zero;
+            var aboveCol = above.AddComponent<PolygonCollider2D>();
+            aboveCol.isTrigger = false;
+            aboveCol.points = CopyPolygon(FarmSceneSpatialContract.RiverAboveBridgeCollisionPath);
+
+            var below = new GameObject("RiverCollider_BelowBridge");
+            below.transform.SetParent(collision.transform);
+            below.transform.localPosition = Vector3.zero;
+            var belowCol = below.AddComponent<PolygonCollider2D>();
+            belowCol.isTrigger = false;
+            belowCol.points = CopyPolygon(FarmSceneSpatialContract.RiverBelowBridgeCollisionPath);
+        }
+
+        private static Vector2[] CopyPolygon(IReadOnlyList<Vector2> polygon)
+        {
+            var points = new Vector2[polygon.Count];
+            for (var i = 0; i < points.Length; i++) points[i] = polygon[i];
+            return points;
         }
 
         // spec_farm_scene_relayout_v4 v7: 4 veios de minerio bloqueados na base da montanha.
@@ -2870,10 +3127,10 @@ namespace CindarsHope.Editor.SceneCreation
 
             var positions = new[]
             {
-                new Vector3(-18f, 18.5f, 0f),
-                new Vector3( -9f, 18.5f, 0f),
-                new Vector3(  0f, 18.5f, 0f),
-                new Vector3(  9f, 18.5f, 0f),
+                new Vector3(-18f, 15.5f, 0f),
+                new Vector3( -9f, 16.2f, 0f),
+                new Vector3( -2f, 15.1f, 0f),
+                new Vector3(  6f, 16.6f, 0f),
             };
 
             var nodeIds = new[]
@@ -2909,6 +3166,232 @@ namespace CindarsHope.Editor.SceneCreation
             }
         }
 
+        // spec_farm_scene_landmarks_and_agriculture_v1: composition only.  No child created here has a
+        // collider or gameplay component; FarmPlot, AnimalReleaseHandler and FishingSpot retain ownership.
+        private static void CreateLandmarkVisualComposition()
+        {
+            var farmPlots = RequireSceneRoot("FarmPlots");
+            PaintCentralFieldSoil(farmPlots);
+            // The field remains genuinely arable; mature crops are not faked with permanent sprites.
+
+            var house = RequireSceneRoot("FarmHouse");
+            CreateVisualSprite(house, "Visual_HomesteadHay", WorldSpriteLibrary.Prop("hay_bale"), new Vector3(-3.5f, -1.5f, 0f));
+
+            var animalHousings = RequireSceneRoot("FarmAnimalHousings");
+            CreateCoopPenComposition(animalHousings);
+
+            var trees = RequireSceneRoot("Trees");
+            CreateVisualSprite(trees, "Visual_WestForestFoliage", WorldSpriteLibrary.Foliage("undergrowth_keyart_v4"), new Vector3(-27f, 8f, 0f));
+            var fonte = RequireSceneRoot("FonteAnya");
+            CreateVisualSprite(fonte, "Visual_AnyaClearing", WorldSpriteLibrary.Foliage("wildflowers_keyart_v4"), new Vector3(1.5f, -1f, 0f));
+
+            var ore = RequireSceneRoot("LockedOreNodes");
+            CreateVisualSprite(ore, "Visual_NorthCliffOre", WorldSpriteLibrary.Prop("rock_ore_0"), new Vector3(14f, 18.5f, 0f));
+            var fishing = RequireSceneRoot("FishingSpot");
+
+
+            CreateFarmRichnessComposition();
+        }
+
+        // FarmRichness wave (2026-08-17): props visuais isolados em coordenadas de MUNDO
+        // (root proprio na origem, sem herdar offset de FarmHouse/FarmPlots). Sem colliders novos.
+        private static void CreateFarmRichnessComposition()
+        {
+            var richness = new GameObject("FarmRichness");
+            richness.transform.position = Vector3.zero;
+
+            var wellVisual = CreateVisualRoot(richness.transform, "Visual_CentralWell", new Vector3(FarmLevel1LayoutContract.WellX, FarmLevel1LayoutContract.WellY, 0f));
+            var wellSprite = WorldSpriteLibrary.Prop("well_keyart_v3");
+            var wellRenderer = wellVisual.gameObject.AddComponent<SpriteRenderer>();
+            wellRenderer.sprite = wellSprite != null ? wellSprite : GetBuiltinSprite();
+            wellRenderer.color = wellSprite != null ? Color.white : Color.magenta;
+            wellRenderer.sortingOrder = 0;
+            wellRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(wellRenderer, "World", wellRenderer.sortingOrder);
+            ApplyKnownOpaqueHeightScale(wellVisual, wellSprite, 4.2f, 79f / 98f);
+            AlignSpriteSupport(wellVisual, wellSprite, new Vector3(FarmLevel1LayoutContract.WellX, FarmLevel1LayoutContract.WellY, 0f), new Vector2(39f, 31f));
+            CreateContractSolidBase(wellVisual.parent, "CentralWellSolidBase", FarmSettlementPhysicsContract.CentralWell);
+
+            CreateScarecrowVisual(richness.transform, "Visual_FieldScarecrow_01", new Vector3(-10.5f, -1f, 0f));
+            CreateScarecrowVisual(richness.transform, "Visual_FieldScarecrow_02", new Vector3(4.5f, -1f, 0f));
+            CreateSizedFarmVisual(richness.transform, "Visual_HouseCrates", WorldSpriteLibrary.Prop("crate"), new Vector3(11.4f, 8.8f, 0f), 1.8f);
+            CreateSizedFarmVisual(richness.transform, "Visual_HouseBench", WorldSpriteLibrary.Prop("bench"), new Vector3(20.5f, 8.8f, 0f), 1.4f);
+            CreateSizedFarmVisual(richness.transform, "Visual_GreenhouseCompost", WorldSpriteLibrary.Prop("compost_bin"), new Vector3(24.8f, 8.3f, 0f), 1.3f);
+            CreateSizedFarmVisual(richness.transform, "Visual_BarnHay", WorldSpriteLibrary.Prop("hay_bale"), new Vector3(FarmLevel1LayoutContract.BarnX - 3.2f, FarmLevel1LayoutContract.BarnY + 0.5f, 0f), 1.1f);
+            CreateSizedFarmVisual(richness.transform, "Visual_CheeseCrate", WorldSpriteLibrary.Prop("crate"), new Vector3(FarmLevel1LayoutContract.ProcessingAX + 2.8f, FarmLevel1LayoutContract.ProcessingAY, 0f), 0.9f);
+            CreateSizedFarmVisual(richness.transform, "Visual_ShedCrate", WorldSpriteLibrary.Prop("crate"), new Vector3(FarmLevel1LayoutContract.ProcessingBX + 2.5f, FarmLevel1LayoutContract.ProcessingBY + 0.2f, 0f), 1f);
+            var flowerAccents = new[]
+            {
+                new Vector2(11.3f, 7f), new Vector2(12f, 5.2f), new Vector2(20f, 5.2f), new Vector2(24.5f, 5.6f),
+                new Vector2(-18.5f, -17f), new Vector2(-12.4f, -18.3f), new Vector2(-5f, -17.4f), new Vector2(1.2f, -17.5f),
+                new Vector2(-10.7f, 4f), new Vector2(-10.8f, 0.6f), new Vector2(4.6f, -6f), new Vector2(7.4f, -1.4f)
+            };
+            for (var accent = 0; accent < flowerAccents.Length; accent++)
+                CreateSizedFarmVisual(richness.transform, "Visual_FlowerAccent_" + accent, WorldSpriteLibrary.Foliage("wildflowers_keyart_v4"), flowerAccents[accent], 0.75f);
+
+        }
+
+        private static void CreateSizedFarmVisual(Transform parent, string name, Sprite sprite, Vector3 localPosition, float worldHeight)
+        {
+            if (sprite == null) return;
+            var visual = CreateVisualRoot(parent, name, localPosition);
+            var renderer = visual.gameObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            ApplyFarmDecorationSorting(renderer);
+            var uniformScale = worldHeight / sprite.bounds.size.y;
+            visual.localScale = new Vector3(uniformScale / parent.lossyScale.x, uniformScale / parent.lossyScale.y, 1f);
+        }
+
+        private static void CreateScarecrowVisual(Transform parent, string name, Vector3 worldPosition)
+        {
+            var visual = CreateVisualRoot(parent, name, worldPosition);
+            var sprite = WorldSpriteLibrary.Prop("scarecrow");
+            var renderer = visual.gameObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite != null ? sprite : GetBuiltinSprite();
+            renderer.color = sprite != null ? Color.white : Color.magenta;
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
+            ApplyUniformBespokeScale(visual, sprite, 1.8f);
+        }
+
+        // Cercado aberto (retangulo sem lado norte) em frente ao Coop_01 (~x[-26,-19] y[-16,-14]).
+        // FarmAnimalHousings esta na origem do mundo, entao as coordenadas locais == mundo.
+        private static void CreateCoopPenComposition(Transform animalHousings)
+        {
+            var pen = CreateVisualRoot(animalHousings, "Visual_CoopPen", new Vector3(FarmLevel1LayoutContract.CoopX + 16f, FarmLevel1LayoutContract.CoopY + 18f, 0f));
+            CreateVisualSprite(pen, "Visual_CoopPenFence_W", WorldSpriteLibrary.Prop("fence"), new Vector3(-18.5f, -18.5f, 0f));
+            CreateVisualSprite(pen, "Visual_CoopPenFence_E", WorldSpriteLibrary.Prop("fence"), new Vector3(-13.5f, -18.5f, 0f));
+            CreateVisualSprite(pen, "Visual_CoopPenTrough", WorldSpriteLibrary.Prop("feeding_trough"), new Vector3(-18f, -19.5f, 0f));
+            CreateVisualSprite(pen, "Visual_CoopPenHay", WorldSpriteLibrary.Prop("hay_bale"), new Vector3(-14f, -19.5f, 0f));
+        }
+
+        private static void CreateFarmDecoration()
+        {
+            var root = new GameObject("FarmDecoration");
+            root.transform.position = Vector3.zero;
+            var plan = FarmDecorationPlanner.Plan();
+            for (var i = 0; i < plan.Count; i++)
+            {
+                var placement = plan[i];
+                var visual = CreateVisualRoot(root.transform, "Decoration_" + placement.Biome + "_" + i.ToString("D3"), placement.Position);
+                var renderer = visual.gameObject.AddComponent<SpriteRenderer>();
+                var sprite = ResolveFarmDecorationSprite(placement.SpriteId);
+                renderer.sprite = sprite != null ? sprite : GetBuiltinSprite();
+                var targetHeight = placement.SpriteId.Contains("tree_stump") || placement.SpriteId.Contains("log_fallen")
+                    ? 0.9f : placement.SpriteId.Contains("mushroom") ? 0.55f : 0.65f;
+                ApplyUniformBespokeScale(visual, sprite, targetHeight);
+                renderer.color = sprite != null ? Color.white : Color.magenta;
+                renderer.sortingOrder = 0;
+                renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                ApplyFarmDecorationSorting(renderer);
+            }
+        }
+
+        private static void ApplyFarmDecorationSorting(SpriteRenderer renderer)
+        {
+            // Ground-cover art must stay beneath tree canopies regardless of its world Y.
+            var isGroundCover = renderer.sprite != null &&
+                AssetDatabase.GetAssetPath(renderer.sprite).Contains("/foliage/");
+            var behindCliff = renderer.transform.position.y >= 16.5f;
+            renderer.sortingOrder = behindCliff ? 3 : isGroundCover ? 4 : 0;
+            TrySetSortingLayer(renderer, behindCliff || isGroundCover ? "Ground" : "World", renderer.sortingOrder);
+        }
+
+        private static Sprite ResolveFarmDecorationSprite(string spriteId)
+        {
+            var separator = spriteId.IndexOf('/');
+            if (separator <= 0 || separator >= spriteId.Length - 1) return null;
+            var category = spriteId.Substring(0, separator);
+            var name = spriteId.Substring(separator + 1);
+            if (category == "foliage")
+                name = name == "flower_patch" ? "wildflowers_keyart_v4"
+                    : name == "bush_leafy" || name == "bush_berry" ? "undergrowth_keyart_v4" : name;
+            return category switch
+            {
+                "foliage" => WorldSpriteLibrary.Foliage(name),
+                "props" => WorldSpriteLibrary.Prop(name),
+                "trees" => WorldSpriteLibrary.Tree(name),
+                _ => null
+            };
+        }
+
+        private static Transform RequireSceneRoot(string rootName)
+        {
+            var transforms = Object.FindObjectsByType<Transform>(FindObjectsSortMode.None);
+            for (var i = 0; i < transforms.Length; i++)
+            {
+                if (transforms[i].name == rootName && transforms[i].parent == null) return transforms[i];
+            }
+
+            throw new System.InvalidOperationException("Farm landmark functional root is missing: " + rootName);
+        }
+
+        private static Transform CreateVisualRoot(Transform parent, string name, Vector3 localPosition)
+        {
+            var visual = new GameObject(name);
+            visual.transform.SetParent(parent);
+            visual.transform.localPosition = localPosition;
+            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localScale = Vector3.one;
+            return visual.transform;
+        }
+
+        private static void PaintCentralFieldSoil(Transform parent)
+        {
+            if (!FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.CropField, out var cropField))
+            {
+                throw new System.InvalidOperationException("Farm landmark crop field footprint is missing.");
+            }
+
+            const float cellSize = 0.5f;
+            var soil = WorldSpriteLibrary.Ground("ground_soil");
+            var tilemap = WorldTilemapGround.GetOrCreateLayer(parent, "VisualFieldGrid",
+                "Visual_CentralFieldSoil", cellSize, 1, "Ground");
+            tilemap.tileAnchor = new Vector3(0.5f, 0.5f, 0f);
+            // Preserve the native 32-pixel/world-unit texture while using half-unit edge cells.
+            // Two empty beds remain tillable; no crop or irrigation state is created by the art.
+            var slices = new UnityEngine.Tilemaps.Tile[16];
+            for (var part = 0; part < slices.Length; part++)
+            {
+                var assetPath = "Assets/_Game/Art/Generated/World/_TileAssets/farm_soil_slice_" + part + ".asset";
+                var tile = AssetDatabase.LoadAssetAtPath<UnityEngine.Tilemaps.Tile>(assetPath);
+                if (tile == null)
+                {
+                    tile = ScriptableObject.CreateInstance<UnityEngine.Tilemaps.Tile>();
+                    var sprite = Sprite.Create(soil.texture, new Rect((part % 4) * 16, (part / 4) * 16, 16, 16),
+                        new Vector2(0.5f, 0.5f), 32f, 0, SpriteMeshType.FullRect);
+                    sprite.name = "farm_soil_slice_" + part;
+                    tile.sprite = sprite;
+                    tile.colliderType = UnityEngine.Tilemaps.Tile.ColliderType.None;
+                    AssetDatabase.CreateAsset(tile, assetPath);
+                    AssetDatabase.AddObjectToAsset(sprite, tile);
+                }
+                slices[part] = tile;
+            }
+            for (var x = -16; x < 10; x++)
+            for (var y = -8; y < 18; y++)
+            {
+                if (y >= 4 && y < 6) continue;
+                // Chamfer only the four outside corners, leaving stable tile/world identity intact.
+                if ((x == -16 || x == 9) && (y == -8 || y == 17)) continue;
+                var part = ((x % 4 + 4) % 4) + ((y % 4 + 4) % 4) * 4;
+                tilemap.SetTile(new Vector3Int(x, y, 0), slices[part]);
+            }
+        }
+
+        private static void CreateVisualSprite(Transform parent, string name, Sprite sprite, Vector3 localPosition)
+        {
+            var visual = CreateVisualRoot(parent, name, localPosition);
+            var renderer = visual.gameObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite != null ? sprite : GetBuiltinSprite();
+            renderer.color = sprite != null ? Color.white : Color.magenta;
+            renderer.sortingOrder = 0;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            ApplyFarmDecorationSorting(renderer);
+        }
+
         // spec_farm_scene_relayout_v4: FarmSceneRuntimeBootstrap — configura FarmTileGrid v4
         // e zonas nao-araveis no Start(). FarmTileGrid resolvido em runtime via
         // DomainManagerRegistry (SaveManager o registra no Initialize()) — sem wiring de editor
@@ -2917,6 +3400,17 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var obj = new GameObject("FarmSceneRuntimeBootstrap");
             var bootstrap = obj.AddComponent<FarmSceneRuntimeBootstrap>();
+            var bases = RequireSceneRoot("FarmDecoration").GetComponentsInChildren<BoxCollider2D>();
+            var serialized = new SerializedObject(bootstrap);
+            var references = serialized.FindProperty("_authoredSolidBases");
+            references.arraySize = 0;
+            foreach (var solid in bases)
+            {
+                if (solid.isTrigger || !solid.name.StartsWith("Solid_", System.StringComparison.Ordinal)) continue;
+                var index = references.arraySize++;
+                references.GetArrayElementAtIndex(index).objectReferenceValue = solid;
+            }
+            serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(bootstrap);
         }
 

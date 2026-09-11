@@ -40,6 +40,7 @@ namespace CindarsHope.Combat.StatusEffect
             var database = CindarsHope.Core.Bootstrap.GameBootstrap.Instance?.StatusEffectDatabase;
             var statusEffects = _enemyHealth.StatusEffects;
             var activeEffects = statusEffects.GetActiveEffects();
+            var preciseMovement = GetComponent<IStatusMovementOverrideRuntime>();
 
             var speedFactor = 1f;
             var invertMovement = false;
@@ -75,7 +76,10 @@ namespace CindarsHope.Combat.StatusEffect
                     _enemyHealth.TakeDamage(dotRequest);
                 }
 
-                speedFactor = Mathf.Min(speedFactor, StatusEffectSemantics.GetMoveSpeedFactor(effect));
+                if (preciseMovement == null
+                    || !preciseMovement.SuppressesStatusMovement(
+                        active.StatusEffectId, active.SourceId))
+                    speedFactor = Mathf.Min(speedFactor, StatusEffectSemantics.GetMoveSpeedFactor(effect));
 
                 if (StatusEffectSemantics.InvertsMovement(effect.Type))
                 {

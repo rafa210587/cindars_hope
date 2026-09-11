@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System;
+using System.Globalization;
 using CindarsHope.Combat.Weapon;
 using CindarsHope.Core;
 using CindarsHope.Core.Data;
@@ -22,6 +24,7 @@ namespace CindarsHope.Combat
 
         // F02: provider de stats derivados (setado pelo PlayerAttackController; null-safe).
         public PlayerCombatStatsProvider StatsProvider { get; set; }
+        public int SourceCasterRuntimeId { get; set; }
 
         private readonly EquipmentManager _equipmentManager;
         private readonly InventoryManager _inventoryManager;
@@ -63,7 +66,7 @@ namespace CindarsHope.Combat
 
             ItemDataSO bowItemData = null;
             if (!string.IsNullOrEmpty(bowItemId) && _itemDatabase != null)
-                _itemDatabase.TryGetById(bowItemId, out bowItemData);
+                _itemDatabase.TryGetById(ItemInstanceIdUtility.GetItemId(bowItemId), out bowItemData);
 
             var bowWeapon = bowItemData != null && !string.IsNullOrEmpty(bowItemData.WeaponId)
                 ? _itemResolver?.LookupWeapon(bowItemData.WeaponId) : null;
@@ -85,6 +88,10 @@ namespace CindarsHope.Combat
             // Null prefab is allowed: ProjectileSpawnService falls back to RuntimeProjectileFactory
             // (procedural arrow visual) so archery works before art prefabs are authored.
             float cooldown = CooldownHelper.CalculateWeaponCooldown(bowWeapon);
+            if (StatsProvider != null)
+            {
+                cooldown = StatsProvider.FinalBowRecovery(cooldown, bowSlot);
+            }
             if (!CooldownHelper.IsCooldownExpired(lastAttackTime, cooldown))
             {
                 CombatLog.Log($"CombatLog: PlayerAttackBlocked. Reason=Cooldown, Slot={ammoSlot}, RemainingSeconds={CooldownHelper.GetRemainingCooldown(lastAttackTime, cooldown):F2}");
@@ -112,15 +119,19 @@ namespace CindarsHope.Combat
 
             // F02/F18 + fable_48: fórmula §18 — finalDamage = derive(bowWeaponDamage + bowBonus + arrowDamage).
             // SkillBonus/MaterialModifier já entram via derived stats (F02); arrowDamage é a parte da munição.
-            var bowDamageBonus = StatsProvider != null ? Mathf.RoundToInt(StatsProvider.Current.BowDamageBonus) : 0;
-            var preDeriveDamage = bowWeapon.BaseDamage + bowDamageBonus + ballistics.ArrowDamage;
-            var finalDamage = StatsProvider != null
-                ? StatsProvider.FinalDamage(preDeriveDamage, AttackWeight.Light, false, out _)
-                : preDeriveDamage;
+            var nonCriticalDamage = bowWeapon.BaseDamage + ballistics.ArrowDamage;
             // Alcance da flecha em tiles (1 tile = 1 metro), capado no maximo de voo (~14m): além disso
             // a flecha para (ProjectileBehaviour destroi ao ultrapassar o range).
             var finalRange = Mathf.Min(MaxArrowRangeTiles,
-                bowWeapon.Range + (StatsProvider != null ? Mathf.Max(0f, StatsProvider.Current.BowRange) : 0f));
+                StatsProvider != null ? StatsProvider.FinalBowRange(bowWeapon.Range, bowSlot) : bowWeapon.Range);
+            var finalProjectileSpeed = StatsProvider != null
+                ? StatsProvider.FinalBowProjectileSpeed(bowWeapon.ProjectileSpeed, bowSlot)
+                : bowWeapon.ProjectileSpeed;
+            var lunarLaunch = RangedLunarModifierProvider.ResolveLaunchModifier();
+            finalRange = Mathf.Min(MaxArrowRangeTiles,
+                finalRange * lunarLaunch.RangeMultiplier);
+            finalProjectileSpeed = Mathf.Max(.1f,
+                finalProjectileSpeed * lunarLaunch.ProjectileSpeedMultiplier);
 
             // fable_48: a flecha define o DamageType (fire→Fire, frost→Ice, físicas→Physical). Físicas
             // herdam o do arco quando o resolver devolve Physical (preserva arcos elementais futuros).
@@ -137,9 +148,9 @@ namespace CindarsHope.Combat
                 bowWeapon.ProjectilePrefab,
                 spawnPosition,
                 direction,
-                bowWeapon.ProjectileSpeed,
+                finalProjectileSpeed,
                 finalRange,
-                finalDamage,
+                nonCriticalDamage,
                 damageType,
                 _knockbackForce,
                 spawnOffset: 0.5f,
@@ -150,6 +161,24 @@ namespace CindarsHope.Combat
             spawnRequest.AppliedTags = appliedTags;
             // Game-feel: a flecha sai rapida e desacelera ate ArrowSpeedDecayToFraction no alcance maximo.
             spawnRequest.SpeedDecayToFraction = ArrowSpeedDecayToFraction;
+            spawnRequest.SourceCasterRuntimeId = SourceCasterRuntimeId;
+            spawnRequest.SourceKind = DamageSourceKind.PlayerRanged;
+            spawnRequest.SourceInstanceId = SourceCasterRuntimeId.ToString(CultureInfo.InvariantCulture);
+            spawnRequest.ActionToken = Guid.NewGuid().ToString("N");
+            spawnRequest.CanTriggerCapstones = true;
+            spawnRequest.TargetedImpactDamageResolver = impact =>
+            {
+                var lunarImpact = RangedLunarModifierProvider.ResolveImpactModifier(
+                    impact.TargetInstanceId, impact.TargetPositionX, impact.TargetPositionY);
+                if (StatsProvider == null)
+                    return new ProjectileImpactDamage(nonCriticalDamage, false);
+
+                int damage = StatsProvider.FinalBowDamage(
+                    bowWeapon, ballistics.ArrowDamage, bowSlot,
+                    impact.GuaranteedCritical, lunarImpact.CriticalChanceBonus,
+                    lunarImpact.CriticalDamageBonus, out bool isCritical);
+                return new ProjectileImpactDamage(damage, isCritical);
+            };
 
             var spawnResult = ProjectileSpawnService.SpawnProjectile(spawnRequest);
             if (!spawnResult.Success)
@@ -166,8 +195,7 @@ namespace CindarsHope.Combat
             // Animacao de tiro de arco do player: direcao pelo facing. Duracao = ~metade do cooldown
             // efetivo (escala com attack speed) — o projetil sai no inicio, entao a anim precisa ser
             // mais rapida que o intervalo de tiro para o saque/release nao terminar depois da flecha.
-            float bowCooldown = StatsProvider != null ? StatsProvider.FinalCooldown(cooldown, bowWeapon) : cooldown;
-            GameEventBus.Publish(new PlayerBowShootEvent(direction, bowCooldown * 0.5f));
+            GameEventBus.Publish(new PlayerBowShootEvent(direction, cooldown * 0.5f));
 
             // fable_48: pilha equipada zerou? auto-equipa a próxima munição compatível (ordem canônica).
             if (!_inventoryManager.HasItem(ammoItemData.Id, 1))

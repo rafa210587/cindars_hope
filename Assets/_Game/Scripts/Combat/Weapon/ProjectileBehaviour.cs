@@ -1,4 +1,4 @@
-﻿using CindarsHope.Core;
+using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
 using CindarsHope.Foundation;
@@ -28,6 +28,20 @@ namespace CindarsHope.Combat.Weapon
 
         private Vector2 _spawnPosition;
         private int _hitCount;
+        private IProjectileHitPolicy _hitPolicy;
+        private float _postureDamageMultiplier;
+        private int _sourceCasterRuntimeId;
+        private bool _stopOnSolidObstacle;
+        private System.Func<bool, ProjectileImpactDamage> _impactDamageResolver;
+        private System.Func<ProjectileImpactContext, ProjectileImpactDamage>
+            _targetedImpactDamageResolver;
+        private DamageSourceKind _sourceKind;
+        private SpellDiscipline _spellDiscipline;
+        private string _sourceInstanceId = string.Empty;
+        private string _actionToken = string.Empty;
+        private bool _canTriggerCapstones;
+        private bool _canTriggerStatusEffects = true;
+        private bool _canTriggerReactions = true;
 
         // Game-feel de desaceleracao: a flecha comeca rapida e perde velocidade conforme avanca,
         // chegando a (_speedDecayToFraction * velocidade inicial) no alcance maximo. 1 = constante.
@@ -179,12 +193,19 @@ namespace CindarsHope.Combat.Weapon
             var enemyHealth = collision.GetComponentInParent<EnemyHealth>() ?? collision.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
+                float hitMultiplier = 1f;
+                if (_hitPolicy != null && !_hitPolicy.TryResolveHit(enemyHealth.GetEntityId().GetHashCode(), out hitMultiplier))
+                    return;
                 _hitCount++;
-                HitEnemy(enemyHealth);
+                HitEnemy(enemyHealth, hitMultiplier);
                 if (_hitCount >= _maxHits)
                 {
                     Destroy(gameObject);
                 }
+            }
+            else if (_stopOnSolidObstacle && !collision.isTrigger)
+            {
+                Destroy(gameObject);
             }
         }
 
@@ -192,6 +213,36 @@ namespace CindarsHope.Combat.Weapon
         public void SetMaxHits(int maxHits)
         {
             _maxHits = Mathf.Max(1, maxHits);
+        }
+
+        public void SetSkillHitPayload(IProjectileHitPolicy hitPolicy,
+            float postureDamageMultiplier, int sourceCasterRuntimeId, bool stopOnSolidObstacle)
+        {
+            _hitPolicy = hitPolicy;
+            _postureDamageMultiplier = Mathf.Max(0f, postureDamageMultiplier);
+            _sourceCasterRuntimeId = sourceCasterRuntimeId;
+            _stopOnSolidObstacle = stopOnSolidObstacle;
+        }
+
+        public void SetCombatContext(System.Func<bool, ProjectileImpactDamage> impactDamageResolver,
+            DamageSourceKind sourceKind, SpellDiscipline spellDiscipline,
+            string sourceInstanceId, string actionToken,
+            bool canTriggerCapstones, bool canTriggerStatusEffects, bool canTriggerReactions)
+        {
+            _impactDamageResolver = impactDamageResolver;
+            _sourceKind = sourceKind;
+            _spellDiscipline = spellDiscipline;
+            _sourceInstanceId = sourceInstanceId ?? string.Empty;
+            _actionToken = actionToken ?? string.Empty;
+            _canTriggerCapstones = canTriggerCapstones;
+            _canTriggerStatusEffects = canTriggerStatusEffects;
+            _canTriggerReactions = canTriggerReactions;
+        }
+
+        public void SetTargetedImpactDamageResolver(
+            System.Func<ProjectileImpactContext, ProjectileImpactDamage> resolver)
+        {
+            _targetedImpactDamageResolver = resolver;
         }
 
         /// <summary>
@@ -204,24 +255,62 @@ namespace CindarsHope.Combat.Weapon
             _appliedTags = appliedTags;
         }
 
-        private void HitEnemy(EnemyHealth enemyHealth)
+        private void HitEnemy(EnemyHealth enemyHealth, float hitMultiplier)
         {
-            var damageRequest = new DamageRequest(enemyHealth.EnemyId, _baseDamage)
+            float markedMultiplier = 1f;
+            var marked = enemyHealth.GetComponent<IRangedDamageModifierRuntime>();
+            if (marked != null)
+                markedMultiplier = marked.ResolveRangedDamageMultiplier(_sourceCasterRuntimeId);
+            var vulnerability = enemyHealth.GetComponent<IEnemyVulnerabilityWindow>();
+            bool guaranteedCritical = vulnerability != null && vulnerability.IsVulnerable;
+            var impactContext = new ProjectileImpactContext(guaranteedCritical,
+                enemyHealth.EnemyInstanceId, enemyHealth.transform.position.x,
+                enemyHealth.transform.position.y);
+            var impactDamage = _targetedImpactDamageResolver != null
+                ? _targetedImpactDamageResolver(impactContext)
+                : _impactDamageResolver != null
+                    ? _impactDamageResolver(guaranteedCritical)
+                    : new ProjectileImpactDamage(_baseDamage, false);
+            int resolvedDamage = Mathf.Max(1,
+                Mathf.RoundToInt(impactDamage.Damage * hitMultiplier * markedMultiplier));
+            var damageRequest = new DamageRequest(enemyHealth.EnemyId, resolvedDamage)
             {
                 DamageType = _damageType,
                 SourcePosition = transform.position,
                 KnockbackForce = _knockbackForce,
                 // fable_48: tags da flecha viajam atÃ© o matching F06 (bÃ´nus sÃ³ com vulnerabilidade
                 // declarada). Null/vazio para magias/projÃ©teis sem tags (comportamento inalterado).
-                WeaponMaterialTags = _appliedTags
+                WeaponMaterialTags = _appliedTags,
+                SourceKind = _sourceKind,
+                SpellDiscipline = _spellDiscipline,
+                SourceInstanceId = _sourceInstanceId,
+                TargetInstanceId = enemyHealth.EnemyInstanceId,
+                ActionToken = _actionToken,
+                IsCritical = impactDamage.IsCritical,
+                IsPrimaryDamage = true,
+                CanTriggerCapstones = _canTriggerCapstones,
+                CanTriggerStatusEffects = _canTriggerStatusEffects,
+                CanTriggerReactions = _canTriggerReactions
             };
 
-            var result = DamageCalculator.Calculate(damageRequest);
             enemyHealth.TakeDamage(damageRequest);
 
-            if (!enemyHealth.IsDead && _statusEffect != null && _statusApplyChance > 0f && Random.value <= _statusApplyChance)
+            if (_postureDamageMultiplier > 0f)
             {
+                var posture = enemyHealth.GetComponent<EnemyPostureState>();
+                posture?.ApplyPostureDamage(resolvedDamage * _postureDamageMultiplier);
+            }
+
+            if (_canTriggerStatusEffects && !enemyHealth.IsDead && _statusEffect != null &&
+                _statusApplyChance > 0f && Random.value <= _statusApplyChance)
+            {
+                bool refreshed = enemyHealth.StatusEffects.HasStatusEffect(_statusEffect.Id);
+                if (refreshed) enemyHealth.StatusEffects.RemoveStatusEffect(_statusEffect.Id);
                 enemyHealth.ApplyStatusEffect(_statusEffect);
+                if (refreshed)
+                    GameEventBus.Publish(new StatusRefreshedEvent(enemyHealth.EnemyId, _statusEffect.Id, _statusEffect.DurationTurns));
+                else
+                    GameEventBus.Publish(new StatusAppliedEvent(enemyHealth.EnemyId, _statusEffect.Id, string.Empty, _statusEffect.DurationTurns));
             }
         }
 

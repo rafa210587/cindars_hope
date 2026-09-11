@@ -76,7 +76,7 @@ namespace CindarsHope.NPC
                 {
                     if (npc != null && npc.NpcData != null && npc.NpcData.NpcId == savedNpc.NpcId)
                     {
-                        npc.transform.position = savedNpc.Position;
+                        RestoreLoadedPosition(npc.transform, savedNpc.Position);
                         npc.RestoreState(savedNpc.HasMet);
                         break;
                     }
@@ -86,12 +86,21 @@ namespace CindarsHope.NPC
                 {
                     if (npc != null && npc.NpcData != null && npc.NpcData.NpcId == savedNpc.NpcId)
                     {
-                        npc.transform.position = savedNpc.Position;
+                        RestoreLoadedPosition(npc.transform, savedNpc.Position);
                         npc.RestoreState(savedNpc.HasMet);
                         break;
                     }
                 }
             }
+        }
+
+        private static void RestoreLoadedPosition(Transform npc, Vector2 savedPosition)
+        {
+            var wanderer = npc != null ? npc.GetComponent<NpcWanderer>() : null;
+            var schedule = Schedule.NpcScheduleService.Instance;
+            if (wanderer != null && schedule != null && schedule.TryRestoreLoadedPosition(wanderer, savedPosition))
+                return;
+            if (npc != null) npc.position = savedPosition;
         }
 
         private static NpcSaveData CaptureNpc(NpcDataSO data, Vector3 position, bool hasMet)

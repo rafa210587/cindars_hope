@@ -37,7 +37,7 @@ namespace CindarsHope.Tests.EditMode.Skills
         [Test]
         public void Catalog_HasCanonicalMappingsAndRejectsUnknownIds()
         {
-            Assert.That(SkillActionEffectCatalog.All.Count, Is.EqualTo(30));
+            Assert.That(SkillActionEffectCatalog.All.Count, Is.EqualTo(31));
             Assert.That(SkillActionEffectCatalog.TryGetEffectId(null, out _), Is.False);
             Assert.That(SkillActionEffectCatalog.TryGetEffectId("skill_unknown", out _), Is.False);
         }

@@ -6,6 +6,7 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
 using CindarsHope.Economy.Transactions;
+using CindarsHope.Economy.Pricing;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
@@ -317,16 +318,40 @@ namespace CindarsHope.Economy
                 return 0;
             }
 
-            var multiplier = shopData != null ? Mathf.Max(0f, shopData.SellPriceMultiplier) : 0.6f;
-            return Mathf.Max(1, Mathf.FloorToInt(itemData.BaseValue * multiplier)) * amount;
+            var profile = PricingProfile.Default();
+            profile.ChannelSellMultipliers[PriceChannel.GenericShopBuyFromPlayer] =
+                shopData != null ? Mathf.Max(0f, shopData.SellPriceMultiplier) : .6f;
+            profile.RoundingRule = RoundingRule.Floor;
+            var result = new EconomyPricingService(profile).CalculatePrice(new PriceRequest
+            {
+                ItemId = itemData.Id,
+                Category = itemData.Category,
+                BaseValue = itemData.BaseValue,
+                Quantity = amount,
+                Channel = PriceChannel.GenericShopBuyFromPlayer
+            });
+            return result.Success ? result.TotalPrice : 0;
         }
 
-        private static int CalculateBuyPrice(ItemDataSO itemData, ShopItemEntry entry, ShopDataSO shopData, int amount)
+        public static int CalculateBuyPrice(ItemDataSO itemData, ShopItemEntry entry, ShopDataSO shopData, int amount = 1)
         {
-            var unitPrice = entry.BuyPriceOverride > 0
-                ? entry.BuyPriceOverride
-                : Mathf.RoundToInt(itemData.BaseValue * Mathf.Max(0f, shopData.BuyPriceMultiplier));
-            return Mathf.Max(1, unitPrice) * amount;
+            if (itemData == null || entry == null || itemData.BaseValue <= 0 || amount <= 0)
+                return 0;
+            var profile = PricingProfile.Default();
+            bool hasOverride = entry.BuyPriceOverride > 0;
+            profile.ChannelSellMultipliers[PriceChannel.ShopSellToPlayer] = hasOverride
+                ? 1f
+                : Mathf.Max(0f, shopData != null ? shopData.BuyPriceMultiplier : 1f);
+            profile.RoundingRule = RoundingRule.Round;
+            var result = new EconomyPricingService(profile).CalculatePrice(new PriceRequest
+            {
+                ItemId = itemData.Id,
+                Category = itemData.Category,
+                BaseValue = hasOverride ? entry.BuyPriceOverride : itemData.BaseValue,
+                Quantity = amount,
+                Channel = PriceChannel.ShopSellToPlayer
+            });
+            return result.Success ? result.TotalPrice : 0;
         }
 
         private void HandleDayStarted(DayStartedEvent evt)

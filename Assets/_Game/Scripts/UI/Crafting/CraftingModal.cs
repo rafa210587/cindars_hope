@@ -4,6 +4,7 @@ using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
 using CindarsHope.Craft.Events;
 using CindarsHope.Foundation;
+using CindarsHope.Skills.Runtime;
 using CindarsHope.UI.Modal;
 using UnityEngine;
 
@@ -22,6 +23,8 @@ namespace CindarsHope.UI.Crafting
         private int _selectedActionIndex;
         private bool _isOpen;
         private string _feedback = string.Empty;
+        private LivingForgeBenefitChoice _livingForgeChoice;
+        private int _selectedCommonMaterialIndex;
 
         private static readonly string[] Actions = { "Craft", "Cancel", "Collect", "Close" };
 
@@ -83,6 +86,14 @@ namespace CindarsHope.UI.Crafting
             {
                 _selectedActionIndex = (_selectedActionIndex + 1) % Actions.Length;
             }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Q))
+            {
+                CycleLivingForgeChoice();
+            }
+            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.R))
+            {
+                CycleLivingForgeMaterial();
+            }
             else if (global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space))
             {
                 ExecuteSelectedAction();
@@ -113,6 +124,7 @@ namespace CindarsHope.UI.Crafting
             _selectedRecipeIndex = 0;
             _selectedActionIndex = 0;
             _feedback = string.Empty;
+            ResetLivingForgeSelection();
             _isOpen = true;
             GameEventBus.Publish(new CraftingStationOpenedEvent(station.StationInstanceId));
         }
@@ -147,7 +159,21 @@ namespace CindarsHope.UI.Crafting
                         return;
                     }
 
-                    _runtime.TryStartCraft(_station, _recipes[_selectedRecipeIndex], out _feedback);
+                    var recipe = _recipes[_selectedRecipeIndex];
+                    if (!TryBuildLivingForgeSelection(
+                            _runtime.LivingForgeRank,
+                            _runtime.IsLivingForgeChargeAvailable,
+                            _livingForgeChoice,
+                            _selectedCommonMaterialIndex,
+                            recipe,
+                            _runtime.IsLivingForgeCommonIngredient,
+                            out var selection,
+                            out _feedback))
+                    {
+                        return;
+                    }
+
+                    _runtime.TryStartCraft(_station, recipe, selection, out _feedback);
                     break;
                 case "Cancel":
                     _runtime.TryCancel(_station, out _feedback);
@@ -169,6 +195,7 @@ namespace CindarsHope.UI.Crafting
             }
 
             _selectedRecipeIndex = (_selectedRecipeIndex + direction + _recipes.Count) % _recipes.Count;
+            ResetLivingForgeSelection();
         }
 
         private void OnGUI()
@@ -201,6 +228,7 @@ namespace CindarsHope.UI.Crafting
                 var selected = _recipes[_selectedRecipeIndex];
                 GUILayout.Space(8f);
                 GUILayout.Label($"Ingredients: {FormatIngredients(selected)}");
+                DrawLivingForgeSelection(selected);
             }
 
             GUILayout.Space(8f);
@@ -237,6 +265,149 @@ namespace CindarsHope.UI.Crafting
             }
 
             return string.Join(", ", parts);
+        }
+
+        public static bool TryBuildLivingForgeSelection(
+            int rank,
+            bool chargeAvailable,
+            LivingForgeBenefitChoice choice,
+            int selectedCommonMaterialIndex,
+            RecipeDataSO recipe,
+            System.Func<string, bool> isCommonIngredient,
+            out LivingForgeCraftSelection selection,
+            out string failureReason)
+        {
+            selection = default;
+            if (rank <= 0 || !chargeAvailable)
+            {
+                failureReason = string.Empty;
+                return true;
+            }
+
+            if (choice == LivingForgeBenefitChoice.None)
+            {
+                failureReason = string.Empty;
+                return true;
+            }
+
+            if (choice == LivingForgeBenefitChoice.Quality)
+            {
+                selection = new LivingForgeCraftSelection(choice);
+                failureReason = string.Empty;
+                return true;
+            }
+
+            if (rank == 1)
+            {
+                failureReason = "Living Forge rank one only offers Quality.";
+                return false;
+            }
+
+            var commonMaterials = CollectEligibleCommonMaterials(recipe, isCommonIngredient);
+            if (commonMaterials.Count == 0)
+            {
+                failureReason = "This recipe has no eligible common material to save.";
+                return false;
+            }
+
+            int index = Mathf.Clamp(selectedCommonMaterialIndex, 0,
+                commonMaterials.Count - 1);
+            selection = new LivingForgeCraftSelection(
+                LivingForgeBenefitChoice.SaveCommonMaterial, commonMaterials[index]);
+            failureReason = string.Empty;
+            return true;
+        }
+
+        public static List<string> CollectEligibleCommonMaterials(
+            RecipeDataSO recipe,
+            System.Func<string, bool> isCommonIngredient)
+        {
+            var result = new List<string>();
+            if (recipe?.Ingredients == null || isCommonIngredient == null)
+                return result;
+
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                if (string.IsNullOrWhiteSpace(ingredient.ItemId) || ingredient.Amount <= 1 ||
+                    !isCommonIngredient(ingredient.ItemId) || result.Contains(ingredient.ItemId))
+                    continue;
+                result.Add(ingredient.ItemId);
+            }
+
+            return result;
+        }
+
+        private void CycleLivingForgeChoice()
+        {
+            if (_runtime == null || _runtime.LivingForgeRank <= 0 ||
+                !_runtime.IsLivingForgeChargeAvailable)
+                return;
+
+            if (_runtime.LivingForgeRank == 1)
+            {
+                _livingForgeChoice = _livingForgeChoice == LivingForgeBenefitChoice.None
+                    ? LivingForgeBenefitChoice.Quality
+                    : LivingForgeBenefitChoice.None;
+                _feedback = string.Empty;
+                return;
+            }
+
+            _livingForgeChoice = _livingForgeChoice switch
+            {
+                LivingForgeBenefitChoice.None => LivingForgeBenefitChoice.Quality,
+                LivingForgeBenefitChoice.Quality => LivingForgeBenefitChoice.SaveCommonMaterial,
+                _ => LivingForgeBenefitChoice.None
+            };
+            _selectedCommonMaterialIndex = 0;
+            _feedback = string.Empty;
+        }
+
+        private void CycleLivingForgeMaterial()
+        {
+            if (_runtime == null || _recipes.Count == 0 ||
+                _livingForgeChoice != LivingForgeBenefitChoice.SaveCommonMaterial)
+                return;
+
+            var materials = CollectEligibleCommonMaterials(
+                _recipes[_selectedRecipeIndex], _runtime.IsLivingForgeCommonIngredient);
+            if (materials.Count > 0)
+                _selectedCommonMaterialIndex =
+                    (_selectedCommonMaterialIndex + 1) % materials.Count;
+        }
+
+        private void DrawLivingForgeSelection(RecipeDataSO recipe)
+        {
+            if (_runtime == null || _runtime.LivingForgeRank <= 0)
+                return;
+
+            if (!_runtime.IsLivingForgeChargeAvailable)
+            {
+                GUILayout.Label("Living Forge: daily charge already used or reserved.");
+                return;
+            }
+
+            string choice = _livingForgeChoice switch
+            {
+                LivingForgeBenefitChoice.Quality => "Quality",
+                LivingForgeBenefitChoice.SaveCommonMaterial => "Save 1 common material",
+                _ => "Do not use (craft normally)"
+            };
+            GUILayout.Label($"Living Forge R{_runtime.LivingForgeRank}: {choice} (Q: choose)");
+            if (_livingForgeChoice != LivingForgeBenefitChoice.SaveCommonMaterial)
+                return;
+
+            var materials = CollectEligibleCommonMaterials(
+                recipe, _runtime.IsLivingForgeCommonIngredient);
+            string material = materials.Count > 0
+                ? materials[Mathf.Clamp(_selectedCommonMaterialIndex, 0, materials.Count - 1)]
+                : "none eligible";
+            GUILayout.Label($"Common material: {material} (R: next)");
+        }
+
+        private void ResetLivingForgeSelection()
+        {
+            _livingForgeChoice = LivingForgeBenefitChoice.None;
+            _selectedCommonMaterialIndex = 0;
         }
     }
 }

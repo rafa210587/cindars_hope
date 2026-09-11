@@ -20,6 +20,7 @@ namespace CindarsHope.Editor.Farm
         private const string ItemsPath = "Assets/_Game/Data/Items/";
         private const string AnimalsPath = "Assets/_Game/Data/Animals/";
         private const string EiranShopPath = "Assets/_Game/Data/Economy/Shop_Eiran.asset";
+        private const string ItemDatabasePath = "Assets/_Game/Data/Registries/ItemDatabase.asset";
 
         // BaseValues: produtos = ITEM_CATALOG §18 (egg 12 / goat_milk 28 / cow_milk 35).
         // Filhotes/ração não constam no §18 — valores de design coerentes com a economia early.
@@ -29,6 +30,7 @@ namespace CindarsHope.Editor.Farm
         private const int BvFeed = 8;
         private const int BvChickChicken = 80;
         private const int BvKidGoat = 180;
+        private const int BvLambSheep = BvKidGoat; // v19: mesmo default de conteúdo do cabrito.
         private const int BvCalfCow = 260;
 
         public static void Generate()
@@ -36,8 +38,10 @@ namespace CindarsHope.Editor.Farm
             EnsureFolder("Assets/_Game/Data", "Animals");
             EnsureFolder("Assets/_Game/Data", "Items");
 
-            CreateItems();
+            var lamb = CreateItems();
+            RegisterLambIfMissing(lamb);
             CreateAnimalDataAssets();
+            FarmAnimalMotionAuthoring.Generate();
             AddEiranShopEntries();
 
             AssetDatabase.SaveAssets();
@@ -45,11 +49,13 @@ namespace CindarsHope.Editor.Farm
             Debug.Log("[GenerateFarmAnimalAssets] Animais de fazenda gerados (itens + SOs + Eiran).");
         }
 
-        private static void CreateItems()
+        private static ItemDataSO CreateItems()
         {
             // Filhotes (compra no Eiran).
             CreateItem(FarmAnimalCatalog.ItemChickChicken, "Pintinho", ItemCategory.Misc, 99, BvChickChicken);
             CreateItem(FarmAnimalCatalog.ItemKidGoat, "Cabrito", ItemCategory.Misc, 99, BvKidGoat);
+            // Conteúdo canônico da ovelha. O cordeiro fica disponível para release, sem ampliar a loja.
+            var lamb = CreateItem(FarmAnimalCatalog.ItemLambSheep, "Cordeiro", ItemCategory.Misc, 99, BvLambSheep);
             CreateItem(FarmAnimalCatalog.ItemCalfCow, "Bezerro", ItemCategory.Misc, 99, BvCalfCow);
 
             // Ração.
@@ -59,6 +65,7 @@ namespace CindarsHope.Editor.Farm
             CreateProductWithQuality(FarmAnimalCatalog.ItemEgg, "Ovo", BvEgg);
             CreateProductWithQuality(FarmAnimalCatalog.ItemGoatMilk, "Leite de Cabra", BvGoatMilk);
             CreateProductWithQuality(FarmAnimalCatalog.ItemCowMilk, "Leite de Vaca", BvCowMilk);
+            return lamb;
         }
 
         private static void CreateProductWithQuality(string baseId, string displayName, int baseValue)
@@ -68,12 +75,13 @@ namespace CindarsHope.Editor.Farm
             CreateItem(baseId + "_gold", displayName + " (Ouro)", ItemCategory.AnimalProduct, 99, Mathf.RoundToInt(baseValue * 2.0f));
         }
 
-        private static void CreateItem(string id, string displayName, ItemCategory category, int maxStack, int baseValue)
+        private static ItemDataSO CreateItem(string id, string displayName, ItemCategory category, int maxStack, int baseValue)
         {
             var path = $"{ItemsPath}{id}.asset";
-            if (AssetDatabase.LoadAssetAtPath<ItemDataSO>(path) != null)
+            var itemAtCanonicalPath = AssetDatabase.LoadAssetAtPath<ItemDataSO>(path);
+            if (itemAtCanonicalPath != null)
             {
-                return;
+                return itemAtCanonicalPath;
             }
 
             // Guard por Id (evita duplicar caso já exista sob outro nome de arquivo).
@@ -82,7 +90,7 @@ namespace CindarsHope.Editor.Farm
                 var existing = AssetDatabase.LoadAssetAtPath<ItemDataSO>(AssetDatabase.GUIDToAssetPath(guid));
                 if (existing != null && existing.Id == id)
                 {
-                    return;
+                    return existing;
                 }
             }
 
@@ -96,6 +104,41 @@ namespace CindarsHope.Editor.Farm
             asset.BaseValue = baseValue;
             asset.IsEquippable = false;
             AssetDatabase.CreateAsset(asset, path);
+            return asset;
+        }
+
+        private static void RegisterLambIfMissing(ItemDataSO lamb)
+        {
+            if (lamb == null) return;
+
+            var database = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(ItemDatabasePath);
+            if (database == null)
+            {
+                Debug.LogWarning($"[GenerateFarmAnimalAssets] ItemDatabase não encontrado em {ItemDatabasePath}; cordeiro criado, mas não registrado.");
+                return;
+            }
+
+            var serialized = new SerializedObject(database);
+            var items = serialized.FindProperty("_items");
+            if (items == null || !items.isArray)
+            {
+                Debug.LogWarning("[GenerateFarmAnimalAssets] ItemDatabase não expõe o array serializado '_items'; cordeiro não registrado.");
+                return;
+            }
+
+            for (var i = 0; i < items.arraySize; i++)
+            {
+                if (items.GetArrayElementAtIndex(i).objectReferenceValue is ItemDataSO existing &&
+                    (existing == lamb || existing.Id == FarmAnimalCatalog.ItemLambSheep))
+                {
+                    return;
+                }
+            }
+
+            items.arraySize++;
+            items.GetArrayElementAtIndex(items.arraySize - 1).objectReferenceValue = lamb;
+            serialized.ApplyModifiedProperties();
+            EditorUtility.SetDirty(database);
         }
 
         private static void CreateAnimalDataAssets()

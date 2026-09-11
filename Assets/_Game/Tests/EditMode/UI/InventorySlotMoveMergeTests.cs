@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using CindarsHope.Core;
 using CindarsHope.Core.Data;
+using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace CindarsHope.Tests.EditMode.UI
 {
@@ -15,14 +20,16 @@ namespace CindarsHope.Tests.EditMode.UI
         private ItemDatabaseSO _database;
         private ItemDataSO _wood;
         private ItemDataSO _stone;
+        private ItemDataSO _sword;
 
         [SetUp]
         public void SetUp()
         {
             _wood = CreateItem("wood", 10);
             _stone = CreateItem("stone", 10);
+            _sword = CreateItem("sword", 1);
             _database = ScriptableObject.CreateInstance<ItemDatabaseSO>();
-            SetRegistryItems(_database, _wood, _stone);
+            SetRegistryItems(_database, _wood, _stone, _sword);
             _inventoryHost = new GameObject("inventory-slot-move-merge-tests");
             _inventory = _inventoryHost.AddComponent<InventoryManager>();
             _inventory.Initialize(_database);
@@ -35,6 +42,7 @@ namespace CindarsHope.Tests.EditMode.UI
             UnityEngine.Object.DestroyImmediate(_database);
             UnityEngine.Object.DestroyImmediate(_wood);
             UnityEngine.Object.DestroyImmediate(_stone);
+            UnityEngine.Object.DestroyImmediate(_sword);
         }
 
         [Test]
@@ -105,6 +113,284 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.That(_inventory.GetAmount("wood"), Is.EqualTo(3));
         }
 
+        [Test]
+        public void Swap_PublishesSourceThenDestinationWithConsistentAggregate()
+        {
+            RestoreSlots(Slot(0, "wood", 3), Slot(1, "stone", 5));
+            var events = new List<InventoryChangedEvent>();
+            var observedSlots = new List<string>();
+            Action<InventoryChangedEvent> onChanged = change =>
+            {
+                events.Add(change);
+                observedSlots.Add(_inventory.Slots[0].ItemId + ":" + _inventory.GetAmount("wood"));
+            };
+            GameEventBus.Subscribe(onChanged);
+            try
+            {
+                Assert.That(_inventory.TryMoveOrMergeSlot(0, 1, out _), Is.True);
+                Assert.That(events.Count, Is.EqualTo(2));
+                Assert.That(events[0].ItemId, Is.EqualTo("wood"));
+                Assert.That(events[1].ItemId, Is.EqualTo("stone"));
+                Assert.That(events[0].Delta, Is.Zero);
+                Assert.That(events[1].Delta, Is.Zero);
+                Assert.That(events[0].NewAmount, Is.EqualTo(3));
+                Assert.That(events[1].NewAmount, Is.EqualTo(5));
+                Assert.That(observedSlots, Is.EqualTo(new[] { "stone:3", "stone:3" }));
+            }
+            finally
+            {
+                GameEventBus.Unsubscribe(onChanged);
+            }
+        }
+
+        [Test]
+        public void Merge_PublishesOnceAndRejectedRetryPublishesNothing()
+        {
+            RestoreSlots(Slot(0, "wood", 6), Slot(1, "wood", 8));
+            var events = new List<InventoryChangedEvent>();
+            Action<InventoryChangedEvent> onChanged = events.Add;
+            GameEventBus.Subscribe(onChanged);
+            try
+            {
+                Assert.That(_inventory.TryMoveOrMergeSlot(0, 1, out _), Is.True);
+                Assert.That(_inventory.TryMoveOrMergeSlot(0, 1, out _), Is.False);
+                Assert.That(events.Count, Is.EqualTo(1));
+                Assert.That(events[0].ItemId, Is.EqualTo("wood"));
+                Assert.That(events[0].Delta, Is.Zero);
+                Assert.That(events[0].NewAmount, Is.EqualTo(14));
+            }
+            finally
+            {
+                GameEventBus.Unsubscribe(onChanged);
+            }
+        }
+
+        [Test]
+        public void SplitOddStack_PreservesTotalAndPublishesOneRefresh()
+        {
+            RestoreSlots(Slot(0, "wood", 5));
+            var events = new List<InventoryChangedEvent>();
+            Action<InventoryChangedEvent> onChanged = events.Add;
+            GameEventBus.Subscribe(onChanged);
+            try
+            {
+                Assert.That(_inventory.SplitSlot(0), Is.True);
+                AssertSlot(0, "wood", 3);
+                AssertSlot(1, "wood", 2);
+                Assert.That(_inventory.GetAmount("wood"), Is.EqualTo(5));
+                Assert.That(events.Count, Is.EqualTo(1));
+                Assert.That(events[0].Delta, Is.Zero);
+                Assert.That(events[0].NewAmount, Is.EqualTo(5));
+            }
+            finally
+            {
+                GameEventBus.Unsubscribe(onChanged);
+            }
+        }
+
+        [Test]
+        public void Add_FillsPartialStackBeforeEarlierEmptySlot_ThenPublishesConsistentTotal()
+        {
+            RestoreSlots(Slot(1, "wood", 8, true));
+            var events = new List<InventoryChangedEvent>();
+            var observed = new List<string>();
+            Action<InventoryChangedEvent> onChanged = change =>
+            {
+                events.Add(change);
+                observed.Add(_inventory.Slots[0].Amount + ":" + _inventory.Slots[1].Amount + ":" + _inventory.GetAmount("wood"));
+            };
+            GameEventBus.Subscribe(onChanged);
+            try
+            {
+                Assert.That(_inventory.AddItem("wood", 5), Is.True);
+                AssertSlot(0, "wood", 3);
+                AssertSlot(1, "wood", 10, true);
+                Assert.That(events.Count, Is.EqualTo(1));
+                Assert.That(events[0].Delta, Is.EqualTo(5));
+                Assert.That(events[0].NewAmount, Is.EqualTo(13));
+                Assert.That(observed, Is.EqualTo(new[] { "3:10:13" }));
+            }
+            finally { GameEventBus.Unsubscribe(onChanged); }
+        }
+
+        [Test]
+        public void AddItemInstance_RequiresNonStackableCanonicalUniqueIdentity()
+        {
+            Assert.That(_inventory.TryAddItemInstance("sword", "sword#crafted-1").Success, Is.True);
+            Assert.That(_inventory.Slots[0].ItemInstanceId, Is.EqualTo("sword#crafted-1"));
+            Assert.That(_inventory.Slots[0].EffectiveItemInstanceId, Is.EqualTo("sword#crafted-1"));
+
+            Assert.That(_inventory.TryAddItemInstance("sword", "sword#crafted-1").Success, Is.False);
+            Assert.That(_inventory.TryAddItemInstance("wood", "wood#crafted-1").Success, Is.False);
+            Assert.That(_inventory.TryAddItemInstance("sword", "foreign#crafted-2").Success, Is.False);
+            Assert.That(_inventory.GetAmount("sword"), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Identity_RoundTripsAndNormalNonStackableGetsStableIdentity()
+        {
+            Assert.That(_inventory.TryAddItemInstance("sword", "sword#crafted-7").Success, Is.True);
+            Assert.That(_inventory.AddItem("sword", 1), Is.True);
+            var saved = _inventory.CaptureSaveData();
+
+            _inventory.RestoreFromSaveData(saved);
+
+            Assert.That(_inventory.Slots[0].ItemInstanceId, Is.EqualTo("sword#crafted-7"));
+            Assert.That(_inventory.Slots[0].EffectiveItemInstanceId, Is.EqualTo("sword#crafted-7"));
+            Assert.That(_inventory.Slots[1].ItemInstanceId, Is.EqualTo("sword#inventory-1"));
+            Assert.That(_inventory.Slots[1].EffectiveItemInstanceId, Is.EqualTo("sword#inventory-1"));
+        }
+
+        [Test]
+        public void NormalNonStackableMultiAdd_IsAtomicUniqueAndSequenceRoundTrips()
+        {
+            Assert.That(_inventory.TryAddItem("sword", 2).Success, Is.True);
+            Assert.That(_inventory.Slots[0].ItemInstanceId, Is.EqualTo("sword#inventory-1"));
+            Assert.That(_inventory.Slots[1].ItemInstanceId, Is.EqualTo("sword#inventory-2"));
+
+            var saved = _inventory.CaptureSaveData();
+            Assert.That(saved.NextItemInstanceSequence, Is.EqualTo(3));
+            _inventory.RestoreFromSaveData(saved);
+            Assert.That(_inventory.AddItem("sword", 1), Is.True);
+            Assert.That(_inventory.Slots[2].ItemInstanceId, Is.EqualTo("sword#inventory-3"));
+        }
+
+        [Test]
+        public void RestoreLegacyNonStackableWithoutIdentity_IsDeterministicAcrossReload()
+        {
+            var legacy = new InventorySaveData { Capacity = InventoryManager.DefaultCapacity };
+            legacy.Slots.Add(Slot(4, "sword", 1));
+
+            _inventory.RestoreFromSaveData(legacy);
+            var first = _inventory.Slots[4].ItemInstanceId;
+            Assert.That(first, Is.EqualTo("sword#inventory-1"));
+
+            _inventory.RestoreFromSaveData(legacy);
+            Assert.That(_inventory.Slots[4].ItemInstanceId, Is.EqualTo(first));
+        }
+
+        [Test]
+        public void RestoreAdvancesPastSavedInventoryIdentity_AndStackablesStayIdentityFree()
+        {
+            RestoreSlots(Slot(0, "sword", 1, instanceId: "sword#inventory-12"));
+            Assert.That(_inventory.AddItem("sword", 1), Is.True);
+            Assert.That(_inventory.Slots[1].ItemInstanceId, Is.EqualTo("sword#inventory-13"));
+
+            Assert.That(_inventory.AddItem("wood", 2), Is.True);
+            Assert.That(_inventory.Slots[2].ItemInstanceId, Is.Empty);
+        }
+
+        [Test]
+        public void NormalNonStackableMultiAdd_FullInventoryFailsWithoutConsumingSequence()
+        {
+            var occupied = new InventorySlotSaveData[InventoryManager.MaxCapacity - 1];
+            for (var index = 0; index < occupied.Length; index++)
+                occupied[index] = Slot(index, "wood", 1);
+            RestoreSlots(occupied);
+
+            Assert.That(_inventory.TryAddItem("sword", 2).Success, Is.False);
+            Assert.That(_inventory.GetAmount("sword"), Is.Zero);
+            Assert.That(_inventory.TryAddItem("sword", 1).Success, Is.True);
+            Assert.That(_inventory.Slots[InventoryManager.MaxCapacity - 1].ItemInstanceId,
+                Is.EqualTo("sword#inventory-1"));
+        }
+
+        [Test]
+        public void Restore_DuplicateExplicitIdentityKeepsOnlyFirstInstance()
+        {
+            LogAssert.Expect(LogType.Warning,
+                "InventoryManager ignored duplicate saved item instance id 'sword#crafted-11'.");
+            RestoreSlots(
+                Slot(0, "sword", 1, instanceId: "sword#crafted-11"),
+                Slot(1, "sword", 1, instanceId: "sword#crafted-11"));
+
+            Assert.That(_inventory.GetAmount("sword"), Is.EqualTo(1));
+            Assert.That(_inventory.Slots[0].ItemInstanceId, Is.EqualTo("sword#crafted-11"));
+            Assert.That(_inventory.Slots[1].IsEmpty, Is.True);
+        }
+
+        [Test]
+        public void MoveUniqueItem_PreservesIdentityAndOrdinaryStacksRemainIdentityFree()
+        {
+            Assert.That(_inventory.TryAddItemInstance("sword", "sword#crafted-9").Success, Is.True);
+            Assert.That(_inventory.AddItem("wood", 2), Is.True);
+
+            Assert.That(_inventory.TryMoveOrMergeSlot(0, 3, out var reason), Is.True, reason);
+
+            Assert.That(_inventory.Slots[0].IsEmpty, Is.True);
+            Assert.That(_inventory.Slots[3].ItemInstanceId, Is.EqualTo("sword#crafted-9"));
+            Assert.That(_inventory.Slots[1].ItemInstanceId, Is.Empty);
+            Assert.That(_inventory.GetAllItems().Single(item => item.ItemId == "wood").ItemInstanceId, Is.Empty);
+        }
+
+        [Test]
+        public void Remove_ConsumesLastStacksFirst_ThenPublishesConsistentTotal()
+        {
+            RestoreSlots(Slot(0, "wood", 5), Slot(2, "wood", 2, true));
+            var events = new List<InventoryChangedEvent>();
+            var observed = new List<string>();
+            Action<InventoryChangedEvent> onChanged = change =>
+            {
+                events.Add(change);
+                observed.Add(_inventory.Slots[0].Amount + ":" + _inventory.Slots[2].IsEmpty + ":" + _inventory.GetAmount("wood"));
+            };
+            GameEventBus.Subscribe(onChanged);
+            try
+            {
+                Assert.That(_inventory.RemoveItem("wood", 3), Is.True);
+                AssertSlot(0, "wood", 4);
+                AssertSlot(2, string.Empty, 0);
+                Assert.That(_inventory.Slots[2].EquipmentBindingId, Is.Empty);
+                Assert.That(events.Count, Is.EqualTo(1));
+                Assert.That(events[0].Delta, Is.EqualTo(-3));
+                Assert.That(events[0].NewAmount, Is.EqualTo(4));
+                Assert.That(observed, Is.EqualTo(new[] { "4:True:4" }));
+            }
+            finally { GameEventBus.Unsubscribe(onChanged); }
+        }
+
+        [Test]
+        public void RejectedAddRemoveAndUnknownItem_DoNotMutateOrPublish()
+        {
+            var slots = new InventorySlotSaveData[InventoryManager.DefaultCapacity];
+            for (int index = 0; index < slots.Length; index++) slots[index] = Slot(index, "wood", 10);
+            RestoreSlots(slots);
+            var events = new List<InventoryChangedEvent>();
+            Action<InventoryChangedEvent> onChanged = events.Add;
+            GameEventBus.Subscribe(onChanged);
+            try
+            {
+                Assert.That(_inventory.AddItem("wood", 1), Is.False);
+                Assert.That(_inventory.RemoveItem("wood", 401), Is.False);
+                LogAssert.Expect(LogType.Warning, "InventoryManager rejected unknown item id 'missing'.");
+                Assert.That(_inventory.AddItem("missing", 1), Is.False);
+                Assert.That(_inventory.GetAmount("wood"), Is.EqualTo(400));
+                foreach (var slot in _inventory.Slots) Assert.That(slot.Amount, Is.EqualTo(10));
+                Assert.That(events, Is.Empty);
+            }
+            finally { GameEventBus.Unsubscribe(onChanged); }
+        }
+
+        [Test]
+        public void Remove_StaleAggregateCannotConsumePartialContentsOrPublish()
+        {
+            RestoreSlots(Slot(0, "wood", 5), Slot(2, "wood", 2, true));
+            _inventory.Slots[0].Amount = 1;
+            var events = new List<InventoryChangedEvent>();
+            Action<InventoryChangedEvent> onChanged = events.Add;
+            GameEventBus.Subscribe(onChanged);
+            try
+            {
+                Assert.That(_inventory.RemoveItem("wood", 4), Is.False);
+                AssertSlot(0, "wood", 1);
+                AssertSlot(2, "wood", 2, true);
+                Assert.That(_inventory.Slots[2].EquipmentBindingId, Is.EqualTo("equipment-slot:Hand"));
+                Assert.That(_inventory.GetAmount("wood"), Is.EqualTo(7));
+                Assert.That(events, Is.Empty);
+            }
+            finally { GameEventBus.Unsubscribe(onChanged); }
+        }
+
         private void RestoreSlots(params InventorySlotSaveData[] slots)
         {
             var data = new InventorySaveData { Capacity = InventoryManager.DefaultCapacity };
@@ -121,12 +407,14 @@ namespace CindarsHope.Tests.EditMode.UI
             Assert.That(slot.IsEquipped, Is.EqualTo(equipped));
         }
 
-        private static InventorySlotSaveData Slot(int index, string itemId, int amount, bool equipped = false)
+        private static InventorySlotSaveData Slot(int index, string itemId, int amount, bool equipped = false,
+            string instanceId = "")
         {
             return new InventorySlotSaveData
             {
                 SlotIndex = index,
                 ItemId = itemId,
+                ItemInstanceId = instanceId,
                 Amount = amount,
                 IsEquipped = equipped,
                 EquipmentBindingId = equipped ? "equipment-slot:Hand" : string.Empty

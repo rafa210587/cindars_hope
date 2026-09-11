@@ -41,18 +41,23 @@ namespace CindarsHope.Tests.EditMode.Save
             Assert.DoesNotThrow(() => provider.Restore(new StaminaSaveData { CurrentStamina = 50, MaxStamina = 100 }));
         }
 
-        [Test]
-        public void Restore_NullSectionData_DoesNotThrow()
+        [TestCase(null)]
+        [TestCase("wrong_section")]
+        public void Restore_InvalidSectionPreservesInitializedState(object section)
         {
-            var provider = new StaminaSectionProvider(null);
-            Assert.DoesNotThrow(() => provider.Restore(null));
-        }
-
-        [Test]
-        public void Restore_WrongType_DoesNotThrow()
-        {
-            var provider = new StaminaSectionProvider(null);
-            Assert.DoesNotThrow(() => provider.Restore("tipo_errado"));
+            var host = new UnityEngine.GameObject("save-provider-fixture");
+            host.SetActive(false);
+            try
+            {
+                var manager = host.AddComponent<StaminaManager>();
+                manager.Initialize(150, 41);
+                var provider = new StaminaSectionProvider(manager);
+                Assert.DoesNotThrow(() => provider.Restore(section));
+                Assert.That(manager.IsInitialized, Is.True);
+                Assert.That(manager.CurrentStamina, Is.EqualTo(41));
+                Assert.That(manager.MaxStamina, Is.EqualTo(150));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(host); }
         }
 
         [Test]
@@ -127,18 +132,26 @@ namespace CindarsHope.Tests.EditMode.Save
             Assert.DoesNotThrow(() => provider.Restore(new PlayerStatusEffectsSaveData()));
         }
 
-        [Test]
-        public void Restore_NullSection_DoesNotThrow()
+        [TestCase(null)]
+        [TestCase("wrong_section")]
+        public void Restore_InvalidSectionPreservesInitializedState(object section)
         {
-            var provider = new PlayerStatusEffectsSectionProvider(null);
-            Assert.DoesNotThrow(() => provider.Restore(null));
-        }
-
-        [Test]
-        public void Restore_WrongType_DoesNotThrow()
-        {
-            var provider = new PlayerStatusEffectsSectionProvider(null);
-            Assert.DoesNotThrow(() => provider.Restore(42));
+            var host = new UnityEngine.GameObject("save-provider-fixture");
+            host.SetActive(false);
+            try
+            {
+                var manager = host.AddComponent<StatusEffectManager>();
+                manager.Initialize();
+                Assert.That(manager.TryAddEffect("fixture_effect", 17f), Is.True);
+                var effect = manager.ActiveEffects["fixture_effect"];
+                var provider = new PlayerStatusEffectsSectionProvider(manager);
+                Assert.DoesNotThrow(() => provider.Restore(section));
+                Assert.That(manager.IsInitialized, Is.True);
+                Assert.That(manager.HasEffect("fixture_effect"), Is.True);
+                Assert.That(manager.ActiveEffects["fixture_effect"], Is.SameAs(effect));
+                Assert.That(manager.GetEffectRemainingSeconds("fixture_effect"), Is.EqualTo(17f));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(host); }
         }
 
         [Test]

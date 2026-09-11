@@ -4,8 +4,11 @@ using CindarsHope.Core.Data;
 using CindarsHope.Core.Events;
 using CindarsHope.Equipment;
 using CindarsHope.Farm.Data;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
+using CindarsHope.Skills;
+using CindarsHope.Skills.Runtime;
 using CindarsHope.Tools;
 using UnityEngine;
 
@@ -18,7 +21,10 @@ namespace CindarsHope.Farm
             if (_staminaManager == null)
                 return true;
 
-            return _staminaManager.CurrentStamina >= requiredStamina;
+            int cost = WorkStaminaCostModifierProvider.PreviewCost(
+                WorkStaminaChannel.Agricultural, requiredStamina,
+                transform.position.x, transform.position.y);
+            return _staminaManager.CurrentStamina >= cost;
         }
 
         private bool TrySpendStamina(int requiredStamina)
@@ -26,7 +32,14 @@ namespace CindarsHope.Farm
             if (_staminaManager == null)
                 return true;
 
-            return _staminaManager.TrySpendStamina(requiredStamina);
+            int cost = WorkStaminaCostModifierProvider.PreviewCost(
+                WorkStaminaChannel.Agricultural, requiredStamina,
+                transform.position.x, transform.position.y);
+            if (!_staminaManager.TrySpendStamina(cost)) return false;
+            WorkStaminaCostModifierProvider.CommitSpend(
+                WorkStaminaChannel.Agricultural, requiredStamina, cost,
+                transform.position.x, transform.position.y);
+            return true;
         }
 
         // â”€â”€ Private action methods â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -324,6 +337,21 @@ namespace CindarsHope.Farm
             var harvestedSeedId = outcome.SeedId;
             var tilePosition = GetTilePosition();
             var harvestedAnyItem = false;
+            var materialEyeRng = DomainManagerRegistry.Get<CraftingPassiveRngState>();
+            var materialEyeConsumer = new MaterialEyeHarvestConsumer(
+                DomainManagerRegistry.Get<ICommonHarvestItemPolicy>());
+            var harvestItemIds = new List<string>(outcome.Items.Length);
+            foreach (var item in outcome.Items)
+            {
+                harvestItemIds.Add(item.itemId);
+            }
+
+            materialEyeConsumer.TryPrepare(
+                materialEyeRng,
+                SkillModifierHooks.HarvestYieldBonus,
+                PlotId,
+                harvestItemIds,
+                out var materialEyeRoll);
 
             foreach (var (itemId, amount, _, _) in outcome.Items)
             {
@@ -348,6 +376,23 @@ namespace CindarsHope.Farm
                 Debug.LogWarning($"FarmPlot {_plotIndex} harvest produced no items and plot will remain ready.", this);
                 return false;
             }
+
+            var materialEyeBonusAdded = false;
+            if (materialEyeRoll.IsPrepared && materialEyeRoll.Roll.Succeeded)
+            {
+                materialEyeBonusAdded = _inventoryManager.AddItem(materialEyeRoll.BonusItemId, 1);
+                if (materialEyeBonusAdded)
+                {
+                    GameEventBus.Publish(new CropHarvestedEvent(
+                        harvestedSeedId, materialEyeRoll.BonusItemId, 1, tilePosition));
+                }
+            }
+
+            materialEyeConsumer.Commit(
+                materialEyeRng,
+                materialEyeRoll,
+                harvestCommitted: true,
+                successfulBonusAdded: materialEyeBonusAdded);
 
             if (fertilizerActive)
             {

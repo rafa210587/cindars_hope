@@ -162,6 +162,11 @@ namespace CindarsHope.Player.Progression
         public PlayerProgressionSaveData CaptureSaveData()
         {
             NormalizeState();
+            return CopySaveData(_state);
+        }
+
+        private static PlayerProgressionSaveData CopySaveData(PlayerProgressionSaveData _state)
+        {
             return new PlayerProgressionSaveData
             {
                 Level = _state.Level,
@@ -183,8 +188,14 @@ namespace CindarsHope.Player.Progression
 
         public void RestoreFromSaveData(PlayerProgressionSaveData saveData)
         {
-            _state = saveData ?? new PlayerProgressionSaveData();
+            _state = saveData != null ? CopySaveData(saveData) : new PlayerProgressionSaveData();
             NormalizeState();
+        }
+
+        // Transaction/restore coordinator only: refunds are not new progression rewards.
+        internal void RestoreSkillPointBalance(int points)
+        {
+            _state.UnspentSkillPoints = System.Math.Max(0, points);
         }
 
         public int ResetCurrentLevelXp()

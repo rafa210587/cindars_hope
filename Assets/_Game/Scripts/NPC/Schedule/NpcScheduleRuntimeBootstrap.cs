@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
+using CindarsHope.NPC.Runtime;
 using UnityEngine;
 
 namespace CindarsHope.NPC.Schedule
@@ -27,11 +28,26 @@ namespace CindarsHope.NPC.Schedule
                 service = go.AddComponent<NpcScheduleService>();
                 Debug.Log("[NpcScheduleRuntimeBootstrap] NpcScheduleService created.");
             }
+            // The service is persistent across scene loads. A validation scene (or another owner)
+            // may have disabled it temporarily; installing Town runtime must restore its lifecycle.
+            service.enabled = true;
+            service.ResetDiagnosticMoveIsolation();
 
             WireTimeSource(service);
             RegisterAnchors(service);
+            RegisterRouteGraph(service);
             RegisterControllers(service);
             return service;
+        }
+
+        private static void RegisterRouteGraph(NpcScheduleService service)
+        {
+            var graph = NpcTownRouteGraph.Active;
+            if (graph != null)
+            {
+                service.RegisterRouteGraph(graph);
+                Debug.Log($"[NpcScheduleRuntimeBootstrap] Registered Town route graph '{graph.name}'.");
+            }
         }
 #pragma warning restore CS0618
 
@@ -75,12 +91,14 @@ namespace CindarsHope.NPC.Schedule
 
             foreach (var controller in dialogueControllers)
             {
+                if (!IsScheduledTownNpc(controller.NpcData)) continue;
                 RegisterWithProfile(service, controller.NpcData, hasShop: false);
                 service.RegisterNpcController(controller);
             }
 
             foreach (var controller in shopControllers)
             {
+                if (!IsScheduledTownNpc(controller.NpcData)) continue;
                 RegisterWithProfile(service, controller.NpcData, hasShop: true);
                 service.RegisterShopController(controller);
             }
@@ -101,6 +119,13 @@ namespace CindarsHope.NPC.Schedule
 
             var archetype = ResolveArchetype(npcData.NpcId, hasShop);
             service.RegisterProfile(NpcScheduleProfile.CreateForArchetype(npcData.NpcId, archetype));
+        }
+
+        private static bool IsScheduledTownNpc(NpcDataSO npcData)
+        {
+            if (npcData == null || string.IsNullOrEmpty(npcData.NpcId)) return false;
+            return !NpcTownRosterRegistry.TryGet(npcData.NpcId, out var entry) ||
+                   entry.PriorityTier != NpcTownRosterRegistry.NpcPriorityTier.Legacy;
         }
 
         /// <summary>

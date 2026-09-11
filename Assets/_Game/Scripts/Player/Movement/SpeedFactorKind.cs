@@ -38,6 +38,15 @@ namespace CindarsHope.Player.Movement
         /// segurado e stamina: 1.0 (restaura a faixa de fora-de-combate, 3.8-4.2). Único dono
         /// deste fator é o PlayerSprintController; ninguém escreve direto no SpeedMultiplier.
         /// </summary>
-        CombatMobility = 7
+        CombatMobility = 7,
+
+        /// <summary>Sinal de Retirada; aplicado somente enquanto o movimento aponta para longe da ameaça.</summary>
+        RetreatSignal = 8,
+
+        /// <summary>Penalidade de terreno; separada de Chill/Slow/Root/Stun.</summary>
+        Terrain = 9,
+
+        /// <summary>Bônus direcional temporário após disparo ranged.</summary>
+        Kiting = 10
     }
 }

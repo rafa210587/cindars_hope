@@ -54,9 +54,11 @@ namespace CindarsHope.Player.Movement
         /// Avança o acumulador de drenagem e devolve quantos pontos inteiros gastar neste frame
         /// (mesmo padrão de PlayerBlockController.DrainStamina). O resto fica no acumulador.
         /// </summary>
-        public static int AdvanceDrain(ref float accumulator, float deltaTime)
+        public static int AdvanceDrain(ref float accumulator, float deltaTime,
+            float costMultiplier = 1f)
         {
-            accumulator += StaminaDrainPerSecond * Mathf.Max(0f, deltaTime);
+            accumulator += StaminaDrainPerSecond * Mathf.Max(0f, deltaTime)
+                * Mathf.Max(0f, costMultiplier);
             var spend = Mathf.FloorToInt(accumulator);
             if (spend <= 0)
             {
@@ -92,6 +94,7 @@ namespace CindarsHope.Player.Movement
 
         private bool _isSprinting;
         private float _staminaDrainAccumulator;
+        private float _directionalSprintCostMultiplier = 1f;
 
         public static PlayerSprintController ActiveInstance => _activeInstance;
 
@@ -131,6 +134,8 @@ namespace CindarsHope.Player.Movement
 
         private void Update()
         {
+            ResolveDirectionalModifier();
+
             // arch: quebra do par mutuo Combat|Player (2026-07-16) — le via porta neutra em vez de
             // nomear CindarsHope.Combat.CombatStateTracker.
             var inCombat = CombatStateProvider.IsInCombat != null && CombatStateProvider.IsInCombat();
@@ -202,7 +207,8 @@ namespace CindarsHope.Player.Movement
                 return; // STAMINA_SPRINT_DEBT (mesmo tratamento do block sem manager)
             }
 
-            var spend = SprintRules.AdvanceDrain(ref _staminaDrainAccumulator, Time.deltaTime);
+            var spend = SprintRules.AdvanceDrain(ref _staminaDrainAccumulator, Time.deltaTime,
+                _directionalSprintCostMultiplier);
             if (spend <= 0)
             {
                 return;
@@ -237,7 +243,27 @@ namespace CindarsHope.Player.Movement
             if (_playerController != null)
             {
                 _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.CombatMobility);
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.RetreatSignal);
             }
+        }
+
+        private void ResolveDirectionalModifier()
+        {
+            if (_playerController == null)
+            {
+                _directionalSprintCostMultiplier = 1f;
+                return;
+            }
+
+            var direction = _playerController.MoveInput;
+            var modifier = DirectionalMobilityModifierProvider.Resolve(
+                MobilityActionKind.SprintTick, direction.x, direction.y);
+            _directionalSprintCostMultiplier = modifier.CostMultiplier;
+            if (direction.sqrMagnitude > .0001f && modifier.SpeedMultiplier > 1f)
+                _playerController.SpeedComposer.SetFactor(
+                    SpeedFactorKind.RetreatSignal, modifier.SpeedMultiplier);
+            else
+                _playerController.SpeedComposer.ClearFactor(SpeedFactorKind.RetreatSignal);
         }
     }
 

@@ -113,6 +113,8 @@ namespace CindarsHope.Cave.Runtime
                 var nodeInstanceId = $"node_{level.CaveLevel}_{spawnPoint.Position.x}_{spawnPoint.Position.y}_{level.BiomeId}";
 
                 SelectAndConfigureResourceNode(resourceNode, level, nodeInstanceId, i, spawnPoint.Position);
+                TemporaryRevealTargetBehaviour.Attach(resourceNode.gameObject, nodeInstanceId,
+                    CindarsHope.Foundation.TemporaryRevealKind.Resource, () => resourceNode.IsDepleted);
                 TrackResourceNodeSnapshot(nodeInstanceId, resourceNode, spawnPoint.Position, lastResourceNodeSnapshots);
 
                 materializedObjects.Add(resourceNode.gameObject);
@@ -142,6 +144,8 @@ namespace CindarsHope.Cave.Runtime
                 var nodeInstanceId = $"node_{level.CaveLevel}_{firstSpawnPoint.Position.x}_{firstSpawnPoint.Position.y}_{level.BiomeId}";
 
                 SelectAndConfigureResourceNode(resourceNode, level, nodeInstanceId, 0, firstSpawnPoint.Position);
+                TemporaryRevealTargetBehaviour.Attach(resourceNode.gameObject, nodeInstanceId,
+                    CindarsHope.Foundation.TemporaryRevealKind.Resource, () => resourceNode.IsDepleted);
                 TrackResourceNodeSnapshot(nodeInstanceId, resourceNode, firstSpawnPoint.Position, lastResourceNodeSnapshots);
 
                 materializedObjects.Add(resourceNode.gameObject);
@@ -186,6 +190,8 @@ namespace CindarsHope.Cave.Runtime
                 }
 
                 ConfigureResourceNodeWithData(resourceNode, nodeData, snapshotEntry.NodeInstanceId, snapshotEntry.GridPosition);
+                TemporaryRevealTargetBehaviour.Attach(resourceNode.gameObject, snapshotEntry.NodeInstanceId,
+                    CindarsHope.Foundation.TemporaryRevealKind.Resource, () => resourceNode.IsDepleted);
 
                 lastResourceNodeSnapshots.Add(new CaveResourceNodeSnapshotEntry
                 {

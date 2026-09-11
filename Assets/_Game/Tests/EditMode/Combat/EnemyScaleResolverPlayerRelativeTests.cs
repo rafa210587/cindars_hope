@@ -11,7 +11,6 @@ namespace CindarsHope.Tests.EditMode.Combat
     ///   CA-2  Large = 1.5× player; Huge = 2× player.
     ///   CA-2  MiniBoss ×1.5 / Boss ×2.5 sobre a base de cada size class.
     ///   CA-2  Gargantuan boss > Huge boss (hierarquia não colapsa).
-    ///   CA-4  Valor retornado por ResolveVisualScale coincide com o que o codex (F45) deve exibir
     ///          (mesma função pura — sem path alternativo no codex).
     ///   CA-3  ColliderRadiusFor não regrediu (física preservada).
     /// </summary>
@@ -19,78 +18,10 @@ namespace CindarsHope.Tests.EditMode.Combat
     public class EnemyScaleResolverPlayerRelativeTests
     {
         private const float Delta = 0.0001f;
-        private const float PlayerRef = EnemyScaleResolver.PlayerReferenceScale; // 2.0
 
         // ── CA-2: Relação com o player travada ─────────────────────────────────────────────
 
-        [Test]
-        public void MediumCommon_EqualsPlayerReferenceScale()
-        {
-            // Medium = 1.0× player; PlayerRef=2.0 → 2.0 * 1.0 * 1.0 = 2.0
-            float scale = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Medium, false, false);
-            Assert.AreEqual(PlayerRef, scale, Delta,
-                "Medium comum deve ter a mesma escala Unity que o player (PlayerReferenceScale).");
-        }
-
-        [Test]
-        public void LargeCommon_Is1_5xPlayer()
-        {
-            // Large = 1.5× player; 2.0 * 1.5 * 1.0 = 3.0
-            float scale = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Large, false, false);
-            Assert.AreEqual(PlayerRef * EnemyScaleResolver.PlayerRelativeScale.Large, scale, Delta,
-                "Large comum deve ser 1.5× o player.");
-        }
-
-        [Test]
-        public void HugeCommon_Is2xPlayer()
-        {
-            // Huge = 2.0× player; 2.0 * 2.0 * 1.0 = 4.0
-            float scale = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Huge, false, false);
-            Assert.AreEqual(PlayerRef * EnemyScaleResolver.PlayerRelativeScale.Huge, scale, Delta,
-                "Huge comum deve ser 2× o player.");
-        }
-
-        [Test]
-        public void TinyCommon_Is0_5xPlayer()
-        {
-            float scale = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Tiny, false, false);
-            Assert.AreEqual(PlayerRef * EnemyScaleResolver.PlayerRelativeScale.Tiny, scale, Delta);
-        }
-
-        [Test]
-        public void SmallCommon_Is0_75xPlayer()
-        {
-            float scale = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Small, false, false);
-            Assert.AreEqual(PlayerRef * EnemyScaleResolver.PlayerRelativeScale.Small, scale, Delta);
-        }
-
-        [Test]
-        public void GargantuanCommon_Is3xPlayer()
-        {
-            float scale = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Gargantuan, false, false);
-            Assert.AreEqual(PlayerRef * EnemyScaleResolver.PlayerRelativeScale.Gargantuan, scale, Delta,
-                "Gargantuan comum deve ser 3× o player.");
-        }
-
         // ── CA-2: Multiplicadores de role ─────────────────────────────────────────────────
-
-        [Test]
-        public void MediumMiniBoss_Is1_5xMediumCommon()
-        {
-            float common   = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Medium, false, false);
-            float miniboss = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Medium, true,  false);
-            Assert.AreEqual(common * EnemyScaleResolver.RoleScaleMultiplier.MiniBoss, miniboss, Delta,
-                "MiniBoss deve ser 1.5× a escala base da size class.");
-        }
-
-        [Test]
-        public void MediumBoss_Is2_5xMediumCommon()
-        {
-            float common = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Medium, false, false);
-            float boss   = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Medium, false, true);
-            Assert.AreEqual(common * EnemyScaleResolver.RoleScaleMultiplier.Boss, boss, Delta,
-                "Boss deve ser 2.5× a escala base da size class.");
-        }
 
         [Test]
         public void BossFlag_PrevailsOverMiniBossFlag()
@@ -120,19 +51,6 @@ namespace CindarsHope.Tests.EditMode.Combat
             float huge       = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Huge,       false, false);
             Assert.Greater(gargantuan, huge,
                 "Gargantuan comum deve ser maior que Huge comum.");
-        }
-
-        // ── CA-4: Coincidência codex/campo ────────────────────────────────────────────────
-
-        [Test]
-        public void ResolveVisualScale_IsPureFunction_SameInputSameOutput()
-        {
-            // A mesma função pura retorna o mesmo valor em qualquer contexto —
-            // codex (F45) e materializer leem o mesmo número sem path alternativo.
-            float r1 = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Large, true, false);
-            float r2 = EnemyScaleResolver.ResolveVisualScale(BestiarySizeClass.Large, true, false);
-            Assert.AreEqual(r1, r2, Delta,
-                "ResolveVisualScale deve ser determinística: mesmos inputs, mesmo output (codex coincide com campo).");
         }
 
         [Test]

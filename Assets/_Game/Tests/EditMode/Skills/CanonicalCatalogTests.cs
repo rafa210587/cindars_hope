@@ -88,6 +88,21 @@ namespace CindarsHope.Tests.EditMode.Skills
             Assert.AreEqual(5, trees.Count);
         }
 
+        [Test]
+        public void GeneratedRuntimeRegistry_WiresAllCanonicalDataAssets()
+        {
+            var registry = Resources.Load<SkillRuntimeCatalogRegistrySO>("Skills/SkillRuntimeCatalogRegistry");
+            Assert.That(registry, Is.Not.Null);
+            Assert.That(registry.TreeRegistry, Is.Not.Null);
+            Assert.That(registry.NodeDatabase, Is.Not.Null);
+            Assert.That(registry.ActionDatabase, Is.Not.Null);
+            Assert.That(registry.TreeRegistry.All.Count, Is.EqualTo(5));
+            Assert.That(registry.NodeDatabase.All.Count, Is.EqualTo(66));
+            Assert.That(registry.ActionDatabase.All.Count, Is.EqualTo(31));
+            Assert.That(registry.ActionDatabase.TryGetById("skill_melee_whirl_cut", out var whirl), Is.True);
+            Assert.That(whirl.TimingProfileId, Is.EqualTo("M2"));
+        }
+
         // ── fable_70: cortes aplicados e last_breath promovido a executavel ────────
         [Test]
         public void Catalog_Fable70_CutNodesAbsent_AndLastBreathPresent()
@@ -394,7 +409,8 @@ namespace CindarsHope.Tests.EditMode.Skills
 
             Assert.AreEqual(1f, s.BowProjectileSpeed, 1e-4f);
             Assert.AreEqual(1.10f, s.AttackSpeed, 1e-4f, "Dual-wield bonus folds into AttackSpeed.");
-            Assert.AreEqual(8, s.Attack, "TwoHanded +3 folds into Attack (5 + 3).");
+            Assert.AreEqual(5, s.Attack, "Two-handed damage keeps its weapon-gated identity.");
+            Assert.AreEqual(3f, s.TwoHandedDamageBonus, 1e-4f);
             Assert.AreEqual(0.10f, s.DodgeCostReduction, 1e-4f);
             Assert.AreEqual(0.10f, s.StatusDurationReduction, 1e-4f);
         }

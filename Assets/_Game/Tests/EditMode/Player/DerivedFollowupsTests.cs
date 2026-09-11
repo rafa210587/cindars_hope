@@ -54,9 +54,9 @@ namespace CindarsHope.Tests.EditMode.Player
         }
 
         [Test]
-        public void CraftTimeMultiplier_CappedAt75Percent()
+        public void CraftTimeMultiplier_CappedAt60Percent()
         {
-            Assert.AreEqual(0.25f, DerivedFollowupFormulas.CraftTimeMultiplier(0.95f), 0.0001f, "Nunca abaixo de 25% do tempo.");
+            Assert.AreEqual(0.40f, DerivedFollowupFormulas.CraftTimeMultiplier(0.95f), 0.0001f, "Nunca abaixo de 40% do tempo.");
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace CindarsHope.Tests.EditMode.Player
         [Test]
         public void EffectiveRepairAmount_IncreasesWithBonus()
         {
-            Assert.AreEqual(15, DerivedFollowupFormulas.EffectiveRepairAmount(10, 0.5f), "10 × 1.5 = 15.");
+            Assert.AreEqual(12, DerivedFollowupFormulas.EffectiveRepairAmount(10, 0.2f), "10 × 1.2 = 12.");
         }
 
         [Test]
@@ -80,9 +80,9 @@ namespace CindarsHope.Tests.EditMode.Player
         }
 
         [Test]
-        public void EffectiveRepairAmount_CappedAt200Percent()
+        public void EffectiveRepairAmount_CappedAt30Percent()
         {
-            Assert.AreEqual(30, DerivedFollowupFormulas.EffectiveRepairAmount(10, 5f), "Cap em +200% → 3× base.");
+            Assert.AreEqual(13, DerivedFollowupFormulas.EffectiveRepairAmount(10, 5f), "Cap em +30%.");
         }
 
         [Test]

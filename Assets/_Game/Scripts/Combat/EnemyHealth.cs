@@ -125,6 +125,18 @@ namespace CindarsHope.Combat
             _vulnerabilityProfile = profile;
         }
 
+        public float ResolveElementVulnerabilityMultiplier(DamageType damageType)
+            => _vulnerabilityProfile != null ? _vulnerabilityProfile.GetElementMultiplier(damageType) : 1f;
+
+        public float ResolveStatusDurationMultiplier(string statusId)
+            => _vulnerabilityProfile != null ? _vulnerabilityProfile.GetStatusDurationMultiplier(statusId) : 1f;
+
+        public bool IsCreatureFamily(string family)
+            => _enemyData != null
+                && !string.IsNullOrWhiteSpace(family)
+                && string.Equals(_enemyData.CreatureFamily, family,
+                    System.StringComparison.OrdinalIgnoreCase);
+
         // spec_enemy_attack_kits_v1 (Rise-once, primitiva P2): parametros lidos do EnemyActionSO
         // marcado RiseOnceEnabled no actionset ativo. Chamado por EnemyBrain apos resolver o
         // ActionSet (InitActionSet); null/disabled = comportamento de morte 100% inalterado.
@@ -191,10 +203,14 @@ namespace CindarsHope.Combat
         }
 
         public void ApplyStatusEffect(CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect)
+            => ApplyStatusEffect(statusEffect, null);
+
+        public void ApplyStatusEffect(CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect,
+            string sourceId)
         {
             if (statusEffect != null)
             {
-                _statusEffects.ApplyStatusEffect(statusEffect);
+                _statusEffects.ApplyStatusEffect(statusEffect, sourceId);
                 CombatLog.Log($"CombatLog: Applied status effect '{statusEffect.DisplayName}' to {DisplayName}.", this);
             }
         }
@@ -294,6 +310,12 @@ namespace CindarsHope.Combat
                 request.TargetId = EnemyId;
             }
 
+            // The receiver owns target identity: callers may know only the catalog id, while the
+            // concrete enemy instance is authoritative here immediately before calculation/event.
+            request.TargetInstanceId = !string.IsNullOrWhiteSpace(_enemyInstanceId)
+                ? _enemyInstanceId
+                : GetEntityId().ToString();
+
             // arch: quebra do par mutuo Combat|Enemy — porta IEnemyVulnerabilityWindow em vez do
             // tipo concreto CindarsHope.Enemy.EnemyVulnerabilityState.
             var vulnerabilityState = GetComponent<IEnemyVulnerabilityWindow>();
@@ -323,6 +345,12 @@ namespace CindarsHope.Combat
             var hpBefore = _currentHp;
             _currentHp -= damageResult.FinalDamage;
             _currentHp = Mathf.Max(0, _currentHp);
+            var reactionRuntime = GetComponent<IEnemySkillReactionRuntime>();
+            // The inter-monster route marks its origin before entering this shared method.
+            // Lure is broken by player damage, not by cave ecosystem conflicts.
+            if (string.IsNullOrEmpty(_pendingEnemyKillerInstanceId) &&
+                reactionRuntime != null && reactionRuntime.IsTemporarilyAttracted)
+                reactionRuntime.CancelTemporaryAttraction();
             // spec_enemy_attack_kits_v1: registra o DamageType deste golpe ANTES de checar morte â€”
             // Die() consulta este valor para decidir se o Rise-once e bloqueado (ex.: fire/radiant).
             _lastDamageType = damageResult.DamageType;

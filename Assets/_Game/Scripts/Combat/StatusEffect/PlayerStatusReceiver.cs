@@ -60,12 +60,18 @@ namespace CindarsHope.Combat.StatusEffect
             float durationSeconds = 3f;
             if (database != null && database.TryGetById(statusEffectId, out var effect) && effect != null)
             {
-                // F01: clamp canônico 1–30s da duração base.
-                var baseSeconds = Mathf.Clamp(effect.DurationTurns, 1, 30);
-                // fable_47 (follow-up 3): resistência do eixo correto encurta a duração
-                // (duração × (1 − min(0.5, resist × 0.02))), preservando o clamp 1–30s.
+                float baseSeconds = Mathf.Max(0f, effect.DurationTurns);
                 var resistance = ResistanceForStatus(effect.Type);
-                durationSeconds = CindarsHope.Player.DerivedFollowupFormulas.ApplyStatusDurationReduction(baseSeconds, resistance, 1f, 30f);
+                float recoveryReduction = PassiveSurvivalModifierProvider.ResolveStatusRecoveryReduction(
+                    RecoveryFamilyFor(effect.Type));
+                durationSeconds = CindarsHope.Player.DerivedFollowupFormulas.ApplyStatusDurationModifiers(
+                    baseSeconds, resistance, recoveryReduction, 1f, 30f);
+                durationSeconds = CavebornCapstoneProvider.ResolveStatusDuration(
+                    durationSeconds, CavebornFamilyFor(effect.Type));
+                if (effect.Type == StatusEffectType.Stun)
+                {
+                    durationSeconds = ApplyStunDurationReduction(durationSeconds);
+                }
             }
 
             if (!_playerStatusManager.TryAddEffect(statusEffectId, durationSeconds))
@@ -163,6 +169,40 @@ namespace CindarsHope.Combat.StatusEffect
 
             return StatusEffectSemantics.GetDamageType(type);
         }
+
+        public static RecoverableStatusFamily RecoveryFamilyFor(StatusEffectType type)
+        {
+            switch (type)
+            {
+                case StatusEffectType.Poison: return RecoverableStatusFamily.Poison;
+                case StatusEffectType.Burn: return RecoverableStatusFamily.Burn;
+                case StatusEffectType.Slow: return RecoverableStatusFamily.Slow;
+                default: return RecoverableStatusFamily.Other;
+            }
+        }
+
+        public static CavebornStatusFamily CavebornFamilyFor(StatusEffectType type)
+        {
+            switch (type)
+            {
+                case StatusEffectType.Chill:
+                case StatusEffectType.ColdStress:
+                    return CavebornStatusFamily.Cold;
+                case StatusEffectType.HeatStress:
+                    return CavebornStatusFamily.Heat;
+                case StatusEffectType.Poison:
+                    return CavebornStatusFamily.Toxic;
+                case StatusEffectType.Fear:
+                    return CavebornStatusFamily.Fear;
+                case StatusEffectType.ConfusionLite:
+                    return CavebornStatusFamily.Confusion;
+                default:
+                    return CavebornStatusFamily.Other;
+            }
+        }
+
+        public static float ApplyStunDurationReduction(float durationSeconds)
+            => Mathf.Clamp(PlayerControlResistanceProvider.ResolveStunDuration(durationSeconds), 1f, 30f);
 
         /// <summary>Resistência atual do player no eixo do status, via fonte única F18.</summary>
         private static int ResistanceForStatus(StatusEffectType type)

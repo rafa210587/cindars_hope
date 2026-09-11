@@ -20,6 +20,9 @@ namespace CindarsHope.Inventory.Data
         public string[] StatusEffectIds;
         public float BuffDurationSeconds;
         public bool IsEquippable;
+        // Skills SDD v1: explicit eligibility for common-material bonuses (Material Eye,
+        // Station Focus and Salvage). False is deliberately safe for legacy/rare data.
+        public bool IsCommonMaterialBonusEligible;
         public int DurabilityRestoreAmount;
         public string WeaponId;
         public string SpellId;

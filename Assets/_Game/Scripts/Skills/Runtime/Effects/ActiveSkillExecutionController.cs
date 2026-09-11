@@ -1,7 +1,13 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Combat;
+using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
+using CindarsHope.Inventory.Data;
+using CindarsHope.Player;
+using CindarsHope.Skills.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityInput = UnityEngine.Input;
@@ -27,24 +33,51 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         [SerializeField] private SkillTargetResolver _targetResolver;
 
-        private readonly SkillEffectRegistry _registry = ActiveSkillExecutorCatalog.CreateRegistry();
-        private readonly float[] _slotCooldowns = new float[4];
-        // fable_71: cooldown total (no momento do disparo) para a HUD calcular o fill radial.
-        private readonly float[] _slotCooldownTotals = new float[4];
+        private SkillEffectRegistry _registry;
+        private readonly SkillCooldownTracker _cooldowns = new SkillCooldownTracker();
         private bool _bootstrapped;
+        private GameObject _avatar;
+        private readonly SkillCastTimeline _timeline = new SkillCastTimeline();
+        private PendingSkillCast _activeCast;
+        private PendingSkillCast _chargedCast;
+        private readonly ChargedSkillCastState _chargeState = new ChargedSkillCastState();
+        private int _chargedSlotIndex = -1;
+        private bool _timelineEventsBound;
+
+        public GameObject BoundAvatar => _avatar;
+        public SkillCastPhase CurrentCastPhase => _timeline.Phase;
+        public bool HasActiveCast => _activeCast != null;
+        public bool IsChargingSkill => _chargedCast != null;
+
+        public void BindAvatar(GameObject avatar, InteractionSystem interactionSystem)
+        {
+            _avatar = avatar != null && avatar.activeInHierarchy ? avatar : null;
+            _targetResolver?.SetInteractionSystem(_avatar != null ? interactionSystem : null);
+        }
 
         public static bool TryGetEffectIdForValidation(string skillActionId, out string effectId)
             => SkillActionEffectCatalog.TryGetEffectId(skillActionId, out effectId);
 
         // ── fable_71: API read-only de cooldown + uso por clique (convergem com as teclas 1-4) ──
         public float GetSlotCooldownRemaining(int slotIndex)
-            => (slotIndex >= 0 && slotIndex < _slotCooldowns.Length) ? Mathf.Max(0f, _slotCooldowns[slotIndex]) : 0f;
+            => _cooldowns.Remaining(GetSlotActionId(slotIndex), Time.time);
 
         public float GetSlotCooldownTotal(int slotIndex)
-            => (slotIndex >= 0 && slotIndex < _slotCooldownTotals.Length) ? Mathf.Max(0f, _slotCooldownTotals[slotIndex]) : 0f;
+            => _cooldowns.Total(GetSlotActionId(slotIndex));
+
+        private static string GetSlotActionId(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= SlotInputKeys.Length) return null;
+            var manager = SkillTreeManager.Instance;
+            var raw = manager?.State?.GetActiveSlotSkillActionId(slotIndex);
+            if (string.IsNullOrEmpty(raw)) return null;
+            return manager.NodeIndex.TryGetValue(raw, out var node) ? node.UnlockedSkillActionId : raw;
+        }
 
         // Ponto unico de uso de slot: a HUD (clique) e o Update (teclas 1-4) chamam isto.
-        public void TryUseSlot(int slotIndex) => TryExecuteSlot(slotIndex);
+        public void TryUseSlot(int slotIndex) => TryExecuteSlot(slotIndex, false);
+        public void BeginChargedSlot(int slotIndex) => TryExecuteSlot(slotIndex, true);
+        public void ReleaseChargedSlot() => ReleaseChargedCast();
 
         public static ActiveSkillExecutionController Install()
         {
@@ -90,6 +123,11 @@ namespace CindarsHope.Skills.Runtime.Effects
 
             _instance = this;
             if (Application.isPlaying) DontDestroyOnLoad(gameObject);
+            if (!_timelineEventsBound)
+            {
+                _timeline.PhaseChanged += HandleTimelinePhaseChanged;
+                _timelineEventsBound = true;
+            }
 
             // Ensure resolver is present if created via inspector
             if (_targetResolver == null)
@@ -108,12 +146,27 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         private void OnEnable()
         {
+            if (_instance != null && _instance != this)
+            {
+                // A replacement may have been installed while this component was disabled.
+                enabled = false;
+                return;
+            }
+            _instance = this;
             SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+            GameEventBus.Subscribe<PlayerDiedEvent>(HandlePlayerDied);
+            GameEventBus.Subscribe<PlayerDamagedEvent>(HandlePlayerDamaged);
         }
 
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+            GameEventBus.Unsubscribe<PlayerDiedEvent>(HandlePlayerDied);
+            GameEventBus.Unsubscribe<PlayerDamagedEvent>(HandlePlayerDamaged);
+            CancelActiveCast();
+            BindAvatar(null, null);
             if (_instance == this)
             {
                 _instance = null;
@@ -122,8 +175,37 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            CancelActiveCast();
+            _registry = null;
             // Re-wire InteractionSystem when scene changes
             WireInteractionSystem();
+            EnsureRegistry();
+        }
+
+        private void EnsureRegistry()
+        {
+            if (_registry != null)
+                return;
+            var bootstrap = GameBootstrap.Instance;
+            _registry = ActiveSkillExecutorCatalog.CreateRegistry(
+                EquipmentManager.Instance,
+                bootstrap?.ItemDatabase as ItemDatabaseSO,
+                bootstrap?.WeaponDatabase,
+                bootstrap?.SpellDatabase);
+        }
+
+        private void OnSceneUnloaded(Scene scene)
+        {
+            CancelActiveCast();
+            if (_avatar == null || _avatar.scene == scene) BindAvatar(null, null);
+        }
+
+        private void HandlePlayerDied(PlayerDiedEvent evt) => CancelActiveCast();
+
+        private void HandlePlayerDamaged(PlayerDamagedEvent evt)
+        {
+            if (evt != null && evt.DamageAmount > 0)
+                CancelActiveCast();
         }
 
         private void Start()
@@ -137,17 +219,12 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (_targetResolver == null)
                 return;
 
-            var playerObject = GameBootstrap.Instance?.PlayerManager != null
-                ? GameBootstrap.Instance.PlayerManager.gameObject
-                : null;
+            var playerObject = PlayerController.ActiveInstance != null
+                ? PlayerController.ActiveInstance.gameObject : null;
             var interactionSystem = playerObject != null
                 ? playerObject.GetComponentInChildren<InteractionSystem>()
                 : null;
-            if (interactionSystem != null)
-            {
-                _targetResolver.SetInteractionSystem(interactionSystem);
-                Debug.Log("[ActiveSkillExecutionController] Wired InteractionSystem to SkillTargetResolver.");
-            }
+            BindAvatar(playerObject, interactionSystem);
         }
 
         private void Update()
@@ -156,37 +233,68 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (bootstrap == null)
                 return;
 
-            if (bootstrap.ModalManager != null && bootstrap.ModalManager.HasActiveModal)
-                return;
-
-            // Update cooldowns
-            for (int i = 0; i < _slotCooldowns.Length; i++)
+            if (ActionBlockProvider.IsActionBlocked?.Invoke() == true)
             {
-                if (_slotCooldowns[i] > 0f)
-                    _slotCooldowns[i] -= Time.deltaTime;
+                if (_chargedCast != null || (_activeCast != null && !_timeline.HasCommitted))
+                    PublishFeedback("A habilidade foi interrompida.", "ActionBlocked");
+                CancelActiveCast();
+                return;
             }
+
+            if (bootstrap.ModalManager != null && bootstrap.ModalManager.HasActiveModal)
+            {
+                CancelActiveCast();
+                return;
+            }
+
+            if (_chargedCast != null)
+            {
+                if (GetSlotActionId(_chargedSlotIndex) != _chargedCast.SkillActionId)
+                {
+                    CancelActiveCast();
+                    return;
+                }
+                _chargeState.Tick(Time.deltaTime);
+                if (UnityInput.GetKeyUp(SlotInputKeys[_chargedSlotIndex]))
+                    ReleaseChargedCast();
+                return;
+            }
+
+            TickActiveCast(Time.deltaTime);
+            if (_activeCast != null)
+                return;
 
             // Check numeric key input 1-4
             for (int slotIndex = 0; slotIndex < SlotInputKeys.Length; slotIndex++)
             {
                 if (UnityInput.GetKeyDown(SlotInputKeys[slotIndex]))
                 {
-                    TryExecuteSlot(slotIndex);
+                    TryExecuteSlot(slotIndex, true);
                     break;
                 }
             }
         }
 
-        private void TryExecuteSlot(int slotIndex)
+        private void TryExecuteSlot(int slotIndex, bool beginHeldCharge)
         {
-            // Validate cooldown
-            if (_slotCooldowns[slotIndex] > 0f)
+            if (slotIndex < 0 || slotIndex >= SlotInputKeys.Length) return;
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
             {
-                float remaining = _slotCooldowns[slotIndex];
-                PublishFeedback($"Slot {slotIndex + 1} em cooldown ({remaining:F1}s).");
+                CancelActiveCast();
                 return;
             }
-
+            if (_activeCast != null || _chargedCast != null)
+            {
+                PublishFeedback("A habilidade atual ainda está em execução.");
+                return;
+            }
+            WireInteractionSystem();
+            EnsureRegistry();
+            if (_avatar == null)
+            {
+                PublishFeedback("Jogador não disponível para usar habilidade.");
+                return;
+            }
             // Resolve equipped skill action ID from SkillTreeManager state
             var skillTreeManager = SkillTreeManager.Instance;
             if (skillTreeManager == null)
@@ -202,6 +310,23 @@ namespace CindarsHope.Skills.Runtime.Effects
                     ? $"Slot {slotIndex + 1} vazio. Equipe uma skill na skill tree (U)."
                     : resolveMessage);
                 Debug.Log($"[ActiveSkillExecutionController] Slot blocked. Slot={slotIndex}, RawSlotValue={rawSlotValue ?? "<empty>"}, Reason={resolveMessage}", this);
+                return;
+            }
+
+            // Dormancy and authored action data are readiness gates. They run before cooldown,
+            // executor resolution or resource spending so a dormant slot cannot commit anything.
+            if (!skillTreeManager.TryResolveActionData(nodeId, out var actionData, out var rank, out var readinessFailure))
+            {
+                PublishFeedback(readinessFailure == "DormantAction"
+                    ? "Esta habilidade ainda está dormente."
+                    : $"Dados da habilidade '{skillActionId}' indisponíveis.");
+                return;
+            }
+
+            if (GetSlotCooldownRemaining(slotIndex) > 0f)
+            {
+                float remaining = GetSlotCooldownRemaining(slotIndex);
+                PublishFeedback($"Slot {slotIndex + 1} em cooldown ({remaining:F1}s).");
                 return;
             }
 
@@ -225,14 +350,16 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
 
             // Build context
-            var playerGo = GameBootstrap.Instance?.PlayerManager != null
-                ? GameBootstrap.Instance.PlayerManager.gameObject
-                : null;
+            var playerGo = _avatar;
             var context = new SkillEffectContext
             {
                 SkillActionId = skillActionId,
                 EffectId = effectId,
                 ActiveSlotIndex = slotIndex,
+                NodeId = nodeId,
+                Rank = rank,
+                VariantId = skillTreeManager.State.GetChosenVariant(nodeId),
+                ActionData = actionData,
                 Caster = playerGo,
                 WorldPosition = playerGo != null ? (Vector2)playerGo.transform.position : Vector2.zero,
                 SceneName = SceneManager.GetActiveScene().name,
@@ -244,23 +371,223 @@ namespace CindarsHope.Skills.Runtime.Effects
                 ? _targetResolver.Resolve(executor.TargetType, context.Caster)
                 : null;
 
-            // Execute
-            var result = executor.Execute(context);
+            if (executor is IPreparableSkillEffectExecutor preparable)
+            {
+                var validation = preparable.Validate(context);
+                if (!validation.Success)
+                {
+                    PublishFeedback(validation.FeedbackMessage, validation.FailureReason);
+                    return;
+                }
+            }
 
-            if (result.Success)
+            var pending = new PendingSkillCast(rawSlotValue, skillActionId, nodeId, effectId, executor, context);
+            if (skillActionId == SkillActionEffectCatalog.RangedChargedShotActionId)
             {
-                // Apply cooldown on success — executors suggest their own balance cooldown;
-                // fall back to a short default for executors that do not.
-                _slotCooldowns[slotIndex] = result.CooldownSeconds > 0f ? result.CooldownSeconds : 1.5f;
-                _slotCooldownTotals[slotIndex] = _slotCooldowns[slotIndex]; // fable_71: base do fill da HUD
-                PublishFeedback(result.FeedbackMessage);
-                Debug.Log($"[ActiveSkillExecutionController] Skill executed. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}, EffectId={effectId}, Executor={executor.GetType().Name}", this);
+                if (beginHeldCharge)
+                {
+                    _chargedCast = pending;
+                    _chargedSlotIndex = slotIndex;
+                    _chargeState.Begin(BuildChargeProfile(actionData));
+                    GameEventBus.Publish(new SkillCastPhaseChangedEvent(skillActionId, "Charge",
+                        actionData.ChargeTimeSeconds));
+                    return;
+                }
+
+                _chargeState.Begin(BuildChargeProfile(actionData));
+                _chargeState.Tick(actionData.ChargeMinimumHoldSeconds);
+                _chargedCast = pending;
+                _chargedSlotIndex = slotIndex;
+                ReleaseChargedCast();
+                return;
             }
-            else
+
+            _activeCast = pending;
+            if (pending.Executor is ISkillCastLifecycleExecutor lifecycle)
+                lifecycle.OnCastStarted(pending.Context);
+            float windup = pending.Executor is ISkillCastTimingResolver timingResolver
+                ? timingResolver.ResolveWindupSeconds(pending.Context, actionData.WindupSeconds)
+                : actionData.WindupSeconds;
+            HandleTimelineResult(_timeline.Begin(windup, actionData.ActiveSeconds, actionData.RecoverySeconds));
+        }
+
+        private void ReleaseChargedCast()
+        {
+            if (_chargedCast == null)
+                return;
+
+            var resolution = _chargeState.Release();
+            if (!resolution.CanCommit)
             {
-                PublishFeedback(result.FeedbackMessage);
-                Debug.Log($"[ActiveSkillExecutionController] Skill failed. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}, EffectId={effectId}, Executor={executor.GetType().Name}, Reason={result.FailureReason}, Feedback={result.FeedbackMessage}", this);
+                PublishFeedback($"Sustente o disparo por pelo menos {_chargedCast.Context.ActionData.ChargeMinimumHoldSeconds:0.00} s.",
+                    "ChargeTooShort");
+                ReleasePendingCast(ref _chargedCast);
+                _chargedSlotIndex = -1;
+                return;
             }
+
+            var original = _chargedCast.Context.ActionData;
+            var chargedAction = Instantiate(original);
+            chargedAction.BaseDamage = resolution.Damage;
+            chargedAction.DamagePerRank = 0;
+            chargedAction.Range = resolution.Range;
+            chargedAction.StaminaCost = resolution.StaminaCost;
+            chargedAction.PostureDamageMultiplier = resolution.PostureMultiplier;
+            _chargedCast.Context.ActionData = chargedAction;
+            _chargedCast.OwnedActionData = chargedAction;
+            _activeCast = _chargedCast;
+            _chargedCast = null;
+            _chargedSlotIndex = -1;
+            HandleTimelineResult(_timeline.Begin(chargedAction.WindupSeconds,
+                chargedAction.ActiveSeconds, chargedAction.RecoverySeconds));
+        }
+
+        private static ChargedSkillProfile BuildChargeProfile(SkillActionSO action)
+        {
+            return new ChargedSkillProfile(
+                action.ChargeMinimumHoldSeconds,
+                action.ChargeTimeSeconds,
+                action.BaseDamage,
+                action.ChargeMaximumDamage,
+                action.Range,
+                action.ChargeMaximumRange,
+                action.PostureDamageMultiplier,
+                action.ChargeMaximumPostureDamageMultiplier,
+                action.StaminaCost,
+                action.ChargeMaximumStaminaCost);
+        }
+
+        private void TickActiveCast(float scaledDeltaSeconds)
+        {
+            if (_activeCast == null)
+                return;
+
+            if (!_timeline.HasCommitted && _activeCast.Executor is ISkillCastLifecycleExecutor lifecycle)
+            {
+                var validation = lifecycle.TickBeforeCommit(_activeCast.Context, scaledDeltaSeconds);
+                if (!validation.Success)
+                {
+                    PublishFeedback(validation.FeedbackMessage, validation.FailureReason);
+                    CancelActiveCast();
+                    return;
+                }
+            }
+
+            HandleTimelineResult(_timeline.Tick(scaledDeltaSeconds));
+        }
+
+        private void HandleTimelineResult(SkillCastTimelineResult timelineResult)
+        {
+            if (_activeCast == null)
+                return;
+
+            if (timelineResult.ShouldCommit && !CommitActiveCast())
+            {
+                CancelActiveCast();
+                return;
+            }
+
+            if (timelineResult.ShouldCommit)
+                timelineResult = _timeline.ContinueAfterCommit();
+
+            if (timelineResult.Completed)
+            {
+                ReleasePendingCast(ref _activeCast);
+                _timeline.Reset();
+            }
+        }
+
+        private bool CommitActiveCast()
+        {
+            var cast = _activeCast;
+            if (cast == null)
+                return false;
+
+            if (cast.Executor is IPreparableSkillEffectExecutor preparable)
+            {
+                var validation = preparable.Validate(cast.Context);
+                if (!validation.Success)
+                {
+                    PublishFeedback(validation.FeedbackMessage, validation.FailureReason);
+                    return false;
+                }
+            }
+
+            bool offensive = IsOffensive(cast.Context.ActionData);
+            if (offensive)
+            {
+                // Commit listeners must remove directional utility bonuses before the
+                // offensive executor samples movement, costs or displacement.
+                GameEventBus.Publish(new PlayerOffensiveActionCommittedEvent(
+                    cast.SkillActionId, "ActiveSkill"));
+            }
+
+            var result = cast.Executor.Execute(cast.Context);
+            if (!result.Success)
+            {
+                PublishFeedback(result.FeedbackMessage, result.FailureReason);
+                Debug.Log($"[ActiveSkillExecutionController] Skill failed at commit. RawSlotValue={cast.RawSlotValue}, ResolvedSkillActionId={cast.SkillActionId}, NodeId={cast.NodeId}, EffectId={cast.EffectId}, Executor={cast.Executor.GetType().Name}, Reason={result.FailureReason}, Feedback={result.FeedbackMessage}", this);
+                return false;
+            }
+
+            float cooldownSeconds = cast.Context.ActionData != null
+                ? cast.Context.ActionData.ResolveRank(cast.Context.Rank).CooldownSeconds
+                : Mathf.Max(0f, result.CooldownSeconds);
+            _cooldowns.Start(cast.SkillActionId, Time.time, cooldownSeconds);
+            PublishFeedback(result.FeedbackMessage);
+            Debug.Log($"[ActiveSkillExecutionController] Skill committed. RawSlotValue={cast.RawSlotValue}, ResolvedSkillActionId={cast.SkillActionId}, NodeId={cast.NodeId}, EffectId={cast.EffectId}, Executor={cast.Executor.GetType().Name}", this);
+            return true;
+        }
+
+        private static bool IsOffensive(SkillActionSO action)
+        {
+            if (action == null) return false;
+            switch (action.SkillActionType)
+            {
+                case SkillActionType.DamageSkill:
+                case SkillActionType.ProjectileSkill:
+                case SkillActionType.AreaSkill:
+                case SkillActionType.LeapSkill:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void CancelActiveCast()
+        {
+            if (_activeCast == null && _chargedCast == null)
+                return;
+
+            if (_activeCast != null)
+            {
+                if (_activeCast.Executor is ISkillCastLifecycleExecutor lifecycle)
+                    lifecycle.OnCastCancelled(_activeCast.Context);
+                _timeline.Cancel();
+            }
+            ReleasePendingCast(ref _activeCast);
+            ReleasePendingCast(ref _chargedCast);
+            _chargeState.Cancel();
+            _chargedSlotIndex = -1;
+            _timeline.Reset();
+        }
+
+        private static void ReleasePendingCast(ref PendingSkillCast cast)
+        {
+            if (cast?.OwnedActionData != null)
+                Destroy(cast.OwnedActionData);
+            cast = null;
+        }
+
+        private void HandleTimelinePhaseChanged(SkillCastPhase phase, float durationSeconds)
+        {
+            if (_activeCast == null)
+                return;
+
+            GameEventBus.Publish(new SkillCastPhaseChangedEvent(
+                _activeCast.SkillActionId,
+                phase.ToString(),
+                durationSeconds));
         }
 
         private static bool TryResolveEquippedSkillAction(
@@ -354,11 +681,33 @@ namespace CindarsHope.Skills.Runtime.Effects
             return true;
         }
 
-        private void PublishFeedback(string message)
+        private void PublishFeedback(string message, string failureKey = "")
         {
-            if (!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message) || !string.IsNullOrEmpty(failureKey))
             {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(message, 2f, failureKey));
+            }
+        }
+
+        private sealed class PendingSkillCast
+        {
+            public string RawSlotValue { get; }
+            public string SkillActionId { get; }
+            public string NodeId { get; }
+            public string EffectId { get; }
+            public ISkillEffectExecutor Executor { get; }
+            public SkillEffectContext Context { get; }
+            public SkillActionSO OwnedActionData { get; set; }
+
+            public PendingSkillCast(string rawSlotValue, string skillActionId, string nodeId,
+                string effectId, ISkillEffectExecutor executor, SkillEffectContext context)
+            {
+                RawSlotValue = rawSlotValue;
+                SkillActionId = skillActionId;
+                NodeId = nodeId;
+                EffectId = effectId;
+                Executor = executor;
+                Context = context;
             }
         }
     }

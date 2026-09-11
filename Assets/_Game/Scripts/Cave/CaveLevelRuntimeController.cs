@@ -5,13 +5,14 @@ using CindarsHope.Cave.Resources;
 using CindarsHope.Cave.Runtime;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace CindarsHope.Cave
 {
     [DisallowMultipleComponent]
-    public sealed class CaveLevelRuntimeController : MonoBehaviour
+    public sealed class CaveLevelRuntimeController : MonoBehaviour, ISkillWorldPlacementRuntime
     {
         [SerializeField] private CaveRunManager _runManager;
         [SerializeField] private CaveRuntimeMaterializer _materializer;
@@ -84,6 +85,7 @@ namespace CindarsHope.Cave
 
         private void OnEnable()
         {
+            SkillWorldPlacementProvider.Source = this;
             GameEventBus.Subscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
             GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
             GameEventBus.Subscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
@@ -94,11 +96,30 @@ namespace CindarsHope.Cave
 
         private void OnDisable()
         {
+            if (ReferenceEquals(SkillWorldPlacementProvider.Source, this))
+                SkillWorldPlacementProvider.Source = null;
             GameEventBus.Unsubscribe<CaveRuntimeMaterializationCompleteEvent>(OnMaterializationComplete);
             GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
             GameEventBus.Unsubscribe<SceneTransitionStartedEvent>(OnSceneTransitionStarted);
             GameEventBus.Unsubscribe<CaveBossDefeatedEvent>(OnBossDefeated);
             GameEventBus.Unsubscribe<CavePlayerDefeatedEvent>(OnPlayerDefeated);
+        }
+
+        public bool CanPlace(float originX, float originY, float targetX, float targetY,
+            float maximumRange)
+        {
+            if (CurrentGeneratedLevel == null || maximumRange < 0f)
+                return false;
+            var origin = new Vector2(originX, originY);
+            var target = new Vector2(targetX, targetY);
+            if ((target - origin).sqrMagnitude > maximumRange * maximumRange)
+                return false;
+            int cellX = Mathf.RoundToInt(target.x + CurrentGeneratedLevel.Width * .5f);
+            int cellY = Mathf.RoundToInt(target.y + CurrentGeneratedLevel.Height * .5f);
+            if (!CurrentGeneratedLevel.WalkableTiles.Contains(new Vector2Int(cellX, cellY)))
+                return false;
+            int mask = CindarsHope.Core.Physics.GameplayLayerNames.GetMaskSafe("WorldSolid");
+            return mask == 0 || Physics2D.Linecast(origin, target, mask).collider == null;
         }
 
         private void OnSceneTransitionStarted(SceneTransitionStartedEvent evt)

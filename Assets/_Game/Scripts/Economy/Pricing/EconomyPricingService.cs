@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Economy.Pricing
 {
@@ -40,7 +41,11 @@ namespace CindarsHope.Economy.Pricing
             float stockMod = IsBuyChannel(req.Channel) ? req.StockScarcityOverride * _profile.StockScarcityModifier : 1f;
             float storyMod = _profile.StoryFlagModifier;
 
-            float rawPrice = req.BaseValue * channelMult * qualityMult * rarityMod * demandMod * reputMod * seasonMod * stockMod * storyMod;
+            MarketPriceDirection marketDirection = DirectionFor(req.Channel);
+            float marketSkillMult = marketDirection == MarketPriceDirection.None
+                ? 1f
+                : MarketSkillModifierProvider.Resolve(marketDirection);
+            float rawPrice = req.BaseValue * channelMult * qualityMult * rarityMod * demandMod * reputMod * seasonMod * stockMod * storyMod * marketSkillMult;
 
             int unitPrice = ApplyRounding(rawPrice, _profile.RoundingRule);
             unitPrice = Math.Max(unitPrice, _profile.MinPrice);
@@ -55,7 +60,8 @@ namespace CindarsHope.Economy.Pricing
                 $"Season={seasonMod:F2}",
                 $"Repute={reputMod:F2}",
                 $"Stock={stockMod:F2}",
-                $"Story={storyMod:F2}"
+                $"Story={storyMod:F2}",
+                $"MarketSkill={marketSkillMult:F2}"
             };
 
             return new PriceResult
@@ -108,5 +114,15 @@ namespace CindarsHope.Economy.Pricing
         private static bool IsBuyChannel(PriceChannel channel) =>
             channel == PriceChannel.ShopSellToPlayer ||
             channel == PriceChannel.ServicePrice;
+
+        private static MarketPriceDirection DirectionFor(PriceChannel channel)
+        {
+            if (channel == PriceChannel.ShopSellToPlayer)
+                return MarketPriceDirection.BuyFromShop;
+            if (channel == PriceChannel.GenericShopBuyFromPlayer ||
+                channel == PriceChannel.SpecializedShopBuyFromPlayer)
+                return MarketPriceDirection.SellToShop;
+            return MarketPriceDirection.None;
+        }
     }
 }

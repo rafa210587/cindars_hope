@@ -24,6 +24,7 @@ namespace CindarsHope.Combat
         private float _currentPosture;
         private float _lastDamageTime;
         private float _nextBreakAllowedTime;
+        private EnemyDifficulty _difficulty = EnemyDifficulty.Normal;
         // arch: quebra do par mutuo Combat|Enemy — portas Foundation em vez dos tipos concretos
         // CindarsHope.Enemy.EnemyBrain / EnemyVulnerabilityState.
         private IEnemyBrainController _brain;
@@ -33,6 +34,16 @@ namespace CindarsHope.Combat
         public float MaxPosture => _maxPosture;
         public float CurrentPosture => _currentPosture;
         public bool IsBroken { get; private set; }
+        public EnemyDifficulty Difficulty => _difficulty;
+        public bool HasExplicitControlWindow
+        {
+            get
+            {
+                if (_vulnerability == null)
+                    _vulnerability = GetComponent<IEnemyVulnerabilityWindow>();
+                return _vulnerability != null && _vulnerability.IsVulnerable;
+            }
+        }
 
         /// <summary>Tabela de posture por dificuldade (documentada na F02).</summary>
         public static float MaxPostureFor(EnemyDifficulty difficulty)
@@ -52,12 +63,17 @@ namespace CindarsHope.Combat
 
         public void Configure(EnemyDifficulty difficulty)
         {
+            _difficulty = difficulty;
             _maxPosture = MaxPostureFor(difficulty);
             _currentPosture = _maxPosture;
         }
 
         /// <summary>Aplica dano de posture. Retorna true se quebrou neste hit.</summary>
         public bool ApplyPostureDamage(float amount)
+            => ApplyPostureDamage(amount, string.Empty, string.Empty, false, string.Empty);
+
+        public bool ApplyPostureDamage(float amount, string sourceId, string sourceInstanceId,
+            bool causedByPlayer, string resolutionId)
         {
             if (amount <= 0f || IsBroken)
             {
@@ -72,18 +88,21 @@ namespace CindarsHope.Combat
                 return false;
             }
 
-            Break();
+            Break(sourceId, sourceInstanceId, causedByPlayer, resolutionId);
             return true;
         }
 
-        private void Break()
+        private void Break(string sourceId, string sourceInstanceId, bool causedByPlayer,
+            string resolutionId)
         {
             IsBroken = true;
             _nextBreakAllowedTime = Time.time + BreakCooldownSeconds;
 
             var enemyId = _health != null ? _health.EnemyId : name;
             CombatLog.Log($"CombatLog: EnemyPostureBroken. EnemyId={enemyId}, MaxPosture={_maxPosture}", this);
-            GameEventBus.Publish(new EnemyPostureBrokenEvent(enemyId));
+            var enemyInstanceId = _health != null ? _health.EnemyInstanceId : string.Empty;
+            GameEventBus.Publish(new EnemyPostureBrokenEvent(enemyId, enemyInstanceId, sourceId,
+                sourceInstanceId, causedByPlayer, resolutionId));
 
             if (_brain != null)
             {

@@ -41,7 +41,8 @@ namespace CindarsHope.Audio
             { typeof(FishCaughtEvent), SfxCategory.Fish },
             { typeof(PlayerLevelChangedEvent), SfxCategory.LevelUp },
             { typeof(DayStartedEvent), SfxCategory.DayStart },
-            { typeof(GameSavedEvent), SfxCategory.Save }
+            { typeof(GameSavedEvent), SfxCategory.Save },
+            { typeof(HouseDoorTransitionCompletedEvent), SfxCategory.Door }
         };
 
         /// <summary>Número de eventos audíveis v1 mapeados.</summary>

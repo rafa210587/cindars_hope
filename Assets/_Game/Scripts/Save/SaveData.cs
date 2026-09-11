@@ -43,6 +43,14 @@ namespace CindarsHope.Save
         public PlayerStatusEffectsSaveData PlayerStatusEffects;
         public ActiveSkillSlotsSaveData ActiveSkillSlots;
         public SkillTreeSaveData SkillTree;
+        public CindarsHope.Skills.Runtime.SurvivalSkillSaveData SurvivalSkills;
+        // Phase 18: escopo e tentativas consumidas dos rolls seeded de passivas de crafting.
+        // Secao aditiva; saves legados restauram escopo do slot e ledger vazio.
+        public CindarsHope.Skills.Runtime.CraftingPassiveRngSaveData CraftingPassiveRng;
+        // Skills 20T: shared Living Forge daily charge and pending job reservations.
+        public CindarsHope.Skills.Runtime.CraftingSkillSaveData CraftingSkills;
+        // Phase 19B: janela temporária Kanthor/Kaand, carga de cura e dedupe causal.
+        public CindarsHope.Skills.Runtime.CombatCapstoneSaveData CombatCapstones;
         public BestiarySaveData Bestiary;
         public CompanionManagerSaveData Companions;
         public QuestStateSectionSaveData Quests;
@@ -105,6 +113,8 @@ namespace CindarsHope.Save
         public int Gold;
         public int CurrentHunger;
         public int MaxHunger;
+        // Campo aditivo: saves anteriores desserializam como 0 e preservam o comportamento legado.
+        public float HungerFractionalDrainAccumulator;
         public int CurrentMana;
         public int MaxMana;
         public Vector2 PlayerPosition;

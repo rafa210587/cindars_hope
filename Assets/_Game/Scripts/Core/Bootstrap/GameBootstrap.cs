@@ -248,6 +248,7 @@ namespace CindarsHope.Core.Bootstrap
             // arch: quebra do par mutuo Core|Inventory (2026-07-15) — movido para depois de
             // InitializeBootstrapRuntimeServices() porque e ali que InventoryManager.InitializeFromBootstrap
             // agora popula os starting items (antes rodava mais cedo, via chamada direta removida acima).
+            ConfigureEquipmentDurabilityResolver();
             EquipStarterCombatLoadout();
 
             // SPEC 14A-FIX14: drop hotbar bindings that don't have a matching item in the inventory.
@@ -307,6 +308,27 @@ namespace CindarsHope.Core.Bootstrap
         // WeaponDataSO (Type=Bow) e o ProjectilePrefab; flecha basica e a municao equipavel canonica.
         private const string StarterBowItemId = "item_weapon_bow_wood";
         private const string StarterArrowItemId = "item_ammo_arrow_basic";
+
+        private void ConfigureEquipmentDurabilityResolver()
+        {
+            var equipmentRuntime = DomainManagerRegistry.Get<IEquipmentRuntime>();
+            equipmentRuntime?.ConfigureWeaponDurabilityResolver(itemInstanceId =>
+            {
+                if (string.IsNullOrWhiteSpace(itemInstanceId) || _weaponDatabase == null
+                    || !(_itemDatabase is IWeaponItemCatalog itemCatalog))
+                    return null;
+                if (!itemCatalog.TryGetWeaponId(itemInstanceId, out var weaponId))
+                {
+                    var separator = itemInstanceId.IndexOf('#');
+                    var itemId = separator > 0 ? itemInstanceId.Substring(0, separator) : itemInstanceId;
+                    if (itemId == itemInstanceId || !itemCatalog.TryGetWeaponId(itemId, out weaponId))
+                        return null;
+                }
+                return _weaponDatabase.TryGetById(weaponId, out var weapon) && weapon != null
+                    ? weapon.DurabilityMax
+                    : (int?)null;
+            });
+        }
 
         // Deixa arco + flecha equipados num jogo novo. So preenche maos VAZIAS (num load, o
         // EquipmentManager limpa e reconstroi do save depois — o save sempre vence).

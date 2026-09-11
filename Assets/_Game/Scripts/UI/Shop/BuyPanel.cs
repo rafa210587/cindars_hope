@@ -150,9 +150,7 @@ namespace CindarsHope.UI.Shop
                     continue;
                 }
 
-                var unitPrice = entry.BuyPriceOverride > 0
-                    ? entry.BuyPriceOverride
-                    : Mathf.Max(1, Mathf.RoundToInt(itemData.BaseValue * session.ShopData.BuyPriceMultiplier));
+                var unitPrice = ShopManager.CalculateBuyPrice(itemData, entry, session.ShopData);
                 var item = Instantiate(_itemPrefab, _itemsContainer);
                 item.gameObject.SetActive(true);
                 item.Initialize(itemData, session.GetItemStock(entry.ItemId), unitPrice, OnItemBuyClicked, ShowItemDetails);

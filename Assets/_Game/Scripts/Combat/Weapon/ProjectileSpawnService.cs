@@ -53,6 +53,14 @@ namespace CindarsHope.Combat.Weapon
             }
 
             projectileBehaviour.SetMaxHits(request.MaxHits);
+            projectileBehaviour.SetSkillHitPayload(request.HitPolicy, request.PostureDamageMultiplier,
+                request.SourceCasterRuntimeId, request.StopOnSolidObstacle);
+            projectileBehaviour.SetCombatContext(request.ImpactDamageResolver, request.SourceKind,
+                request.SpellDiscipline,
+                request.SourceInstanceId, request.ActionToken, request.CanTriggerCapstones,
+                request.CanTriggerStatusEffects, request.CanTriggerReactions);
+            projectileBehaviour.SetTargetedImpactDamageResolver(
+                request.TargetedImpactDamageResolver);
             // fable_48: tags de material/elemento da muniÃ§Ã£o (flecha) anexadas ANTES do Initialize;
             // viajam ao DamageRequest no impacto (matching de vulnerabilidade F06). Null = sem tags.
             projectileBehaviour.SetAppliedTags(request.AppliedTags);

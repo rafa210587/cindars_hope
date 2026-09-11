@@ -2,6 +2,7 @@ using CindarsHope.Combat;
 using CindarsHope.Core.Time;
 using CindarsHope.Gameplay.Input;
 using CindarsHope.Skills.Runtime.Effects;
+using CindarsHope.Skills.Runtime;
 using CindarsHope.UI.Routing;
 using UnityEngine;
 
@@ -106,6 +107,7 @@ namespace CindarsHope.Composition
 
             State = RuntimeCompositionState.NotInstalled;
             CraftingRuntimeInstaller.Uninstall();
+            ItemRuntimeInstaller.Uninstall();
             _instance = null;
         }
 
@@ -118,7 +120,9 @@ namespace CindarsHope.Composition
         private void OnDisable()
         {
             if (object.ReferenceEquals(_instance, this))
+            {
                 CraftingRuntimeInstaller.Uninstall();
+            }
         }
 
         private static void NormalizeDestroyedInstance()
@@ -126,6 +130,7 @@ namespace CindarsHope.Composition
             if (!object.ReferenceEquals(_instance, null) && _instance == null)
             {
                 CraftingRuntimeInstaller.Uninstall();
+                ItemRuntimeInstaller.Uninstall();
                 _instance = null;
                 State = RuntimeCompositionState.NotInstalled;
             }
@@ -143,6 +148,8 @@ namespace CindarsHope.Composition
             CombatStateTrackerBootstrap.Install();
             GameplayInputRouter.Install(_instance != null ? _instance.transform : null);
             ActiveSkillExecutionController.Install();
+            SurvivalSkillRuntimeCoordinator.Install(_instance != null ? _instance.transform : null);
+            EfficiencyMarkRuntimeCoordinator.Install(_instance != null ? _instance.transform : null);
             CraftingRuntimeInstaller.Install();
             CaveRuntimeInstaller.Install(_instance != null ? _instance.transform : null);
             State = RuntimeCompositionState.Ready;

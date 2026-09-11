@@ -29,6 +29,17 @@ namespace CindarsHope.Player
             public float BowProjectileSpeed;       // BowProjectileSpeedFlat
             public float DodgeCostReduction;        // DodgeCostReduction (0.10 == -10% dodge stamina)
             public float StatusDurationReduction;   // StatusDurationReduction (0.10 == -10% status time)
+            public float MeleeAttackBonus;
+            public float MagicAttackBonus;
+            public float ArcaneBoltDamageBonus;
+            public float DualWieldRecoverySpeed;
+            public float BowRecoverySpeed;
+            public float ManaRegenBasePercent;
+            public float TerrainPenaltyRecovery;
+            public float KitingMoveSpeedBonus;
+            public float GuardedDefenseBonus;
+            public float TwoHandedDamageBonus;
+            public float StationCommonMaterialReduction;
         }
 
         public static DerivedStats Calculate(
@@ -98,9 +109,19 @@ namespace CindarsHope.Player
                         // fable_29 (emenda V3 item 8): the five formerly-dead modifiers, now consumed.
                         case SkillModifierType.BowProjectileSpeedFlat:    stats.BowProjectileSpeed += mod.Value; break;
                         case SkillModifierType.DualWieldAttackSpeedBonus: stats.AttackSpeed += mod.Value; break;
-                        case SkillModifierType.TwoHandedDamageBonus:      stats.Attack += (int)mod.Value; break;
+                        case SkillModifierType.TwoHandedDamageBonus:      stats.TwoHandedDamageBonus += mod.Value; break;
                         case SkillModifierType.DodgeCostReduction:        stats.DodgeCostReduction += mod.Value; break;
                         case SkillModifierType.StatusDurationReduction:   stats.StatusDurationReduction += mod.Value; break;
+                        case SkillModifierType.MeleeAttackFlat:           stats.MeleeAttackBonus += mod.Value; break;
+                        case SkillModifierType.MagicAttackFlat:           stats.MagicAttackBonus += mod.Value; break;
+                        case SkillModifierType.ArcaneBoltDamageFlat:      stats.ArcaneBoltDamageBonus += mod.Value; break;
+                        case SkillModifierType.DualWieldRecoverySpeed:    stats.DualWieldRecoverySpeed += mod.Value; break;
+                        case SkillModifierType.BowRecoverySpeed:          stats.BowRecoverySpeed += mod.Value; break;
+                        case SkillModifierType.ManaRegenBasePercent:      stats.ManaRegenBasePercent += mod.Value; break;
+                        case SkillModifierType.TerrainPenaltyRecovery:    stats.TerrainPenaltyRecovery += mod.Value; break;
+                        case SkillModifierType.KitingMoveSpeedBonus:      stats.KitingMoveSpeedBonus += mod.Value; break;
+                        case SkillModifierType.GuardedDefenseFlat:        stats.GuardedDefenseBonus += mod.Value; break;
+                        case SkillModifierType.StationCommonMaterialReduction: stats.StationCommonMaterialReduction += mod.Value; break;
                     }
                 }
             }

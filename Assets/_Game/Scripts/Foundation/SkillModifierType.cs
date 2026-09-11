@@ -5,32 +5,42 @@ namespace CindarsHope.Foundation
 {
     public enum SkillModifierType
     {
-        AttackFlat,
-        DefenseFlat,
-        MaxHPFlat,
-        MaxStaminaFlat,
-        MaxManaFlat,
-        ManaRegenFlat,
-        BowRangeFlat,
-        BowDamageFlat,
-        // fable_29 (emenda V3 item 8): the five formerly-dead modifiers below are now ROUTED into
-        // the DerivedStats provider (F02) via DerivedStatsCalculator — none is retired, none is
-        // left dangling unaggregated on a node. Two reach gameplay TODAY (AttackSpeed/Attack are
-        // read by combat); three aggregate into a derived field whose downstream READER is pending
-        // (same "efeito pendente" discipline as the named hooks — the value is computed/exposed,
-        // the consumer reads it when its system lands). Marked [TODAY] / [reader pending] below.
-        BowProjectileSpeedFlat,       // → DerivedStats.BowProjectileSpeed   [reader pending: bow projectile speed]
-        CraftTimeReductionPercent,
-        RepairEfficiencyBonus,
-        HungerDrainReduction,
-        ToxicResistanceBonus,
-        ColdResistanceBonus,
-        HeatResistanceBonus,
-        DualWieldAttackSpeedBonus,    // → DerivedStats.AttackSpeed          [TODAY: combat reads AttackSpeed]
-        TwoHandedDamageBonus,         // → DerivedStats.Attack               [TODAY: combat reads Attack]
-        DodgeCostReduction,           // → DerivedStats.DodgeCostReduction   [reader pending: dodge stamina cost]
-        StatusDurationReduction,      // → DerivedStats.StatusDurationReduction [reader pending: player status duration]
-        MoveSpeedBonus,
-        AttackSpeedBonus
+        AttackFlat = 0,
+        DefenseFlat = 1,
+        MaxHPFlat = 2,
+        MaxStaminaFlat = 3,
+        MaxManaFlat = 4,
+        ManaRegenFlat = 5,
+        BowRangeFlat = 6,
+        BowDamageFlat = 7,
+        // Legacy ordinals remain pinned because existing ScriptableObjects serialize this enum as int.
+        // Phase 17 catalogs no longer use the generic attack/recovery entries for effects whose
+        // weapon or action identity matters.
+        BowProjectileSpeedFlat = 8,
+        CraftTimeReductionPercent = 9,
+        RepairEfficiencyBonus = 10,
+        HungerDrainReduction = 11,
+        ToxicResistanceBonus = 12,
+        ColdResistanceBonus = 13,
+        HeatResistanceBonus = 14,
+        DualWieldAttackSpeedBonus = 15,
+        TwoHandedDamageBonus = 16,
+        DodgeCostReduction = 17,
+        StatusDurationReduction = 18,
+        MoveSpeedBonus = 19,
+        AttackSpeedBonus = 20,
+
+        // Phase 17: typed channels retain gameplay identity through DerivedStats. Values are
+        // per-rank payloads; equipment/action gates belong to their downstream consumer.
+        MeleeAttackFlat = 21,
+        MagicAttackFlat = 22,
+        ArcaneBoltDamageFlat = 23,
+        DualWieldRecoverySpeed = 24,
+        BowRecoverySpeed = 25,
+        ManaRegenBasePercent = 26,
+        TerrainPenaltyRecovery = 27,
+        KitingMoveSpeedBonus = 28,
+        GuardedDefenseFlat = 29,
+        StationCommonMaterialReduction = 30
     }
 }

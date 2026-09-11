@@ -127,9 +127,8 @@ namespace CindarsHope.Fonte
             }
 
             var gold = playerManager.CurrentGold;
-            if (skillManager.TryRespec(ref gold, progressionManager.Level))
+            if (skillManager.TryRespec(ref gold, progressionManager.Level, playerManager.SetGold))
             {
-                playerManager.SetGold(gold);
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("Suas habilidades retornaram a Fonte."));
             }
             else

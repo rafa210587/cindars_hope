@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player.Movement
@@ -52,16 +53,22 @@ namespace CindarsHope.Player.Movement
                 return;
             }
 
-            if (_staminaManager != null && !_staminaManager.TrySpendStamina(_dodgeStaminaCost))
+            var modifier = DirectionalMobilityModifierProvider.Resolve(
+                MobilityActionKind.DodgeCommit, direction.x, direction.y);
+            float costMultiplier = DodgeCostModifierProvider.ResolveCurrent(modifier.CostMultiplier);
+            int effectiveCost = Mathf.CeilToInt(_dodgeStaminaCost * costMultiplier);
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(effectiveCost))
             {
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("Stamina insuficiente para dodge."));
                 return;
             }
 
             _lastDodgeTime = Time.time;
-            Debug.Log($"[PlayerDodgeController] Dodge requested direction={direction} distance={_dodgeDistance} targetObject={gameObject.name}");
+            float effectiveDistance = _dodgeDistance +
+                CavebornCapstoneProvider.ResolveDodgeDistanceBonus();
+            Debug.Log($"[PlayerDodgeController] Dodge requested direction={direction} distance={effectiveDistance} targetObject={gameObject.name}");
 
-            if (!_displacementResolver.TryDisplace(direction, _dodgeDistance, _dodgeDuration, () =>
+            if (!_displacementResolver.TryDisplace(direction, effectiveDistance, _dodgeDuration, () =>
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("Dodge!"))))
             {
                 GameEventBus.Publish(new PlayerActionFeedbackEvent("Dodge bloqueado: movimento indisponivel."));

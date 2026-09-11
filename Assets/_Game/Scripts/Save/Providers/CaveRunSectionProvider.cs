@@ -43,7 +43,7 @@ namespace CindarsHope.Save.Providers
         public void Restore(object sectionData)
         {
             var data = sectionData as CaveRunSaveData;
-            if (data == null || !data.HasActiveRun)
+            if (data == null || string.IsNullOrWhiteSpace(data.RunSeed))
             {
                 return;
             }
@@ -58,8 +58,17 @@ namespace CindarsHope.Save.Providers
             var restoredRun = CaveRunSaveMapper.FromSaveData(data);
             if (restoredRun != null)
             {
-                CaveRunStateCache.Set(restoredRun);
-                Debug.Log($"CaveRunSectionProvider: cave run restaurada (nível {restoredRun.CurrentCaveLevel}, seed {restoredRun.CaveRunSeed}).");
+                var activeRunManager = CaveRunManager.Instance;
+                if (activeRunManager != null)
+                {
+                    activeRunManager.RestoreRuntimeState(restoredRun);
+                }
+                else
+                {
+                    CaveRunStateCache.Set(restoredRun);
+                }
+
+                Debug.Log($"CaveRunSectionProvider: cave state restaurado (nível {restoredRun.CurrentCaveLevel}, seed {restoredRun.CaveRunSeed}, runId {restoredRun.CaveRunId}).");
             }
         }
     }

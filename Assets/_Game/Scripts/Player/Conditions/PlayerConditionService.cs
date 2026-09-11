@@ -2,6 +2,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Player.Movement;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player.Conditions
@@ -178,7 +179,8 @@ namespace CindarsHope.Player.Conditions
             var phaseHours = phase == GamePhaseChangedEvent.GamePhase.Day ? DayPhaseHours : NightPhaseHours;
             if (deltaNormalized > 0f)
             {
-                _fatigueSystem.AddTimePassingFatigue(deltaNormalized * phaseHours);
+                _fatigueSystem.AddTimePassingFatigue(
+                    deltaNormalized * phaseHours * ResolveNaturalFatigueMultiplier());
                 ApplyThresholdEffects();
             }
 
@@ -198,7 +200,8 @@ namespace CindarsHope.Player.Conditions
         {
             if (_previousStamina >= 0 && evt.CurrentStamina < _previousStamina)
             {
-                _fatigueSystem.AddFatigueFromStaminaSpend(_previousStamina - evt.CurrentStamina);
+                _fatigueSystem.AddFatigueFromStaminaSpend(
+                    (_previousStamina - evt.CurrentStamina) * ResolveNaturalFatigueMultiplier());
                 ApplyThresholdEffects();
             }
 
@@ -315,6 +318,13 @@ namespace CindarsHope.Player.Conditions
             {
                 _fatigueSystem = new FatigueSystem();
             }
+        }
+
+        private float ResolveNaturalFatigueMultiplier()
+        {
+            var world = _playerController != null ? _playerController.transform.position : transform.position;
+            return NaturalSurvivalRateModifierProvider.Resolve(
+                NaturalSurvivalRateChannel.FatigueGain, world.x, world.y);
         }
     }
 

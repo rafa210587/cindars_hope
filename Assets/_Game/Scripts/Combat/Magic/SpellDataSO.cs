@@ -14,6 +14,7 @@ namespace CindarsHope.Combat.Magic
         public Sprite Icon;
         public SpellType Type;
         public DamageType DamageType = DamageType.Arcane;
+        public SpellDiscipline Discipline = SpellDiscipline.None;
         public int BaseDamage;
         public int ManaCost;
         public float CooldownSeconds = 1f;
