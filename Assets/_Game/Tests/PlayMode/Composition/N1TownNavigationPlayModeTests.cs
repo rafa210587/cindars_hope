@@ -220,8 +220,13 @@ namespace CindarsHope.Tests.PlayMode.NPC
                 Assert.IsTrue(messages.Exists(m => m.Contains($"Waiting at safe position npc={recoveryNpcId}") &&
                     m.Contains("reason=route_blocked") && m.Contains("from=") && m.Contains("to=")),
                     "after the bounded budget the blocked actor must stop at its physical safe side");
-                Assert.IsFalse(actorCollider.Distance(wallCollider).isOverlapped,
-                    "recovery may wait in contact but must not place the NPC inside the obstacle");
+                var separation = actorCollider.Distance(wallCollider);
+                Assert.IsFalse(separation.isOverlapped,
+                    "recovery may wait in contact but must not place the NPC inside the obstacle; " +
+                    $"distance={separation.distance:F4} actor={actor.transform.position} " +
+                    $"actorBounds={actorCollider.bounds} start={before} routeStart={route[0]} " +
+                    $"wall={wall.transform.position} wallBounds={wallCollider.bounds} " +
+                    $"segment={firstSegment} replans={diagnostic.Replans}");
                 Assert.AreEqual(saveBefore, SnapshotPersistentFiles(), "onscreen replan/wait must not write save");
                 Application.logMessageReceived -= capture;
             }
