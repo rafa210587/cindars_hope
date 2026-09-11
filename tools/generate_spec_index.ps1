@@ -13,6 +13,12 @@
 .NOTES
   Idempotente, somente leitura sobre as specs. Nao usa Play Mode nem Unity.
   Rode da raiz do repo:  pwsh -File tools/generate_spec_index.ps1
+
+  Saida byte-identica em Windows PowerShell 5.1 e PowerShell 7. Nao usar
+  ConvertTo-Json nem Set-Content -Encoding utf8 aqui: o 5.1 escapa "&" e "'"
+  como sequencias unicode e grava BOM; o 7 nao. Como o hook
+  sync-harness-and-tracing chama 'powershell', isso gerava churn de milhares
+  de linhas a cada Stop, alternando conforme o shell que rodou por ultimo.
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -40,6 +46,34 @@ function Get-Field([string]$text, [string]$name) {
         return ($m.Groups[1].Value -replace '`','' -replace '\*+\s*$','' -replace '^\s*\*+','').Trim()
     }
     return ''
+}
+
+function ConvertTo-JsonStringLiteral([string]$value) {
+    # Escapa apenas o minimo exigido por RFC 8259. Deliberadamente NAO escapa
+    # caracteres nao-ASCII nem "&"/"'": o arquivo e UTF-8 e o acento/simbolo
+    # literal e valido, alem de manter o diff legivel.
+    $sb = [System.Text.StringBuilder]::new()
+    foreach ($ch in $value.ToCharArray()) {
+        switch ($ch) {
+            '"'      { [void]$sb.Append('\"');  continue }
+            '\'      { [void]$sb.Append('\\');  continue }
+            "`b"     { [void]$sb.Append('\b');  continue }
+            "`f"     { [void]$sb.Append('\f');  continue }
+            "`n"     { [void]$sb.Append('\n');  continue }
+            "`r"     { [void]$sb.Append('\r');  continue }
+            "`t"     { [void]$sb.Append('\t');  continue }
+            default  {
+                if ([int]$ch -lt 0x20) { [void]$sb.Append('\u{0:x4}' -f [int]$ch) }
+                else                   { [void]$sb.Append($ch) }
+            }
+        }
+    }
+    return $sb.ToString()
+}
+
+function Write-Utf8NoBom([string]$path, [string]$text) {
+    # Set-Content -Encoding utf8 grava BOM no 5.1 e sem BOM no 7; fixamos sem BOM.
+    [System.IO.File]::WriteAllText($path, $text, (New-Object System.Text.UTF8Encoding $false))
 }
 
 $rows = @()
@@ -80,8 +114,25 @@ $bucketOrder = @{ 'Fila-FABLE'=0; 'Fila'=1; 'Closeout-MVP'=2; 'Build-Validated'=
 $rows = $rows | Sort-Object @{ Expression = { $bucketOrder[$_.bucket] } }, id
 
 # ---- JSON ----
+# Serializacao manual: ordem de chaves e espacamento fixos, independentes da
+# versao do PowerShell (ver .NOTES).
+$jsonKeys = @('id','bucket','status','wave','priority','type','domain','title','path')
+$jb = [System.Text.StringBuilder]::new()
+[void]$jb.Append("[`n")
+for ($i = 0; $i -lt $rows.Count; $i++) {
+    [void]$jb.Append("  {`n")
+    for ($k = 0; $k -lt $jsonKeys.Count; $k++) {
+        $key = $jsonKeys[$k]
+        $val = ConvertTo-JsonStringLiteral ([string]$rows[$i].$key)
+        $sep = if ($k -lt $jsonKeys.Count - 1) { ',' } else { '' }
+        [void]$jb.Append("    ""$key"": ""$val""$sep`n")
+    }
+    $sep = if ($i -lt $rows.Count - 1) { ',' } else { '' }
+    [void]$jb.Append("  }$sep`n")
+}
+[void]$jb.Append("]`n")
 $jsonPath = Join-Path $specsRoot 'SPEC_INDEX.json'
-$rows | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $jsonPath -Encoding utf8
+Write-Utf8NoBom $jsonPath $jb.ToString()
 
 # ---- Markdown ----
 $counts = $rows | Group-Object bucket | Sort-Object @{ Expression = { $bucketOrder[$_.Name] } }
@@ -103,7 +154,9 @@ foreach ($r in $rows) {
     [void]$sb.AppendLine("| $($r.id) | $($r.bucket) | $st | $wv | $dm | $($r.path) |")
 }
 $mdPath = Join-Path $specsRoot 'SPEC_INDEX.md'
-Set-Content -LiteralPath $mdPath -Value $sb.ToString() -Encoding utf8
+# O "`n" final preserva a linha em branco que Set-Content acrescentava, mantendo
+# diff zero contra o indice ja versionado.
+Write-Utf8NoBom $mdPath ($sb.ToString() + "`n")
 
 Write-Host "OK: $($rows.Count) specs indexadas"
 Write-Host "  -> $($mdPath.Substring($repo.Length + 1))"
