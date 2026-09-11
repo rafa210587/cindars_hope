@@ -315,6 +315,8 @@ namespace CindarsHope.Editor
                 () => CindarsHope.Editor.Validation.ValidateSceneTransitions.ValidateAll());
             ValidateStep("Validar layout FarmScene v4 (presenca dos elementos §32)",
                 () => CindarsHope.Editor.Validation.ValidateFarmSceneLayoutV4.Validate());
+            ValidateStep("Validar desvio das rotas da Town (grafo vs linha reta entre ancoras)",
+                () => CindarsHope.Editor.Validation.ValidateTownRouteDetourRatio.Validate());
             ValidateStep("Validar bindings de skin de inimigo (slugs existem; profiles cobertos)",
                 () => CindarsHope.Editor.EnemySkins.ValidateEnemySkinBindings.Validate());
             ValidateStep("Validar animacoes de caminhada dos NPCs (25 sprites fatiados por NPC)",
