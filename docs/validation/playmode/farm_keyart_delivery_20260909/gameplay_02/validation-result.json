@@ -1,0 +1,11 @@
+{
+  "status": "FAIL",
+  "views": 8,
+  "runtimeErrors": 0,
+  "sceneUnchanged": true,
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "failure": "Physical route proof failed or absent; inspect physicalRoutes.",
+  "physicalProbeActuallyExecuted": true,
+  "reason": "System.InvalidOperationException: Missing physical route landmark: Workbench\r\n  at CindarsHope.Editor.Validation.FarmPhysicalRouteProbe.<Targets>g__Approach|9_1 (System.String name, UnityEngine.Vector2 offset, CindarsHope.Editor.Validation.FarmPhysicalRouteProbe+<>c__DisplayClass9_0& ) [0x00043] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Validation\\FarmPhysicalRouteProbe.cs:140 \r\n  at CindarsHope.Editor.Validation.FarmPhysicalRouteProbe.Targets (CindarsHope.Player.PlayerController player) [0x00043] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Validation\\FarmPhysicalRouteProbe.cs:142 \r\n  at CindarsHope.Editor.Validation.FarmPhysicalRouteProbe.Evaluate (CindarsHope.Player.PlayerController player) [0x00108] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Validation\\FarmPhysicalRouteProbe.cs:54 "
+}

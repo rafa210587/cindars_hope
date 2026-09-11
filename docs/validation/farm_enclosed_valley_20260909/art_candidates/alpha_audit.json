@@ -1,0 +1,62 @@
+[
+  {
+    "path": "docs\\validation\\farm_enclosed_valley_20260909\\art_candidates\\cow_side_candidate_v1.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "alpha_bbox": [
+      209,
+      21,
+      1522,
+      984
+    ],
+    "fully_transparent": 1273697,
+    "fully_opaque": 0
+  },
+  {
+    "path": "docs\\validation\\farm_enclosed_valley_20260909\\art_candidates\\cow_side_candidate_v2.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "alpha_bbox": [
+      89,
+      21,
+      1490,
+      998
+    ],
+    "fully_transparent": 1276615,
+    "fully_opaque": 0
+  },
+  {
+    "path": "docs\\validation\\farm_enclosed_valley_20260909\\art_candidates\\sheep_side_candidate_v1.png",
+    "size": [
+      1448,
+      1086
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      81,
+      21,
+      1315,
+      1029
+    ],
+    "fully_transparent": 1293451,
+    "fully_opaque": 1381
+  }
+]

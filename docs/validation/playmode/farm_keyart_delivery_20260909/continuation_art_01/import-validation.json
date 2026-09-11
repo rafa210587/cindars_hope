@@ -1,0 +1,248 @@
+[
+  {
+    "id": "cliff_keyart_v1",
+    "asset": "Assets\\_Game\\Art\\Generated\\World\\props\\cliff_keyart_v1.png",
+    "raw": "art\\farm-pixelart-review\\raw\\cliff-keyart-v1.png",
+    "assetSha256": "981CF92F32E9C6A713A59FF96824E9E1CF0B69BFDDB07813EA15AA8D9FC4F028",
+    "rawSha256": "981CF92F32E9C6A713A59FF96824E9E1CF0B69BFDDB07813EA15AA8D9FC4F028",
+    "bytesIdentical": true,
+    "width": 2172,
+    "height": 724,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 549589,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "metaSha256": "73D1788DF81F77794164907BF055D02FC54C6C2EA843A09EF889F4CE4324300E",
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": "0",
+        "overridden": "0",
+        "maxTextureSize": "4096"
+      },
+      {
+        "target": "Standalone",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "WebGL",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      }
+    ],
+    "promptSummary": "art\\farm-pixelart-review\\prompts\\cliff-keyart-v1-summary.txt",
+    "promptSummarySha256": "E333DF9E1489953BA70578151311905D6C9D1AEC52706CA008AED16F039D3714"
+  },
+  {
+    "id": "reeds_keyart_v1",
+    "asset": "Assets\\_Game\\Art\\Generated\\World\\props\\reeds_keyart_v1.png",
+    "raw": "art\\farm-pixelart-review\\raw\\reeds-keyart-v1.png",
+    "assetSha256": "CE5A93008A30DB06B6396C2061D5174EF621A2604842FAAB5C3A8F3740624F12",
+    "rawSha256": "CE5A93008A30DB06B6396C2061D5174EF621A2604842FAAB5C3A8F3740624F12",
+    "bytesIdentical": true,
+    "width": 1313,
+    "height": 1198,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 1278903,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "metaSha256": "48BA0435B3009BB1F150DD23E612B4781EE129E99F39FA38079D4F4238F44847",
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": "0",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "Standalone",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "WebGL",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      }
+    ],
+    "promptSummary": "art\\farm-pixelart-review\\prompts\\reeds-keyart-v1-summary.txt",
+    "promptSummarySha256": "A154FF12C22DD157E973A043E6A8A061DA2D03708052F3F082A968279666A733"
+  },
+  {
+    "id": "lily_pads_keyart_v1",
+    "asset": "Assets\\_Game\\Art\\Generated\\World\\props\\lily_pads_keyart_v1.png",
+    "raw": "art\\farm-pixelart-review\\raw\\lily-pads-keyart-v1.png",
+    "assetSha256": "DF0CFFC4E191DA24C3D49E6B41DCDEA03951D88ABC9328FAC63876372FC38AA0",
+    "rawSha256": "DF0CFFC4E191DA24C3D49E6B41DCDEA03951D88ABC9328FAC63876372FC38AA0",
+    "bytesIdentical": true,
+    "width": 1428,
+    "height": 1102,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 1263455,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "metaSha256": "2EB74BE22BA0969FE52066F4699FDAE9A192D60BB6A5A2129A49A78A94EEE180",
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": "0",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "Standalone",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "WebGL",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      }
+    ],
+    "promptSummary": "art\\farm-pixelart-review\\prompts\\lily-pads-keyart-v1-summary.txt",
+    "promptSummarySha256": "5DB9BC7C7E849987D9FEB2F25571BD58A0123D3206625667B13CBEFC77A68825"
+  },
+  {
+    "id": "ground_water_keyart_v1",
+    "asset": "Assets\\_Game\\Art\\Generated\\World\\tiles\\ground_water_keyart_v1.png",
+    "raw": "art\\farm-pixelart-review\\raw\\water-calm-keyart-v1.png",
+    "assetSha256": "8ADA4301738B0BD523B81979084B5691086830AD4EE2BBC4BB4388FED68B7409",
+    "rawSha256": "8ADA4301738B0BD523B81979084B5691086830AD4EE2BBC4BB4388FED68B7409",
+    "bytesIdentical": true,
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGB",
+    "alphaExtrema": null,
+    "transparentPixels": 0,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "metaSha256": "E9C26E19560EDEF272D53B472D932E38728AED3A35696BDB954EA2B333A86496",
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": "0",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "Standalone",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "WebGL",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      }
+    ],
+    "promptSummary": "art\\farm-pixelart-review\\prompts\\water-calm-keyart-v1-summary.txt",
+    "promptSummarySha256": "6A00FDCEC690685E715B695BC1401AF8438A751DB03CBF5DE9FFC1BD2212DAD3"
+  },
+  {
+    "id": "shore_bank_keyart_v1",
+    "asset": "Assets\\_Game\\Art\\Generated\\World\\props\\shore_bank_keyart_v1.png",
+    "raw": "art\\farm-pixelart-review\\raw\\shore-bank-keyart-v1.png",
+    "assetSha256": "328F1FBE10AB9E57D7C7C43A99B4D9261DBB3C4EE82301468152544347A6605D",
+    "rawSha256": "328F1FBE10AB9E57D7C7C43A99B4D9261DBB3C4EE82301468152544347A6605D",
+    "bytesIdentical": true,
+    "width": 2172,
+    "height": 724,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 1211288,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "metaSha256": "0A682473271CF5CD69EBDF52D115CFE9F202D8C179BE4267087944A414051566",
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": "0",
+        "overridden": "0",
+        "maxTextureSize": "4096"
+      },
+      {
+        "target": "Standalone",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "WebGL",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      }
+    ],
+    "promptSummary": "art\\farm-pixelart-review\\prompts\\shore-bank-keyart-v1-summary.txt",
+    "promptSummarySha256": "8E13969BE0600BA0D0F4286A69C5695F91F369130924BE9145C77C8141A1FFBD"
+  },
+  {
+    "id": "ground_grass_keyart_v2",
+    "asset": "Assets\\_Game\\Art\\Generated\\World\\tiles\\ground_grass_keyart_v2.png",
+    "raw": "art\\farm-pixelart-review\\raw\\ground-grass-keyart-v2.png",
+    "assetSha256": "6B5419E57A843071D26F1B2F58FC1F4D079D170E5BAF4278945ADD3231299E4A",
+    "rawSha256": "6B5419E57A843071D26F1B2F58FC1F4D079D170E5BAF4278945ADD3231299E4A",
+    "bytesIdentical": true,
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGB",
+    "alphaExtrema": null,
+    "transparentPixels": 0,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "metaSha256": "B2FDF823BDD61EAD22713076B1C221067BE4372276E37C40CCE0D030E199B244",
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": "0",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "Standalone",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      },
+      {
+        "target": "WebGL",
+        "compression": "1",
+        "overridden": "0",
+        "maxTextureSize": "2048"
+      }
+    ],
+    "promptSummary": "art\\farm-pixelart-review\\prompts\\ground-grass-keyart-v2-summary.txt",
+    "promptSummarySha256": "3A4C87B42043DBD572B7027F56DDCFB35048F2B313F5A7DB452AE25738F13050"
+  }
+]

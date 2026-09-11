@@ -90,6 +90,22 @@ Defines enemy roles, combat interactions, status effects, and damage systems.
 
 - **Applies to:** Multi-unit combat systems
 
+### Rule: Strong Control Diminishing Returns
+
+- **Rule:** Strong control shares one transient diminishing-returns sequence per target:
+  - first eligible application uses 100% of its already-resisted duration;
+  - second uses 60%;
+  - third uses 30% and starts 4 seconds of immunity;
+  - attempts during immunity do not apply or advance the sequence;
+  - after immunity expires, the next eligible application restarts at 100%.
+- **Resistance order:** Target-class resistance is applied before diminishing returns. Elite and
+  mini-boss taunt duration is 60% of the authored duration. Boss taunt is ineligible outside an
+  explicit vulnerability/control window; inside that window it uses 30% before diminishing returns.
+- **Scope:** Taunt and future effects explicitly classified as strong control. Damage, posture damage,
+  knockback distance and ordinary status refresh do not advance this sequence.
+- **Persistence:** Transient combat state only; it is not written to cave snapshots or save data.
+- **Source:** `spec_skills_12_melee_movement_posture_v1`
+
 ---
 
 ## Status Effects (MVP Roster)
@@ -119,5 +135,5 @@ Defines enemy roles, combat interactions, status effects, and damage systems.
 
 ---
 
-*Last Reviewed: 2026-06-01 (SPEC_DOCS_38)*  
+*Last Reviewed: 2026-09-10 (spec_skills_12_melee_movement_posture_v1)*
 *Migrated from: FASE9G Amendment, SPEC_09*

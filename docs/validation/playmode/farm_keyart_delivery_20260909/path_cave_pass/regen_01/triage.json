@@ -1,0 +1,15 @@
+{
+  "status": "FAIL",
+  "category": "Editor generation invariant",
+  "error": "Farm forest cluster cannot place stable tree ID 43",
+  "file": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+  "line": 146,
+  "unityExit": 1,
+  "scanExit": 1,
+  "newPngCount": 0,
+  "playMode": "NOT RUN: generation failed",
+  "savedSceneBefore": "EB848C096E5E13CD015E61516EE0E7E11374708CBB22B37CF22CB9515F723D16",
+  "savedSceneAfter": "EB848C096E5E13CD015E61516EE0E7E11374708CBB22B37CF22CB9515F723D16",
+  "savedSceneUnchanged": true,
+  "nextAction": "Implementation owner adjusts bounded forest placement while preserving IDs and clearance; await new freeze."
+}

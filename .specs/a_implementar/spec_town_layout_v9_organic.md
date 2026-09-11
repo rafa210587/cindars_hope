@@ -5,6 +5,10 @@
 **Dependências:** Fundação de rendering v2 já aplicada (sorting layers Ground/World/Roof + Y-sort custom axis Y + pivots BottomCenter — concluída em 2026-07-03).
 **Origem:** Pedido direto do usuário (2026-07-03): aproximar a TownScene da imagem de referência gerada (cidade murada, portão sul, praça central com estátua/fonte, distritos), podendo ser MAIS ORGÂNICO que a grade rígida da referência.
 
+> **Proposta sucessora 2026-09-10:** esta spec é referência histórica do layout120×90 e não deve ser
+> reexecutada para reverter o estado atual. A spec aprovada `spec_town_spatial_expansion_and_access_v1`
+> substitui o contrato dimensional por160×112 a partir da autorização humana de 2026-09-10.
+
 ---
 
 ## Objetivo

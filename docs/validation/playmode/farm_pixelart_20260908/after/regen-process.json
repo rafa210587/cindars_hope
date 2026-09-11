@@ -1,0 +1,22 @@
+{
+  "startedUtc": "2026-09-09T02:07:49.9484144Z",
+  "finishedUtc": "2026-09-09T02:08:02.8151611Z",
+  "exitCode": 0,
+  "command": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.7f1\\Editor\\Unity.exe \"-batchmode\" \"-quit\" \"-projectPath\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\" \"-executeMethod\" \"CindarsHope.Editor.Dev.FarmSceneCapture.RegenAndCapture\" \"-logFile\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\\docs\\validation\\playmode\\farm_pixelart_20260908\\after\\regen-unity.log\"",
+  "backupRoot": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\art\\farm-pixelart-review\\backups\\20260908_230040",
+  "sourceInputs": [
+    {
+      "path": "Assets/_Game/Scripts/Editor/Dev/FarmSceneCapture.cs",
+      "sha256": "BEA4DE3808471033D720B9D1C511BEB883DD1787F8DE94D4E37D21492E6C5456"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Dev/FarmPlayModeCaptureSession.cs",
+      "sha256": "A705817D1DBFF37DD23A1BFE99AA67DE2DDC0743F380F4EBDCDDD6187CFD7206"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+      "sha256": "0F7B85AB88C6CA9009B2F7AA57E21FA3FF4B74C902705194A4AA3913EA778CF4"
+    }
+  ],
+  "sceneAfterSha256": "1036E1D21A5B501218F86D1937D66D34C77D155525A2B78CFE2E4202402EDC74"
+}

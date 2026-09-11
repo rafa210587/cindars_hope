@@ -1,0 +1,157 @@
+{
+  "status": "PASS",
+  "sceneSha256": "1C6311A582901D2F69A60A3D3E90E43940E95C3D18E8D1485CA3C7944F764844",
+  "sceneMatchesMetadataBefore": true,
+  "sceneMatchesMetadataAfter": true,
+  "sceneMatchesSnapshot": true,
+  "views": 8,
+  "customAxisYViews": 8,
+  "routes": [
+    {
+      "id": "house",
+      "status": "PASS",
+      "points": 3
+    },
+    {
+      "id": "cultivation",
+      "status": "PASS",
+      "points": 44
+    },
+    {
+      "id": "well_visual",
+      "status": "PASS",
+      "points": 56
+    },
+    {
+      "id": "fountain_approach",
+      "status": "PASS",
+      "points": 79
+    },
+    {
+      "id": "cave_entrance_approach",
+      "status": "PASS",
+      "points": 92
+    },
+    {
+      "id": "greenhouse_approach",
+      "status": "PASS",
+      "points": 16
+    },
+    {
+      "id": "fishing_approach",
+      "status": "PASS",
+      "points": 44
+    },
+    {
+      "id": "workbench",
+      "status": "PASS",
+      "points": 16
+    },
+    {
+      "id": "forge",
+      "status": "PASS",
+      "points": 12
+    },
+    {
+      "id": "cooking",
+      "status": "PASS",
+      "points": 16
+    },
+    {
+      "id": "bridge",
+      "status": "PASS",
+      "points": 22
+    },
+    {
+      "id": "east_bridge_exit",
+      "status": "PASS",
+      "points": 28
+    },
+    {
+      "id": "animals_west",
+      "status": "PASS",
+      "points": 108
+    },
+    {
+      "id": "animals_east",
+      "status": "PASS",
+      "points": 66
+    },
+    {
+      "id": "coop_door_approach",
+      "status": "PASS",
+      "points": 106
+    },
+    {
+      "id": "barn_door_approach",
+      "status": "PASS",
+      "points": 92
+    }
+  ],
+  "visitedNodes": 6455,
+  "selectionPass": 5,
+  "runtimeErrors": 0,
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "saveHashSetsEqual": true,
+  "sourceDrift": [],
+  "testInputs": [
+    {
+      "path": "Assets/_Game/Tests/EditMode/Farm/FarmLevel1LayoutContractTests.cs",
+      "testSha": "F255F05C90FEF4A6630CF89C63F3CF520DFB3135060916277742BF41BAE93A55",
+      "currentSha": "F255F05C90FEF4A6630CF89C63F3CF520DFB3135060916277742BF41BAE93A55",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneSpatialContractTests.cs",
+      "testSha": "38D1780F1DC55359F1AE5F2EBA42A9525268DF10BE7FCB716DBED58F73A24D05",
+      "currentSha": "38D1780F1DC55359F1AE5F2EBA42A9525268DF10BE7FCB716DBED58F73A24D05",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneNavigationContractTests.cs",
+      "testSha": "D11B48BEA2EDADA600D0DBB0628FE7BBA04BCC899149362CC2AB7C762308F29D",
+      "currentSha": "D11B48BEA2EDADA600D0DBB0628FE7BBA04BCC899149362CC2AB7C762308F29D",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/FarmLevel1LayoutContract.cs",
+      "testSha": "EC1CAAA4D8FAB74E33964E09D398E27DC14B1DB24349F591E0103973A6015918",
+      "currentSha": "EC1CAAA4D8FAB74E33964E09D398E27DC14B1DB24349F591E0103973A6015918",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs",
+      "testSha": "28E2CBAE84C36DD5AB0843BFC7DE4908225CCCEFABAC2C9E8D879BD67384574C",
+      "currentSha": "28E2CBAE84C36DD5AB0843BFC7DE4908225CCCEFABAC2C9E8D879BD67384574C",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationPolicy.cs",
+      "testSha": "A241F722880EB9C833799DA4A6F0D40C5920C1B3016EEB3C6B2567D21CCE15FF",
+      "currentSha": "A241F722880EB9C833799DA4A6F0D40C5920C1B3016EEB3C6B2567D21CCE15FF",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationRaster.cs",
+      "testSha": "3BDC5FC38B1D2EDF375991F9DEF9A502B4129A1C51C4A95316B416B4DA73E771",
+      "currentSha": "3BDC5FC38B1D2EDF375991F9DEF9A502B4129A1C51C4A95316B416B4DA73E771",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+      "testSha": "7852B93D4C94FA57725E4DEBF06D5F7618AEAC9D4672F9E0A86DA9ADC08D3938",
+      "currentSha": "7852B93D4C94FA57725E4DEBF06D5F7618AEAC9D4672F9E0A86DA9ADC08D3938",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs",
+      "testSha": "2D72E8D7018C25C843B591C5128E5373F8DEB9322CAA80CD8AC2F252F11C2972",
+      "currentSha": "2D72E8D7018C25C843B591C5128E5373F8DEB9322CAA80CD8AC2F252F11C2972",
+      "same": true
+    }
+  ],
+  "oldArtInputs": 300,
+  "oldArtDrift": [],
+  "unityActive": 0
+}

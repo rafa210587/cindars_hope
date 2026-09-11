@@ -1,0 +1,132 @@
+[
+  {
+    "name": "farm_capture.png",
+    "changedPixels": 33861,
+    "totalPixels": 1920000,
+    "changedPercent": 1.76359375,
+    "meanAbsoluteChannelDifference": 0.31597161458333334,
+    "changedBounds": [
+      179,
+      140,
+      1369,
+      1005
+    ]
+  },
+  {
+    "name": "farm_capture_animals.png",
+    "changedPixels": 19349,
+    "totalPixels": 1920000,
+    "changedPercent": 1.0077604166666667,
+    "meanAbsoluteChannelDifference": 0.1650328125,
+    "changedBounds": [
+      203,
+      0,
+      1599,
+      862
+    ]
+  },
+  {
+    "name": "farm_capture_closeup.png",
+    "changedPixels": 7602,
+    "totalPixels": 1920000,
+    "changedPercent": 0.3959375,
+    "meanAbsoluteChannelDifference": 0.04119127604166667,
+    "changedBounds": [
+      19,
+      0,
+      1480,
+      1199
+    ]
+  },
+  {
+    "name": "farm_capture_keyart_composition.png",
+    "changedPixels": 43354,
+    "totalPixels": 1600000,
+    "changedPercent": 2.709625,
+    "meanAbsoluteChannelDifference": 0.49321046875,
+    "changedBounds": [
+      62,
+      0,
+      1476,
+      982
+    ]
+  },
+  {
+    "name": "farm_capture_region_animals.png",
+    "changedPixels": 19349,
+    "totalPixels": 1920000,
+    "changedPercent": 1.0077604166666667,
+    "meanAbsoluteChannelDifference": 0.1650328125,
+    "changedBounds": [
+      203,
+      0,
+      1599,
+      862
+    ]
+  },
+  {
+    "name": "farm_capture_region_cultivation.png",
+    "changedPixels": 26254,
+    "totalPixels": 1920000,
+    "changedPercent": 1.3673958333333334,
+    "meanAbsoluteChannelDifference": 0.19866158854166666,
+    "changedBounds": [
+      0,
+      3,
+      1599,
+      1151
+    ]
+  },
+  {
+    "name": "farm_capture_region_forest.png",
+    "changedPixels": 177078,
+    "totalPixels": 1920000,
+    "changedPercent": 9.2228125,
+    "meanAbsoluteChannelDifference": 1.9067604166666667,
+    "changedBounds": [
+      337,
+      2,
+      1496,
+      1199
+    ]
+  },
+  {
+    "name": "farm_capture_region_homestead.png",
+    "changedPixels": 10534,
+    "totalPixels": 1920000,
+    "changedPercent": 0.5486458333333334,
+    "meanAbsoluteChannelDifference": 0.054905989583333335,
+    "changedBounds": [
+      0,
+      63,
+      1528,
+      1199
+    ]
+  },
+  {
+    "name": "farm_capture_region_mountain.png",
+    "changedPixels": 41674,
+    "totalPixels": 1920000,
+    "changedPercent": 2.1705208333333332,
+    "meanAbsoluteChannelDifference": 0.3016875,
+    "changedBounds": [
+      0,
+      252,
+      1599,
+      1199
+    ]
+  },
+  {
+    "name": "farm_capture_region_water_bridge.png",
+    "changedPixels": 6411,
+    "totalPixels": 1920000,
+    "changedPercent": 0.33390625,
+    "meanAbsoluteChannelDifference": 0.032293359375,
+    "changedBounds": [
+      0,
+      25,
+      1111,
+      1086
+    ]
+  }
+]

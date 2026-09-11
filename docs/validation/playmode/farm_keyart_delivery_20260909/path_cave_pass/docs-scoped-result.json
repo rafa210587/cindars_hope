@@ -1,0 +1,10 @@
+{
+  "mode": "SCOPED",
+  "gates": [
+    "diff",
+    "quality"
+  ],
+  "exitCode": 0,
+  "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/docs/run_strict_validation.ps1 -Gates diff,quality -ScopePath docs/validation/playmode/farm_keyart_delivery_20260909/path_cave_pass/docs-scope.json",
+  "scope": "183 exact authorized H paths; not global docs/build/architecture gates"
+}

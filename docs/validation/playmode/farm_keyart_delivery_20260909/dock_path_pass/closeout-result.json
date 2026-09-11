@@ -1,0 +1,21 @@
+{
+  "status": "SCOPED_PASS",
+  "sceneSha256": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803",
+  "generation": "regen_01",
+  "play": "gameplay_01",
+  "focalPassed": 32,
+  "views": 8,
+  "physicalRoutes": 16,
+  "visitedNodes": 6465,
+  "realSelections": 6,
+  "adjacentWaterBlocked": 3,
+  "customAxisYViews": 8,
+  "runtimeErrors": 0,
+  "docsScoped": "PASS diff,quality exit0",
+  "scopedFiles": 122,
+  "changedLinksChecked": 6,
+  "changedLinksMissing": 0,
+  "rootVisualReview": "Confirmed overview,water_bridge,all8Playframes and browser preview",
+  "humanAcceptance": "NOT RUN / pending for I",
+  "unityActive": 0
+}

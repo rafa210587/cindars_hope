@@ -1,0 +1,5 @@
+Unity project version: 6000.5.7f1; editor: C:\Program Files\Unity\Hub\Editor\6000.5.7f1\Editor\Unity.exe
+Unity log scan PASSED.
+No critical compile errors found.
+UNITY_EDITMODE: PASS; total=4; passed=4; failed=0
+Results: D:\Projetos\Cindars_Hope\cindars_hope\docs\validation\playmode\farm_keyart_delivery_20260909\continuation_art_01\planner-tests_02.xml; Log: D:\Projetos\Cindars_Hope\cindars_hope\docs\validation\playmode\farm_keyart_delivery_20260909\continuation_art_01\planner-tests_02.log; process exit: 0

@@ -21,10 +21,11 @@ If an ADR conflicts with a game rule:
 
 ---
 
-## Active Decisions (ADR-0001 to ADR-0030)
+## Active Decisions (ADR-0001 to ADR-0031)
 
 | ADR | Title | Theme | Status | Canonical Ref | Source |
 |---|---|---|---|---|---|
+| [ADR-0031](../decisions/ADR-0031-evidence-driven-unity-aseprite-harness.md) | Harness Unity e Aseprite orientado por evidência | Tooling/Governance | accepted | .claude/HARNESS_INDEX.md | Pesquisa e autorização humana 2026-09-10 |
 | [ADR-0001](../decisions/ADR-0001-canonical-documentation-structure.md) | Canonical Documentation Structure | Documentation | accepted | docs/decisions/ADR-0001-* | SPEC_DOCS_35-37 |
 | [ADR-0002](../decisions/ADR-0002-agent-context-minimum.md) | Agent Context Minimum | Governance | accepted | .claude/rules/context-reading-policy.md | CLAUDE.md, AGENTS.md |
 | [ADR-0003](../decisions/ADR-0003-spec-lifecycle.md) | Spec Lifecycle | Governance | accepted | docs/decisions/ADR-0003-* | SPEC_EXECUTION_ORDER.md, CURRENT_STATE.md |

@@ -1,0 +1,916 @@
+{
+  "beforeSceneSha256": "EB848C096E5E13CD015E61516EE0E7E11374708CBB22B37CF22CB9515F723D16",
+  "afterSceneSha256": "7BC3921B83F8D35A5FA3DFA30802D4FF904EFFB751BF47B66CB708A475DE3D28",
+  "beforeTreeCount": 71,
+  "afterTreeCount": 71,
+  "sameIds": true,
+  "changedTreeCount": 23,
+  "changes": [
+    {
+      "index": "9",
+      "before": {
+        "path": "Trees/TreeNode_09",
+        "position": "{x: -19.131533, y: 10.675802, z: 0}",
+        "scale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_09",
+        "position": "{x: -14.802443, y: 9.625682, z: 0}",
+        "scale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "36",
+      "before": {
+        "path": "Trees/TreeNode_36",
+        "position": "{x: -21.406464, y: 15.529259, z: 0}",
+        "scale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_36",
+        "position": "{x: -21.750013, y: 8.470104, z: 0}",
+        "scale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "46",
+      "before": {
+        "path": "Trees/TreeNode_46",
+        "position": "{x: -21.081745, y: 1.9480506, z: 0}",
+        "scale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_46",
+        "position": "{x: -15.653015, y: -1.8172628, z: 0}",
+        "scale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "37",
+      "before": {
+        "path": "Trees/TreeNode_37",
+        "position": "{x: -16.048199, y: 11.584361, z: 0}",
+        "scale": "{x: 1.2920527, y: 1.2920527, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 4dc9d774befa975478cdb25e4277e8c1, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_37",
+        "position": "{x: -18.953579, y: 7.25469, z: 0}",
+        "scale": "{x: 1.2920527, y: 1.2920527, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 4dc9d774befa975478cdb25e4277e8c1, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "16",
+      "before": {
+        "path": "Trees/TreeNode_16",
+        "position": "{x: -18.264156, y: 8.924725, z: 0}",
+        "scale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_16",
+        "position": "{x: -19.829727, y: 8.356548, z: 0}",
+        "scale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "8",
+      "before": {
+        "path": "Trees/TreeNode_08",
+        "position": "{x: -20.584436, y: 9.307809, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_08",
+        "position": "{x: -26.47954, y: 12.261623, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "58",
+      "before": {
+        "path": "Trees/TreeNode_58",
+        "position": "{x: -14.822079, y: 10.7729225, z: 0}",
+        "scale": "{x: 1.1435632, y: 1.1435632, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 64c2bf430c9a4d44a91f7a5a7b627df6, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_58",
+        "position": "{x: -30.164904, y: 2.1425996, z: 0}",
+        "scale": "{x: 1.1435632, y: 1.1435632, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 64c2bf430c9a4d44a91f7a5a7b627df6, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "49",
+      "before": {
+        "path": "Trees/TreeNode_49",
+        "position": "{x: -29.868507, y: 10.944328, z: 0}",
+        "scale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_49",
+        "position": "{x: -28.215687, y: 14.385166, z: 0}",
+        "scale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "52",
+      "before": {
+        "path": "Trees/TreeNode_52",
+        "position": "{x: -27.81211, y: -0.83110285, z: 0}",
+        "scale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_52",
+        "position": "{x: -27.323462, y: -1.5766288, z: 0}",
+        "scale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "29",
+      "before": {
+        "path": "Trees/TreeNode_29",
+        "position": "{x: -25.541656, y: 9.703426, z: 0}",
+        "scale": "{x: 1.4752542, y: 1.4752542, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 4dc9d774befa975478cdb25e4277e8c1, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_29",
+        "position": "{x: -24.458525, y: 15.099512, z: 0}",
+        "scale": "{x: 1.4752542, y: 1.4752542, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 4dc9d774befa975478cdb25e4277e8c1, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "59",
+      "before": {
+        "path": "Trees/TreeNode_59",
+        "position": "{x: -27.34831, y: 1.356957, z: 0}",
+        "scale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_59",
+        "position": "{x: -29.701168, y: 3.7967687, z: 0}",
+        "scale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "44",
+      "before": {
+        "path": "Trees/TreeNode_44",
+        "position": "{x: -20.239702, y: 7.541811, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_44",
+        "position": "{x: -27.774137, y: 0.72327614, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "30",
+      "before": {
+        "path": "Trees/TreeNode_30",
+        "position": "{x: -15.989399, y: 9.989455, z: 0}",
+        "scale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_30",
+        "position": "{x: -16.51623, y: 8.381983, z: 0}",
+        "scale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "35",
+      "before": {
+        "path": "Trees/TreeNode_35",
+        "position": "{x: -30.738894, y: 8.198809, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_35",
+        "position": "{x: -26.695114, y: 9.861973, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "43",
+      "before": {
+        "path": "Trees/TreeNode_43",
+        "position": "{x: -22.444166, y: 8.490553, z: 0}",
+        "scale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_43",
+        "position": "{x: -18.07375, y: 8.397487, z: 0}",
+        "scale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "53",
+      "before": {
+        "path": "Trees/TreeNode_53",
+        "position": "{x: -15.891283, y: -1.1008369, z: 0}",
+        "scale": "{x: 1.3378531, y: 1.3378531, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 4dc9d774befa975478cdb25e4277e8c1, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_53",
+        "position": "{x: -20.938004, y: 1.3121485, z: 0}",
+        "scale": "{x: 1.3378531, y: 1.3378531, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 4dc9d774befa975478cdb25e4277e8c1, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "1",
+      "before": {
+        "path": "Trees/TreeNode_01",
+        "position": "{x: -23.613226, y: 11.130697, z: 0}",
+        "scale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_01",
+        "position": "{x: -24.537302, y: 13.408677, z: 0}",
+        "scale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "50",
+      "before": {
+        "path": "Trees/TreeNode_50",
+        "position": "{x: -19.900808, y: 11.788738, z: 0}",
+        "scale": "{x: 0.9603616, y: 0.9603616, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 64c2bf430c9a4d44a91f7a5a7b627df6, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_50",
+        "position": "{x: -14.996317, y: 12.521257, z: 0}",
+        "scale": "{x: 0.9603616, y: 0.9603616, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 64c2bf430c9a4d44a91f7a5a7b627df6, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "51",
+      "before": {
+        "path": "Trees/TreeNode_51",
+        "position": "{x: -16.79637, y: 8.735817, z: 0}",
+        "scale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_51",
+        "position": "{x: -28.669224, y: -1.1608793, z: 0}",
+        "scale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "56",
+      "before": {
+        "path": "Trees/TreeNode_56",
+        "position": "{x: -26.401495, y: 11.634487, z: 0}",
+        "scale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_56",
+        "position": "{x: -30.463636, y: 10.902417, z: 0}",
+        "scale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "57",
+      "before": {
+        "path": "Trees/TreeNode_57",
+        "position": "{x: -24.43283, y: 15.528704, z: 0}",
+        "scale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_57",
+        "position": "{x: -23.138832, y: 8.385644, z: 0}",
+        "scale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "22",
+      "before": {
+        "path": "Trees/TreeNode_22",
+        "position": "{x: -21.284975, y: 11.3621855, z: 0}",
+        "scale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_22",
+        "position": "{x: -26.172039, y: 14.221079, z: 0}",
+        "scale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "15",
+      "before": {
+        "path": "Trees/TreeNode_15",
+        "position": "{x: -23.297152, y: 9.74288, z: 0}",
+        "scale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_15",
+        "position": "{x: -25.143248, y: 11.449704, z: 0}",
+        "scale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    }
+  ],
+  "exteriorComponentCount": 205,
+  "exteriorColliderCount": 0,
+  "exteriorTreeNodeCount": 0,
+  "exteriorComponentTypes": [
+    4,
+    212
+  ],
+  "beforeLandmarks": [
+    {
+      "path": "FarmSceneFoundationZones/Zone_CaveEntrance",
+      "componentType": 4,
+      "position": "{x: -28, y: 18.25, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "FarmSceneFoundationZones/Zone_CaveEntrance",
+      "componentType": 114,
+      "position": "{x: -28, y: 18.25, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "FarmSceneFoundationZones/Zone_CaveEntrance",
+      "componentType": 61,
+      "position": "{x: -28, y: 18.25, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "{x: 4, y: 3.5}",
+      "offset": "{x: 0, y: 0}",
+      "isTrigger": "1",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "SpawnPoints/Spawn_farm_from_cave",
+      "componentType": 114,
+      "position": "{x: -23, y: 15, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "farm_from_cave",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "SpawnPoints/Spawn_farm_from_cave",
+      "componentType": 4,
+      "position": "{x: -23, y: 15, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "CaveEntrance",
+      "componentType": 114,
+      "position": "{x: -28, y: 18.5, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "cave_from_farm",
+      "spawnId": "",
+      "gate": "gate_farm_cave_entrance",
+      "targetScene": "CaveScene"
+    },
+    {
+      "path": "CaveEntrance",
+      "componentType": 61,
+      "position": "{x: -28, y: 18.5, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "{x: 4, y: 3.5}",
+      "offset": "{x: 0, y: 0}",
+      "isTrigger": "1",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "CaveEntrance",
+      "componentType": 4,
+      "position": "{x: -28, y: 18.5, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 114,
+      "position": "{x: -22, y: 16, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 61,
+      "position": "{x: -22, y: 16, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "{x: 1.2, y: 1.6}",
+      "offset": "{x: 0, y: 0}",
+      "isTrigger": "1",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 114,
+      "position": "{x: -22, y: 16, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 212,
+      "position": "{x: -22, y: 16, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "{x: 0.16, y: 0.16}",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 4,
+      "position": "{x: -22, y: 16, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "CaveEntrance/Visual",
+      "componentType": 4,
+      "position": "{x: 0, y: 0, z: 0}",
+      "scale": "{x: 1.3241379, y: 1.3241379, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "CaveEntrance/Visual",
+      "componentType": 212,
+      "position": "{x: 0, y: 0, z: 0}",
+      "scale": "{x: 1.3241379, y: 1.3241379, z: 1}",
+      "size": "{x: 4.1484375, y: 3.3984375}",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    }
+  ],
+  "afterLandmarks": [
+    {
+      "path": "CaveEntrance/Visual",
+      "componentType": 4,
+      "position": "{x: 0, y: 0, z: 0}",
+      "scale": "{x: 1.3241379, y: 1.3241379, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "CaveEntrance/Visual",
+      "componentType": 212,
+      "position": "{x: 0, y: 0, z: 0}",
+      "scale": "{x: 1.3241379, y: 1.3241379, z: 1}",
+      "size": "{x: 4.1484375, y: 3.3984375}",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "CaveEntrance",
+      "componentType": 114,
+      "position": "{x: -19.5, y: 17, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "cave_from_farm",
+      "spawnId": "",
+      "gate": "gate_farm_cave_entrance",
+      "targetScene": "CaveScene"
+    },
+    {
+      "path": "CaveEntrance",
+      "componentType": 61,
+      "position": "{x: -19.5, y: 17, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "{x: 4, y: 3.5}",
+      "offset": "{x: 0, y: 0}",
+      "isTrigger": "1",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "CaveEntrance",
+      "componentType": 4,
+      "position": "{x: -19.5, y: 17, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 114,
+      "position": "{x: -16.5, y: 15.5, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 61,
+      "position": "{x: -16.5, y: 15.5, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "{x: 1.2, y: 1.6}",
+      "offset": "{x: 0, y: 0}",
+      "isTrigger": "1",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 114,
+      "position": "{x: -16.5, y: 15.5, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 212,
+      "position": "{x: -16.5, y: 15.5, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "{x: 0.16, y: 0.16}",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "Board_Zrix",
+      "componentType": 4,
+      "position": "{x: -16.5, y: 15.5, z: 0}",
+      "scale": "{x: 1.44, y: 1.44, z: 1.44}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "FarmSceneFoundationZones/Zone_CaveEntrance",
+      "componentType": 4,
+      "position": "{x: -19.5, y: 17, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "FarmSceneFoundationZones/Zone_CaveEntrance",
+      "componentType": 114,
+      "position": "{x: -19.5, y: 17, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "FarmSceneFoundationZones/Zone_CaveEntrance",
+      "componentType": 61,
+      "position": "{x: -19.5, y: 17, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "{x: 4, y: 3.5}",
+      "offset": "{x: 0, y: 0}",
+      "isTrigger": "1",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "SpawnPoints/Spawn_farm_from_cave",
+      "componentType": 114,
+      "position": "{x: -19.5, y: 14.5, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "farm_from_cave",
+      "gate": "",
+      "targetScene": ""
+    },
+    {
+      "path": "SpawnPoints/Spawn_farm_from_cave",
+      "componentType": 4,
+      "position": "{x: -19.5, y: 14.5, z: 0}",
+      "scale": "{x: 1, y: 1, z: 1}",
+      "size": "",
+      "offset": "",
+      "isTrigger": "",
+      "targetSpawn": "",
+      "spawnId": "",
+      "gate": "",
+      "targetScene": ""
+    }
+  ],
+  "gardenObjectCount": 15,
+  "gardenObjects": [
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenBush_6",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -21.25, y: -12, z: 0}",
+      "scale": "{x: 0.76, y: 0.76, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenFlowers_2",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -14.7, y: -3.62, z: 0}",
+      "scale": "{x: 0.5, y: 0.5, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenBush_5",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: 1.25, y: -9, z: 0}",
+      "scale": "{x: 0.96, y: 0.96, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenFlowers_4",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -4.7, y: -9.12, z: 0}",
+      "scale": "{x: 0.5, y: 0.5, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenBush_4",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -5.25, y: -9, z: 0}",
+      "scale": "{x: 0.86, y: 0.86, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenSapling_2",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -14.4, y: -3.42, z: 0}",
+      "scale": "{x: 1.56, y: 1.56, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenFlowers_1",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: 8.7, y: 7.88, z: 0}",
+      "scale": "{x: 0.5, y: 0.5, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenBush_2",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -15.25, y: -3.5, z: 0}",
+      "scale": "{x: 0.96, y: 0.96, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenBush_0",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -2.25, y: 10, z: 0}",
+      "scale": "{x: 0.76, y: 0.76, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenFlowers_0",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -1.7, y: 9.88, z: 0}",
+      "scale": "{x: 0.5, y: 0.5, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenSapling_6",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -20.4, y: -11.92, z: 0}",
+      "scale": "{x: 1.56, y: 1.56, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenBush_1",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: 9.25, y: 8, z: 0}",
+      "scale": "{x: 0.86, y: 0.86, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenSapling_0",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -1.4, y: 10.08, z: 0}",
+      "scale": "{x: 1.56, y: 1.56, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenFlowers_5",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: 0.7, y: -9.12, z: 0}",
+      "scale": "{x: 0.5, y: 0.5, z: 1}"
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_PathGardenFlowers_6",
+      "componentType": 4,
+      "treeNode": false,
+      "position": "{x: -20.7, y: -12.12, z: 0}",
+      "scale": "{x: 0.5, y: 0.5, z: 1}"
+    }
+  ],
+  "gardenComponentTypes": [
+    4,
+    212
+  ],
+  "gardenColliderCount": 0,
+  "gardenTreeNodeCount": 0
+}

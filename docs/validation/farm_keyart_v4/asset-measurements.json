@@ -1,0 +1,512 @@
+[
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fountain_keyart_v3.png",
+    "size": [
+      170,
+      159
+    ],
+    "alpha_bounds_exclusive": [
+      19,
+      3,
+      145,
+      139
+    ],
+    "transparent_pixels": 18432,
+    "opaque_pixels": 8598,
+    "partial_alpha_pixels": 0,
+    "sha256": "7956c2ea48e224d2969e9e589e4bd530d872fd5030928144e816bc499098e050"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/well_keyart_v3.png",
+    "size": [
+      78,
+      98
+    ],
+    "alpha_bounds_exclusive": [
+      12,
+      6,
+      67,
+      85
+    ],
+    "transparent_pixels": 4300,
+    "opaque_pixels": 3344,
+    "partial_alpha_pixels": 0,
+    "sha256": "71f93feccb8fccc1f49d9f1b7025bb2aa5f2d993e86a0a010aed0374c7d751ea"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/bridge_keyart_v3.png",
+    "size": [
+      105,
+      72
+    ],
+    "alpha_bounds_exclusive": [
+      6,
+      9,
+      100,
+      59
+    ],
+    "transparent_pixels": 3966,
+    "opaque_pixels": 3594,
+    "partial_alpha_pixels": 0,
+    "sha256": "186f87fa3633bcf09f464278043483be63f077b63dd89013115cc802c0b68a16"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/water_ripples_keyart_v4.png",
+    "size": [
+      64,
+      48
+    ],
+    "alpha_bounds_exclusive": [
+      0,
+      0,
+      64,
+      48
+    ],
+    "transparent_pixels": 2184,
+    "opaque_pixels": 0,
+    "partial_alpha_pixels": 888,
+    "sha256": "39924365407c711a9fd0b9b06ca1e851c46391f51753ca856484150a931986e4"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/waterfall_keyart_v4.png",
+    "size": [
+      82,
+      125
+    ],
+    "alpha_bounds_exclusive": [
+      6,
+      0,
+      72,
+      110
+    ],
+    "transparent_pixels": 4785,
+    "opaque_pixels": 4756,
+    "partial_alpha_pixels": 709,
+    "sha256": "48d3ad64a563929f6bd082c1d6774a301d73a20d40f2c27a5d79d4f4365c693b"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/stall_keyart_v4.png",
+    "size": [
+      77,
+      75
+    ],
+    "alpha_bounds_exclusive": [
+      9,
+      11,
+      65,
+      59
+    ],
+    "transparent_pixels": 3260,
+    "opaque_pixels": 2515,
+    "partial_alpha_pixels": 0,
+    "sha256": "9e344a957656b85ee724da0e28e5d7543af238f6e04cd7a7a748ba94658d0e5a"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/tree_keyart_v4_01.png",
+    "size": [
+      117,
+      119
+    ],
+    "alpha_bounds_exclusive": [
+      19,
+      6,
+      103,
+      111
+    ],
+    "transparent_pixels": 8879,
+    "opaque_pixels": 5044,
+    "partial_alpha_pixels": 0,
+    "sha256": "78fa01e083dfd4aebf9659b6545a556111748a2897207de121fd8b027d3a2fad"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/boulder_keyart_v4_01.png",
+    "size": [
+      97,
+      90
+    ],
+    "alpha_bounds_exclusive": [
+      6,
+      11,
+      88,
+      81
+    ],
+    "transparent_pixels": 4909,
+    "opaque_pixels": 3821,
+    "partial_alpha_pixels": 0,
+    "sha256": "6be03b0e4154af6df42bf3bafd340f0dc57d599aa2fbde5cd896ada163acdeac"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/cow_keyart_v4_01.png",
+    "size": [
+      59,
+      46
+    ],
+    "alpha_bounds_exclusive": [
+      3,
+      8,
+      51,
+      37
+    ],
+    "transparent_pixels": 1935,
+    "opaque_pixels": 779,
+    "partial_alpha_pixels": 0,
+    "sha256": "738837d43d27f97f85de34275e35bad1953e503c2af434d09f3bbf51546b9838"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/sheep_keyart_v4_01.png",
+    "size": [
+      50,
+      39
+    ],
+    "alpha_bounds_exclusive": [
+      11,
+      7,
+      44,
+      33
+    ],
+    "transparent_pixels": 1352,
+    "opaque_pixels": 598,
+    "partial_alpha_pixels": 0,
+    "sha256": "01bbf4dd768431481de6692a64dc844a71688e9edc3b55a184d9bc8c92c1f732"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/farmhouse_keyart_v4.png",
+    "size": [
+      212,
+      205
+    ],
+    "alpha_bounds_exclusive": [
+      21,
+      12,
+      198,
+      192
+    ],
+    "transparent_pixels": 19572,
+    "opaque_pixels": 23888,
+    "partial_alpha_pixels": 0,
+    "sha256": "b8b90714711a195c3ba5d853c85a22d0a27d27b9d9ed60c65b3386a9e4983399"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/greenhouse_keyart_v4.png",
+    "size": [
+      129,
+      158
+    ],
+    "alpha_bounds_exclusive": [
+      10,
+      6,
+      104,
+      148
+    ],
+    "transparent_pixels": 8695,
+    "opaque_pixels": 11687,
+    "partial_alpha_pixels": 0,
+    "sha256": "93677924edea385eb41c7e03c754a784444ad63ec54282e1e8b2a395f431a180"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/barrel_keyart_v4.png",
+    "size": [
+      33,
+      37
+    ],
+    "alpha_bounds_exclusive": [
+      6,
+      7,
+      27,
+      32
+    ],
+    "transparent_pixels": 826,
+    "opaque_pixels": 395,
+    "partial_alpha_pixels": 0,
+    "sha256": "61e5d0c0f9b2e533696835af6fa6fea276619ebbe99746623922ccdb53a60904"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_water_keyart_v4.png",
+    "size": [
+      64,
+      64
+    ],
+    "alpha_bounds_exclusive": [
+      0,
+      0,
+      64,
+      64
+    ],
+    "transparent_pixels": 0,
+    "opaque_pixels": 4096,
+    "partial_alpha_pixels": 0,
+    "sha256": "4928352e7eb0b72d72672a50e3e8cd66f559ada6a9f34888296911b892579e67"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_path_aseprite_v1.png",
+    "size": [
+      64,
+      64
+    ],
+    "alpha_bounds_exclusive": [
+      0,
+      0,
+      64,
+      64
+    ],
+    "transparent_pixels": 0,
+    "opaque_pixels": 4096,
+    "partial_alpha_pixels": 0,
+    "sha256": "dd33c3a632985a8e1ad8038bbb22d2263ee40c1149fca785a89e34ed74e9ee89"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/coop_keyart_v4.png",
+    "size": [
+      108,
+      146
+    ],
+    "alpha_bounds_exclusive": [
+      20,
+      11,
+      96,
+      102
+    ],
+    "transparent_pixels": 10351,
+    "opaque_pixels": 5417,
+    "partial_alpha_pixels": 0,
+    "sha256": "fd77b21b5dff0261288a6726a2f0b253809f401ddb31a0bb6b79380a26ab257a"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/barn_keyart_v4.png",
+    "size": [
+      125,
+      166
+    ],
+    "alpha_bounds_exclusive": [
+      11,
+      7,
+      112,
+      133
+    ],
+    "transparent_pixels": 9835,
+    "opaque_pixels": 10915,
+    "partial_alpha_pixels": 0,
+    "sha256": "56f6652658a34a17c224137fe120027033983d8965cb2009d640faaac01ef774"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/cheese_shed_keyart_v4.png",
+    "size": [
+      116,
+      149
+    ],
+    "alpha_bounds_exclusive": [
+      12,
+      9,
+      105,
+      133
+    ],
+    "transparent_pixels": 8475,
+    "opaque_pixels": 8809,
+    "partial_alpha_pixels": 0,
+    "sha256": "b1dadf24a8c2c4e27f274081b20d25128e691a9a70e1e46b3cf19cd5d633ff95"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/wine_shed_keyart_v4.png",
+    "size": [
+      119,
+      154
+    ],
+    "alpha_bounds_exclusive": [
+      11,
+      13,
+      106,
+      141
+    ],
+    "transparent_pixels": 8355,
+    "opaque_pixels": 9971,
+    "partial_alpha_pixels": 0,
+    "sha256": "e422b96aa5c6c238718b2e3fdde106e49aa79551697550d35a1401e0a37c2971"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/dock_keyart_v4.png",
+    "size": [
+      93,
+      137
+    ],
+    "alpha_bounds_exclusive": [
+      12,
+      7,
+      85,
+      124
+    ],
+    "transparent_pixels": 7425,
+    "opaque_pixels": 5316,
+    "partial_alpha_pixels": 0,
+    "sha256": "bec93d6183b7a3356dc99b835f9faa4a097ce347ae94239a8c8b5d527e827181"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/boat_keyart_v4.png",
+    "size": [
+      76,
+      68
+    ],
+    "alpha_bounds_exclusive": [
+      8,
+      25,
+      66,
+      57
+    ],
+    "transparent_pixels": 3823,
+    "opaque_pixels": 1345,
+    "partial_alpha_pixels": 0,
+    "sha256": "c0f86c0f0422c7a9ff869d986ed96ef4c75d662ad7cfee917b58a636c40c53ee"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/noticeboard_keyart_v4.png",
+    "size": [
+      79,
+      69
+    ],
+    "alpha_bounds_exclusive": [
+      8,
+      9,
+      70,
+      61
+    ],
+    "transparent_pixels": 3140,
+    "opaque_pixels": 2311,
+    "partial_alpha_pixels": 0,
+    "sha256": "57c8e7cb5d5c186617e9e7e91a9d379e66aebbc0923ed35b33555abcc4a6bb4a"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/tool_rack_keyart_v4.png",
+    "size": [
+      84,
+      67
+    ],
+    "alpha_bounds_exclusive": [
+      11,
+      8,
+      70,
+      56
+    ],
+    "transparent_pixels": 3250,
+    "opaque_pixels": 2378,
+    "partial_alpha_pixels": 0,
+    "sha256": "54d097231009912ed9fd25d68eb72711600fc910e516dac5d7e410e37277dd1d"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/lilies_keyart_v4.png",
+    "size": [
+      38,
+      29
+    ],
+    "alpha_bounds_exclusive": [
+      5,
+      5,
+      31,
+      22
+    ],
+    "transparent_pixels": 886,
+    "opaque_pixels": 216,
+    "partial_alpha_pixels": 0,
+    "sha256": "130319786426c88fc050019106d0b1d277a2a3652a447d28bcb535652320fbf6"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/undergrowth_keyart_v4.png",
+    "size": [
+      84,
+      74
+    ],
+    "alpha_bounds_exclusive": [
+      9,
+      10,
+      65,
+      65
+    ],
+    "transparent_pixels": 4361,
+    "opaque_pixels": 1855,
+    "partial_alpha_pixels": 0,
+    "sha256": "d7b0363b99f44666f513226e54a1b6ea871f82ee5115a6726fbab33f25e0c285"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/wildflowers_keyart_v4.png",
+    "size": [
+      43,
+      36
+    ],
+    "alpha_bounds_exclusive": [
+      1,
+      4,
+      34,
+      30
+    ],
+    "transparent_pixels": 1198,
+    "opaque_pixels": 350,
+    "partial_alpha_pixels": 0,
+    "sha256": "5e00616f5230d8185e11f2bcf2e614200d8e18c3fd213bd22757708b597a75da"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/river_cascade_keyart_v4.png",
+    "size": [
+      68,
+      56
+    ],
+    "alpha_bounds_exclusive": [
+      2,
+      8,
+      56,
+      45
+    ],
+    "transparent_pixels": 2864,
+    "opaque_pixels": 944,
+    "partial_alpha_pixels": 0,
+    "sha256": "3371a041fe93f797fb2a6e83d5d95345db3d32ea368050834c8dbe48ad5dfdc1"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_pine_keyart_v4.png",
+    "size": [
+      94,
+      151
+    ],
+    "alpha_bounds_exclusive": [
+      10,
+      11,
+      76,
+      128
+    ],
+    "transparent_pixels": 10896,
+    "opaque_pixels": 3298,
+    "partial_alpha_pixels": 0,
+    "sha256": "a835368c3666feb2a37082eab508893be805affdfc694d2dcee5ce5e45f7dadf"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fence_rail_keyart_v4.png",
+    "size": [
+      45,
+      39
+    ],
+    "alpha_bounds_exclusive": [
+      5,
+      6,
+      38,
+      27
+    ],
+    "transparent_pixels": 1435,
+    "opaque_pixels": 320,
+    "partial_alpha_pixels": 0,
+    "sha256": "0b7e9b325397424171dca104d3604e4f641a79415a2b8bfce9a8d9a624a129ce"
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fence_rail_keyart_v4_diagonal.png",
+    "size": [
+      46,
+      48
+    ],
+    "alpha_bounds_exclusive": [
+      5,
+      5,
+      39,
+      37
+    ],
+    "transparent_pixels": 1849,
+    "opaque_pixels": 359,
+    "partial_alpha_pixels": 0,
+    "sha256": "edada941aae0501038eeda73bde80aeb828b11a909c4ad68d76232e31c5f91af"
+  }
+]

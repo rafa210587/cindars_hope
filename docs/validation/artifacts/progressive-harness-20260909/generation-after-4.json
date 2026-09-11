@@ -1,0 +1,546 @@
+[
+  {
+    "Path": ".agents\\skills\\ability-effect-composition\\SKILL.md",
+    "Hash": "E19F6A4B7A2973F9DDA560F9580F954B526E09578649F4B02B171E6C73472C4C"
+  },
+  {
+    "Path": ".agents\\skills\\action-feedback-pipeline\\SKILL.md",
+    "Hash": "859B711F82CB3DADEBC4F4779F8534FD21CD32132057AC3A46943362B08F20C6"
+  },
+  {
+    "Path": ".agents\\skills\\audio-event-wiring\\SKILL.md",
+    "Hash": "4BDC0C3866FFF2413D41C2009D26D5DA7161D3EFA17600FCF22F0F47953047B9"
+  },
+  {
+    "Path": ".agents\\skills\\audit-harness\\SKILL.md",
+    "Hash": "8671A7D97E1511BA8B65D19057BB8491C8450816611D471E1586404109098805"
+  },
+  {
+    "Path": ".agents\\skills\\audit-spec\\SKILL.md",
+    "Hash": "B361C93F4FCBE1302B905544B51D4C92E1BF000E88456A9737659FEB2AC46B14"
+  },
+  {
+    "Path": ".agents\\skills\\boot-integration-smoke\\SKILL.md",
+    "Hash": "06D6A2236E724ECF2142CCF2B4968679E7E32905A174375454608758467030EF"
+  },
+  {
+    "Path": ".agents\\skills\\bootstrap-wiring\\SKILL.md",
+    "Hash": "5854CEC60D681439264815342EA867893985D8A8A052009F4FDB4F5646D0E578"
+  },
+  {
+    "Path": ".agents\\skills\\bugfix\\SKILL.md",
+    "Hash": "AA6B8ECF6840140DC0403371C8C12D3DD05586F29B2DF677AC4174ACEB98DF21"
+  },
+  {
+    "Path": ".agents\\skills\\cave-stable-run-guard\\SKILL.md",
+    "Hash": "E8E5DA1037BCA65A0A54AFC7C3FF70806C1D46FE2CD6717AC529978697D62E2B"
+  },
+  {
+    "Path": ".agents\\skills\\chatgpt-web-sprite-gen\\SKILL.md",
+    "Hash": "B36BCF57472888ED4F9F76BF1668A9A58CFE9BAB029C65D2834978139EB66571"
+  },
+  {
+    "Path": ".agents\\skills\\chatgpt-web-sprite-gen\\references\\web-operation.md",
+    "Hash": "3C0CC1EE8FDF022B3A9A84F0224C102AC259174E1A587A852883AA2DB93F9383"
+  },
+  {
+    "Path": ".agents\\skills\\combat-data-wiring\\SKILL.md",
+    "Hash": "30C3F639887847A521A74E36CB1D1B3CAE4E132BC53802CDAF25AB37F1597EB2"
+  },
+  {
+    "Path": ".agents\\skills\\crafting-recipe-authoring\\SKILL.md",
+    "Hash": "26EBC00D13199E9D3F49EA7F9036744A43B2FFEAB0531C709D1FF5C465C48EDF"
+  },
+  {
+    "Path": ".agents\\skills\\crop-farming-systems\\SKILL.md",
+    "Hash": "4933E88903BE89952A5DFBE6A554DF3D3B414961DB2D57E3CDC488D6C5CF4F5A"
+  },
+  {
+    "Path": ".agents\\skills\\data-catalog-authoring\\SKILL.md",
+    "Hash": "CF94F6C019169185DEE6107FE823FA2E38CD25A6BB37E2BEF98611D406956D25"
+  },
+  {
+    "Path": ".agents\\skills\\decision-rule-extraction\\SKILL.md",
+    "Hash": "10CB83F64ED1F314084F0A01240B5BC50805BDC6530A7296B239C11001649BFE"
+  },
+  {
+    "Path": ".agents\\skills\\delegated-execution\\SKILL.md",
+    "Hash": "1B1B1628447A08564E9F4C963D8EFB43B52C2A6EB431BA4FD0132C1B7AB292E3"
+  },
+  {
+    "Path": ".agents\\skills\\docs-governance\\SKILL.md",
+    "Hash": "FA8B68036DBE281C3471186E4E2B7FFDA2028B61247F26F33F540DD5B2DA7E95"
+  },
+  {
+    "Path": ".agents\\skills\\docs-health\\SKILL.md",
+    "Hash": "E0B3E08F7BBE0A90C08BA743EA59CC22A622D4D5155ECFAEED1D5C30125AC12D"
+  },
+  {
+    "Path": ".agents\\skills\\docs-migration\\SKILL.md",
+    "Hash": "16B7ECB2FFE06B0BA0C56455BA6378775235269EDE481632DA7E7A8B11B4086D"
+  },
+  {
+    "Path": ".agents\\skills\\economy-balance-tuning\\SKILL.md",
+    "Hash": "38FBB3FFC277EE8D1C5A6089FB63B6753236EAF127737B743B3729C5102B52BA"
+  },
+  {
+    "Path": ".agents\\skills\\editmode-test-authoring\\SKILL.md",
+    "Hash": "8F25ECFC618B5A7E397B3C0FCCE55B9F70B8C2B5B9347BD31612DDBD301214BA"
+  },
+  {
+    "Path": ".agents\\skills\\editor-tooling-orchestration\\SKILL.md",
+    "Hash": "3B7E2E18EE3AF00B4CE0ADEDADEEFF2DE21B864BA3F0EF115DE51A90B3209691"
+  },
+  {
+    "Path": ".agents\\skills\\editor-validator-authoring\\SKILL.md",
+    "Hash": "ECA23A9060C7E6DC99BDA69F6EB709876142AE57BB8497AE4F6D729D5C6FD467"
+  },
+  {
+    "Path": ".agents\\skills\\enemy-ai-authoring\\SKILL.md",
+    "Hash": "76C75929A47A344B1FD2631545793414AD6B68F89FCC2A7C5E2F83FD56D723DA"
+  },
+  {
+    "Path": ".agents\\skills\\equipment-durability-repair\\SKILL.md",
+    "Hash": "9D1ACB8D3CE2C0A43FFC7C51A4D831839D55C9C1CD3DBA9E8E526C2947B83FA8"
+  },
+  {
+    "Path": ".agents\\skills\\event-bus-pattern\\SKILL.md",
+    "Hash": "14D28BDF17A489D0866C726E3160F56ECD84C46867A7A6EC488F3D25BD354736"
+  },
+  {
+    "Path": ".agents\\skills\\event-catalog-and-tracing\\SKILL.md",
+    "Hash": "D53F581E5FE48849A6EE13341342F5262C9A8885C08C4FFBA0BEC9D15582B402"
+  },
+  {
+    "Path": ".agents\\skills\\execute-spec-strict\\SKILL.md",
+    "Hash": "8DB68D11321787F72432A043C953B964A35DEE7069B73BDD2918902232D4FF12"
+  },
+  {
+    "Path": ".agents\\skills\\fail-state-recovery-design\\SKILL.md",
+    "Hash": "09495FC23343372A1CA004DBCEC96CD0BD782C801C5A8E0F3D7E642ED73D34EF"
+  },
+  {
+    "Path": ".agents\\skills\\finish-spec\\SKILL.md",
+    "Hash": "F8138E621515EF7E1F29D14AB292E351E221427035F5E72579EA54FF07A87B93"
+  },
+  {
+    "Path": ".agents\\skills\\game-feel-checklist\\SKILL.md",
+    "Hash": "5634B779A43BD41A3FD5D4B54B7ABAC1683F49D56242D0A21493E7F3F7E274FB"
+  },
+  {
+    "Path": ".agents\\skills\\gameplay-test-scenario\\SKILL.md",
+    "Hash": "9BA2CE9090773FE1C3E17BC076BB8164F8E5868FD3540D2E858CB60C268C929A"
+  },
+  {
+    "Path": ".agents\\skills\\harness-audit\\SKILL.md",
+    "Hash": "8EC86ED518E61EB7B90770BB52A48459DB267C0CA74DCE4BB1B5C35D3EE37EB3"
+  },
+  {
+    "Path": ".agents\\skills\\harness-audit\\references\\audit-dimensions.md",
+    "Hash": "786E340358F80F89F69CB2D5390FDA13BD7535B40B4BC14FB7C62F25E0F314CC"
+  },
+  {
+    "Path": ".agents\\skills\\harness-authoring\\SKILL.md",
+    "Hash": "DED6EC773D4257A5D86CB15065539784451D5F14A3A791843A6878A9767D7EB6"
+  },
+  {
+    "Path": ".agents\\skills\\harness-authoring\\references\\artifact-types.md",
+    "Hash": "AF29748AE2351ADC25A664E1CFD31B4EA4D7EA2C7627337FC562A91E8EEED834"
+  },
+  {
+    "Path": ".agents\\skills\\hud-canvas-binding\\SKILL.md",
+    "Hash": "6B149259D7245B52E6495792251566DF363C855E192EF21A22B73458C63BC3D3"
+  },
+  {
+    "Path": ".agents\\skills\\implement-spec\\SKILL.md",
+    "Hash": "B0DD8BC26A9A8E77BA26CA724868D800517225D2F90603FC492D06CAE7238ADB"
+  },
+  {
+    "Path": ".agents\\skills\\implementation-closeout\\SKILL.md",
+    "Hash": "599EAEBE4CBB07DA618D6DDCEA25C3289703E0723BCD287476C45ABBC45F0500"
+  },
+  {
+    "Path": ".agents\\skills\\input-gamepad-routing\\SKILL.md",
+    "Hash": "963EA229D7EE4653FD39B37FD9BDB02E4A64F3EF1AF7A4E8D2FD9BFE96ABAACD"
+  },
+  {
+    "Path": ".agents\\skills\\inventory-transactions\\SKILL.md",
+    "Hash": "A7C1BC35993C08A61BD7BB8261D281DFEC9CE5DF583D15181C72D90007A985EB"
+  },
+  {
+    "Path": ".agents\\skills\\localization-authoring\\SKILL.md",
+    "Hash": "BE53E62D0D99F1E3A7921C33C5083B000B11F520F732A0DEB72A18CE1FDE27AF"
+  },
+  {
+    "Path": ".agents\\skills\\loop-hierarchy-design\\SKILL.md",
+    "Hash": "34791A9C4D6B0874D3BD798F077E6BA970BAAAF697914B947398AA81EBEB8407"
+  },
+  {
+    "Path": ".agents\\skills\\loop-spec-batch-strict\\SKILL.md",
+    "Hash": "CBF6F3154690A1A895361473243299A0679ECFB239C825C1AF40986457E4F459"
+  },
+  {
+    "Path": ".agents\\skills\\loot-table-authoring\\SKILL.md",
+    "Hash": "F4050CC16B2446EC0977BAEFCCA8A0F0CE9461F240445B09B6ED6616290A9FB2"
+  },
+  {
+    "Path": ".agents\\skills\\monobehaviour-decomposition\\SKILL.md",
+    "Hash": "97644151A827B024E3BAFF8550A8EC52770D1245C5533B5401C6B640C3422F69"
+  },
+  {
+    "Path": ".agents\\skills\\non-regression-review\\SKILL.md",
+    "Hash": "1D3096087600C45F7438832344FCA3D3399AC949B4A853B7ADA3BE57CA86347C"
+  },
+  {
+    "Path": ".agents\\skills\\npc-dialogue-authoring\\SKILL.md",
+    "Hash": "E793CF7D587767415D3BA15EE576196CD9C9622514C8B4D43B1551B69C6F4AD4"
+  },
+  {
+    "Path": ".agents\\skills\\npc-walk-animation\\SKILL.md",
+    "Hash": "095CE4EA205CD043A8267E9FA663EA599990F589F27129D42637E7DECEC5F189"
+  },
+  {
+    "Path": ".agents\\skills\\npc-walk-animation\\references\\npc-pipeline.md",
+    "Hash": "C72C7D11EA322B470272CFD3388551683A1BFA1965C1970053B282DD5F672D55"
+  },
+  {
+    "Path": ".agents\\skills\\object-pooling-pattern\\SKILL.md",
+    "Hash": "84039F0FA092D4BF1608A13592BA8104B9BE80B554AD22441C3383EF43F2D3A9"
+  },
+  {
+    "Path": ".agents\\skills\\observability-and-logging\\SKILL.md",
+    "Hash": "F5FEEE9D203BF5661D92C1AD6F77F7E45FFF0CF984A575C3FB7DA21FDBB07DA9"
+  },
+  {
+    "Path": ".agents\\skills\\pixel-art-direction\\SKILL.md",
+    "Hash": "4BE1DEAB5052D58E98426881FEA7AE4B96F80C2BFB7948CBBB44FAEECCC2FC2C"
+  },
+  {
+    "Path": ".agents\\skills\\pixel-art-direction\\references\\style-and-perspective.md",
+    "Hash": "B51F4C137649294D7429BAC2D1433FAFBBC87EC885A8A83C391A3E83DCDDD116"
+  },
+  {
+    "Path": ".agents\\skills\\pixel-art-prompt-authoring\\SKILL.md",
+    "Hash": "AF1A6AD047BEFA44CBA5B215743E038446858A1542224D2E7BB206A7589C4DEC"
+  },
+  {
+    "Path": ".agents\\skills\\pixel-art-prompt-authoring\\references\\local-prompt-contract.md",
+    "Hash": "BB54200CE03A7046A41890BED3B65F9F1A3BE2788554E95B5BE26BCCBDD9DAAD"
+  },
+  {
+    "Path": ".agents\\skills\\plan-wave\\SKILL.md",
+    "Hash": "AEF57C3B0A95FDD9AF513732ED39C1FFE642F350B1E18B005F203D38F50422BB"
+  },
+  {
+    "Path": ".agents\\skills\\player-ability-runtime\\SKILL.md",
+    "Hash": "C73DB5038A46E30A28AB110376BFCCAED4F74A1C6D6B0304CA2F1EF74B02DE03"
+  },
+  {
+    "Path": ".agents\\skills\\player-needs-survival\\SKILL.md",
+    "Hash": "C768F7AF8A54FC8289422032835F28772814B34107D6A7051357D873FCA56F69"
+  },
+  {
+    "Path": ".agents\\skills\\progression-curve-design\\SKILL.md",
+    "Hash": "B8E91C6EC6D9193C4198154ADB3D996D20BBFDA6E42205E36F392B052684C590"
+  },
+  {
+    "Path": ".agents\\skills\\quest-authoring\\SKILL.md",
+    "Hash": "CB93016EA6601DE6CDD471449BC50B9AD1D14AB398AF27F35D91AB0B77169AC9"
+  },
+  {
+    "Path": ".agents\\skills\\reconcile-status\\SKILL.md",
+    "Hash": "DCB75C2F1A6F3A4E6E49FF7F494F8DD95DA4E3016AF427FDF100DAB7AF8565BF"
+  },
+  {
+    "Path": ".agents\\skills\\registry-catalog-pattern\\SKILL.md",
+    "Hash": "15BBA23A1080777F8222B9169DC008E3CABE625EB4A3FB26BD0838C36426F81F"
+  },
+  {
+    "Path": ".agents\\skills\\resolve-spec-dependency-chain\\SKILL.md",
+    "Hash": "DE82C317A062FB568E18AF190DADF8759F53388AE0356E4E50154A252EDCAC45"
+  },
+  {
+    "Path": ".agents\\skills\\review-non-regression\\SKILL.md",
+    "Hash": "C940E578D804DFD87D4B620322CF8B9496C361F9B128FB118E32278152348B8B"
+  },
+  {
+    "Path": ".agents\\skills\\rng-and-determinism\\SKILL.md",
+    "Hash": "4BEF69FB2856F204BA5126FBC0181F6734B1B8EC8DB48D43202A51DBA0C68BA5"
+  },
+  {
+    "Path": ".agents\\skills\\run-editmode-tests\\SKILL.md",
+    "Hash": "E023E69A2B1DBC6BF7DF77C58117F6E22F980DDA842FFE50F1365EF1C411CF1B"
+  },
+  {
+    "Path": ".agents\\skills\\runtime-bootstrap-pattern\\SKILL.md",
+    "Hash": "1FE24E826B2E0B46091F8211A811C31A5C7FDD8E118B5B65B0F290410F6DE74A"
+  },
+  {
+    "Path": ".agents\\skills\\save-load-pattern\\SKILL.md",
+    "Hash": "AEB12581CD3633C1FBAE6DBBFCEE754FF6A747DB6E81BFF9A968E3973DAEE446"
+  },
+  {
+    "Path": ".agents\\skills\\save-section-provider\\SKILL.md",
+    "Hash": "A77437C290DB76BA7264B954858DD38EB52173CD14E29D5C65827F91365CA2AB"
+  },
+  {
+    "Path": ".agents\\skills\\scene-interactable-wiring\\SKILL.md",
+    "Hash": "E5A456D6EB93222ADC299E2D20D7C4F7E5574F6983886782E372539794B6B648"
+  },
+  {
+    "Path": ".agents\\skills\\skill-tree-authoring\\SKILL.md",
+    "Hash": "2379E876D66E38CA2B991256F6C2DDEBF61F172C3EBB098DD02D844902E5C463"
+  },
+  {
+    "Path": ".agents\\skills\\solid-refactoring\\SKILL.md",
+    "Hash": "37E73B1EB9C19E158F7BE18B56FC1F99B7E8A8019D9C88E542F181B7DFE04712"
+  },
+  {
+    "Path": ".agents\\skills\\spec-authoring\\SKILL.md",
+    "Hash": "A597F73366591BB0C230F9C1F7EF8862B2C2D0764AB0E36D2F25664EB70C6246"
+  },
+  {
+    "Path": ".agents\\skills\\spec-execution\\SKILL.md",
+    "Hash": "DCEA828632FBCC1A2EF4BF0342C3607B14FB91C18BAD28D5200745AF19D4EA41"
+  },
+  {
+    "Path": ".agents\\skills\\spec-execution\\TESTING_QUALITY_GATE_ADDENDUM.md",
+    "Hash": "D05D66611E7B531D80BB503267180B59E6739C734DFC1930F1CB12CAA9002853"
+  },
+  {
+    "Path": ".agents\\skills\\sprite-animation-review\\SKILL.md",
+    "Hash": "031ECE621B4CA6DE25A190E259573902D5A1D273DD0C14D9C2CD91B2722BDA3F"
+  },
+  {
+    "Path": ".agents\\skills\\sprite-animation-review\\references\\motion-diagnostics.md",
+    "Hash": "967754CCFB6AEDE6725F98D4A5F3F371E3EB566636BFC6B851DB5CB0F706731B"
+  },
+  {
+    "Path": ".agents\\skills\\sprite-generation-pipeline\\SKILL.md",
+    "Hash": "6CE8FA2484907657DCA9E28FDE6BBFF5C049CAB825D2DDB6EF514CC33004947B"
+  },
+  {
+    "Path": ".agents\\skills\\sprite-scene-integration\\SKILL.md",
+    "Hash": "0BED479F26DD80A9367B0D688CC62746369389BF570DAF2B0BC6DA10DB38B595"
+  },
+  {
+    "Path": ".agents\\skills\\sprite-scene-integration\\references\\scene-fit.md",
+    "Hash": "F7967D53A7DC40C383860518637B0D564551844A8C40C66919ACDFAF3A5186B8"
+  },
+  {
+    "Path": ".agents\\skills\\start-spec\\SKILL.md",
+    "Hash": "70DB0B17E5A334D9442BD0849D9C8A29CB430973C1B4F931223E0D7835B73BB9"
+  },
+  {
+    "Path": ".agents\\skills\\state-machine-design\\SKILL.md",
+    "Hash": "B2CC63424370ED4428DF40C592F25A465861310BFFF1137E1905030CD168542E"
+  },
+  {
+    "Path": ".agents\\skills\\system-reuse-audit\\SKILL.md",
+    "Hash": "CC512300A8EEBBEE207BEBC88541341BA9D2F689A24EE2F865F0CE8108DB2583"
+  },
+  {
+    "Path": ".agents\\skills\\tilemap-world-rendering\\SKILL.md",
+    "Hash": "3E4CE010321944DED8ADDDD0928CAD4E4A3EB875E99E55EB2A273BDE68129DD4"
+  },
+  {
+    "Path": ".agents\\skills\\time-calendar-weather\\SKILL.md",
+    "Hash": "FA569B47851BD77316541056FE60EBC032B1181F2D5306E9C134E5EE05170A6C"
+  },
+  {
+    "Path": ".agents\\skills\\ui-modal-stack\\SKILL.md",
+    "Hash": "4368E222B37C96BFD89FAC99DBE1BC8C72E4A86F087A834C0CF2FD63F23E9633"
+  },
+  {
+    "Path": ".agents\\skills\\ui-projection-pattern\\SKILL.md",
+    "Hash": "64F40A4581433103C8A4AD33C5C87D59A8D06F2EEC7310526B59EA730EAD74A7"
+  },
+  {
+    "Path": ".agents\\skills\\unity-asset-generation\\SKILL.md",
+    "Hash": "289D86BD15E945B4F14A04CCFB8404995BF76DAC898FCA119C30F3314621675C"
+  },
+  {
+    "Path": ".agents\\skills\\unity-validation\\SKILL.md",
+    "Hash": "A5001065737F138755ED0A56B64DDC34256B3BA1FFC5C438A4F88870620D7030"
+  },
+  {
+    "Path": ".agents\\skills\\unity-validation\\TESTING_QUALITY_GATE_ADDENDUM.md",
+    "Hash": "B2329EF4D3DB9C2EF01FD8F263D97EBF7E503ACCAA818430DF12FE5FB311BC22"
+  },
+  {
+    "Path": ".agents\\skills\\unity-validation-triage\\SKILL.md",
+    "Hash": "3562A31DA3DC6FD2B1E1430580DC4F79A42657BD26114F2FC7FF0F7B749D3597"
+  },
+  {
+    "Path": ".agents\\skills\\validate-spec\\SKILL.md",
+    "Hash": "6463687D5FD277716EEA9A802EDB71552AACA188BA45B71D5EE2A6353CA6F972"
+  },
+  {
+    "Path": ".agents\\skills\\validate-unity\\SKILL.md",
+    "Hash": "7F9A4E4354E6E48852322013761E9868EC1E7F21FCA221E25F7445C111E6434C"
+  },
+  {
+    "Path": ".agents\\skills\\visual-asset-review\\SKILL.md",
+    "Hash": "18E964BE2AF16562558FD1FBDC57A72BFD032154E0AC509FFBEE5C115133EEB1"
+  },
+  {
+    "Path": ".agents\\skills\\visual-asset-review\\references\\image-inspection.md",
+    "Hash": "2465C2CE22BD4C3F65B7BF771912EA5760FEFEAF3702F2479EDA07A221C4C509"
+  },
+  {
+    "Path": ".agents\\skills\\wave-integration-slice\\SKILL.md",
+    "Hash": "1DFBFC99CA58AFC94146C1ABBDE42061B3B2D9D519DEA0732E44A6CF32DDFEA5"
+  },
+  {
+    "Path": ".codex\\config.toml",
+    "Hash": "6F369E1652B349C0B19AD365C038ADE22D65FA2BBD293C3C53FC4A39152A39C4"
+  },
+  {
+    "Path": ".codex\\config.toml.bak-20260812-1934",
+    "Hash": "D12E8684C6FAEEC217ECC62BF080105856174C5CDB7ABE593F90E2AB31EC48E6"
+  },
+  {
+    "Path": ".codex\\hooks.json",
+    "Hash": "74892BFCF89178FF104E0BCBD1523DFC0ECD9545CFB129D679E3AC030A96E486"
+  },
+  {
+    "Path": ".codex\\agents\\architecture-reviewer.toml",
+    "Hash": "ABC42B330A2627F11A8884F40E6558E4838AE3D77A199E298AA005BC4CE63A52"
+  },
+  {
+    "Path": ".codex\\agents\\asset-wiring-specialist.toml",
+    "Hash": "D3CE9810D42F3D1685C212A08560AA0CFEA5A1B92BA22446D12EAF906615483F"
+  },
+  {
+    "Path": ".codex\\agents\\bugfix-investigator.toml",
+    "Hash": "9C32E549853306CC918B61DF881B786E692E58F17649477A057D8E588B9D264B"
+  },
+  {
+    "Path": ".codex\\agents\\docs-curator.toml",
+    "Hash": "3406749B1D99C433730980620DE7677B0D5A71BA0D42DD520634BFB2108818DD"
+  },
+  {
+    "Path": ".codex\\agents\\game-design-reviewer.toml",
+    "Hash": "FB063AE232D8BDCD4D2C44A7774695EFE12B2A9DC9BC64B557B072824327B57E"
+  },
+  {
+    "Path": ".codex\\agents\\non-regression-auditor.toml",
+    "Hash": "BA92DA91532449341BD8F5399B0DC2FC42CFA85B14FD3DBF53D5A7F179FE9257"
+  },
+  {
+    "Path": ".codex\\agents\\performance-auditor.toml",
+    "Hash": "F644F76585B14D5A53275B904AB23FFE73C6D8D4E7560B1F5BAB94CF6D25BB19"
+  },
+  {
+    "Path": ".codex\\agents\\pixel-art-scene-reviewer.toml",
+    "Hash": "7958EE2C4C3C1BF071D77498AE9A02E21BF17A5777FBCE5FD794B57A454441F0"
+  },
+  {
+    "Path": ".codex\\agents\\spec-implementer.toml",
+    "Hash": "00E15B8384DE8135C6857C2992FA4F8F81115557843E391414F5B86920D0FD31"
+  },
+  {
+    "Path": ".codex\\agents\\test-author.toml",
+    "Hash": "BD419FBEFBEF5DD5D7084729C1023847047A797F04C98B7614D9D8AF38425C65"
+  },
+  {
+    "Path": ".codex\\agents\\unity-validator.toml",
+    "Hash": "16AD0A826DACBE89FA587FEB9051864491C7481FD40E8EF858AB95F3B7E4BE54"
+  },
+  {
+    "Path": ".codex\\rules\\cave-stable-run.md",
+    "Hash": "D8839D875FC7E0B7F09CEA6FE33192C3104226891BFF6668AEB97E7DB4888A87"
+  },
+  {
+    "Path": ".codex\\rules\\code-minimalism-ladder.md",
+    "Hash": "E22E1348EC3D141B09C83E0CA30898A7DC2581BA040EC35CB2C6B51D380F110A"
+  },
+  {
+    "Path": ".codex\\rules\\context-reading-policy.md",
+    "Hash": "75E99438EFDD416CD4E03DEBAEC7E5D9FE342BF88E6BCA64FD6A9311DB893DFA"
+  },
+  {
+    "Path": ".codex\\rules\\csharp-style.md",
+    "Hash": "7C3C3401108FCE082F7B65B8F0EE7052599C23E473CF5E97A37570065293A1BF"
+  },
+  {
+    "Path": ".codex\\rules\\docs-governance.md",
+    "Hash": "90BCE648A7D14C7D96D07EA767B3211995CF112F0D1E49F527BAA0990E0B064F"
+  },
+  {
+    "Path": ".codex\\rules\\editor-generation-orchestration.md",
+    "Hash": "CF832B355EC407F5759D84D3183462E7AB8CEA96FC63C61B884C30785124E6D5"
+  },
+  {
+    "Path": ".codex\\rules\\error-handling-resilience.md",
+    "Hash": "706055CD0CEDC099A96C171F0CC5ABE152ED1D41782FFC7563F78EACEAF84B07"
+  },
+  {
+    "Path": ".codex\\rules\\gameplay-design-patterns.md",
+    "Hash": "8374D43882860CE6CE1F2159319088CFC80FA7871B526F597DEA57349EAADF7D"
+  },
+  {
+    "Path": ".codex\\rules\\id-stability.md",
+    "Hash": "DCDBA3439D01196C241E7111B6AB7BD664BB62D1FDBD9ECC8CA941846935FA9B"
+  },
+  {
+    "Path": ".codex\\rules\\keyart-scene-fidelity.md",
+    "Hash": "4B4AE467610810584C0B14ECDE469CE911CC3470DDF33CE28C11C57621A0414C"
+  },
+  {
+    "Path": ".codex\\rules\\no-magic-balance-values.md",
+    "Hash": "B7D7442C7377395D3A88FBFB488A928823A2205E39816C1971426FCBA6BD892B"
+  },
+  {
+    "Path": ".codex\\rules\\no-unsafe-git.md",
+    "Hash": "9D9895741C01C14FB87DD1F8926448A74AB63BD815DA7BB2AE9D1307C0447176"
+  },
+  {
+    "Path": ".codex\\rules\\RULES.md",
+    "Hash": "9586F50F2E434326BC4D6201A1E7E8BC5064F5B66E4F0760D7A2AA3E85ED8FE0"
+  },
+  {
+    "Path": ".codex\\rules\\security-and-files.md",
+    "Hash": "D461558274CB8DFEFAFF59DCC4CED014D6DEF3C7B0ECDA11529AFDB3ED8D409F"
+  },
+  {
+    "Path": ".codex\\rules\\solid-and-ai-context.md",
+    "Hash": "41059C5A6EF0487F7311847BF4B9964EB0413D427366F0A4403593950EC55CF6"
+  },
+  {
+    "Path": ".codex\\rules\\spec_dependency_resolution.md",
+    "Hash": "95307032A185AA444562F0AC23EB056465B718A854CF388E19AC9308374E4441"
+  },
+  {
+    "Path": ".codex\\rules\\spec_quality_gate.md",
+    "Hash": "5FA6E035F2269AD9EA8E9465A4AD1F976C682CF42C427D9DDA35754D1C2288CC"
+  },
+  {
+    "Path": ".codex\\rules\\subagent-results-not-evidence.md",
+    "Hash": "CEF57E3970B67AE13A7443E4F43887693EC5E72402CF6D1C5F2A5BF509D73115"
+  },
+  {
+    "Path": ".codex\\rules\\testing-quality-gate.md",
+    "Hash": "D61FBB8AB47DA41DAC877671BED868A16BE58C8B88B6179E0F88BB4470108D23"
+  },
+  {
+    "Path": ".codex\\rules\\unity-architecture.md",
+    "Hash": "B12D682489834E27B2E27A015ADDB3843AF5710E86E49AE47EA64A53B76E737D"
+  },
+  {
+    "Path": ".codex\\rules\\unity-assets.md",
+    "Hash": "412F4FB97DABFEABD644F6518DC6D7120B4BC0556ECA17F7C441B638BCA31FB3"
+  },
+  {
+    "Path": ".codex\\rules\\validation-truth.md",
+    "Hash": "65861BD4630B19EC27742AA5A8AE0281E6CE5751AABF154124A773FA3F156081"
+  },
+  {
+    "Path": ".codex\\rules\\windows_powershell_only.md",
+    "Hash": "D1679EF6C122E80EAA59D94BC90A16BA5B044E0C383A376A2D57B402242905D5"
+  },
+  {
+    "Path": "AGENTS.md",
+    "Hash": "F8922BEC0C9540BFE34D8FBA539875EB3F6C165037D6F620944513A4EBE41E40"
+  }
+]

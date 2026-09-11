@@ -1,0 +1,309 @@
+{
+  "status": "PASS",
+  "sceneSha256": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803",
+  "sceneMatchesMetadataBefore": true,
+  "sceneMatchesMetadataAfter": true,
+  "sceneMatchesSnapshot": true,
+  "views": 8,
+  "customAxisYViews": 8,
+  "routes": [
+    {
+      "id": "house",
+      "status": "PASS",
+      "points": 3,
+      "requested": {
+        "x": 16.0,
+        "y": 5.25
+      },
+      "reached": {
+        "x": 16.0,
+        "y": 4.0
+      }
+    },
+    {
+      "id": "cultivation",
+      "status": "PASS",
+      "points": 44,
+      "requested": {
+        "x": -3.0,
+        "y": -1.0
+      },
+      "reached": {
+        "x": -2.5,
+        "y": 0.0
+      }
+    },
+    {
+      "id": "well_visual",
+      "status": "PASS",
+      "points": 56,
+      "requested": {
+        "x": -7.0,
+        "y": 9.0
+      },
+      "reached": {
+        "x": -6.5,
+        "y": 8.0
+      }
+    },
+    {
+      "id": "fountain_approach",
+      "status": "PASS",
+      "points": 79,
+      "requested": {
+        "x": -24.0,
+        "y": 3.0
+      },
+      "reached": {
+        "x": -23.0,
+        "y": 3.0
+      }
+    },
+    {
+      "id": "cave_entrance_approach",
+      "status": "PASS",
+      "points": 92,
+      "requested": {
+        "x": -19.5,
+        "y": 14.5
+      },
+      "reached": {
+        "x": -19.0,
+        "y": 13.5
+      }
+    },
+    {
+      "id": "greenhouse_approach",
+      "status": "PASS",
+      "points": 16,
+      "requested": {
+        "x": 23.0,
+        "y": 5.25
+      },
+      "reached": {
+        "x": 22.0,
+        "y": 4.5
+      }
+    },
+    {
+      "id": "fishing_approach",
+      "status": "PASS",
+      "points": 39,
+      "requested": {
+        "x": 10.0,
+        "y": -10.0
+      },
+      "reached": {
+        "x": 10.0,
+        "y": -10.0
+      }
+    },
+    {
+      "id": "workbench",
+      "status": "PASS",
+      "points": 16,
+      "requested": {
+        "x": 12.0,
+        "y": -2.0
+      },
+      "reached": {
+        "x": 13.0,
+        "y": -1.5
+      }
+    },
+    {
+      "id": "forge",
+      "status": "PASS",
+      "points": 12,
+      "requested": {
+        "x": 16.0,
+        "y": -2.0
+      },
+      "reached": {
+        "x": 15.0,
+        "y": -1.5
+      }
+    },
+    {
+      "id": "cooking",
+      "status": "PASS",
+      "points": 16,
+      "requested": {
+        "x": 20.0,
+        "y": -2.0
+      },
+      "reached": {
+        "x": 19.0,
+        "y": -1.5
+      }
+    },
+    {
+      "id": "bridge",
+      "status": "PASS",
+      "points": 22,
+      "requested": {
+        "x": 27.0,
+        "y": 3.0
+      },
+      "reached": {
+        "x": 26.0,
+        "y": 2.5
+      }
+    },
+    {
+      "id": "east_bridge_exit",
+      "status": "PASS",
+      "points": 28,
+      "requested": {
+        "x": 30.0,
+        "y": 3.0
+      },
+      "reached": {
+        "x": 29.0,
+        "y": 2.5
+      }
+    },
+    {
+      "id": "animals_west",
+      "status": "PASS",
+      "points": 108,
+      "requested": {
+        "x": -16.0,
+        "y": -20.0
+      },
+      "reached": {
+        "x": -15.5,
+        "y": -19.0
+      }
+    },
+    {
+      "id": "animals_east",
+      "status": "PASS",
+      "points": 66,
+      "requested": {
+        "x": 5.0,
+        "y": -20.0
+      },
+      "reached": {
+        "x": 5.5,
+        "y": -19.0
+      }
+    },
+    {
+      "id": "coop_door_approach",
+      "status": "PASS",
+      "points": 106,
+      "requested": {
+        "x": -16.0,
+        "y": -19.0
+      },
+      "reached": {
+        "x": -15.5,
+        "y": -18.0
+      }
+    },
+    {
+      "id": "barn_door_approach",
+      "status": "PASS",
+      "points": 92,
+      "requested": {
+        "x": -9.0,
+        "y": -19.0
+      },
+      "reached": {
+        "x": -8.5,
+        "y": -18.0
+      }
+    }
+  ],
+  "visitedNodes": 6465,
+  "dockWaterChecks": [
+    {
+      "position": {
+        "x": 8.5,
+        "y": -10.0
+      },
+      "blocked": true
+    },
+    {
+      "position": {
+        "x": 11.800000190734863,
+        "y": -10.699999809265137
+      },
+      "blocked": true
+    },
+    {
+      "position": {
+        "x": 10.0,
+        "y": -11.5
+      },
+      "blocked": true
+    }
+  ],
+  "selectionPass": 6,
+  "runtimeErrors": 0,
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "saveHashSetsEqual": true,
+  "sourceDrift": [],
+  "testInputs": [
+    {
+      "path": "Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs",
+      "testSha": "2D72E8D7018C25C843B591C5128E5373F8DEB9322CAA80CD8AC2F252F11C2972",
+      "currentSha": "2D72E8D7018C25C843B591C5128E5373F8DEB9322CAA80CD8AC2F252F11C2972",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/Farm/FarmLevel1LayoutContractTests.cs",
+      "testSha": "F255F05C90FEF4A6630CF89C63F3CF520DFB3135060916277742BF41BAE93A55",
+      "currentSha": "F255F05C90FEF4A6630CF89C63F3CF520DFB3135060916277742BF41BAE93A55",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneSpatialContractTests.cs",
+      "testSha": "38D1780F1DC55359F1AE5F2EBA42A9525268DF10BE7FCB716DBED58F73A24D05",
+      "currentSha": "38D1780F1DC55359F1AE5F2EBA42A9525268DF10BE7FCB716DBED58F73A24D05",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneNavigationContractTests.cs",
+      "testSha": "0C6D736210D71E03AED7BD82AFA5AB5F053FB6DA4BE110CF24664CADE8AF6F87",
+      "currentSha": "0C6D736210D71E03AED7BD82AFA5AB5F053FB6DA4BE110CF24664CADE8AF6F87",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+      "testSha": "FF87191F7A76545F89F3559398D36D117FCBB4712A2D88D5D35BD131999A74C4",
+      "currentSha": "FF87191F7A76545F89F3559398D36D117FCBB4712A2D88D5D35BD131999A74C4",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/FarmLevel1LayoutContract.cs",
+      "testSha": "4A06A3221FD6BB358373E605A957A5D824D9CA544A0AF20DA28C76019C281D78",
+      "currentSha": "4A06A3221FD6BB358373E605A957A5D824D9CA544A0AF20DA28C76019C281D78",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs",
+      "testSha": "2A39CB98FB9CEC2AEAC9530683D43726ADB03DED6C45AA5CFBADA6D05B094A28",
+      "currentSha": "2A39CB98FB9CEC2AEAC9530683D43726ADB03DED6C45AA5CFBADA6D05B094A28",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationPolicy.cs",
+      "testSha": "A241F722880EB9C833799DA4A6F0D40C5920C1B3016EEB3C6B2567D21CCE15FF",
+      "currentSha": "A241F722880EB9C833799DA4A6F0D40C5920C1B3016EEB3C6B2567D21CCE15FF",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationRaster.cs",
+      "testSha": "515890E43C116DBAC87F28F1DE17B2F4339AB5D51FC12FE3FED331AB0642F6CE",
+      "currentSha": "515890E43C116DBAC87F28F1DE17B2F4339AB5D51FC12FE3FED331AB0642F6CE",
+      "same": true
+    }
+  ],
+  "oldArtInputs": 302,
+  "oldArtDrift": [],
+  "fishingStableIdSerialized": true,
+  "unityActive": 0
+}

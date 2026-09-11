@@ -1,0 +1,1277 @@
+{
+  "model": "Analytical bounds and structural witnesses; no enemy AI, damage mitigation, animation, Unity or human playtest",
+  "sourceHashes": {
+    "Assets/_Game/Scripts/Skills/DefaultSkillCatalog.cs": "f133ea2b3c1d6cc8f6cc879ffb6df2b87aff7fc555855f120fd15128e036e501",
+    "Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutorCatalog.cs": "76ae26d968a70f3c97c4e41798ee7775dca3708bc9dd072c1677443bdd251a37",
+    "Assets/_Game/Scripts/Skills/SkillTierRules.cs": "ee66d445481b3abe3895aa8143742f533b38aad8cd1dd69227945ba159a2dada",
+    "Assets/_Game/Scripts/Player/ManaManager.cs": "6b039e38457fab65f902ab8e4d8f640f00a96a5e9ca7caedbc17216379bb6744",
+    "Assets/_Game/Scripts/Player/DerivedFollowupFormulas.cs": "6a52a50898c1556154f781d09f3bc42bf3e538cc95d8ea8d87062bfd4601e352",
+    "Assets/_Game/Scripts/Economy/Pricing/PricingProfile.cs": "46c78f3ee73bb67945a2fe03832d43e6e757890d4cd208c9733c937d59c826e7",
+    "docs/design/gameplay/combat/SKILL_NUMERIC_ADDENDUM_v1.0.md": "da1473cb27c6ce9d032fa686cbb12b8be77a07e212c0d6c025e5c0e724dc4214",
+    "docs/design/gameplay/player/PLAYER_SKILL_TREES_DIRECTION.md": "850ba1d3c426b5da4f8471bd7942f4fa50b3fb98238bb5a50d05baa20d00dac8",
+    "Assets/_Game/Scripts/Core/GameTimeManager.cs": "4dcd2aa2b8389407e4b69e9508ea68e787cd38c9b42299d366831b49873e9a9e",
+    "Assets/_Game/Scripts/Player/Progression/ProgressionCurve.cs": "d1e86fbaefa2ccf3e0ee04ba1d940d06a9ed7ba469b72dcba6aa1396901656e2",
+    "Assets/_Game/Scripts/Skills/SkillPurchaseService.cs": "8456a970cc54762e2b2ff8d3b16713f5df8b9ca77f853dee147d8839ec484ee0"
+  },
+  "parameters": {
+    "tierThresholds": [
+      0,
+      0,
+      5,
+      11,
+      18,
+      26
+    ],
+    "pointCeiling": 55,
+    "baseBuyMultiplier": 1.3,
+    "baseSellMultiplier": 0.9,
+    "manaBasePerTick": 2,
+    "tickIntervalSeconds": 1,
+    "markBonuses": [
+      0.05,
+      0.08,
+      0.12
+    ],
+    "markDurations": [
+      8,
+      10,
+      12
+    ]
+  },
+  "capstoneWitnesses": [
+    {
+      "tree": "melee",
+      "target": "melee_capstone_battle_rhythm",
+      "targetRank": 1,
+      "points": 27,
+      "rank": {
+        "melee_iron_grip": 5,
+        "melee_guarded_stance": 5,
+        "melee_dual_wield_flow": 5,
+        "melee_two_handed_momentum": 5,
+        "melee_battle_dash": 5,
+        "melee_dodge_training": 1,
+        "melee_capstone_battle_rhythm": 1
+      },
+      "sequence": [
+        {
+          "point": 1,
+          "node": "melee_iron_grip",
+          "rank": 1
+        },
+        {
+          "point": 2,
+          "node": "melee_guarded_stance",
+          "rank": 1
+        },
+        {
+          "point": 3,
+          "node": "melee_iron_grip",
+          "rank": 2
+        },
+        {
+          "point": 4,
+          "node": "melee_guarded_stance",
+          "rank": 2
+        },
+        {
+          "point": 5,
+          "node": "melee_dual_wield_flow",
+          "rank": 1
+        },
+        {
+          "point": 6,
+          "node": "melee_two_handed_momentum",
+          "rank": 1
+        },
+        {
+          "point": 7,
+          "node": "melee_iron_grip",
+          "rank": 3
+        },
+        {
+          "point": 8,
+          "node": "melee_guarded_stance",
+          "rank": 3
+        },
+        {
+          "point": 9,
+          "node": "melee_dual_wield_flow",
+          "rank": 2
+        },
+        {
+          "point": 10,
+          "node": "melee_dual_wield_flow",
+          "rank": 3
+        },
+        {
+          "point": 11,
+          "node": "melee_two_handed_momentum",
+          "rank": 2
+        },
+        {
+          "point": 12,
+          "node": "melee_battle_dash",
+          "rank": 1
+        },
+        {
+          "point": 13,
+          "node": "melee_dodge_training",
+          "rank": 1
+        },
+        {
+          "point": 14,
+          "node": "melee_iron_grip",
+          "rank": 4
+        },
+        {
+          "point": 15,
+          "node": "melee_guarded_stance",
+          "rank": 4
+        },
+        {
+          "point": 16,
+          "node": "melee_dual_wield_flow",
+          "rank": 4
+        },
+        {
+          "point": 17,
+          "node": "melee_two_handed_momentum",
+          "rank": 3
+        },
+        {
+          "point": 18,
+          "node": "melee_two_handed_momentum",
+          "rank": 4
+        },
+        {
+          "point": 19,
+          "node": "melee_iron_grip",
+          "rank": 5
+        },
+        {
+          "point": 20,
+          "node": "melee_guarded_stance",
+          "rank": 5
+        },
+        {
+          "point": 21,
+          "node": "melee_dual_wield_flow",
+          "rank": 5
+        },
+        {
+          "point": 22,
+          "node": "melee_two_handed_momentum",
+          "rank": 5
+        },
+        {
+          "point": 23,
+          "node": "melee_battle_dash",
+          "rank": 2
+        },
+        {
+          "point": 24,
+          "node": "melee_battle_dash",
+          "rank": 3
+        },
+        {
+          "point": 25,
+          "node": "melee_battle_dash",
+          "rank": 4
+        },
+        {
+          "point": 26,
+          "node": "melee_battle_dash",
+          "rank": 5
+        },
+        {
+          "point": 27,
+          "node": "melee_capstone_battle_rhythm",
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "tree": "ranged",
+      "target": "ranged_capstone_eagle_focus",
+      "targetRank": 1,
+      "points": 27,
+      "rank": {
+        "ranged_steady_hand": 5,
+        "ranged_long_sight": 5,
+        "ranged_charged_shot": 5,
+        "ranged_quick_nock": 5,
+        "ranged_multishot_fan": 4,
+        "ranged_kiting_steps": 1,
+        "ranged_projectile_tuning": 1,
+        "ranged_capstone_eagle_focus": 1
+      },
+      "sequence": [
+        {
+          "point": 1,
+          "node": "ranged_steady_hand",
+          "rank": 1
+        },
+        {
+          "point": 2,
+          "node": "ranged_long_sight",
+          "rank": 1
+        },
+        {
+          "point": 3,
+          "node": "ranged_charged_shot",
+          "rank": 1
+        },
+        {
+          "point": 4,
+          "node": "ranged_steady_hand",
+          "rank": 2
+        },
+        {
+          "point": 5,
+          "node": "ranged_long_sight",
+          "rank": 2
+        },
+        {
+          "point": 6,
+          "node": "ranged_steady_hand",
+          "rank": 3
+        },
+        {
+          "point": 7,
+          "node": "ranged_long_sight",
+          "rank": 3
+        },
+        {
+          "point": 8,
+          "node": "ranged_charged_shot",
+          "rank": 2
+        },
+        {
+          "point": 9,
+          "node": "ranged_charged_shot",
+          "rank": 3
+        },
+        {
+          "point": 10,
+          "node": "ranged_quick_nock",
+          "rank": 1
+        },
+        {
+          "point": 11,
+          "node": "ranged_quick_nock",
+          "rank": 2
+        },
+        {
+          "point": 12,
+          "node": "ranged_multishot_fan",
+          "rank": 1
+        },
+        {
+          "point": 13,
+          "node": "ranged_kiting_steps",
+          "rank": 1
+        },
+        {
+          "point": 14,
+          "node": "ranged_steady_hand",
+          "rank": 4
+        },
+        {
+          "point": 15,
+          "node": "ranged_long_sight",
+          "rank": 4
+        },
+        {
+          "point": 16,
+          "node": "ranged_quick_nock",
+          "rank": 3
+        },
+        {
+          "point": 17,
+          "node": "ranged_quick_nock",
+          "rank": 4
+        },
+        {
+          "point": 18,
+          "node": "ranged_charged_shot",
+          "rank": 4
+        },
+        {
+          "point": 19,
+          "node": "ranged_projectile_tuning",
+          "rank": 1
+        },
+        {
+          "point": 20,
+          "node": "ranged_steady_hand",
+          "rank": 5
+        },
+        {
+          "point": 21,
+          "node": "ranged_long_sight",
+          "rank": 5
+        },
+        {
+          "point": 22,
+          "node": "ranged_quick_nock",
+          "rank": 5
+        },
+        {
+          "point": 23,
+          "node": "ranged_charged_shot",
+          "rank": 5
+        },
+        {
+          "point": 24,
+          "node": "ranged_multishot_fan",
+          "rank": 2
+        },
+        {
+          "point": 25,
+          "node": "ranged_multishot_fan",
+          "rank": 3
+        },
+        {
+          "point": 26,
+          "node": "ranged_multishot_fan",
+          "rank": 4
+        },
+        {
+          "point": 27,
+          "node": "ranged_capstone_eagle_focus",
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "tree": "magic",
+      "target": "magic_capstone_elemental_confluence",
+      "targetRank": 1,
+      "points": 27,
+      "rank": {
+        "magic_mana_well": 5,
+        "magic_quick_channel": 5,
+        "magic_arcane_edge": 5,
+        "magic_ice_bind": 5,
+        "magic_lightning_chain": 5,
+        "magic_slowing_sigils": 1,
+        "magic_capstone_elemental_confluence": 1
+      },
+      "sequence": [
+        {
+          "point": 1,
+          "node": "magic_mana_well",
+          "rank": 1
+        },
+        {
+          "point": 2,
+          "node": "magic_quick_channel",
+          "rank": 1
+        },
+        {
+          "point": 3,
+          "node": "magic_mana_well",
+          "rank": 2
+        },
+        {
+          "point": 4,
+          "node": "magic_quick_channel",
+          "rank": 2
+        },
+        {
+          "point": 5,
+          "node": "magic_arcane_edge",
+          "rank": 1
+        },
+        {
+          "point": 6,
+          "node": "magic_ice_bind",
+          "rank": 1
+        },
+        {
+          "point": 7,
+          "node": "magic_mana_well",
+          "rank": 3
+        },
+        {
+          "point": 8,
+          "node": "magic_quick_channel",
+          "rank": 3
+        },
+        {
+          "point": 9,
+          "node": "magic_arcane_edge",
+          "rank": 2
+        },
+        {
+          "point": 10,
+          "node": "magic_arcane_edge",
+          "rank": 3
+        },
+        {
+          "point": 11,
+          "node": "magic_ice_bind",
+          "rank": 2
+        },
+        {
+          "point": 12,
+          "node": "magic_lightning_chain",
+          "rank": 1
+        },
+        {
+          "point": 13,
+          "node": "magic_mana_well",
+          "rank": 4
+        },
+        {
+          "point": 14,
+          "node": "magic_quick_channel",
+          "rank": 4
+        },
+        {
+          "point": 15,
+          "node": "magic_arcane_edge",
+          "rank": 4
+        },
+        {
+          "point": 16,
+          "node": "magic_ice_bind",
+          "rank": 3
+        },
+        {
+          "point": 17,
+          "node": "magic_ice_bind",
+          "rank": 4
+        },
+        {
+          "point": 18,
+          "node": "magic_lightning_chain",
+          "rank": 2
+        },
+        {
+          "point": 19,
+          "node": "magic_slowing_sigils",
+          "rank": 1
+        },
+        {
+          "point": 20,
+          "node": "magic_mana_well",
+          "rank": 5
+        },
+        {
+          "point": 21,
+          "node": "magic_quick_channel",
+          "rank": 5
+        },
+        {
+          "point": 22,
+          "node": "magic_arcane_edge",
+          "rank": 5
+        },
+        {
+          "point": 23,
+          "node": "magic_ice_bind",
+          "rank": 5
+        },
+        {
+          "point": 24,
+          "node": "magic_lightning_chain",
+          "rank": 3
+        },
+        {
+          "point": 25,
+          "node": "magic_lightning_chain",
+          "rank": 4
+        },
+        {
+          "point": 26,
+          "node": "magic_lightning_chain",
+          "rank": 5
+        },
+        {
+          "point": 27,
+          "node": "magic_capstone_elemental_confluence",
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "tree": "survival",
+      "target": "survival_capstone_caveborn",
+      "targetRank": 1,
+      "points": 27,
+      "rank": {
+        "survival_cave_lungs": 5,
+        "survival_hard_skin": 5,
+        "survival_toxic_sense": 5,
+        "survival_low_rations": 5,
+        "survival_status_recovery": 5,
+        "survival_last_breath": 1,
+        "survival_capstone_caveborn": 1
+      },
+      "sequence": [
+        {
+          "point": 1,
+          "node": "survival_cave_lungs",
+          "rank": 1
+        },
+        {
+          "point": 2,
+          "node": "survival_hard_skin",
+          "rank": 1
+        },
+        {
+          "point": 3,
+          "node": "survival_toxic_sense",
+          "rank": 1
+        },
+        {
+          "point": 4,
+          "node": "survival_cave_lungs",
+          "rank": 2
+        },
+        {
+          "point": 5,
+          "node": "survival_hard_skin",
+          "rank": 2
+        },
+        {
+          "point": 6,
+          "node": "survival_cave_lungs",
+          "rank": 3
+        },
+        {
+          "point": 7,
+          "node": "survival_hard_skin",
+          "rank": 3
+        },
+        {
+          "point": 8,
+          "node": "survival_toxic_sense",
+          "rank": 2
+        },
+        {
+          "point": 9,
+          "node": "survival_toxic_sense",
+          "rank": 3
+        },
+        {
+          "point": 10,
+          "node": "survival_low_rations",
+          "rank": 1
+        },
+        {
+          "point": 11,
+          "node": "survival_low_rations",
+          "rank": 2
+        },
+        {
+          "point": 12,
+          "node": "survival_status_recovery",
+          "rank": 1
+        },
+        {
+          "point": 13,
+          "node": "survival_cave_lungs",
+          "rank": 4
+        },
+        {
+          "point": 14,
+          "node": "survival_hard_skin",
+          "rank": 4
+        },
+        {
+          "point": 15,
+          "node": "survival_low_rations",
+          "rank": 3
+        },
+        {
+          "point": 16,
+          "node": "survival_low_rations",
+          "rank": 4
+        },
+        {
+          "point": 17,
+          "node": "survival_toxic_sense",
+          "rank": 4
+        },
+        {
+          "point": 18,
+          "node": "survival_status_recovery",
+          "rank": 2
+        },
+        {
+          "point": 19,
+          "node": "survival_last_breath",
+          "rank": 1
+        },
+        {
+          "point": 20,
+          "node": "survival_cave_lungs",
+          "rank": 5
+        },
+        {
+          "point": 21,
+          "node": "survival_hard_skin",
+          "rank": 5
+        },
+        {
+          "point": 22,
+          "node": "survival_low_rations",
+          "rank": 5
+        },
+        {
+          "point": 23,
+          "node": "survival_toxic_sense",
+          "rank": 5
+        },
+        {
+          "point": 24,
+          "node": "survival_status_recovery",
+          "rank": 3
+        },
+        {
+          "point": 25,
+          "node": "survival_status_recovery",
+          "rank": 4
+        },
+        {
+          "point": 26,
+          "node": "survival_status_recovery",
+          "rank": 5
+        },
+        {
+          "point": 27,
+          "node": "survival_capstone_caveborn",
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "tree": "crafting",
+      "target": "crafting_capstone_master_artisan",
+      "targetRank": 1,
+      "points": 27,
+      "rank": {
+        "crafting_fast_hands": 5,
+        "crafting_material_eye": 5,
+        "crafting_repair_care": 5,
+        "crafting_station_focus": 5,
+        "crafting_salvage_method": 5,
+        "crafting_durable_finish": 1,
+        "crafting_capstone_master_artisan": 1
+      },
+      "sequence": [
+        {
+          "point": 1,
+          "node": "crafting_fast_hands",
+          "rank": 1
+        },
+        {
+          "point": 2,
+          "node": "crafting_material_eye",
+          "rank": 1
+        },
+        {
+          "point": 3,
+          "node": "crafting_fast_hands",
+          "rank": 2
+        },
+        {
+          "point": 4,
+          "node": "crafting_material_eye",
+          "rank": 2
+        },
+        {
+          "point": 5,
+          "node": "crafting_repair_care",
+          "rank": 1
+        },
+        {
+          "point": 6,
+          "node": "crafting_station_focus",
+          "rank": 1
+        },
+        {
+          "point": 7,
+          "node": "crafting_fast_hands",
+          "rank": 3
+        },
+        {
+          "point": 8,
+          "node": "crafting_repair_care",
+          "rank": 2
+        },
+        {
+          "point": 9,
+          "node": "crafting_repair_care",
+          "rank": 3
+        },
+        {
+          "point": 10,
+          "node": "crafting_material_eye",
+          "rank": 3
+        },
+        {
+          "point": 11,
+          "node": "crafting_station_focus",
+          "rank": 2
+        },
+        {
+          "point": 12,
+          "node": "crafting_salvage_method",
+          "rank": 1
+        },
+        {
+          "point": 13,
+          "node": "crafting_fast_hands",
+          "rank": 4
+        },
+        {
+          "point": 14,
+          "node": "crafting_repair_care",
+          "rank": 4
+        },
+        {
+          "point": 15,
+          "node": "crafting_material_eye",
+          "rank": 4
+        },
+        {
+          "point": 16,
+          "node": "crafting_station_focus",
+          "rank": 3
+        },
+        {
+          "point": 17,
+          "node": "crafting_station_focus",
+          "rank": 4
+        },
+        {
+          "point": 18,
+          "node": "crafting_salvage_method",
+          "rank": 2
+        },
+        {
+          "point": 19,
+          "node": "crafting_durable_finish",
+          "rank": 1
+        },
+        {
+          "point": 20,
+          "node": "crafting_fast_hands",
+          "rank": 5
+        },
+        {
+          "point": 21,
+          "node": "crafting_repair_care",
+          "rank": 5
+        },
+        {
+          "point": 22,
+          "node": "crafting_material_eye",
+          "rank": 5
+        },
+        {
+          "point": 23,
+          "node": "crafting_station_focus",
+          "rank": 5
+        },
+        {
+          "point": 24,
+          "node": "crafting_salvage_method",
+          "rank": 3
+        },
+        {
+          "point": 25,
+          "node": "crafting_salvage_method",
+          "rank": 4
+        },
+        {
+          "point": 26,
+          "node": "crafting_salvage_method",
+          "rank": 5
+        },
+        {
+          "point": 27,
+          "node": "crafting_capstone_master_artisan",
+          "rank": 1
+        }
+      ]
+    }
+  ],
+  "dualCapstone": {
+    "minimumArithmetic": 54,
+    "witnessPair": 54,
+    "budget": 55,
+    "bothRankThree": 58
+  },
+  "offensiveEfficiency": [
+    {
+      "id": "offhand",
+      "cost": 10,
+      "cooldown": 2.5,
+      "R1": {
+        "damage": 8,
+        "damagePerResource": 0.8,
+        "damagePerCooldownSecond": 3.2
+      },
+      "R3": {
+        "damage": 12,
+        "damagePerResource": 1.2,
+        "damagePerCooldownSecond": 4.8
+      }
+    },
+    {
+      "id": "whirl",
+      "cost": 22,
+      "cooldown": 6,
+      "R1": {
+        "damage": 10,
+        "damagePerResource": 0.454545,
+        "damagePerCooldownSecond": 1.666667
+      },
+      "R3": {
+        "damage": 14,
+        "damagePerResource": 0.636364,
+        "damagePerCooldownSecond": 2.333333
+      }
+    },
+    {
+      "id": "line_piercer",
+      "cost": 18,
+      "cooldown": 7,
+      "R1": {
+        "damage": 12,
+        "damagePerResource": 0.666667,
+        "damagePerCooldownSecond": 1.714286
+      },
+      "R3": {
+        "damage": 18,
+        "damagePerResource": 1,
+        "damagePerCooldownSecond": 2.571429
+      }
+    },
+    {
+      "id": "multishot_per_arrow",
+      "cost": 24,
+      "cooldown": 8,
+      "R1": {
+        "damage": 8,
+        "damagePerResource": 0.333333,
+        "damagePerCooldownSecond": 1
+      },
+      "R3": {
+        "damage": 12,
+        "damagePerResource": 0.5,
+        "damagePerCooldownSecond": 1.5
+      }
+    },
+    {
+      "id": "fire_spark",
+      "cost": 10,
+      "cooldown": 3,
+      "R1": {
+        "damage": 12,
+        "damagePerResource": 1.2,
+        "damagePerCooldownSecond": 4
+      },
+      "R3": {
+        "damage": 16,
+        "damagePerResource": 1.6,
+        "damagePerCooldownSecond": 5.333333
+      }
+    },
+    {
+      "id": "chama_breve",
+      "cost": 8,
+      "cooldown": 2.5,
+      "R1": {
+        "damage": 8,
+        "damagePerResource": 1,
+        "damagePerCooldownSecond": 3.2
+      },
+      "R3": {
+        "damage": 12,
+        "damagePerResource": 1.5,
+        "damagePerCooldownSecond": 4.8
+      }
+    }
+  ],
+  "manaSustain": [
+    {
+      "quickChannelRank": 0,
+      "regenPerSecond": 2,
+      "fireSparkSpendPerSecond": 3.333333,
+      "netPerSecond": -1.333333,
+      "intendedPercentRegenAtRank": 2
+    },
+    {
+      "quickChannelRank": 1,
+      "regenPerSecond": 3,
+      "fireSparkSpendPerSecond": 3.333333,
+      "netPerSecond": -0.333333,
+      "intendedPercentRegenAtRank": 2.1
+    },
+    {
+      "quickChannelRank": 2,
+      "regenPerSecond": 4,
+      "fireSparkSpendPerSecond": 3.333333,
+      "netPerSecond": 0.666667,
+      "intendedPercentRegenAtRank": 2.2
+    },
+    {
+      "quickChannelRank": 3,
+      "regenPerSecond": 5,
+      "fireSparkSpendPerSecond": 3.333333,
+      "netPerSecond": 1.666667,
+      "intendedPercentRegenAtRank": 2.3
+    },
+    {
+      "quickChannelRank": 5,
+      "regenPerSecond": 7,
+      "fireSparkSpendPerSecond": 3.333333,
+      "netPerSecond": 3.666667,
+      "intendedPercentRegenAtRank": 2.5
+    }
+  ],
+  "markBreakEven": [
+    {
+      "rank": 1,
+      "bonus": 0.05,
+      "duration": 8,
+      "maxLostAttackTimeSeconds": 0.380952,
+      "assumption": "Fixed target exposure horizon equal to listed duration, including cast; no ally contribution. Full duration after cast gives b*T instead."
+    },
+    {
+      "rank": 2,
+      "bonus": 0.08,
+      "duration": 10,
+      "maxLostAttackTimeSeconds": 0.740741,
+      "assumption": "Fixed target exposure horizon equal to listed duration, including cast; no ally contribution. Full duration after cast gives b*T instead."
+    },
+    {
+      "rank": 3,
+      "bonus": 0.12,
+      "duration": 12,
+      "maxLostAttackTimeSeconds": 1.285714,
+      "assumption": "Fixed target exposure horizon equal to listed duration, including cast; no ally contribution. Full duration after cast gives b*T instead."
+    }
+  ],
+  "recoveryBounds": {
+    "threeDistinctHpSkillsPerMinute": 81.666667,
+    "uniqueLastBreathHpPerMinute": 26.666667,
+    "fourCopiesLastBreathHpPerMinute": 106.666667,
+    "safeCampMpPerMinute": 15,
+    "instinctStaminaPerMinute": 100,
+    "caveat": "Long-run capacity, not exact first-minute casts; excludes overheal and interruption. Three HP actions use three slots."
+  },
+  "aoeBounds": {
+    "pierceFourFlat": 48,
+    "pierceFourWithTwentyPercentDecay": 35.424,
+    "fanOneArrow": 8,
+    "fanThreeSameTarget": 24,
+    "caveat": "Alternatives of collision/target policy, not measured hit probability"
+  },
+  "craftThroughput": [
+    {
+      "rankEach": 0,
+      "rawReduction": 0,
+      "effectiveReduction": 0,
+      "throughput": 1
+    },
+    {
+      "rankEach": 1,
+      "rawReduction": 0.3,
+      "effectiveReduction": 0.30000000000000004,
+      "throughput": 1.428571
+    },
+    {
+      "rankEach": 2,
+      "rawReduction": 0.6,
+      "effectiveReduction": 0.6000000000000001,
+      "throughput": 2.5
+    },
+    {
+      "rankEach": 3,
+      "rawReduction": 0.9,
+      "effectiveReduction": 0.75,
+      "throughput": 4
+    },
+    {
+      "rankEach": 5,
+      "rawReduction": 1.5,
+      "effectiveReduction": 0.75,
+      "throughput": 4
+    }
+  ],
+  "craftReachableWitness": {
+    "tree": "crafting",
+    "target": "crafting_capstone_master_artisan",
+    "targetRank": 3,
+    "points": 29,
+    "rank": {
+      "crafting_fast_hands": 5,
+      "crafting_material_eye": 5,
+      "crafting_repair_care": 5,
+      "crafting_station_focus": 5,
+      "crafting_salvage_method": 5,
+      "crafting_durable_finish": 1,
+      "crafting_capstone_master_artisan": 3
+    },
+    "sequence": [
+      {
+        "point": 1,
+        "node": "crafting_fast_hands",
+        "rank": 1
+      },
+      {
+        "point": 2,
+        "node": "crafting_material_eye",
+        "rank": 1
+      },
+      {
+        "point": 3,
+        "node": "crafting_fast_hands",
+        "rank": 2
+      },
+      {
+        "point": 4,
+        "node": "crafting_material_eye",
+        "rank": 2
+      },
+      {
+        "point": 5,
+        "node": "crafting_repair_care",
+        "rank": 1
+      },
+      {
+        "point": 6,
+        "node": "crafting_station_focus",
+        "rank": 1
+      },
+      {
+        "point": 7,
+        "node": "crafting_fast_hands",
+        "rank": 3
+      },
+      {
+        "point": 8,
+        "node": "crafting_repair_care",
+        "rank": 2
+      },
+      {
+        "point": 9,
+        "node": "crafting_repair_care",
+        "rank": 3
+      },
+      {
+        "point": 10,
+        "node": "crafting_material_eye",
+        "rank": 3
+      },
+      {
+        "point": 11,
+        "node": "crafting_station_focus",
+        "rank": 2
+      },
+      {
+        "point": 12,
+        "node": "crafting_salvage_method",
+        "rank": 1
+      },
+      {
+        "point": 13,
+        "node": "crafting_fast_hands",
+        "rank": 4
+      },
+      {
+        "point": 14,
+        "node": "crafting_repair_care",
+        "rank": 4
+      },
+      {
+        "point": 15,
+        "node": "crafting_material_eye",
+        "rank": 4
+      },
+      {
+        "point": 16,
+        "node": "crafting_station_focus",
+        "rank": 3
+      },
+      {
+        "point": 17,
+        "node": "crafting_station_focus",
+        "rank": 4
+      },
+      {
+        "point": 18,
+        "node": "crafting_salvage_method",
+        "rank": 2
+      },
+      {
+        "point": 19,
+        "node": "crafting_durable_finish",
+        "rank": 1
+      },
+      {
+        "point": 20,
+        "node": "crafting_fast_hands",
+        "rank": 5
+      },
+      {
+        "point": 21,
+        "node": "crafting_repair_care",
+        "rank": 5
+      },
+      {
+        "point": 22,
+        "node": "crafting_material_eye",
+        "rank": 5
+      },
+      {
+        "point": 23,
+        "node": "crafting_station_focus",
+        "rank": 5
+      },
+      {
+        "point": 24,
+        "node": "crafting_salvage_method",
+        "rank": 3
+      },
+      {
+        "point": 25,
+        "node": "crafting_salvage_method",
+        "rank": 4
+      },
+      {
+        "point": 26,
+        "node": "crafting_salvage_method",
+        "rank": 5
+      },
+      {
+        "point": 27,
+        "node": "crafting_capstone_master_artisan",
+        "rank": 1
+      },
+      {
+        "point": 28,
+        "node": "crafting_capstone_master_artisan",
+        "rank": 2
+      },
+      {
+        "point": 29,
+        "node": "crafting_capstone_master_artisan",
+        "rank": 3
+      }
+    ]
+  },
+  "arbitrage": {
+    "symmetricBonusBreakEven": 0.181818,
+    "scenarios": [
+      {
+        "bonus": 0,
+        "buy": 1.3,
+        "sell": 0.9,
+        "grossProfit": -0.4
+      },
+      {
+        "bonus": 0.1,
+        "buy": 1.17,
+        "sell": 0.99,
+        "grossProfit": -0.18
+      },
+      {
+        "bonus": 0.15,
+        "buy": 1.105,
+        "sell": 1.035,
+        "grossProfit": -0.07
+      },
+      {
+        "bonus": 0.2,
+        "buy": 1.04,
+        "sell": 1.08,
+        "grossProfit": 0.04
+      },
+      {
+        "bonus": 0.25,
+        "buy": 0.975,
+        "sell": 1.125,
+        "grossProfit": 0.15
+      }
+    ],
+    "caveat": "Common item normalized BV=1 without rounding, no reputation/events. Not proof all channels safe."
+  },
+  "lunarSeeds": [
+    {
+      "maxMp": 30,
+      "threshold": 10.5,
+      "castsAtTenMp": 2,
+      "caveat": "Threshold sensitivity only; 6s sliding window and legal cast timing must also hold"
+    },
+    {
+      "maxMp": 60,
+      "threshold": 21,
+      "castsAtTenMp": 3,
+      "caveat": "Threshold sensitivity only; 6s sliding window and legal cast timing must also hold"
+    },
+    {
+      "maxMp": 100,
+      "threshold": 35,
+      "castsAtTenMp": 4,
+      "caveat": "Threshold sensitivity only; 6s sliding window and legal cast timing must also hold"
+    },
+    {
+      "maxMp": 200,
+      "threshold": 70,
+      "castsAtTenMp": 7,
+      "caveat": "Threshold sensitivity only; 6s sliding window and legal cast timing must also hold"
+    }
+  ],
+  "rankMilestones": [
+    {
+      "level": 1,
+      "baseSkillPoints": 0,
+      "nextXpAnalytical": 60,
+      "note": "double precision approximation"
+    },
+    {
+      "level": 5,
+      "baseSkillPoints": 2,
+      "nextXpAnalytical": 671,
+      "note": "double precision approximation"
+    },
+    {
+      "level": 10,
+      "baseSkillPoints": 5,
+      "nextXpAnalytical": 1897,
+      "note": "double precision approximation"
+    },
+    {
+      "level": 25,
+      "baseSkillPoints": 12,
+      "nextXpAnalytical": 7500,
+      "note": "double precision approximation"
+    },
+    {
+      "level": 50,
+      "baseSkillPoints": 25,
+      "nextXpAnalytical": 21213,
+      "note": "double precision approximation"
+    },
+    {
+      "level": 75,
+      "baseSkillPoints": 37,
+      "nextXpAnalytical": 38971,
+      "note": "double precision approximation"
+    },
+    {
+      "level": 100,
+      "baseSkillPoints": 50,
+      "nextXpAnalytical": 60000,
+      "note": "cap; next XP not a playable next level"
+    }
+  ]
+}

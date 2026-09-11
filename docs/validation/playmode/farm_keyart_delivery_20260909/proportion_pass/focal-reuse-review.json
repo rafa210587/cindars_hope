@@ -1,0 +1,26 @@
+[
+  {
+    "path": "Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs",
+    "before": "59F9A5883FA84851EF28E40F2A625606F955D48F250F3F9E75D3D93E7DEB23F2",
+    "after": "59F9A5883FA84851EF28E40F2A625606F955D48F250F3F9E75D3D93E7DEB23F2",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneCompositionContractTests.cs",
+    "before": "C0DAFB69E2A929AE4D1B1B48BC003620FCC5D1610489A68F6B82F2D55714833C",
+    "after": "C0DAFB69E2A929AE4D1B1B48BC003620FCC5D1610489A68F6B82F2D55714833C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+    "before": "A756725DC63DEAF4F42C3C1FF3A505EFED0DE57969373962CFA118F626E2CA34",
+    "after": "A756725DC63DEAF4F42C3C1FF3A505EFED0DE57969373962CFA118F626E2CA34",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs",
+    "before": "C60C83F9E0AD9DB7B35F9B66FA0EFEAA57000F22F95BA9B81CF379C8B78D57AC",
+    "after": "C60C83F9E0AD9DB7B35F9B66FA0EFEAA57000F22F95BA9B81CF379C8B78D57AC",
+    "same": true
+  }
+]

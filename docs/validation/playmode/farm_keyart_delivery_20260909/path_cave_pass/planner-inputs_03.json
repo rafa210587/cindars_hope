@@ -1,0 +1,10 @@
+[
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+    "sha256": "7852B93D4C94FA57725E4DEBF06D5F7618AEAC9D4672F9E0A86DA9ADC08D3938"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs",
+    "sha256": "2D72E8D7018C25C843B591C5128E5373F8DEB9322CAA80CD8AC2F252F11C2972"
+  }
+]

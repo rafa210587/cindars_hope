@@ -1,0 +1,119 @@
+{
+  "beforeSceneSha256": "8E68982B60724243FBEF52823CF6B1C9343797788C4237B03166B9C3F940AB6C",
+  "afterSceneSha256": "EB848C096E5E13CD015E61516EE0E7E11374708CBB22B37CF22CB9515F723D16",
+  "beforeTreeCount": 71,
+  "afterTreeCount": 71,
+  "sameIds": true,
+  "changedTreeCount": 6,
+  "changes": [
+    {
+      "index": "62",
+      "before": {
+        "path": "Trees/TreeNode_62",
+        "position": "{x: -16.804108, y: -7.381665, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_62",
+        "position": "{x: -1.9, y: 13, z: 0}",
+        "scale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "63",
+      "before": {
+        "path": "Trees/TreeNode_63",
+        "position": "{x: -31.338732, y: 11.300126, z: 0}",
+        "scale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_63",
+        "position": "{x: -0.100000024, y: 13, z: 0}",
+        "scale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "65",
+      "before": {
+        "path": "Trees/TreeNode_65",
+        "position": "{x: -18.280018, y: 11.864707, z: 0}",
+        "scale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_65",
+        "position": "{x: 8.9, y: 12.5, z: 0}",
+        "scale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "67",
+      "before": {
+        "path": "Trees/TreeNode_67",
+        "position": "{x: -20.714771, y: -3.1847136, z: 0}",
+        "scale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_67",
+        "position": "{x: -13.917669, y: -11.765952, z: 0}",
+        "scale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "66",
+      "before": {
+        "path": "Trees/TreeNode_66",
+        "position": "{x: -29.797651, y: 2.2675855, z: 0}",
+        "scale": "{x: 0.9970018, y: 0.9970018, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 64c2bf430c9a4d44a91f7a5a7b627df6, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_66",
+        "position": "{x: -15.717669, y: -11.765952, z: 0}",
+        "scale": "{x: 0.9970018, y: 0.9970018, z: 1}",
+        "sprite": "{fileID: 21300000, guid: 64c2bf430c9a4d44a91f7a5a7b627df6, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    },
+    {
+      "index": "64",
+      "before": {
+        "path": "Trees/TreeNode_64",
+        "position": "{x: -24.36663, y: 8.651095, z: 0}",
+        "scale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      },
+      "after": {
+        "path": "Trees/TreeNode_64",
+        "position": "{x: 7.1, y: 12.5, z: 0}",
+        "scale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "sprite": "{fileID: 21300000, guid: ceec5e167291a4648922ae1634abe275, type: 3}",
+        "treeData": "{fileID: 11400000, guid: 7a04e3344d604eff8f1e05b1aebd4d01, type: 2}"
+      }
+    }
+  ],
+  "exteriorComponentCount": 203,
+  "exteriorColliderCount": 0,
+  "exteriorTreeNodeCount": 0,
+  "exteriorComponentTypes": [
+    4,
+    212
+  ]
+}

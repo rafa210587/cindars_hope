@@ -1,0 +1,11 @@
+{
+  "Idempotent": true,
+  "ManualAgentsPreserved": true,
+  "ConfigPreserved": true,
+  "AssetsStatusPreserved": true,
+  "OutputCount": 136,
+  "RouterBytes": 2665,
+  "AgentsBytes": 5518,
+  "ReferenceCount": 11,
+  "ReferencesEqual": true
+}

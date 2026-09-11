@@ -1,0 +1,42 @@
+[
+  {
+    "name": "farm_capture_animals.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture_closeup.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture_keyart_composition.png",
+    "identical": false
+  },
+  {
+    "name": "farm_capture_region_animals.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture_region_cultivation.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture_region_forest.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture_region_homestead.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture_region_mountain.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture_region_water_bridge.png",
+    "identical": true
+  },
+  {
+    "name": "farm_capture.png",
+    "identical": false
+  }
+]

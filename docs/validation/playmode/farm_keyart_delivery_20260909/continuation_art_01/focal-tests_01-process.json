@@ -1,0 +1,6 @@
+{
+  "startedUtc": "2026-09-09T03:34:51.6728917Z",
+  "finishedUtc": "2026-09-09T03:35:03.7265390Z",
+  "filter": "CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests;CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests;CindarsHope.Tests.EditMode.World.TreeNodeVisualTests",
+  "runnerExit": 1
+}

@@ -44,6 +44,10 @@
 | `docs/IMPLEMENTATION_STATUS.md` | Broad implementation status |
 | `.specs/SPEC_EXECUTION_ORDER.md` | Spec registry and dependency order |
 | `docs/backlog/reorg_architecture_residual_backlog.md` | Reorg residuals |
+| `docs/validation/SOLID_AI_PROJECT_AUDIT.md` | Auditoria atual, refactors SOLID, dívida e evidência antes/depois |
+| `docs/validation/QUALITY_IMPROVEMENTS_EXECUTION.md` | Continuação executada: inventário/UI, validações, testes e resultados |
+| `docs/validation/TEST_VALIDATION_EFFICIENCY_REVIEW.md` | Auditoria histórica de redundância; aplicação referenciada no report atual |
+| `docs/archive/CURRENT_STATE_before_SOLID_AI_2026_09_08.md` | Snapshot histórico preservado integralmente; não usar como fila atual |
 
 ---
 
@@ -96,6 +100,7 @@
 
 | Document | Purpose |
 |----------|---------|
+| `docs/architecture/AI_CODE_CONTEXT.md` | Consulta seletiva de tipos com Roslyn; decisão sobre XML e frontmatter |
 | `docs/architecture/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.1_FASE9C_DELTA.md` | Core contracts (current) |
 | `docs/amendments/` | **ARCHIVED HISTORICAL SOURCE** — Amendment content migrated to ADRs and game_rules; not canonical |
 | `docs/amendments/README.md` | Migration map showing where amendment content now lives |

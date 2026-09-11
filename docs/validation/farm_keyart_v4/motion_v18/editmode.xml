@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="62" result="Passed" total="62" passed="62" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0,2561169">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="3303" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.256117" total="62" passed="62" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="4656" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="3303" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.234357" total="62" passed="62" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="7972" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="4657" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="3303" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.217662" total="62" passed="62" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="4662" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="3200" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.199200" total="62" passed="62" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="4664" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="3183" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.183150" total="62" passed="62" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="4685" name="Farm" fullname="CindarsHope.Tests.EditMode.Farm" runstate="Runnable" testcasecount="350" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.086732" total="62" passed="62" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="3079" name="AnimalMotionTests" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.049039" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3083" name="BlockedMotion_UsesBoundedAttempts_ThenReturnsToIdle" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.BlockedMotion_UsesBoundedAttempts_ThenReturnsToIdle" methodname="BlockedMotion_UsesBoundedAttempts_ThenReturnsToIdle" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="351870896" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.013554" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3082" name="BodyAwareBounds_KeepWholeFootprintInsideSharedPen" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.BodyAwareBounds_KeepWholeFootprintInsideSharedPen" methodname="BodyAwareBounds_KeepWholeFootprintInsideSharedPen" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="2106677812" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.007698" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3084" name="InteractionFreeze_AndUnavailableHealth_StopDisplacement" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.InteractionFreeze_AndUnavailableHealth_StopDisplacement" methodname="InteractionFreeze_AndUnavailableHealth_StopDisplacement" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="1147794649" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.001463" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3085" name="PenSmallerThanBody_IsRejectedFailClosed" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.PenSmallerThanBody_IsRejectedFailClosed" methodname="PenSmallerThanBody_IsRejectedFailClosed" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="1337349147" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000383" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3089" name="Presenter_StoppedMode_FreezesCurrentPose" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.Presenter_StoppedMode_FreezesCurrentPose" methodname="Presenter_StoppedMode_FreezesCurrentPose" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="1815097249" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.003763" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3087" name="Restore_BlockedTemporarily_QueuesThenMaterializesExactlyOnce" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.Restore_BlockedTemporarily_QueuesThenMaterializesExactlyOnce" methodname="Restore_BlockedTemporarily_QueuesThenMaterializesExactlyOnce" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="1438881166" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.008178" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3088" name="Restore_DeadAnimal_IsNeitherQueuedNorMaterialized" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.Restore_DeadAnimal_IsNeitherQueuedNorMaterialized" methodname="Restore_DeadAnimal_IsNeitherQueuedNorMaterialized" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="1871748982" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000335" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3086" name="Restore_IsHousingFilteredAndIdempotentByInstanceId" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.Restore_IsHousingFilteredAndIdempotentByInstanceId" methodname="Restore_IsHousingFilteredAndIdempotentByInstanceId" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="1580064666" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000675" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3080" name="SameStableIds_ProduceSameLocalMotionSequence" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.SameStableIds_ProduceSameLocalMotionSequence" methodname="SameStableIds_ProduceSameLocalMotionSequence" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="277519475" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.001842" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3081" name="StableSeed_UsesAnimalDataId_NotSharedSpecies" fullname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests.StableSeed_UsesAnimalDataId_NotSharedSpecies" methodname="StableSeed_UsesAnimalDataId_NotSharedSpecies" classname="CindarsHope.Tests.EditMode.Farm.AnimalMotionTests" runstate="Runnable" seed="486187679" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000151" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="3090" name="AnimalProductCollectionTests" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.006964" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3103" name="CollectBySpecies_Chicken_ReturnsEgg" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.CollectBySpecies_Chicken_ReturnsEgg" methodname="CollectBySpecies_Chicken_ReturnsEgg" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="1809828342" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.001541" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3096" name="Collection_ConsumesProductReady_AfterSuccess" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Collection_ConsumesProductReady_AfterSuccess" methodname="Collection_ConsumesProductReady_AfterSuccess" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="391871662" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000368" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3094" name="Collection_Fails_WhenAnimalNotFound" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Collection_Fails_WhenAnimalNotFound" methodname="Collection_Fails_WhenAnimalNotFound" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="765788690" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000182" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3095" name="Collection_Fails_WhenAnimalUnavailable" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Collection_Fails_WhenAnimalUnavailable" methodname="Collection_Fails_WhenAnimalUnavailable" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="2136547989" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000145" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3093" name="Collection_Fails_WhenAnimalUnfed_AndDefinitionRequiresFed" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Collection_Fails_WhenAnimalUnfed_AndDefinitionRequiresFed" methodname="Collection_Fails_WhenAnimalUnfed_AndDefinitionRequiresFed" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="514822752" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000346" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3092" name="Collection_Fails_WhenProductNotReady" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Collection_Fails_WhenProductNotReady" methodname="Collection_Fails_WhenProductNotReady" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="744351411" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000146" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3091" name="Collection_Succeeds_WhenProductReady_AndFed" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Collection_Succeeds_WhenProductReady_AndFed" methodname="Collection_Succeeds_WhenProductReady_AndFed" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="19534072" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000188" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3097" name="DuplicateCollection_Fails_AfterFirstSuccess" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.DuplicateCollection_Fails_AfterFirstSuccess" methodname="DuplicateCollection_Fails_AfterFirstSuccess" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="906805546" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000157" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3102" name="FertilizerBase_CanBeMarkedAsFertilizerBase" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.FertilizerBase_CanBeMarkedAsFertilizerBase" methodname="FertilizerBase_CanBeMarkedAsFertilizerBase" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="939297207" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000203" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3099" name="Quality_Boa_WhenCareScoreMedium" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Quality_Boa_WhenCareScoreMedium" methodname="Quality_Boa_WhenCareScoreMedium" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="956850094" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000134" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3100" name="Quality_Excelente_WhenCareScoreHigh" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Quality_Excelente_WhenCareScoreHigh" methodname="Quality_Excelente_WhenCareScoreHigh" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="499590422" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000109" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3101" name="Quality_Normal_WhenAnimalUnhealthy" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Quality_Normal_WhenAnimalUnhealthy" methodname="Quality_Normal_WhenAnimalUnhealthy" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="1552236529" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000138" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3098" name="Quality_Normal_WhenCareScoreLow" fullname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests.Quality_Normal_WhenCareScoreLow" methodname="Quality_Normal_WhenCareScoreLow" classname="CindarsHope.Tests.EditMode.Farm.AnimalProductCollectionTests" runstate="Runnable" seed="1063147595" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000126" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="3138" name="FarmAnimalCareTests" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.007048" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3139" name="TestAnimalDefinitionCreation" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestAnimalDefinitionCreation" methodname="TestAnimalDefinitionCreation" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="559260354" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000957" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3140" name="TestAnimalInstanceCreation" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestAnimalInstanceCreation" methodname="TestAnimalInstanceCreation" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="485639862" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000232" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3155" name="TestAnimalUnavailable_CannotFeed" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestAnimalUnavailable_CannotFeed" methodname="TestAnimalUnavailable_CannotFeed" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1384010471" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000228" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3152" name="TestCareScore_FavoriteFood" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestCareScore_FavoriteFood" methodname="TestCareScore_FavoriteFood" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1685511020" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000475" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3153" name="TestCareScore_MaxCap" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestCareScore_MaxCap" methodname="TestCareScore_MaxCap" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="481554568" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000191" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3148" name="TestDailyProcessor_HungerEscalation" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestDailyProcessor_HungerEscalation" methodname="TestDailyProcessor_HungerEscalation" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="480694145" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000719" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3151" name="TestDailyProcessor_ProductCadence" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestDailyProcessor_ProductCadence" methodname="TestDailyProcessor_ProductCadence" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1101884829" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000224" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3150" name="TestDailyProcessor_ProductNotReadyWithoutFood" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestDailyProcessor_ProductNotReadyWithoutFood" methodname="TestDailyProcessor_ProductNotReadyWithoutFood" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="122939603" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000105" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3149" name="TestDailyProcessor_ProductReadiness" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestDailyProcessor_ProductReadiness" methodname="TestDailyProcessor_ProductReadiness" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1768096565" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000089" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3147" name="TestDailyProcessor_UnfedAnimal" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestDailyProcessor_UnfedAnimal" methodname="TestDailyProcessor_UnfedAnimal" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="411560967" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000111" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3143" name="TestFeedingAnimal_AnimalNotFound" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestFeedingAnimal_AnimalNotFound" methodname="TestFeedingAnimal_AnimalNotFound" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1929418613" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000084" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3142" name="TestFeedingAnimal_InvalidFeed" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestFeedingAnimal_InvalidFeed" methodname="TestFeedingAnimal_InvalidFeed" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="170053868" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000107" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3141" name="TestFeedingAnimal_Success" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestFeedingAnimal_Success" methodname="TestFeedingAnimal_Success" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="449338962" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000117" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3144" name="TestHousingCapacity_AddAnimal" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestHousingCapacity_AddAnimal" methodname="TestHousingCapacity_AddAnimal" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1255772306" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000167" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3145" name="TestHousingCapacity_CapacityFull" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestHousingCapacity_CapacityFull" methodname="TestHousingCapacity_CapacityFull" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1965349974" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000140" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3146" name="TestHousingCapacity_RemoveAnimal" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestHousingCapacity_RemoveAnimal" methodname="TestHousingCapacity_RemoveAnimal" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="819136751" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000138" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3154" name="TestProductQualityBias" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests.TestProductQualityBias" methodname="TestProductQualityBias" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalCareTests" runstate="Runnable" seed="1831462631" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000095" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="3156" name="FarmAnimalsRuntimeTests" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.013869" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3169" name="Capacity_FifthAnimalInCoopOfFour_IsRejected" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Capacity_FifthAnimalInCoopOfFour_IsRejected" methodname="Capacity_FifthAnimalInCoopOfFour_IsRejected" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1014388750" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000573" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3177" name="Catalog_HasFourCanonicalAnimals" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Catalog_HasFourCanonicalAnimals" methodname="Catalog_HasFourCanonicalAnimals" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1302065815" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000315" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3178" name="Catalog_ProductItemIdsMatchCanonicalCatalog" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Catalog_ProductItemIdsMatchCanonicalCatalog" methodname="Catalog_ProductItemIdsMatchCanonicalCatalog" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1058411290" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.001365" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3160" name="Collect_IsIdempotent_SecondCollectFails" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Collect_IsIdempotent_SecondCollectFails" methodname="Collect_IsIdempotent_SecondCollectFails" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1600500902" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.001518" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3159" name="Collect_ReturnsBaseProduct_AndConsumesReadiness" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Collect_ReturnsBaseProduct_AndConsumesReadiness" methodname="Collect_ReturnsBaseProduct_AndConsumesReadiness" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="342376556" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000313" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3157" name="Cycle_FedAnimal_ProducesNextDay" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Cycle_FedAnimal_ProducesNextDay" methodname="Cycle_FedAnimal_ProducesNextDay" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1163907262" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000265" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3158" name="Cycle_UnfedAnimal_DoesNotProduce" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Cycle_UnfedAnimal_DoesNotProduce" methodname="Cycle_UnfedAnimal_DoesNotProduce" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="832862527" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000520" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3167" name="Death_IsPermanent_CannotFeedDead" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Death_IsPermanent_CannotFeedDead" methodname="Death_IsPermanent_CannotFeedDead" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1003427302" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000749" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3168" name="Death_RemovesAnimalFromHousingCapacity" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Death_RemovesAnimalFromHousingCapacity" methodname="Death_RemovesAnimalFromHousingCapacity" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="609426193" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000333" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3170" name="Ids_AreDeterministicAndUnique" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Ids_AreDeterministicAndUnique" methodname="Ids_AreDeterministicAndUnique" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="110556443" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000238" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3166" name="Neglect_FeedingResetsCountdown_PreventsDeath" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Neglect_FeedingResetsCountdown_PreventsDeath" methodname="Neglect_FeedingResetsCountdown_PreventsDeath" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1725156635" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000284" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3165" name="Neglect_ProgressiveWarnings_HungryThenCritical" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Neglect_ProgressiveWarnings_HungryThenCritical" methodname="Neglect_ProgressiveWarnings_HungryThenCritical" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="592869970" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000269" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3164" name="Neglect_SevenConsecutiveDaysWithoutFood_KillsPermanently" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Neglect_SevenConsecutiveDaysWithoutFood_KillsPermanently" methodname="Neglect_SevenConsecutiveDaysWithoutFood_KillsPermanently" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1933859934" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000283" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3163" name="Quality_ResolveProductItemId_DirectMapping" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Quality_ResolveProductItemId_DirectMapping" methodname="Quality_ResolveProductItemId_DirectMapping" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1359450872" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000216" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3162" name="Quality_SevenConsecutiveFedDays_YieldsGold" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Quality_SevenConsecutiveFedDays_YieldsGold" methodname="Quality_SevenConsecutiveFedDays_YieldsGold" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="179856158" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000281" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3161" name="Quality_ThreeConsecutiveFedDays_YieldsSilver" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Quality_ThreeConsecutiveFedDays_YieldsSilver" methodname="Quality_ThreeConsecutiveFedDays_YieldsSilver" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="168429040" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000267" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3171" name="Release_WrongHousingForSpecies_IsRejected" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Release_WrongHousingForSpecies_IsRejected" methodname="Release_WrongHousingForSpecies_IsRejected" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="604583800" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000213" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3175" name="Save_DeadAnimal_RestoresAsDead_AndNotInHousing" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Save_DeadAnimal_RestoresAsDead_AndNotInHousing" methodname="Save_DeadAnimal_RestoresAsDead_AndNotInHousing" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1339219334" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.001214" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3174" name="Save_EmptySection_LoadsZeroAnimals" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Save_EmptySection_LoadsZeroAnimals" methodname="Save_EmptySection_LoadsZeroAnimals" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1486230262" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000269" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3176" name="Save_IdCounter_StaysUniqueAfterRestore" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Save_IdCounter_StaysUniqueAfterRestore" methodname="Save_IdCounter_StaysUniqueAfterRestore" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="95609083" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000383" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3173" name="Save_LegacyNull_LoadsZeroAnimals" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Save_LegacyNull_LoadsZeroAnimals" methodname="Save_LegacyNull_LoadsZeroAnimals" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1249309874" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000240" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3172" name="Save_RoundTrip_PreservesAnimalsAndState" fullname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests.Save_RoundTrip_PreservesAnimalsAndState" methodname="Save_RoundTrip_PreservesAnimalsAndState" classname="CindarsHope.Tests.EditMode.Farm.FarmAnimalsRuntimeTests" runstate="Runnable" seed="1686913387" result="Passed" start-time="2026-09-10 22:27:02Z" end-time="2026-09-10 22:27:02Z" duration="0.000493" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

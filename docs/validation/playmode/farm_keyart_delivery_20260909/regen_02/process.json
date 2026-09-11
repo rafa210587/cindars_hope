@@ -1,0 +1,473 @@
+﻿{
+    "startedUtc":  "2026-09-09T02:37:32.7922657Z",
+    "finishedUtc":  "2026-09-09T02:37:50.4962914Z",
+    "exitCode":  0,
+    "timedOut":  false,
+    "command":  "C:/Program Files/Unity/Hub/Editor/6000.5.7f1/Editor/Unity.exe \"-batchmode\" \"-projectPath\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\" \"-executeMethod\" \"CindarsHope.Editor.Dev.FarmSceneCapture.RegenAndCapture\" \"-logFile\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\\docs\\validation\\playmode\\farm_keyart_delivery_20260909\\regen_02\\unity.log\" \"-quit\"",
+    "unityVersion":  "6000.5.7f1",
+    "mode":  "SCOPED",
+    "sceneBeforeSha256":  "0586EF69E6BC9AB8B82B71C42C459FDA79C7864D85AAFCF9FE7B345354925A94",
+    "sceneAfterSha256":  "8087F040636D621382E08BE4FF9530B296FF474D17648C7025BA4334BD85331F",
+    "sourceInputs":  [
+                         {
+                             "path":  "Assets/_Game/Scripts/City/FarmVisits/FarmVisitEligibilityResolver.cs",
+                             "sha256":  "7235C10D4609D8C44594D422FF01D5CBF36500114671015E6F3E49D52B12B740"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/City/FarmVisits/FarmVisitRule.cs",
+                             "sha256":  "94087495B11D7519CC621224CDD609BB52A9B6392960182EC5DEDD67FE64F49C"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Companions/CompanionFarmJobAssignment.cs",
+                             "sha256":  "B026CA4ECDBC2ABD6AA2DE91A1BFDD8E9456F8941A48917FB6CB806CD4F0AAAD"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Companions/CompanionFarmJobDefinition.cs",
+                             "sha256":  "4DBB1C0D349A7D3DB1AE0223BB09502C152078EA3DFFACBD2B176ABB2C27F670"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Companions/CompanionFarmJobType.cs",
+                             "sha256":  "AE32B714A7E4AA4DFE3984C67F3B0D0AB4238BA2727125AD66958793B6C18E09"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Core/Events/FarmAnimalEvents.cs",
+                             "sha256":  "44EF3AF862D329C057B2CA77B270752B249CF6DC53175963B0CEE7D6760D5B8B"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Core/Events/FarmLotUnlockedEvent.cs",
+                             "sha256":  "F7BD2A422B6E973A3C12555BC01215E5E6E2FF9C45CDDB0CFE544E1C9F3DBEE9"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+                             "sha256":  "2D59C27DB43761A584D80E44F7122D2E4F4BD0A8E4120CF4BA3E7C44537B274F"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Art/WorldSpriteLibrary.cs",
+                             "sha256":  "84A005908CC7574A679897CE9233359C36E6A04389B28E6995FF0588C13633DC"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Art/WorldTilemapGround.cs",
+                             "sha256":  "3EE93212A8F98DE9FA840BB78DCB6CFAC8BAD1823D0FB5A64E67E2499F9A1BF6"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Dev/FarmPlayModeCaptureSession.cs",
+                             "sha256":  "605470268EB8908DFC340EC5F976B399A0E9EE349756C7527859A5C90F6E45F1"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Dev/FarmSceneCapture.cs",
+                             "sha256":  "EF19483D90BBAAD1FB9D089738B13CB3891974D39E5AA2E4962045369C3C9393"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Farm/GenerateFarmAnimalAssets.cs",
+                             "sha256":  "86DC49D6EA453FDEDD1662CDA8945DD1ED2937F1B5AAE0FEF681A781575B4A92"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+                             "sha256":  "0CCBB36417299AB213F54A4858416E5528CC8A79F8DEDA074D6A02442B4BEEBE"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/FarmPhysicalRouteProbe.cs",
+                             "sha256":  "371C47586569E2F07A2756DA0D1CD6486068227850B0C01D23070751AE80D548"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmLevel1LayoutContract.cs",
+                             "sha256":  "1939F95AEDE6E5A8880808CAC5C7752F6E13C6F2A01BFE2DDDBBE85D08BD1B68"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmResourceInteractables.cs",
+                             "sha256":  "F261A6D0B10F3176A0F421928099820519EE925237834F667F6AA8B6099EF402"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmScaleContract.cs",
+                             "sha256":  "566BC8031C9F21FC5CB14E6A696EC91F6AB2510FC2525D9D3CC46FD9F1124934"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneComposition.cs",
+                             "sha256":  "00F5F312C3A06982598B3D7DE65EC5250C9C7696298B08B4E06A0A2F726CE661"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneDecoration.cs",
+                             "sha256":  "AD98F663C967DF9ED0A5329925280A41B329725C0FEB23BDE023C9B7FFFC3C07"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneLandmarks.cs",
+                             "sha256":  "DB5BE2A0A1C4EE3346C179056E2BE1074BE7524590B6BE652033F653C8465917"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneLayoutV4.cs",
+                             "sha256":  "CA582B6FF005F3571830296999678B679FA7271037BFCE37D39E9C039DBF0107"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneNavigation.cs",
+                             "sha256":  "4C54205BEE89AB5D89ACD9C0BEADA5519A8C2C068F456A17978CD02AE87A14B7"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneSpatialContract.cs",
+                             "sha256":  "19DB35DB876CB6792716F72AABEE811700F5CDD6086F7B032B89225E1543B242"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateFarmTerrainMasks.cs",
+                             "sha256":  "E8B00B637E882C6D7D27C24CA7FC343C49EAFB156CC038ECCFEDD19ED75297E2"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Editor/Validation/ValidateWave24FarmLoopDepth.cs",
+                             "sha256":  "4F758059B5311EBF110D461FEE80D4EFB3BA62E9C7A600CDF1DA367932C384BD"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmFertilityRuntime.cs",
+                             "sha256":  "79BB9934DED0A7491E4AB301C255DDD0B285C74EF0CAEB379E035EFC8ABB9A03"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmLevel1LayoutContract.cs",
+                             "sha256":  "41CD0D9D735E70CD7C46F8D116529AB4322A92EC6082FFB2904BBE2DF5F91089"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmNonArableZones.cs",
+                             "sha256":  "76B8E3E08A9D83F86726D21B27A420A97925E548877C5D6095936D68954DB0A3"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmPlot.Actions.cs",
+                             "sha256":  "6D329480E536D8ED08070E78EC7296AF4320870730FB1C92BDD27C570FE5150D"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmPlot.cs",
+                             "sha256":  "60FBC5A9B35C78755CBF6206F247CAD591080931E7E78EF1D60AEA303CF2EC36"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmPlotLogic.cs",
+                             "sha256":  "91BCDBAF4E985BC816FB124D3838ED119B1A662B3A9C7DC510EF779E43DAA486"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmPlotMenuController.cs",
+                             "sha256":  "8934DFA8B1FC105A199BA2FCE170516B6C7677EC4CC2A8B843B96F44A6D7E57A"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmPlotRegistry.cs",
+                             "sha256":  "31B49E4AB13DD7432433E6E5CA1E5E7D789FBEA3E4C3FCBF0D3075315B907C33"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmPlotSaveData.cs",
+                             "sha256":  "D609381E42F215FE2D2210B2868A427F0A5B0F4B35FF0661189F1696BBB63D10"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmPlotState.cs",
+                             "sha256":  "BC9C8B263982123601BBF33A07D5F23DE933F880442F03A085575E1D80A006AB"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmSaveData.cs",
+                             "sha256":  "7AE21B06E9B1801A83C4B640E76275027FA3955DAD9A5092602A0B63650CDFE0"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmScaleContract.cs",
+                             "sha256":  "44B740AB3CBBCEA0ED3C82F862C3D72264C46A688EC4909932C664A23F552525"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmSeasonGate.cs",
+                             "sha256":  "7B24DFC686008A09735EF81F27132EC9F2CAAEF10C41AA19F71B7D93527FF899"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmTileGrid.cs",
+                             "sha256":  "C51D3AD7498EC27F2939526DEDCBCFAB02E1E44C2EB4D5E2AE9927B0EB5E78A4"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/FarmTilledSoilService.cs",
+                             "sha256":  "EC7A0BC6E18A21111ABA42DBF02B91CC56E95CA6CA0F85386C72F869E074DB43"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/WorldEventFarmHook.cs",
+                             "sha256":  "79A6E742791A34602D84F3BEC1891CBED1352E9145C9638E618AA0AA77322C5E"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Animals/FarmAnimalCatalog.cs",
+                             "sha256":  "9C3DC72C85D0A64BD05FE17050060F9A30290975DD3C3B49B52ABD099E6BB918"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Animals/FarmAnimalRegistry.cs",
+                             "sha256":  "ED967BAF0CA7734A342B502C621C801F76543F0CD0C14D26E437F73F68B8404A"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Animals/FarmAnimalRuntime.cs",
+                             "sha256":  "AC4A57EB14E2566BDF16FCAE3E60D2CABCC58EA92A2D1B74B404218AA80B5B86"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Animals/FarmAnimalRuntimeBootstrap.cs",
+                             "sha256":  "CF45478B4996AFB651D5508B76575A2021BB777EAE1A00DB0FE7157FD26116D3"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Animals/FarmAnimalSpecies.cs",
+                             "sha256":  "EDD16F27B1584B3DB92B5069793DF63D6C859D77479804A90621AD1832769624"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Animals/FarmAnimalsSaveData.cs",
+                             "sha256":  "742F61042BDB476405C7BEF3980DB44B1EBFBD16D1F8BD2DB67AF1C5990D283E"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Buildings/FarmBuildingDefinition.cs",
+                             "sha256":  "C8AECB9637AEBFFC28EB374B1D3C1CE2974C347BC27A54BB89ED7FE102CA003A"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Expansion/FarmExpansionValidator.cs",
+                             "sha256":  "4E0E2E767C618669A50E18A2BB5AC1F53EDB316C0F86BB06B224605044FA5796"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Expansion/FarmExpansionZone.cs",
+                             "sha256":  "66386FFA6BAB4FC1F5735F0A862D219E6F78AD71A66B0704971AEADF57D64283"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Expansion/FarmZoneType.cs",
+                             "sha256":  "72068C868FF27FD8DAF87797B304772443E736CECC22A90A9FED101F798040E7"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Fishing/FarmFishingService.cs",
+                             "sha256":  "436469E8DAA31F83A245574323E62E5586711BA2208D691D1151B648F1D4613D"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Fishing/FarmFishingSpotDefinition.cs",
+                             "sha256":  "A576984C4CEBA849677A6FB0871EEF24E0020E6BEED8AAC9038CC604A6F7E3F1"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Forage/FarmForageRuntimeService.cs",
+                             "sha256":  "0147FE70AC6A469082AE8F61ED031BA20D133F49BFCAF35641FC872C51BC3A45"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Forage/FarmForageSpawnService.cs",
+                             "sha256":  "1D99F7DD9A78BB0D1DD2328EE6AC7934E59B72821225AA42502A41E5C0579711"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Integration/FarmResourceInteractable.cs",
+                             "sha256":  "B3F83C4ED02F5C2842C97E2E0330E068736796603058D4938841C09321290E7D"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Integration/FarmResourceInteractableType.cs",
+                             "sha256":  "A466137C171F1EAE34304AE66C8705B7C73EC81FDAAD7E091143FBB824279BFA"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Integration/FarmResourceReward.cs",
+                             "sha256":  "06BD34F2BA12E01F6FF49DA0F6365B777E49339978FE470BFF5FBF423E40C9D3"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Integration/FarmResourceVisualController.cs",
+                             "sha256":  "6698ED45F732E26120F55E577991B26DF38B7A21B1FAC7ED54FE294907C9F2EB"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Integration/FarmResourceVisualState.cs",
+                             "sha256":  "93B8457BF9FCC6C19CA8D672C53A03357E27FBE38AC657EABF21AB71EF0728D6"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotCatalog.cs",
+                             "sha256":  "0054050F60FF1EA469AD442C3E99EDB0ECCC455D42EE0D5DF30ECA3E1F40AE1B"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotDefinition.cs",
+                             "sha256":  "7AF4A8E8C56282A0D32704D3DFD0EEEDEDB6B931EF6681EB10DE243F994BB664"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotId.cs",
+                             "sha256":  "87C293473EBE2771F74224A63E027D18D8421D640C72AA682A6256A84DEDEA9C"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotProgression.cs",
+                             "sha256":  "D1E367FBEBE59671ACF2B252542ED1B792028C6C3C28BCBBB9FB6037D6CF6EC8"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotRuntimeBootstrap.cs",
+                             "sha256":  "0E44F20EF42BDCACF45A2F6077960C2DE5BE8387BF68242E77EED4E6BDDE7262"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotSceneBinding.cs",
+                             "sha256":  "7BFEE8A2E2926282D453BC31FF3D1913BF9B94CB733BE5316993E8F6E43ACC71"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotService.cs",
+                             "sha256":  "4EFF4E613FA6D137D8701AE6993EF9C28DB389F007EDE681EB49B6E9DFE2A82B"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotsSaveData.cs",
+                             "sha256":  "C309CCE7F35AD42AC99747370038809FA14905C8DF25FBC7DDAF86E1285DCF6F"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmLotState.cs",
+                             "sha256":  "2A79DC8F0E02DDBE9E2F864A3BA41CB469440EC428A0CD69864CB4D745251EED"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Lots/FarmOrchardCatalog.cs",
+                             "sha256":  "731CB5BA7F0D5231F864A12404A6CA46D906823C3FB5846D4D40380E63321C80"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Processing/FarmProcessingJob.cs",
+                             "sha256":  "3F7A9F48D501C9400D20FEE54C5B0518C8A8BAE76752DD7706FD8D722FCE1BE5"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Processing/FarmProcessingSaveData.cs",
+                             "sha256":  "B540E5B2304B92B7AD99A8E4E2332A2D57EFF115E1D59AB55832F52CE34FA4D9"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Processing/FarmProcessingStationModel.cs",
+                             "sha256":  "0F2BA5603880B451FDA22B2B15F865331F1A8A0005926EFD46A8694F439CF0FA"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Processing/FarmProcessingStationService.cs",
+                             "sha256":  "250A2F039F58B78E1248A4099557B52276AC2632FB7E98368D9811B65AF8C4A4"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Resources/FarmResourceNodeService.cs",
+                             "sha256":  "53FC21F7DA224000F491A710DAC27C64F9A155D52BE45FF2E44A813F24B2F42F"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Resources/FarmResourceRefreshProcessor.cs",
+                             "sha256":  "00EB8BE42531F16F6DD83013A8CCF7221646C7691954C16B1FCADB052D619AE1"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Resources/FarmResourceRefreshRuntime.cs",
+                             "sha256":  "DB18963CEB0F2F3A1C11B7365DF97163C82B1ED54E8E039B39DFE87B454A6753"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmDailyGoalCatalog.cs",
+                             "sha256":  "F914D4594B67E3A2D5E7266A31E95CA42F31A662572458760808E832EC470FDD"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmDailyGoalDefinition.cs",
+                             "sha256":  "52C1C3E0E0A0352C52408AAE11B9D5B8F5EFB79C882A968A97BACD10921CE892"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmDailyGoalRewardTable.cs",
+                             "sha256":  "D36E74A44D7E14AEC792861D456423F24FB8374A61C535FD0EC26EAB17BC3046"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmDailyGoalRuntimeBootstrap.cs",
+                             "sha256":  "8064E0438F4AF632503EDC42F15B2A506193D11EB49AB24A4DEB1A7EE82FE117"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmDailyGoalService.cs",
+                             "sha256":  "49AD1D6452BC1DBE3F8DBC32BC61B246293E47489179321A3019961E78E52AA9"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmDailyGoalsSaveData.cs",
+                             "sha256":  "50299FD8CD271BB30D54FB100B9FCC99653CF101E5A479414F10A5211050AB04"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmDailyGoalState.cs",
+                             "sha256":  "4E57653C02454FA2AF7D45B07A28654C5E4A63D61E272CE4D4E17D196612BE0E"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmLoopFeedbackBridge.cs",
+                             "sha256":  "ECA301515EFE0226A3E1435517DF3033F08286A57AAF3D9748E9BFF7B171206D"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmSceneRuntimeBootstrap.cs",
+                             "sha256":  "251B8F9784211EE0B2E4AA9FDC3772FE0AAE908A52308AB16F70139B14DD367C"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Runtime/FarmTillingInputController.cs",
+                             "sha256":  "8C83744E20A6F4D6E1AB9E99CC86BBE8355EC73B46E89385047D9E3E50590BF3"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationPolicy.cs",
+                             "sha256":  "A241F722880EB9C833799DA4A6F0D40C5920C1B3016EEB3C6B2567D21CCE15FF"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationRaster.cs",
+                             "sha256":  "3BDC5FC38B1D2EDF375991F9DEF9A502B4129A1C51C4A95316B416B4DA73E771"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs",
+                             "sha256":  "28E2CBAE84C36DD5AB0843BFC7DE4908225CCCEFABAC2C9E8D879BD67384574C"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Scene/FarmSceneZoneMarker.cs",
+                             "sha256":  "9162498BBDD79872CDA4BD3327EC6EDF74A61CBF5760847D290D029639AE6C3D"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Shipping/FarmShippingService.cs",
+                             "sha256":  "8118116085B7640DF42778989326633A3A3998C9D08FC7725741C52A6F075E3D"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Tools/FarmToolCapabilityResolver.cs",
+                             "sha256":  "1A7620D7C08F79AEA5CBA324F3C55DA5116218C2B20C939B64D332ECCC9DE869"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Tools/FarmToolDefinition.cs",
+                             "sha256":  "ADF2A6BF85976B7AE4752EB74544ADA641AB50C1C924C843298218A0E3C947FD"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Tools/FarmToolType.cs",
+                             "sha256":  "53EEC17BE3134D1503EE41AAD86BCAD1E93E28D41B962E10210ACFD41D8CB4CE"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Tools/FarmToolUpgradeService.cs",
+                             "sha256":  "E3FD73FC570F13A3AFD610FFC115B51C92257C288AAFDB4A0B8D032186F722F3"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Visitors/GoblinFarmVisitor.cs",
+                             "sha256":  "20F9D9C8646EEE67679DE461ADD40F4E237FADBB70A5F7154563BFF48C9007BB"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Watering/FarmPlotWaterState.cs",
+                             "sha256":  "CCEB83E426BF67257337E0C3E8ADC8980530219102B6B47E1EB27AC4954DC465"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Farm/Watering/FarmWateringService.cs",
+                             "sha256":  "D6DAB70ACE61B15BBBABC614D0C2C59FD0FD141A79424C7E4B119D65BBD17C64"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Quests/FarmOrders/FarmOrderDefinition.cs",
+                             "sha256":  "13800FF5EBB7DC241C32C1C4CA9FB16ABD5C8E63FB4836D0DE865367CB149695"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Quests/FarmOrders/FarmOrderDeliveryService.cs",
+                             "sha256":  "5C240A8D6486D7561A8459CE4969B702A1212BF808744644EB7958BCC12E75EF"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Quests/FarmOrders/FarmOrderObjectiveAdapter.cs",
+                             "sha256":  "C14EFD1C94EA1F659BEFB48A31889BED42C34ECD8AD7D5EAFF337FFBA44A7D9F"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Quests/FarmOrders/FarmOrderValidator.cs",
+                             "sha256":  "428FB7532D03EA1008B081A171FCA969FE7291EA5EE1050C9B38FD4F8B857AD3"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Save/FarmTilesSaveData.cs",
+                             "sha256":  "99718CE82D765A3945DA5B0C33F89FC77DB3C65B1FF7DF9BE91EE8C40DA934F2"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Save/Providers/FarmAnimalsSectionProvider.cs",
+                             "sha256":  "3553EE8EA4B55707E6A20101B0B4114E8FC1E77C17754789EF79B28976C8105A"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Save/Providers/FarmLotsSectionProvider.cs",
+                             "sha256":  "8A864639650FB15AB204E2FE6CBCB99A35B2658EACA5BB844412762111038C56"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Save/Providers/FarmSectionProvider.cs",
+                             "sha256":  "1AB61912FEA980533F350FA9F7E92FE6020493F96E3203AA1B230B3BDE802681"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Save/Providers/FarmTilesSectionProvider.cs",
+                             "sha256":  "CFB9C235A973814517F2BF2DB1B651FDF03D10AC4A6EABA07B2708BD1EC97D61"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeReferenceInstaller.cs",
+                             "sha256":  "8396B2FAF72AE56FC7F2A9AE4DAF7E1DDF951D758DC1B94EB7F810E345A9F845"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/SceneManagement/FarmSceneRuntimeStateCache.cs",
+                             "sha256":  "45FB1C9E484FFA5616EF3EB1D5CC916D6F00B3DCA17DA317849920427C24145E"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/Skills/Runtime/Effects/FarmCropSkillEffectExecutor.cs",
+                             "sha256":  "C4CBF5208619F6B56F4030E60F8FC19F2BF70DE04620F4380A5486920DD06376"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/World/FarmEvolutionBoardInteractable.cs",
+                             "sha256":  "7943DFA21CAAA77E39E3A294450DE4A8C0054523E0B9F95C325402B28B96F907"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/World/FarmHouseChestInteractable.cs",
+                             "sha256":  "C0165982E5BE1AF91E3A889AAD13DC205648A0DF7A371ED42FC44355FA830A6D"
+                         },
+                         {
+                             "path":  "Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs",
+                             "sha256":  "CAA8755A6BF88FCEA8258807D4D82257757DD5FE0579E3ED4B132B8B4F90A16D"
+                         }
+                     ]
+}

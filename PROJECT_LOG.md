@@ -4,6 +4,101 @@
 
 ---
 
+## Sessão 2026-09-10 — Fazenda v4, porta/interior e água
+
+Reconstrução visual reaberta pela revisão humana. Arte existente derivada do GPT recebeu edição e frames no
+Aseprite; porta e água integradas no Unity, junto com19bases de props e acessos Farm-side cidade/caverna.
+Testes encontraram e corrigiram tag Player ausente e alcance frontal insuficiente dos móveis. Stage12:
+81/81EditMode,18vistas/19rotas/488bordas/24sólidos/4acessos/78tiles/37imagens temporizadas PASS.
+Revisão ainda encontrou o ator encoberto na escada; sorting e caminhada da demonstração em correção.
+Sem promoção,95% ou aceite humano. [Relatório com limites](docs/validation/farm_keyart_v4/REPORT.md).
+
+## Sessão 2026-09-10 — Harness Unity/Aseprite e ADR-0031
+
+Pesquisa de fontes oficiais/comunitárias e refatoração autorizada do harness: operação MCP,
+profiling, wiring/HUD e contratos de adaptadores Aseprite. Sem instalar fornecedores ou alterar
+runtime/assets. Testes do gerador 36/36; docs global FAIL (74 baseline, 59 final, zero novos).
+A redução ocorreu em specs fora deste escopo durante trabalho concorrente.
+[Relatório](docs/validation/HARNESS_TOOLING_REFACTOR_20260910.md).
+
+Continuação: progressive disclosure aplicado às seis maiores entradas priorizadas e às descrições
+dos commands. Corpus de SKILL.md caiu de 100.266 para 86.039 tokens o200k de referência;
+catálogo local estimado caiu de 4.215 para 4.044. Contratos foram preservados sob demanda;
+gerador 38/38 e paridade de 136 arquivos PASS.
+
+## Sessão 2026-09-09 — Auditoria de fechamento da fazenda
+
+Cena preservada; Play Mode atual com16rotas/6seleções PASS, sem ação Interact/percurso humano.
+Achados: estufa/celeiro/galinheiro sem sólido próprio; perímetro contínuo, Zrix preservado
+mas sem wiring de diálogo. Validator de navegação tem divergência de nomes/ownership.
+[Relatório e mapa físico](docs/validation/FARM_PRECLOSE_AUDIT_20260909.md). Sem fechamento ou correção nesta rodada.
+
+## Sessão 2026-09-09 — Piloto de inglês e tokenização
+
+Dez skills/recursos migrados, roteador/padrão/agente visual alinhados. Tiktoken de referência:
+o200k 13,72% e cl100k 25,52% menos tokens no corpus de skills; sem medição exata de Astra/sessão.
+IDs/links/marcadores preservados; review textual de seis cenários PASS. Relatório:
+[avaliação do piloto](docs/validation/ENGLISH_HARNESS_PILOT_20260909.md).
+
+## Sessão 2026-09-09 — Templates e exemplos do harness
+
+Continuação autorizada: 10 templates + 10 exemplos didáticos em dez skills; recursos sob demanda.
+88 links fonte/cópia válidos, paridade e repetição sem alteração de conteúdo. Sem scripts/Unity
+novos nem claims de execução nos exemplos. Evidência no relatório progressivo vinculado abaixo.
+
+## Sessão 2026-09-09 — Harness progressivo e revisão visual
+
+Implementação autorizada de quatro skills visuais (direção, imagem, animação e integração)
+e um agente de revisão visual. Catálogo sob demanda; instruções iniciais curtas, referências
+condicionais e cópia recursiva. Delegação e testes por risco/comportamento; sem frontmatter
+manual por classe. Stop e sincronização corrigidos, com 36+14 contratos isolados PASS.
+Fechamento e limites no [relatório](docs/validation/PROGRESSIVE_HARNESS_VISUAL_WORKFLOWS_20260909.md).
+Sem alteração de gameplay/Assets nesta tarefa; sem claim de economia medida ou aceitação da fazenda.
+
+## Sessão 2026-09-08 — Continuação: melhorias executadas e validações proporcionais
+
+Pedido humano de aplicar recomendações: Add/remove/capacidade no core de slots,
+prontidão compartilhada na UI e fix da mensagem da última unidade. Validators/menu
+tratam erro/config/exception honestamente; transições/farm/cidade preservam ownership.
+Cortados17testes redundantes e3scans duplicados do Unity (retidos no ratchet canônico);
+quatro restores inválidos agora comprovam preservação de estado real.
+Matriz/rules/skills/agents alinhados; runners com lock/timeout/versão/XML/filtro;
+95contratos tooling +30gerador PASS, paridade gerada e config/manualAGENTS preservados.
+
+Baseline2900/2904; final2911/2915, mesmas4falhas farm. Fixtures alteradas126/126,
+build7/7 e PlayMode2/2 PASS. Batch21reprova wiring real (pickaxes/Fireball/gates/anchors);
+docs47diagnósticos após remover26falsos positivos do detector. Não há GLOBAL_PASS.
+Settings migrado incidentalmente pelo PlayMode foi restaurado byte a byte.
+Nenhum commit/push/merge, asset gerado/reparado ou promoção de spec.
+
+Relatório: `docs/validation/QUALITY_IMPROVEMENTS_EXECUTION.md`; evidência em
+`TestResults/quality-improvements/`. Trabalho concorrente de farm/keyart preservado.
+
+## Sessão 2026-09-08 — SOLID, harness e contexto seletivo para AI
+
+Pedido humano: analisar projeto inteiro e melhorar qualidade/modularização/desacoplamento,
+clean code/SOLID, uso de patterns e contexto por classe. Auditoria sintática geral e
+semântica de hotspots; nenhuma certificação de todo o runtime.
+
+Entregues rule+skill SOLID, atualização de três agentes, correção de instruções de save,
+normalizador comum para quatro hooks, gerador com paridade e preservação de config,
+strict com exit codes verdadeiros e ratchet. Testes de tooling:77+30+23asserts PASS;
+Get-ClassContext Roslyn:15contratos PASS. Sem frontmatter manual repetitivo em massa.
+
+Refactors: operações de slots em C# puro; escrita de save no serviço existente;
+três consumidores de quest ID canônico. Characterization20/20 antes; focados36/36 depois;
+build7/7 e Unity compile PASS; full2900/2904 com quatro falhas preexistentes iguais;
+PlayMode composição2/2 PASS. Docs73diagnósticos iguais ao baseline, strict FAIL verdadeiro.
+Nenhum commit/push, nenhuma promoção nem claim de aceitação humana.
+
+CURRENT_STATE545→78linhas; cópia byte-exata preservada em
+`docs/archive/CURRENT_STATE_before_SOLID_AI_2026_09_08.md`. Trabalhos concorrentes de
+farm/arte/cenas preservados. Side effects do runner (ProjectSettings restaurado e cleanup
+de intermediário GDK) documentados no audit, sem alegar restauração dos untracked GDK.
+
+Relatório: `docs/validation/SOLID_AI_PROJECT_AUDIT.md`; evidência local: `TestResults/solid-ai/`.
+Próximos riscos: falhas farm/docs, aceitação humana, ações de UI, ports object/casts e bootstraps.
+
 ## Sessao 2026-07-16 — Modularizacao residual: 25 pares mutuos → 0
 
 **Foco:** fechar os 25 pares mutuos remanescentes reportados por
@@ -7427,3 +7522,71 @@ Play Mode: NOT RUN - correcao restrita a assets/initializers de editor e validad
 - `docs/validation/BUGFIX_SPEC07_CRAFTING_INITIALIZER_DATA_IDS_20260524.md`
 
 ---
+
+
+### 2026-09-09 — FarmScene, fechamento técnico F01–F05
+
+Reconstrução pixelart integrada e entregue para revisão humana. Closing regen04/gameplay04/replay01: SCOPED_PASS,8vistas,16rotas físicas,4seleções reais,8câmerasCustomAxis/Y e0runtimeErrors;11testes focais reutilizados por6inputs de hashes equivalentes. Trigger local da porta e adapter CameraTransparencySort2D corrigem aproximação e persistência do sorting, sem mudar alcance global/ProjectSettings. Todas6regiões do replay idênticas; dois overviews mantêm resíduo de142/200pixels em pequena árvoreSW, sem alegação de determinismo integral. Spec IN_PROGRESS, promoçãoNO, aceite humano/input/animação pendentes; demais falhas históricas do projeto não são reclassificadas. Evidência: docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md.
+
+
+### 2026-09-09 — FarmScene revisão G, proporções e perímetro
+
+G01–G04 SCOPED_PASS técnico: props/prédios calibrados ao player, casa mantida para preservar porta, ponte reta RGBA integrada,6árvores redistribuídas mantendo71IDs e perímetro visual externo sem recursos novos. Evidência vigente proportion_pass/regen_02/gameplay_02:8vistas,16rotas,4seleçõesreais,0erros,CustomAxis/Y e cena/saves preservados;9focais01 reutilizados por4inputs iguais. CenaSHA eb848c096e5e13cd015e61516ee0e7e11374708cbb22b37cf22cb9515f723d16. SpecIN_PROGRESS/promoçãoNO, aceitehumano/inputs/animação pendentes. Evidência: docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md. Demais baselines do projeto não foram reclassificadas.
+
+### 2026-09-09 — FarmScene revisão H, trilhas e entrada exterior
+
+H01–H04 SCOPED_PASS técnico: trilhas ramificadas em raster visual0.25u, cave exterior(-19.5,17) com retorno canônico, clareira e mural GPT;15jardins sem colisão.71IDs preservados,29árvores realocadas perante G sem drift de sprite/escala/dados. path_cave_pass/regen_04/gameplay_02:8vistas,16rotas(6455nós),5seleções reais,0erros e cena/saves preservados;31casos válidos(5Planner03+26reuso7inputs). CenaSHA1c6311a582901d2f69a60a3d3e90e43940e95c3d18e8d1485ca3c7944f764844. Falhas intermediárias Tree43/Meadow11/raster1u permanecem históricas. CaveScene/procedural/save não alterados. Spec IN_PROGRESS/promoçãoNO; aceite humano/input/animação pendentes. Evidência: docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md. Sem reclassificar baselines globais.
+
+### 2026-09-09 — FarmScene revisão I, cais e trilhas
+
+I01–I04 SCOPED_PASS técnico: cais upright reduzido para4.2u e apoiado na margem, deck caminhável, barco/água adjacente bloqueados; pesca movida preservando IDlegado, trilhas com chanfros/bordas externas finas. dock_path_pass/regen_01/gameplay_01:32/32focais,8vistas,16rotas(6465nós),6seleções reais,3águas bloqueadas,0erros e cena/saves preservados.71árvores semdelta vsH. CenaSHA751a9263324f2a322135e9900e969fc5b22f73955db31d629a592296ffacf803. Root revisouoverview/água+8frames; adaptação aprovada para entrega, humano/input/ações/animação pendentes. Não houve ação de pesca nem peixe obtido pelo teste. Spec IN_PROGRESS/promoçãoNO. Evidência: docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md. Sem reclassificar baselines globais.
+
+## 2026-09-09 — Paisagem exterior da fazenda
+
+Periferia preenchida com grupos variados de vegetação/rochas, chão112×80 e continuação visual da estrada leste. Cena gerada via Unity; 16 capturas,16 rotas e6 seleções PASS. Revisão independente preservou171 componentes físicos e54 componentes com IDs. Aceite humano pendente; não encerra pendências físicas anteriores. Evidência: [relatório](docs/validation/farm_outskirts_20260909/REPORT.md).
+
+## 2026-09-09 — Fazenda em vale fechado v2
+
+Direção visual aprovada integrada por subagents com revisão independente: envelope72×50, floresta/escarpa sólida contínua, pomar/pasto e marcos reposicionados. Novo jogo sem cultivos por escolha humana. Root verificou geraçãoUnity exit0, EditMode36/36,18capturas,19rotas,7seleções,480consultas de fronteira,42células não aráveis da casa e0runtimeErrors. IDs/membership preservados;71TreeNodes (68TreeRegistry),263MonoBehaviours;171→199componentes físicos. CODE_COMPLETE/SCOPED_PASS, promoçãoNO; diferenças da keyart, walkthrough/transições humanas e save progredido pendentes. Evidência: [relatório](docs/validation/farm_enclosed_valley_20260909/REPORT.md).
+
+Refino de proporção/borda: escala visual da fileira sul passou a usar pixels opacos e aumentou de forma controlada; casa/estufa preservadas. Removida a corrente de pedras sob o penhasco sem tocar nos28colliders; cercamento do pomar ganhou laterais esparsas. Rule de fidelidade atualizada para keyartv2, proporção/player e repetição de bordas. Evidência final:19/19EditMode,18capturas,19rotas,7seleções,480bloqueios,0runtimeErrors; aceite humano permanece pendente.
+
+## 2026-09-09 — Piloto Aseprite de estrada e cercas
+
+Preparado harness aseprite-authoring com referências condicionais, exemplos e template; cópias sincronizadas.
+Aseprite1.3.18.5 abriu candidatos editáveis; Lua preservou original e validou roundtrip. Estrada ganhou atlas
+em escala de pixels coerente e borda de grama; cercas derivam dos segmentos físicos, pivôs nos pés e trilhos
+ordenados por trecho. Revisão independente identificou P2 de sorting, corrigido. GeraçãoUnity exit0 e PlayMode
+18capturas/19rotas/480bordas/27marcos/7seleções,0erros PASS. Sem promoção ou aceite humano da fazenda.
+Evidência: docs/validation/farm_aseprite_pilot/REPORT.md. Tentativas rejeitadas e limitações mantidas no relatório.
+
+## 2026-09-10 — Fundação de habilidades
+
+Spark reforçou a skill de validação; runtime implementado pelo agente primário após limite Spark, com autorização e revisão independente. Avatar/efeitos, transações/save v3 e recarga actionId: 131 EditMode + cinco cenários PlayMode PASS. Sem mudança arbitrária de capstones ou balanceamento, sem commit/push. UI/arte final pendentes. [Evidência](docs/validation/skills_sdd_v1/execution/FOUNDATION_REPORT.md).
+
+
+## Farm v4 — rodada visual 14 (2026-09-10)
+
+Comparativo atualizado: docs/validation/farm_keyart_v4/progress-review.html. Uma integração visual após dois bloqueios de compilação da fase de skills; stage14c.log exit0 e EditMode14/14 PASS. Árvores preservadas na comparação de71 transformações. Revisão visual aceita apenas o ganho local de vegetação; caminhos/composição permanecem pendentes. Regra visual-iteration-budget adicionada e gerada para Codex. IN_PROGRESS, sem promoção. Evidência completa no REPORT.md da farm_keyart_v4.
+
+2026-09-10 Farm v15: cais+10%, espaçamento sul,7arbustos sem bloqueio, fonte/cascata5frames e peixe20s nativos.33/33EditMode e18/18capturas/rotasPlayMode PASS; observação contínua do peixe pendente. Relatório: docs/validation/farm_keyart_v4/REPORT.md.
+
+Farm ambient observation: one41sPlayModecapturePASS, fonte/cascata5frames, peixe2saltos20.000061s apart,8idle-null samples, scene/savespreserved. OptionalEditorprobe only; timestampHTMLdelivered. No redundant EditMode/regen.
+
+Farm v16: consolidado pacote único de resolução/contato/pesca;10candidatos de código e2materiais aplicados com backup/hash. Grama314 preserva footprint; celeiro candidato não integrado por ganho insuficiente. Unity bloqueado em Untitled; não regenerada cena nem declarados testes PASS.
+
+Farm v16 integrado: geração Unity e53/53EditMode PASS; PlayModeD16contatos+3seleções PASS,5frames e71árvores preservados. Comparativo stage16 e galeria em docs/validation/farm_keyart_v4/contact_v16/index.html. Promoção final pendente dos critérios residuais explicitados no REPORT.md; bloqueio Unity anterior resolvido.
+
+Farm v16:follow-up do rochedo oeste integrado;10/10navegação e19checksPlayPASS, comparação visual local aprovada. Arte e71árvores preservadas; evidência contact_v16/rock_fix/.
+
+Farm v17:popa do barco reconstruída emAseprite e integrada; geraçãoUnity exit0 e revisão visualPASS. Outros props semamputação confirmada no conjunto examinado; emenda degrama no gate leste pendente. docs/validation/farm_keyart_v4/boat_v17/index.html.
+
+Farm v18 piloto integrado: barco4poses5s e galinha19frames com movimento seguro, interação e restore.62/62EditMode +PlayC60sPASS, artevisívelrevisada. Vaca/ovelha/cabra semciclosnovos; fullherd/humano pendentes. docs/validation/farm_keyart_v4/motion_v18/index.html eREPORT.md.
+
+## Farm v19 — 2026-09-10
+
+Farm v19 integrado: vaca/ovelha/cabra com 19 poses cada e perfis por ID; cordeiro ausente corrigido no catálogo gerado. 65/65 EditMode e Play B com quatro animais por 60s PASS, interação/restore/limites verificados. Proporções revisadas, 71 árvores preservadas. Aceitação humana/input pendente. Evidência: docs/validation/farm_keyart_v4/herd_v19/REPORT.md e index.html.
+
+
+Farm v20 integrado: +27 arbustos baixos e54 tufos decorativos, Ground/4 semcolliders; árvores eacessos preservados. GeraçãoUnity exit0 e15/15testesdecoração/navegação PASS. Comparativo/evidência: docs/validation/farm_keyart_v4/groundcover_v20/index.html eREPORT.md. Aceitaçãovisualhumana pendente.
+

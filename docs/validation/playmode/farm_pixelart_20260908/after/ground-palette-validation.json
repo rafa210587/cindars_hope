@@ -1,0 +1,30 @@
+{
+  "result": "PASS",
+  "method": "Read-only scene YAML: Ground GameObject->Tilemap->m_TileAssetArray GUID resolved through actual tile asset metas; m_TileIndex counted and compared to m_RefCount",
+  "sceneSha256": "1036E1D21A5B501218F86D1937D66D34C77D155525A2B78CFE2E4202402EDC74",
+  "groundGameObjectFileId": "106644319",
+  "tilemapFileId": "106644322",
+  "families": [
+    {
+      "tileAsset": "tile_ground_grass.asset",
+      "guid": "d331e458f803ef34abefb6f081cc1e8e",
+      "tileIndex": 0,
+      "cells": 12749
+    },
+    {
+      "tileAsset": "tile_ground_grass_flower.asset",
+      "guid": "7146d2851ed06a8409f74636a724c067",
+      "tileIndex": 1,
+      "cells": 1451
+    },
+    {
+      "tileAsset": "tile_ground_grass_pebble.asset",
+      "guid": "a02e5023fb311134588951277b5c6b5d",
+      "tileIndex": 2,
+      "cells": 776
+    }
+  ],
+  "grassACells": 0,
+  "grassBCells": 0,
+  "totalCells": 14976.0
+}

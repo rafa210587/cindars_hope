@@ -1,0 +1,16 @@
+{
+  "generatorTests": "PASS: 36 assertions; tool invocation exit 0",
+  "generation": "PASS",
+  "idempotenceDifferences": 0,
+  "resourceParityFiles": 124,
+  "resourceParityMismatches": 0,
+  "localHarnessLinksChecked": 57,
+  "localHarnessLinksBroken": 0,
+  "docsBaselineErrors": 74,
+  "docsFinalErrors": 59,
+  "docsNewErrors": 0,
+  "applicationExecution": "NOT RUN: harness-only task",
+  "independentReview": "One P2 corrected and rechecked: per-agent tool availability",
+  "adrReportLocalLinks": "7 checked; zero broken",
+  "whitespace": "Harness PASS; tracking files have EOF blank lines outside inserted sections"
+}

@@ -1,0 +1,191 @@
+{
+    "status": "PASS",
+    "method": "AnimationClip keyframes and native AnimationMode.SampleAnimationClip on a temporary Editor object. This is not a 21-second Play Mode observation, performance measurement or visual approval.",
+    "clips": [
+        {
+            "id": "fountain_v15",
+            "clipPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/fountain_v15.anim",
+            "controllerPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/fountain_v15.controller",
+            "frameCount": 5,
+            "period": 0.699999988079071,
+            "pixelsPerUnit": 128.0,
+            "activeStart": 0.0,
+            "canvas": {
+                "x": 170.0,
+                "y": 159.0
+            },
+            "pivot": {
+                "x": 85.0,
+                "y": 0.0
+            },
+            "keyTimes": [
+                0.0,
+                0.14000000059604646,
+                0.2800000011920929,
+                0.41999998688697817,
+                0.5600000023841858,
+                0.6899999976158142
+            ],
+            "sampledTimes": [
+                0.07000000029802323,
+                0.21000000834465028,
+                0.3499999940395355,
+                0.49000000953674319,
+                0.625
+            ],
+            "sampledSprites": [
+                "fountain_v15_frame_00",
+                "fountain_v15_frame_01",
+                "fountain_v15_frame_02",
+                "fountain_v15_frame_03",
+                "fountain_v15_frame_04"
+            ],
+            "nativeSamplesMatch": true,
+            "hiddenDuringWait": false
+        },
+        {
+            "id": "cascade_v15",
+            "clipPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/cascade_v15.anim",
+            "controllerPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/cascade_v15.controller",
+            "frameCount": 5,
+            "period": 0.699999988079071,
+            "pixelsPerUnit": 128.0,
+            "activeStart": 0.0,
+            "canvas": {
+                "x": 68.0,
+                "y": 56.0
+            },
+            "pivot": {
+                "x": 34.0,
+                "y": 0.0
+            },
+            "keyTimes": [
+                0.0,
+                0.14000000059604646,
+                0.2800000011920929,
+                0.41999998688697817,
+                0.5600000023841858,
+                0.6899999976158142
+            ],
+            "sampledTimes": [
+                0.07000000029802323,
+                0.21000000834465028,
+                0.3499999940395355,
+                0.49000000953674319,
+                0.625
+            ],
+            "sampledSprites": [
+                "cascade_v15_frame_00",
+                "cascade_v15_frame_01",
+                "cascade_v15_frame_02",
+                "cascade_v15_frame_03",
+                "cascade_v15_frame_04"
+            ],
+            "nativeSamplesMatch": true,
+            "hiddenDuringWait": false
+        },
+        {
+            "id": "fish_v15",
+            "clipPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/fish_v15.anim",
+            "controllerPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/fish_v15.controller",
+            "frameCount": 8,
+            "period": 20.0,
+            "pixelsPerUnit": 18.299999237060548,
+            "activeStart": 19.040000915527345,
+            "canvas": {
+                "x": 48.0,
+                "y": 48.0
+            },
+            "pivot": {
+                "x": 24.0,
+                "y": 14.0
+            },
+            "keyTimes": [
+                0.0,
+                19.040000915527345,
+                19.160001754760743,
+                19.28000259399414,
+                19.40000343322754,
+                19.520004272460939,
+                19.640005111694337,
+                19.760005950927736,
+                19.880006790161134,
+                19.989999771118165
+            ],
+            "sampledTimes": [
+                9.520000457763672,
+                19.10000228881836,
+                19.220001220703126,
+                19.340003967285158,
+                19.460002899169923,
+                19.580005645751954,
+                19.70000457763672,
+                19.82000732421875,
+                19.93500328063965,
+                0.0,
+                0.0010000000474974514,
+                19.03900146484375,
+                20.0
+            ],
+            "sampledSprites": [
+                "null",
+                "fish_v15_frame_00",
+                "fish_v15_frame_01",
+                "fish_v15_frame_02",
+                "fish_v15_frame_03",
+                "fish_v15_frame_04",
+                "fish_v15_frame_05",
+                "fish_v15_frame_06",
+                "fish_v15_frame_07",
+                "null",
+                "null",
+                "null",
+                "null"
+            ],
+            "nativeSamplesMatch": true,
+            "hiddenDuringWait": true
+        },
+        {
+            "id": "boat_v18",
+            "clipPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/boat_v18.anim",
+            "controllerPath": "Assets/_Game/Art/Generated/World/ambient/_AnimationAssets/boat_v18.controller",
+            "frameCount": 4,
+            "period": 5.0,
+            "pixelsPerUnit": 128.0,
+            "activeStart": 0.0,
+            "canvas": {
+                "x": 76.0,
+                "y": 68.0
+            },
+            "pivot": {
+                "x": 38.0,
+                "y": 0.0
+            },
+            "keyTimes": [
+                0.0,
+                1.25,
+                2.5,
+                3.75,
+                4.989999771118164
+            ],
+            "sampledTimes": [
+                0.625,
+                1.875,
+                3.125,
+                4.369999885559082
+            ],
+            "sampledSprites": [
+                "boat_v18_frame_00",
+                "boat_v18_frame_01",
+                "boat_v18_frame_02",
+                "boat_v18_frame_03"
+            ],
+            "nativeSamplesMatch": true,
+            "hiddenDuringWait": false
+        }
+    ],
+    "sceneColliderComparisonPerformed": true,
+    "originalCollidersUnchanged": true,
+    "colliderCountBefore": 240,
+    "colliderCountAfter": 240
+}

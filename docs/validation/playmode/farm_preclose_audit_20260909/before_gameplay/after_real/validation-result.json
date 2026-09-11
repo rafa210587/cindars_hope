@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "scanExit": 0,
+  "runtimeErrorCount": 0,
+  "scenePreserved": true,
+  "saveRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\\saves",
+  "saveBeforeCount": 0,
+  "saveAfterCount": 0,
+  "shippingHeightPass": true,
+  "shippingMeasuredHeights": [
+    2.0,
+    2.0,
+    2.0
+  ],
+  "views": [
+    {
+      "id": "spawn",
+      "width": 640,
+      "height": 480,
+      "orthographicSize": 8.5,
+      "sha256": "5215BE82AB22F93A8C2A35DD0C186F268798E4DD8973FA9FF5D61DB0ABEFFC26",
+      "lastWriteUtc": "2026-09-09T02:10:52.0289646Z"
+    },
+    {
+      "id": "bridge",
+      "width": 640,
+      "height": 480,
+      "orthographicSize": 8.5,
+      "sha256": "523BA09AD120A4A9A8D7689024B5A100AB87A11B8C093D1BFAD996926DE7A0FB",
+      "lastWriteUtc": "2026-09-09T02:10:54.0561246Z"
+    },
+    {
+      "id": "cultivation",
+      "width": 640,
+      "height": 480,
+      "orthographicSize": 8.5,
+      "sha256": "02F73C8B3A7311EBFF18CDEAB3DA84E8164FD1F9F1CDF3B5230EFA30E3F8BE74",
+      "lastWriteUtc": "2026-09-09T02:10:56.0771705Z"
+    }
+  ],
+  "humanAcceptance": "NOT RUN",
+  "motionAndTraversal": "NOT RUN"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "path": "Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs",
+    "sha256": "22FF043F3DEAD21FFF746573A78F87D64175CB2465FDD67D7B505536B3ABCDDC"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneCompositionContractTests.cs",
+    "sha256": "C0DAFB69E2A929AE4D1B1B48BC003620FCC5D1610489A68F6B82F2D55714833C"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/World/TreeNodeVisualTests.cs",
+    "sha256": "0ACEF38084FF1B4F7A6B8E6C8C99267931B29B37DA82E629416F3B1E4CD16948"
+  },
+  {
+    "path": "Assets/_Game/Scripts/World/TreeNode.cs",
+    "sha256": "80C51108369EA930E980DEC38F2302963D25B9D4A7EB583310B612160C5420E9"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+    "sha256": "FF752D27CD940898825B37C23207234F4305AF80708029B0D3192475A3C9A6C5"
+  },
+  {
+    "path": "Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs",
+    "sha256": "C190A2D6CB63A8A7FFC99F0FFF48C7BBFC2372563E7F3F84C69545B5AE1DA552"
+  }
+]

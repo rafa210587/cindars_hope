@@ -1,0 +1,38 @@
+[
+  {
+    "path": "Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs",
+    "sha256": "2D72E8D7018C25C843B591C5128E5373F8DEB9322CAA80CD8AC2F252F11C2972"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Farm/FarmLevel1LayoutContractTests.cs",
+    "sha256": "F255F05C90FEF4A6630CF89C63F3CF520DFB3135060916277742BF41BAE93A55"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneSpatialContractTests.cs",
+    "sha256": "38D1780F1DC55359F1AE5F2EBA42A9525268DF10BE7FCB716DBED58F73A24D05"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneNavigationContractTests.cs",
+    "sha256": "0C6D736210D71E03AED7BD82AFA5AB5F053FB6DA4BE110CF24664CADE8AF6F87"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+    "sha256": "FF87191F7A76545F89F3559398D36D117FCBB4712A2D88D5D35BD131999A74C4"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/FarmLevel1LayoutContract.cs",
+    "sha256": "4A06A3221FD6BB358373E605A957A5D824D9CA544A0AF20DA28C76019C281D78"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs",
+    "sha256": "2A39CB98FB9CEC2AEAC9530683D43726ADB03DED6C45AA5CFBADA6D05B094A28"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationPolicy.cs",
+    "sha256": "A241F722880EB9C833799DA4A6F0D40C5920C1B3016EEB3C6B2567D21CCE15FF"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationRaster.cs",
+    "sha256": "515890E43C116DBAC87F28F1DE17B2F4339AB5D51FC12FE3FED331AB0642F6CE"
+  }
+]

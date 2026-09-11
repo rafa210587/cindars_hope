@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "views": 8,
+  "runtimeErrors": 0,
+  "sceneUnchanged": true,
+  "sceneMatchesCurrent": true,
+  "sceneSha256": "7e2ffd6919591e634444d943ae8eb26d1eff4aeca886a8f03f0b8cbe60a2ea2c",
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "physicalProbeActuallyExecuted": true,
+  "physicalStatus": "PASS",
+  "visitedNodes": 6529,
+  "routeCount": 16,
+  "failedRoutes": 0,
+  "sourceDriftCount": 0
+}

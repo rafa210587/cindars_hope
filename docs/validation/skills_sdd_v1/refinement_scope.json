@@ -1,0 +1,23 @@
+{
+  "changedFiles": [
+    "docs/refinements/a_implementar/ref_skill_catalog_functional_contract_v3.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_00_decisoes_catalogo_v1.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_03_dados_rank_readiness_v1.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_04_passivas_capstones_v1.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_05_mecanicas_ativas_v1.md",
+    "docs/validation/skills_sdd_v1/SKILL_FUNCTIONAL_REFINEMENT_REVIEW.md",
+    "docs/validation/skills_sdd_v1/refinement_scope.json"
+  ],
+  "allowedPaths": [
+    "docs/refinements/a_implementar/ref_skill_catalog_functional_contract_v3.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_00_decisoes_catalogo_v1.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_03_dados_rank_readiness_v1.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_04_passivas_capstones_v1.md",
+    ".specs/features_futuras/skills_sdd_v1/spec_skills_05_mecanicas_ativas_v1.md",
+    "docs/validation/skills_sdd_v1/SKILL_FUNCTIONAL_REFINEMENT_REVIEW.md",
+    "docs/validation/skills_sdd_v1/refinement_scope.json"
+  ],
+  "reportPaths": [
+    "docs/validation/skills_sdd_v1/SKILL_FUNCTIONAL_REFINEMENT_REVIEW.md"
+  ]
+}

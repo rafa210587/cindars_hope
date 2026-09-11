@@ -1,0 +1,8 @@
+{
+  "overall": "PARTIAL",
+  "generation": "PASS",
+  "focalTests": "FAIL 30/31: Meadow count11",
+  "play": "PASS 8 views,16 routes,5 selections",
+  "visual": "Root requested smaller path raster steps",
+  "next": "Await implementation freeze before new regeneration"
+}

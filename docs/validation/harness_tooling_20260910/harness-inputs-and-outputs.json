@@ -1,0 +1,158 @@
+[
+  {
+    "Path": ".claude\\HARNESS_INDEX.md",
+    "Hash": "3436D740E6991735069BBD2F8FAB0F2F86159DA66090B013857197A87836D9BB"
+  },
+  {
+    "Path": ".claude\\agents\\asset-wiring-specialist.md",
+    "Hash": "02F2C6873B3E4954F48D999DCB489232432E7D1FC22A853EFEE83FA3BAEE3644"
+  },
+  {
+    "Path": ".claude\\agents\\bugfix-investigator.md",
+    "Hash": "7B4B4AB4D003415D8F02E06711B2E73DD3E217C3D135C53416977E5B4BAD3D6D"
+  },
+  {
+    "Path": ".claude\\agents\\performance-auditor.md",
+    "Hash": "B62DA89741D3CD38204F9D1E2B90B4053A49950944B011221E886B6C612DBDF7"
+  },
+  {
+    "Path": ".claude\\agents\\unity-validator.md",
+    "Hash": "F14BEF292AB2FD851174B9FE0CE86476BF0CDDA557730D70909ED911D43035CE"
+  },
+  {
+    "Path": ".claude\\skills\\aseprite-authoring\\SKILL.md",
+    "Hash": "EE18F0414381E96679A69E75163DB7DB9201DB9E52E097903DA68BF1A1BF99C6"
+  },
+  {
+    "Path": ".claude\\skills\\aseprite-authoring\\assets\\templates\\work-order.md",
+    "Hash": "6D1C7611CE21FE74357A358BEEFE4E7C93D9FC6A75AD551AC1D98DAA26E2CF9D"
+  },
+  {
+    "Path": ".claude\\skills\\aseprite-authoring\\references\\acceptance.md",
+    "Hash": "AF275CD6713B8E7C231B6E8295A1E4817EAAC1E35879558B3545F73EE3F6EE7A"
+  },
+  {
+    "Path": ".claude\\skills\\aseprite-authoring\\references\\adapters.md",
+    "Hash": "7FF65EF232CEF54FA8D047F64C5DD570EBB1B5BCA6B68614758301F4026BA76C"
+  },
+  {
+    "Path": ".claude\\skills\\aseprite-authoring\\references\\cli-lua.md",
+    "Hash": "B1DBFFDBB4DF1B0ADEB0B2EE4BE4363A934F8573DCCD5EAF05039D736D7786EF"
+  },
+  {
+    "Path": ".claude\\skills\\harness-authoring\\SKILL.md",
+    "Hash": "845ECDD5CAE7ACE8A8C60D42A90437E380411E6D89F7C4BB7E06B23F5337A895"
+  },
+  {
+    "Path": ".claude\\skills\\harness-authoring\\references\\external-capabilities.md",
+    "Hash": "46ECC4C09C10897A7831762BD49400E3E51E0F23503FD9B345FA8874670E76EC"
+  },
+  {
+    "Path": ".claude\\skills\\hud-canvas-binding\\SKILL.md",
+    "Hash": "C7D379A851535EBD6A63FB1BCDCDC21DAAF26D70802BD992D46D38D36CA8AB2C"
+  },
+  {
+    "Path": ".claude\\skills\\localization-authoring\\SKILL.md",
+    "Hash": "B39726105E7D60185F2E1732214605FF59C57E80D85F04F14194107EE72D2EE0"
+  },
+  {
+    "Path": ".claude\\skills\\pixel-art-animator\\references\\operations.md",
+    "Hash": "80CBCA2A35B0B5148EE8574B4D5459B42697969D8FB64BF97DD86FD64CF1FFA0"
+  },
+  {
+    "Path": ".claude\\skills\\sprite-animation-review\\references\\motion-diagnostics.md",
+    "Hash": "3003CEF28DFC789FAD0444C26A71123089749CD1E61D7EF014648BBEE2F8A27A"
+  },
+  {
+    "Path": ".claude\\skills\\unity-asset-generation\\SKILL.md",
+    "Hash": "0239DFD581465BDAA315EBEA4BABE3CFCA0A16F1BEE8D92FF8E5291C2E1015D7"
+  },
+  {
+    "Path": ".claude\\skills\\unity-mcp-operations\\SKILL.md",
+    "Hash": "407206AFFBB8E9D4A56C181BCB24A34E0882FCEE2F79B469F334AEFE8FB7E737"
+  },
+  {
+    "Path": ".claude\\skills\\unity-performance-profiling\\SKILL.md",
+    "Hash": "B74CFDF8374B5F2B27B51B7502932CE6A469329CD33F608A08F25976B7D49AD8"
+  },
+  {
+    "Path": ".claude\\skills\\unity-validation\\SKILL.md",
+    "Hash": "A82379CDA062F2B6D2E42FB3FC5E219996B2D996FEB039115354C99C43D9B362"
+  },
+  {
+    "Path": ".agents\\skills\\aseprite-authoring\\SKILL.md",
+    "Hash": "EE18F0414381E96679A69E75163DB7DB9201DB9E52E097903DA68BF1A1BF99C6"
+  },
+  {
+    "Path": ".agents\\skills\\aseprite-authoring\\assets\\templates\\work-order.md",
+    "Hash": "6D1C7611CE21FE74357A358BEEFE4E7C93D9FC6A75AD551AC1D98DAA26E2CF9D"
+  },
+  {
+    "Path": ".agents\\skills\\aseprite-authoring\\references\\acceptance.md",
+    "Hash": "AF275CD6713B8E7C231B6E8295A1E4817EAAC1E35879558B3545F73EE3F6EE7A"
+  },
+  {
+    "Path": ".agents\\skills\\aseprite-authoring\\references\\adapters.md",
+    "Hash": "7FF65EF232CEF54FA8D047F64C5DD570EBB1B5BCA6B68614758301F4026BA76C"
+  },
+  {
+    "Path": ".agents\\skills\\aseprite-authoring\\references\\cli-lua.md",
+    "Hash": "B1DBFFDBB4DF1B0ADEB0B2EE4BE4363A934F8573DCCD5EAF05039D736D7786EF"
+  },
+  {
+    "Path": ".agents\\skills\\harness-authoring\\SKILL.md",
+    "Hash": "845ECDD5CAE7ACE8A8C60D42A90437E380411E6D89F7C4BB7E06B23F5337A895"
+  },
+  {
+    "Path": ".agents\\skills\\harness-authoring\\references\\external-capabilities.md",
+    "Hash": "46ECC4C09C10897A7831762BD49400E3E51E0F23503FD9B345FA8874670E76EC"
+  },
+  {
+    "Path": ".agents\\skills\\hud-canvas-binding\\SKILL.md",
+    "Hash": "C7D379A851535EBD6A63FB1BCDCDC21DAAF26D70802BD992D46D38D36CA8AB2C"
+  },
+  {
+    "Path": ".agents\\skills\\localization-authoring\\SKILL.md",
+    "Hash": "B39726105E7D60185F2E1732214605FF59C57E80D85F04F14194107EE72D2EE0"
+  },
+  {
+    "Path": ".agents\\skills\\pixel-art-animator\\references\\operations.md",
+    "Hash": "80CBCA2A35B0B5148EE8574B4D5459B42697969D8FB64BF97DD86FD64CF1FFA0"
+  },
+  {
+    "Path": ".agents\\skills\\sprite-animation-review\\references\\motion-diagnostics.md",
+    "Hash": "3003CEF28DFC789FAD0444C26A71123089749CD1E61D7EF014648BBEE2F8A27A"
+  },
+  {
+    "Path": ".agents\\skills\\unity-asset-generation\\SKILL.md",
+    "Hash": "0239DFD581465BDAA315EBEA4BABE3CFCA0A16F1BEE8D92FF8E5291C2E1015D7"
+  },
+  {
+    "Path": ".agents\\skills\\unity-mcp-operations\\SKILL.md",
+    "Hash": "407206AFFBB8E9D4A56C181BCB24A34E0882FCEE2F79B469F334AEFE8FB7E737"
+  },
+  {
+    "Path": ".agents\\skills\\unity-performance-profiling\\SKILL.md",
+    "Hash": "B74CFDF8374B5F2B27B51B7502932CE6A469329CD33F608A08F25976B7D49AD8"
+  },
+  {
+    "Path": ".agents\\skills\\unity-validation\\SKILL.md",
+    "Hash": "A82379CDA062F2B6D2E42FB3FC5E219996B2D996FEB039115354C99C43D9B362"
+  },
+  {
+    "Path": ".codex\\agents\\asset-wiring-specialist.toml",
+    "Hash": "D939BD8751F96C12CFDCEB00216BBFEA6121970117D358BB39020E57014EACD7"
+  },
+  {
+    "Path": ".codex\\agents\\bugfix-investigator.toml",
+    "Hash": "58B0CC08A612A9A8597E4B8BA4BC08246B267DA15EB73D1EB907291417DFA3D5"
+  },
+  {
+    "Path": ".codex\\agents\\performance-auditor.toml",
+    "Hash": "3EC267DF68F58F8272FA204506B20D77F22EC7764AF440E8D0D48F26535A887E"
+  },
+  {
+    "Path": ".codex\\agents\\unity-validator.toml",
+    "Hash": "FF55A272719D5BB5B54B5D3C75293409EB9EF49CBD050712B718E623F4D6BC04"
+  }
+]

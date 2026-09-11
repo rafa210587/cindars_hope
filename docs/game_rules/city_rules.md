@@ -10,7 +10,7 @@ source_documents:
   - docs/design/gameplay/ui_ux/HUD_LAYOUT_SCENES_DIRECTION_v1.0.md
   - docs/design/FABLE_DECISOES_RESPOSTAS_v2.0.md
   - Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs
-last_reviewed: 2026-06-13
+last_reviewed: 2026-09-11
 ---
 
 # City Rules — Cindar's Hope
@@ -31,6 +31,28 @@ Statue Garden, public fountain).
 This rule is the canon source cited by `fable_11` (interiors / doors / schedule anchors),
 `fable_19` (schedule reconciliation + live services), and `fable_40` (48×42 relayout). It does
 **not** restate combat, save, or skill rules — see the cross-references at the end.
+
+---
+
+## Amendment operacional — Town expandida (2026-09-11)
+
+Este amendment aplica a decisão humana e a implementação validada de
+`.specs/a_implementar/spec_town_spatial_expansion_and_access_v1.md`. Em caso de conflito com as seções
+históricas abaixo, prevalecem estes contratos:
+
+- footprint atual **160×112** (`x=-80..80`, `y=-56..56`), sete distritos, 24 lotes,
+  29 NPCs materializados, 28 perfis agendados e 84 anchors;
+- 23 edifícios usam interior **walk-in no próprio footprint** com `HouseDoorInteractable` e
+  `RoofRevealController`; `House_AnimalYard` é exterior. A descrição off-playfield/teleporte da Rule3
+  permanece apenas como histórico do fable_11 e não rege a Town atual;
+- lojas continuam submetidas à Rule4: apresentação walk-in não autoriza entrada ou serviço fora do
+  horário;
+- snap ao carregar ou resolver NPC totalmente offscreen permanece permitido. Teleporte após ~5s durante
+  circulação onscreen é dívida observável de runtime e será tratado por
+  `spec_town_npc_visuals_navigation_v1`; não é critério de rota bem-sucedida;
+- câmera e proporção da expansão seguem `CITY_KEYART_PROPORTION_RULE_v1.md` revisada em 2026-09-11.
+
+Este amendment não altera preços, serviços, religião, agenda, IDs ou save schema.
 
 ---
 

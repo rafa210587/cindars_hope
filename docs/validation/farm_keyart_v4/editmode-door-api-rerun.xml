@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="11" result="Passed" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0,1772122">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="2994" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.177212" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="4296" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2994" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.147589" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="47192" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="4297" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2994" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.123059" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="4300" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2906" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.099260" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="4302" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2889" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.076262" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="4303" name="World" fullname="CindarsHope.Tests.EditMode.World" runstate="Runnable" testcasecount="225" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.047546" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1288" name="HouseDoorInteractableTests" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.036319" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1294" name="ActorEnteringDuringClosing_ReversesBeforeBlockerReturns" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.ActorEnteringDuringClosing_ReversesBeforeBlockerReturns" methodname="ActorEnteringDuringClosing_ReversesBeforeBlockerReturns" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" seed="1571905940" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.016861" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1290" name="AnimatedOpening_ReleasesBlockerOnlyAtFinalClearPose" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.AnimatedOpening_ReleasesBlockerOnlyAtFinalClearPose" methodname="AnimatedOpening_ReleasesBlockerOnlyAtFinalClearPose" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" seed="305666083" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.004308" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1293" name="DisabledBlocker_StillDetectsActorAndRefusesClosing" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.DisabledBlocker_StillDetectsActorAndRefusesClosing" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.003355" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1291" name="DisabledBlocker_StillDetectsActorAndRefusesClosing(False)" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.DisabledBlocker_StillDetectsActorAndRefusesClosing(False)" methodname="DisabledBlocker_StillDetectsActorAndRefusesClosing" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" seed="1021086661" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.000738" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1292" name="DisabledBlocker_StillDetectsActorAndRefusesClosing(True)" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.DisabledBlocker_StillDetectsActorAndRefusesClosing(True)" methodname="DisabledBlocker_StillDetectsActorAndRefusesClosing" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" seed="1196593712" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.001069" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1289" name="LegacyDoor_StillOpensImmediatelyAndHidesLeaf" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.LegacyDoor_StillOpensImmediatelyAndHidesLeaf" methodname="LegacyDoor_StillOpensImmediatelyAndHidesLeaf" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" seed="285012666" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.000453" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1296" name="Occupancy_UsesScaledOffsetDoorwayRatherThanRootPosition" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.Occupancy_UsesScaledOffsetDoorwayRatherThanRootPosition" methodname="Occupancy_UsesScaledOffsetDoorwayRatherThanRootPosition" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" seed="143236597" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.000859" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1295" name="TriggerSensorAlone_DoesNotPreventClosing" fullname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests.TriggerSensorAlone_DoesNotPreventClosing" methodname="TriggerSensorAlone_DoesNotPreventClosing" classname="CindarsHope.Tests.EditMode.World.HouseDoorInteractableTests" runstate="Runnable" seed="421235267" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.000526" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1303" name="RoofRevealControllerTests" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.007346" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1307" name="FeetMode_DisabledPlayerAndComponentRestoreExteriorWithoutChangingLeafEnabled" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.FeetMode_DisabledPlayerAndComponentRestoreExteriorWithoutChangingLeafEnabled" methodname="FeetMode_DisabledPlayerAndComponentRestoreExteriorWithoutChangingLeafEnabled" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="1369940674" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.003785" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1306" name="FeetMode_IgnoresSensorAndBodyOverlapUntilFeetCrossUsefulInterior" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.FeetMode_IgnoresSensorAndBodyOverlapUntilFeetCrossUsefulInterior" methodname="FeetMode_IgnoresSensorAndBodyOverlapUntilFeetCrossUsefulInterior" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="45787223" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.001158" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1305" name="LegacyConfiguration_StillControlsOnlyTheRoof" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.LegacyConfiguration_StillControlsOnlyTheRoof" methodname="LegacyConfiguration_StillControlsOnlyTheRoof" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="1376758742" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.000312" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1304" name="PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" methodname="PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="1118362428" result="Passed" start-time="2026-09-10 03:36:37Z" end-time="2026-09-10 03:36:37Z" duration="0.000894" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

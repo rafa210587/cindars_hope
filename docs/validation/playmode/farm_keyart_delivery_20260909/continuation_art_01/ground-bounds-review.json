@@ -1,0 +1,29 @@
+{
+  "source": "Serialized Grid cellSize plus PaintRect floor/ceil formula; diagnostic log confirms final auto camera.",
+  "cellSize": 9.796875,
+  "xMin": -4,
+  "xMaxExclusive": 4,
+  "yMin": -3,
+  "yMaxExclusive": 3,
+  "tileCount": 48,
+  "visualBoundsWidth": 78.375,
+  "visualBoundsHeight": 58.78125,
+  "visualCenter": [
+    0,
+    0
+  ],
+  "requestedCoverage": [
+    72,
+    52
+  ],
+  "requestedCenter": [
+    -1,
+    -1
+  ],
+  "oldAutomaticOrtho": 28.5,
+  "newAutomaticOrtho": 31.4,
+  "fixedViewWidth": 1600,
+  "fixedViewHeight": 1000,
+  "fixedViewOrtho": 22,
+  "gameplayCameraChanged": false
+}

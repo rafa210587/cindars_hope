@@ -1,0 +1,116 @@
+[
+  {
+    "raw": "art/farm-pixelart-review/raw/farmhouse-keyart-v2.png",
+    "asset": "Assets/_Game/Art/Generated/World/building/farmhouse_keyart_v2.png",
+    "rawSha256": "0CAFB6D418E11AFF51D7B2E57F3E8A935EB3F37851887EBA3D6EB739F3182DAE",
+    "assetSha256": "0CAFB6D418E11AFF51D7B2E57F3E8A935EB3F37851887EBA3D6EB739F3182DAE",
+    "bytesIdentical": true,
+    "width": 1374,
+    "height": 1145,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 709352,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": 0,
+        "overridden": 0
+      },
+      {
+        "target": "Standalone",
+        "compression": 1,
+        "overridden": 0
+      },
+      {
+        "target": "WebGL",
+        "compression": 1,
+        "overridden": 0
+      }
+    ],
+    "prompt": "art/farm-pixelart-review/prompts/farmhouse-keyart-v2.txt",
+    "promptSha256": "7F6CA837CA401A99C03EF839F34C4FB0672A7A52DED03A9F3BD46AA0ADB6BDC2",
+    "metaSha256": "0C1F3BE1F68D61EFAA5253818925087D5AD0A9FB0572588F084A1666C4819A2B"
+  },
+  {
+    "raw": "art/farm-pixelart-review/raw/fishing-dock-keyart-v1.png",
+    "asset": "Assets/_Game/Art/Generated/World/props/fishing_dock_keyart_v1.png",
+    "rawSha256": "955F3619449C1387E31E0455D3ADB039A2ADA916EB8674A88F98A8921700876C",
+    "assetSha256": "955F3619449C1387E31E0455D3ADB039A2ADA916EB8674A88F98A8921700876C",
+    "bytesIdentical": true,
+    "width": 1245,
+    "height": 1263,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 1094753,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": 0,
+        "overridden": 0
+      },
+      {
+        "target": "Standalone",
+        "compression": 1,
+        "overridden": 0
+      },
+      {
+        "target": "WebGL",
+        "compression": 1,
+        "overridden": 0
+      }
+    ],
+    "prompt": "art/farm-pixelart-review/prompts/fishing-dock-keyart-v1.txt",
+    "promptSha256": "0E038ABBB00100EF7727B5BF75222DC33F46E65E5644D8116F86E7349F7A00C6",
+    "metaSha256": "94EFDD93A6BC57E011CF6A19E68403B8CE499333ABB984235BC97425995A5C43"
+  },
+  {
+    "raw": "art/farm-pixelart-review/raw/waterfall-keyart-v1.png",
+    "asset": "Assets/_Game/Art/Generated/World/props/waterfall_keyart_v1.png",
+    "rawSha256": "CA8EF8BF5809C4C659E8E1552CD97514C0777AA1280B1A35E312D6DB6F983160",
+    "assetSha256": "CA8EF8BF5809C4C659E8E1552CD97514C0777AA1280B1A35E312D6DB6F983160",
+    "bytesIdentical": true,
+    "width": 887,
+    "height": 1774,
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "transparentPixels": 820467,
+    "filterMode": 0,
+    "enableMipMap": 0,
+    "ppu": 128,
+    "platforms": [
+      {
+        "target": "DefaultTexturePlatform",
+        "compression": 0,
+        "overridden": 0
+      },
+      {
+        "target": "Standalone",
+        "compression": 1,
+        "overridden": 0
+      },
+      {
+        "target": "WebGL",
+        "compression": 1,
+        "overridden": 0
+      }
+    ],
+    "prompt": "art/farm-pixelart-review/prompts/waterfall-keyart-v1.txt",
+    "promptSha256": "D515DF084748039B43BB8BD38013131495F4C3FCCB9165719A69A31CD18058DD",
+    "metaSha256": "DD39A7D8A481F89218664019807FBA7FED714865116A615A09B5B39EC2FD40EC"
+  }
+]

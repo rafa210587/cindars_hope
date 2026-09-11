@@ -1,0 +1,37 @@
+{
+  "scope": "New I sections and full I review/plan/report; historical sections excluded",
+  "checkedLinks": 6,
+  "missing": 0,
+  "links": [
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/process.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/process.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/dock_path_pass/focal-tests_01.xml",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/capture-metadata.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/dock_path_pass/scene-identity-review.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/dock_path_pass/dock-after-water-review.json",
+      "exists": true
+    }
+  ]
+}

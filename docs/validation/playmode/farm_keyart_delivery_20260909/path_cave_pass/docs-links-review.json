@@ -1,0 +1,62 @@
+{
+  "scope": "New H sections in spec/execution report, full new H review/plan/report; existing historical sections excluded",
+  "checkedLinks": 11,
+  "missing": 0,
+  "links": [
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/path_cave_pass/regen_04/process.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/path_cave_pass/gameplay_02/process.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/path_cave_pass/gameplay_02/capture-metadata.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/path_cave_pass/planner-tests_03.xml",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/path_cave_pass/focal-unaffected-reuse.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/path_cave_pass/scene-identity-review.json",
+      "exists": true
+    },
+    {
+      "document": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+      "target": "playmode/farm_keyart_delivery_20260909/path_cave_pass/notice-board-import-review.json",
+      "exists": true
+    },
+    {
+      "document": "art/farm-pixelart-review/paths-cave-review.md",
+      "target": "proportions-review.md",
+      "exists": true
+    },
+    {
+      "document": "art/farm-pixelart-review/paths-cave-review.md",
+      "target": "delivery.html",
+      "exists": true
+    },
+    {
+      "document": "art/farm-pixelart-review/paths-cave-review.md",
+      "target": "delivery-standalone.html",
+      "exists": true
+    },
+    {
+      "document": "art/farm-pixelart-review/paths-cave-review.md",
+      "target": "prompts/notice-board-keyart-v1.txt",
+      "exists": true
+    }
+  ]
+}

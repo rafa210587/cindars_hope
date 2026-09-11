@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="46" result="Passed" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0,2669569">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="2970" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.266957" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="4268" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2970" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.236412" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="50096" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="4269" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2970" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.210365" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="4272" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2882" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.184016" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="4274" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2865" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.156076" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="4284" name="Skills" fullname="CindarsHope.Tests.EditMode.Skills" runstate="Runnable" testcasecount="46" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.110045" total="46" passed="46" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1827" name="ActiveSkillExecutionControllerMappingTests" fullname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests" classname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.028916" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1830" name="Catalog_HasCanonicalMappingsAndRejectsUnknownIds" fullname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests.Catalog_HasCanonicalMappingsAndRejectsUnknownIds" methodname="Catalog_HasCanonicalMappingsAndRejectsUnknownIds" classname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests" runstate="Runnable" seed="31428979" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.010590" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1831" name="EveryMappedEffectId_HasARegisteredExecutor" fullname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests.EveryMappedEffectId_HasARegisteredExecutor" methodname="EveryMappedEffectId_HasARegisteredExecutor" classname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests" runstate="Runnable" seed="780378175" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.004201" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1828" name="FieldPatch_NoLongerMapsToFarmWaterSkill" fullname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests.FieldPatch_NoLongerMapsToFarmWaterSkill" methodname="FieldPatch_NoLongerMapsToFarmWaterSkill" classname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests" runstate="Runnable" seed="2016441714" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000398" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1829" name="IrrigadorPortatil_MapsToRealFarmWaterEffect" fullname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests.IrrigadorPortatil_MapsToRealFarmWaterEffect" methodname="IrrigadorPortatil_MapsToRealFarmWaterEffect" classname="CindarsHope.Tests.EditMode.Skills.ActiveSkillExecutionControllerMappingTests" runstate="Runnable" seed="1097142144" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000154" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1832" name="CanonicalCatalogTests" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.028446" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1846" name="Aggregator_NamedHook_DeliversToRegisteredConsumer" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Aggregator_NamedHook_DeliversToRegisteredConsumer" methodname="Aggregator_NamedHook_DeliversToRegisteredConsumer" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="827268541" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.005341" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1845" name="Aggregator_PublishesNamedHooks_WhenConsumerAbsent" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Aggregator_PublishesNamedHooks_WhenConsumerAbsent" methodname="Aggregator_PublishesNamedHooks_WhenConsumerAbsent" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1637873052" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000356" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1844" name="Aggregator_RankScalesPassiveEffect" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Aggregator_RankScalesPassiveEffect" methodname="Aggregator_RankScalesPassiveEffect" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="584542332" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.001446" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1843" name="Aggregator_StaminaPassive_RaisesDerivedMaxStamina" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Aggregator_StaminaPassive_RaisesDerivedMaxStamina" methodname="Aggregator_StaminaPassive_RaisesDerivedMaxStamina" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1808638390" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000291" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1840" name="Capstone_ChoosingKanthor_BlocksKaand_AndRequiresConfirmation" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Capstone_ChoosingKanthor_BlocksKaand_AndRequiresConfirmation" methodname="Capstone_ChoosingKanthor_BlocksKaand_AndRequiresConfirmation" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="527888922" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.001053" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1841" name="Capstone_ChoosingSenya_BlocksAnya_InverseDirection" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Capstone_ChoosingSenya_BlocksAnya_InverseDirection" methodname="Capstone_ChoosingSenya_BlocksAnya_InverseDirection" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1112596261" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000278" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1835" name="Catalog_EveryNodeHasValidTier_AndCapstonesAreTier5" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Catalog_EveryNodeHasValidTier_AndCapstonesAreTier5" methodname="Catalog_EveryNodeHasValidTier_AndCapstonesAreTier5" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1288876513" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.004494" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1834" name="Catalog_Fable70_CutNodesAbsent_AndLastBreathPresent" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Catalog_Fable70_CutNodesAbsent_AndLastBreathPresent" methodname="Catalog_Fable70_CutNodesAbsent_AndLastBreathPresent" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1327296870" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.002589" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1833" name="Catalog_HasExactly66NodesAcross5Trees" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Catalog_HasExactly66NodesAcross5Trees" methodname="Catalog_HasExactly66NodesAcross5Trees" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="953259254" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000833" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1842" name="Catalog_MeleeAndMagicCapstones_ExposeExclusiveVariants" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Catalog_MeleeAndMagicCapstones_ExposeExclusiveVariants" methodname="Catalog_MeleeAndMagicCapstones_ExposeExclusiveVariants" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1072201246" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.001246" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1848" name="Catalog_NoNodeReferencesAnUnconsumedModifier" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Catalog_NoNodeReferencesAnUnconsumedModifier" methodname="Catalog_NoNodeReferencesAnUnconsumedModifier" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1110251350" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.001693" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1847" name="DeadModifiers_AreConsumedByDerivedStats" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.DeadModifiers_AreConsumedByDerivedStats" methodname="DeadModifiers_AreConsumedByDerivedStats" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1533205706" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000345" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1838" name="DynamicRankCap_UnlockingTier2_RaisesT1NodeCapFrom2To3" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.DynamicRankCap_UnlockingTier2_RaisesT1NodeCapFrom2To3" methodname="DynamicRankCap_UnlockingTier2_RaisesT1NodeCapFrom2To3" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="733781020" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000523" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1849" name="EquipGate_ItemBlockedAfterTierRelock_UnblockedAfterReunlock" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.EquipGate_ItemBlockedAfterTierRelock_UnblockedAfterReunlock" methodname="EquipGate_ItemBlockedAfterTierRelock_UnblockedAfterReunlock" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1777933489" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.001158" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1852" name="OnePointPerRank_IncludingCapstone" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.OnePointPerRank_IncludingCapstone" methodname="OnePointPerRank_IncludingCapstone" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1163277269" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000244" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1839" name="Prerequisites_BlockUntilSatisfied" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.Prerequisites_BlockUntilSatisfied" methodname="Prerequisites_BlockUntilSatisfied" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="225410226" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000375" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1851" name="SaveMigration_RefundsUnknownNodeIds_NoPointLoss" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.SaveMigration_RefundsUnknownNodeIds_NoPointLoss" methodname="SaveMigration_RefundsUnknownNodeIds_NoPointLoss" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="394095940" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.001427" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1850" name="SaveRoundTrip_PreservesRanksAndVariants" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.SaveRoundTrip_PreservesRanksAndVariants" methodname="SaveRoundTrip_PreservesRanksAndVariants" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1417729665" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000961" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1837" name="TierGating_HigherThresholds_11_18_26_AreEnforced" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.TierGating_HigherThresholds_11_18_26_AreEnforced" methodname="TierGating_HigherThresholds_11_18_26_AreEnforced" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1256042654" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000175" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1836" name="TierGating_Tier2_RequiresFivePointsInTree" fullname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests.TierGating_Tier2_RequiresFivePointsInTree" methodname="TierGating_Tier2_RequiresFivePointsInTree" classname="CindarsHope.Tests.EditMode.Skills.CanonicalCatalogTests" runstate="Runnable" seed="1545440999" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000492" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1855" name="FarmCropStaminaDeductionTests" fullname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests" classname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.006679" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1858" name="Execute_EnoughStamina_DeductsStaminaAndSucceeds" fullname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests.Execute_EnoughStamina_DeductsStaminaAndSucceeds" methodname="Execute_EnoughStamina_DeductsStaminaAndSucceeds" classname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests" runstate="Runnable" seed="1531312403" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.004682" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[[FarmCropSkillEffectExecutor] Plot watered via skill. SkillActionId=skill_crafting_field_patch StaminaSpent=True
+]]></output>
+                </test-case>
+                <test-case id="1856" name="Execute_NullCaster_SkipsStaminaDeduction_ReturnsSuccess" fullname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests.Execute_NullCaster_SkipsStaminaDeduction_ReturnsSuccess" methodname="Execute_NullCaster_SkipsStaminaDeduction_ReturnsSuccess" classname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests" runstate="Runnable" seed="1554493117" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000687" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[[FarmCropSkillEffectExecutor] Plot watered via skill. SkillActionId=skill_crafting_field_patch StaminaSpent=False
+]]></output>
+                </test-case>
+                <test-case id="1857" name="Execute_ZeroStamina_ReturnsInsufficientStamina" fullname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests.Execute_ZeroStamina_ReturnsInsufficientStamina" methodname="Execute_ZeroStamina_ReturnsInsufficientStamina" classname="CindarsHope.Tests.EditMode.Skills.FarmCropStaminaDeductionTests" runstate="Runnable" seed="364986227" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000312" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1853" name="Physics2DOverlapBufferTests" fullname="CindarsHope.Tests.EditMode.Skills.Physics2DOverlapBufferTests" classname="CindarsHope.Tests.EditMode.Skills.Physics2DOverlapBufferTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.002950" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1854" name="QueryCircle_GrowsWhenFullAndReusesExpandedCapacity" fullname="CindarsHope.Tests.EditMode.Skills.Physics2DOverlapBufferTests.QueryCircle_GrowsWhenFullAndReusesExpandedCapacity" methodname="QueryCircle_GrowsWhenFullAndReusesExpandedCapacity" classname="CindarsHope.Tests.EditMode.Skills.Physics2DOverlapBufferTests" runstate="Runnable" seed="2123880903" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.002310" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1859" name="SkillCooldownTrackerTests" fullname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests" classname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.002948" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1862" name="InvalidInput_DoesNotPoisonHudValues" fullname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests.InvalidInput_DoesNotPoisonHudValues" methodname="InvalidInput_DoesNotPoisonHudValues" classname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests" runstate="Runnable" seed="550104233" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.001307" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1861" name="PausedClockPreservesRemaining_AdvancingGameplayClockExpires" fullname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests.PausedClockPreservesRemaining_AdvancingGameplayClockExpires" methodname="PausedClockPreservesRemaining_AdvancingGameplayClockExpires" classname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests" runstate="Runnable" seed="523142711" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000638" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1860" name="SameActionInDifferentSlots_SharesDeadline_OtherActionIndependent" fullname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests.SameActionInDifferentSlots_SharesDeadline_OtherActionIndependent" methodname="SameActionInDifferentSlots_SharesDeadline_OtherActionIndependent" classname="CindarsHope.Tests.EditMode.Skills.SkillCooldownTrackerTests" runstate="Runnable" seed="1269364687" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000202" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1863" name="SkillExecutionFoundationTests" fullname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests" classname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.008566" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1866" name="Controller_InvalidSlotsAndDisabledAvatar_AreSafe" fullname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests.Controller_InvalidSlotsAndDisabledAvatar_AreSafe" methodname="Controller_InvalidSlotsAndDisabledAvatar_AreSafe" classname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests" runstate="Runnable" seed="13479994" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.002018" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1865" name="Melee_MultipleColliders_SingleDamageApplication" fullname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests.Melee_MultipleColliders_SingleDamageApplication" methodname="Melee_MultipleColliders_SingleDamageApplication" classname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests" runstate="Runnable" seed="733912423" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.005036" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1864" name="MissingResourceOrStatus_RefusesBeforeSpawning" fullname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests.MissingResourceOrStatus_RefusesBeforeSpawning" methodname="MissingResourceOrStatus_RefusesBeforeSpawning" classname="CindarsHope.Tests.EditMode.Skills.SkillExecutionFoundationTests" runstate="Runnable" seed="393598017" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:44Z" duration="0.000869" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1867" name="SkillPointTransactionTests" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.029401" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-suite type="ParameterizedMethod" id="1880" name="CompleteSave_InvalidSkillsRejectBeforeAnyRestore" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.CompleteSave_InvalidSkillsRejectBeforeAnyRestore" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.010511" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1878" name="CompleteSave_InvalidSkillsRejectBeforeAnyRestore(True)" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.CompleteSave_InvalidSkillsRejectBeforeAnyRestore(True)" methodname="CompleteSave_InvalidSkillsRejectBeforeAnyRestore" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="243683460" result="Passed" start-time="2026-09-10 03:10:44Z" end-time="2026-09-10 03:10:45Z" duration="0.008694" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[Day restored to 7.
+]]></output>
+                  </test-case>
+                  <test-case id="1879" name="CompleteSave_InvalidSkillsRejectBeforeAnyRestore(False)" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.CompleteSave_InvalidSkillsRejectBeforeAnyRestore(False)" methodname="CompleteSave_InvalidSkillsRejectBeforeAnyRestore" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="1623164967" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.001334" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[Day restored to 7.
+]]></output>
+                  </test-case>
+                </test-suite>
+                <test-case id="1870" name="FailedPurchase_DoesNotMutateOrPublishSuccess" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.FailedPurchase_DoesNotMutateOrPublishSuccess" methodname="FailedPurchase_DoesNotMutateOrPublishSuccess" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="844915068" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.002086" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1874" name="LegacyNullCollectionsAndExcessiveRank_NormalizeWithoutOverflow" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.LegacyNullCollectionsAndExcessiveRank_NormalizeWithoutOverflow" methodname="LegacyNullCollectionsAndExcessiveRank_NormalizeWithoutOverflow" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="2063547502" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.000947" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1875" name="PaidRespec_CompletedEventObservesCommittedWalletAndLedger" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.PaidRespec_CompletedEventObservesCommittedWalletAndLedger" methodname="PaidRespec_CompletedEventObservesCommittedWalletAndLedger" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="860345896" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.003316" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1872" name="PaidRespec_InsufficientGoldPreservesEverything" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.PaidRespec_InsufficientGoldPreservesEverything" methodname="PaidRespec_InsufficientGoldPreservesEverything" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="1404301773" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.001384" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1868" name="Purchase_EventSeesCoherentBalances_AndRejectsReentrancy" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.Purchase_EventSeesCoherentBalances_AndRejectsReentrancy" methodname="Purchase_EventSeesCoherentBalances_AndRejectsReentrancy" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="665997291" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.001086" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1869" name="Purchase_NonUnitCostAndRank_RoundTripPreservesActualSpend" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.Purchase_NonUnitCostAndRank_RoundTripPreservesActualSpend" methodname="Purchase_NonUnitCostAndRank_RoundTripPreservesActualSpend" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="276170555" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.002000" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1873" name="RepeatedCompleteRestore_UnknownNodeRefund_DoesNotMutateInputs" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.RepeatedCompleteRestore_UnknownNodeRefund_DoesNotMutateInputs" methodname="RepeatedCompleteRestore_UnknownNodeRefund_DoesNotMutateInputs" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="919518625" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.002381" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[[SkillTreeManager] Save migration: refunded 2 point(s) for obsolete skill 'obsolete_skill'.
+[SkillTreeManager] Save migration complete: 1 obsolete node(s), 2 point(s) refunded to pool.
+[SkillTreeManager] Save migration: refunded 2 point(s) for obsolete skill 'obsolete_skill'.
+[SkillTreeManager] Save migration complete: 1 obsolete node(s), 2 point(s) refunded to pool.
+]]></output>
+                </test-case>
+                <test-case id="1871" name="Respec_PreservesTwelveSpentPlusThreeFree_ThenNextPurchase" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.Respec_PreservesTwelveSpentPlusThreeFree_ThenNextPurchase" methodname="Respec_PreservesTwelveSpentPlusThreeFree_ThenNextPurchase" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="2010637479" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.000924" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1877" name="V3UnknownRefund_UsesLastActualCost_AndNormalizesNegativeRespec" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.V3UnknownRefund_UsesLastActualCost_AndNormalizesNegativeRespec" methodname="V3UnknownRefund_UsesLastActualCost_AndNormalizesNegativeRespec" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="1182294217" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.001503" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[[SkillTreeManager] Save migration: refunded 7 point(s) for obsolete skill 'obsolete'.
+[SkillTreeManager] Save migration complete: 1 obsolete node(s), 7 point(s) refunded to pool.
+]]></output>
+                </test-case>
+                <test-case id="1876" name="ValidationQueries_DoNotMutateOrPublish" fullname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests.ValidationQueries_DoNotMutateOrPublish" methodname="ValidationQueries_DoNotMutateOrPublish" classname="CindarsHope.Tests.EditMode.Skills.SkillPointTransactionTests" runstate="Runnable" seed="1272810312" result="Passed" start-time="2026-09-10 03:10:45Z" end-time="2026-09-10 03:10:45Z" duration="0.001171" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

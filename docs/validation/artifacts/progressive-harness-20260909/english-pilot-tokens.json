@@ -1,0 +1,734 @@
+{
+  "tiktoken_version": "0.14.0",
+  "scope": "reference-encoding corpus comparison; no inference calls or session usage measurement",
+  "exact_astra_tokenizer": "NOT CONFIRMED",
+  "groups": {
+    "all_pilot_files": {
+      "files": 40,
+      "tokens": {
+        "o200k_base": {
+          "before": 21786,
+          "after": 18956,
+          "reduction_percent": 12.99
+        },
+        "cl100k_base": {
+          "before": 25307,
+          "after": 18964,
+          "reduction_percent": 25.06
+        }
+      }
+    },
+    "skills_only": {
+      "files": 37,
+      "tokens": {
+        "o200k_base": {
+          "before": 19512,
+          "after": 16835,
+          "reduction_percent": 13.72
+        },
+        "cl100k_base": {
+          "before": 22609,
+          "after": 16840,
+          "reduction_percent": 25.52
+        }
+      }
+    },
+    "skill_entries_only": {
+      "files": 10,
+      "tokens": {
+        "o200k_base": {
+          "before": 8041,
+          "after": 7056,
+          "reduction_percent": 12.25
+        },
+        "cl100k_base": {
+          "before": 9241,
+          "after": 7053,
+          "reduction_percent": 23.68
+        }
+      }
+    }
+  },
+  "files": [
+    {
+      "path": ".claude/skills/pixel-art-direction/SKILL.md",
+      "before_sha256": "1532bb4cd13f5d54edd864841623a5dbf1bedb0750e1891964c7c27b025467a7",
+      "after_sha256": "52f113410467ea9df4a999dc15de14841f7e8d75ade6fa5ae7fed463baebfa2d",
+      "before_bytes_normalized": 2496,
+      "after_bytes_normalized": 2394,
+      "tokens": {
+        "o200k_base": {
+          "before": 558,
+          "after": 487
+        },
+        "cl100k_base": {
+          "before": 679,
+          "after": 488
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/pixel-art-direction/assets/templates/visual-brief.md",
+      "before_sha256": "6e26cfbc885ea8ce8fe1fa65c8830042e4aa588957c944bee33189c25f220c8a",
+      "after_sha256": "ae5625223d6c70b1283069030833c8b7bd4dc6a08482354f7bdd3796b92d00bc",
+      "before_bytes_normalized": 1439,
+      "after_bytes_normalized": 1373,
+      "tokens": {
+        "o200k_base": {
+          "before": 365,
+          "after": 298
+        },
+        "cl100k_base": {
+          "before": 425,
+          "after": 296
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/pixel-art-direction/references/style-and-perspective.md",
+      "before_sha256": "b51f4c137649294d7429bac2d1433fafbbc87ec885a8a83c391a3e83dcddd116",
+      "after_sha256": "6987a8eca8d28d13501c66763cfa74730ee1412e0f29bfd36d6dd4cd482ae3be",
+      "before_bytes_normalized": 1849,
+      "after_bytes_normalized": 1758,
+      "tokens": {
+        "o200k_base": {
+          "before": 407,
+          "after": 352
+        },
+        "cl100k_base": {
+          "before": 482,
+          "after": 352
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/pixel-art-direction/references/examples/farm-bridge-brief.md",
+      "before_sha256": "6a2aba35bdeba574267602575fa5772682c2fe4bf5be061d038171c4c7a5efe4",
+      "after_sha256": "60a9ac7e86e522c3c9661c1a49bd8a7d9158b2018b7ecd5fb908fe05deea6c4b",
+      "before_bytes_normalized": 2231,
+      "after_bytes_normalized": 2131,
+      "tokens": {
+        "o200k_base": {
+          "before": 508,
+          "after": 415
+        },
+        "cl100k_base": {
+          "before": 629,
+          "after": 416
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/visual-asset-review/SKILL.md",
+      "before_sha256": "378289321d91003b5eed603b023b758fa12be21b145ced9b7f740e7d7d968dd0",
+      "after_sha256": "0b8ff1710fd28ad8921ce9e862b4a307b391ee06574ac7a40429247ac9bdbf61",
+      "before_bytes_normalized": 2450,
+      "after_bytes_normalized": 2368,
+      "tokens": {
+        "o200k_base": {
+          "before": 548,
+          "after": 479
+        },
+        "cl100k_base": {
+          "before": 642,
+          "after": 481
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/visual-asset-review/assets/templates/asset-review.md",
+      "before_sha256": "5722f5bce7e554df31de517ab00fc52272d0b7ebca7b8efc2a7656d34d98261b",
+      "after_sha256": "44d414ce7ed7de11abcd3fb000bc014cbbeb11e198cb60990c7967fb12dc976f",
+      "before_bytes_normalized": 1649,
+      "after_bytes_normalized": 1568,
+      "tokens": {
+        "o200k_base": {
+          "before": 423,
+          "after": 352
+        },
+        "cl100k_base": {
+          "before": 461,
+          "after": 354
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/visual-asset-review/references/image-inspection.md",
+      "before_sha256": "2465c2ce22bd4c3f65b7bf771912ea5760fefeaf3702f2479eda07a221c4c509",
+      "after_sha256": "a54928a20e793fd845377da9c7023bec25e34641d94cb90adde19a3e00a84736",
+      "before_bytes_normalized": 1734,
+      "after_bytes_normalized": 1686,
+      "tokens": {
+        "o200k_base": {
+          "before": 372,
+          "after": 317
+        },
+        "cl100k_base": {
+          "before": 448,
+          "after": 321
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/visual-asset-review/references/examples/dock-alpha-review.md",
+      "before_sha256": "6cd13db753d3b04aa24061e7643769d84361a02e168e9a66d135d966f43834cc",
+      "after_sha256": "8c5ea11199a9a7e5b3bb787b6e1bc70fed3ad43b1337e634686b46e116450bb1",
+      "before_bytes_normalized": 2076,
+      "after_bytes_normalized": 2036,
+      "tokens": {
+        "o200k_base": {
+          "before": 468,
+          "after": 384
+        },
+        "cl100k_base": {
+          "before": 553,
+          "after": 385
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-animation-review/SKILL.md",
+      "before_sha256": "5411e13db4f8f0b92c8358807ba21aed52a8bb055b59e409b508b57cf525bae7",
+      "after_sha256": "8d16e170ed46ba61ac4f0decddf3315985b3c28bd874c0b15fdead8168fa3554",
+      "before_bytes_normalized": 2589,
+      "after_bytes_normalized": 2450,
+      "tokens": {
+        "o200k_base": {
+          "before": 582,
+          "after": 505
+        },
+        "cl100k_base": {
+          "before": 684,
+          "after": 506
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-animation-review/assets/templates/animation-review.md",
+      "before_sha256": "2b3ced559588ea45787351043a948211d3c554743bffd9e187c0fd47b19a858e",
+      "after_sha256": "e2bb416e13a4b8969ec9b4e0e600a998178acc1e8ef90a327d98ce4ec4174598",
+      "before_bytes_normalized": 1921,
+      "after_bytes_normalized": 1800,
+      "tokens": {
+        "o200k_base": {
+          "before": 500,
+          "after": 419
+        },
+        "cl100k_base": {
+          "before": 569,
+          "after": 421
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-animation-review/references/motion-diagnostics.md",
+      "before_sha256": "967754ccfb6aede6725f98d4a5f3f371e3eb566636bfc6b851db5cb0f706731b",
+      "after_sha256": "8d79547b8dfecd4dc06fccadaf6cc832e2f2d51644b5d692eeb77607d7a465b9",
+      "before_bytes_normalized": 1966,
+      "after_bytes_normalized": 1920,
+      "tokens": {
+        "o200k_base": {
+          "before": 453,
+          "after": 380
+        },
+        "cl100k_base": {
+          "before": 546,
+          "after": 379
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-animation-review/references/examples/walk-and-attack-review.md",
+      "before_sha256": "de36aa36941dc99db5874c5ee55e7b9961727789c6b3d0919288f742f3c80243",
+      "after_sha256": "2a60143bdde74548cbf98ddbb83bf7a46210e3b9e2c8680bf2e65e4d9a7c6f1c",
+      "before_bytes_normalized": 2498,
+      "after_bytes_normalized": 2451,
+      "tokens": {
+        "o200k_base": {
+          "before": 543,
+          "after": 463
+        },
+        "cl100k_base": {
+          "before": 671,
+          "after": 469
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-scene-integration/SKILL.md",
+      "before_sha256": "4a199ef102b5206d3d48db3f296a8444c7543ee376057cd9cc0ac1b096207f13",
+      "after_sha256": "4a6aeb7ef8532186853b2b8270a94f2dad2eaf48bd94c3c8fa7dc03c6e154548",
+      "before_bytes_normalized": 2646,
+      "after_bytes_normalized": 2551,
+      "tokens": {
+        "o200k_base": {
+          "before": 599,
+          "after": 534
+        },
+        "cl100k_base": {
+          "before": 699,
+          "after": 536
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-scene-integration/assets/templates/scene-integration.md",
+      "before_sha256": "75eeb52ec72def9291694ae6af5417889d76b78dcd3127d84b5336260c765b10",
+      "after_sha256": "7fbc7ec5a4e92dbf71c760d1e64511609c710c73d3310ac73264aa05a1030dd6",
+      "before_bytes_normalized": 1901,
+      "after_bytes_normalized": 1837,
+      "tokens": {
+        "o200k_base": {
+          "before": 491,
+          "after": 417
+        },
+        "cl100k_base": {
+          "before": 559,
+          "after": 417
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-scene-integration/references/scene-fit.md",
+      "before_sha256": "f7967d53a7dc40c383860518637b0d564551844a8c40c66919acdfaf3a5186b8",
+      "after_sha256": "a6e6a1030f27976d3a922b4aa2e50d1d6587cada8d198b74a44d3e2bdb62a5c3",
+      "before_bytes_normalized": 2159,
+      "after_bytes_normalized": 2043,
+      "tokens": {
+        "o200k_base": {
+          "before": 475,
+          "after": 401
+        },
+        "cl100k_base": {
+          "before": 570,
+          "after": 402
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/sprite-scene-integration/references/examples/farm-bridge-fit.md",
+      "before_sha256": "d68d37b6aaa0310ee39560f5916484b59e4fa1cf5a962615614893badf93b6bd",
+      "after_sha256": "9f19b95e9f20d305f4c6477bf124dcdde58fc04c0630db75b6c5933c8f773a42",
+      "before_bytes_normalized": 2379,
+      "after_bytes_normalized": 2291,
+      "tokens": {
+        "o200k_base": {
+          "before": 531,
+          "after": 454
+        },
+        "cl100k_base": {
+          "before": 640,
+          "after": 458
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/pixel-art-prompt-authoring/SKILL.md",
+      "before_sha256": "01246588db53d2ff842fa822d03d5e61edf6f37ecd613b2fe64a237ce5170cfb",
+      "after_sha256": "da4230e3162e23b51c1f8d665038e9d7438a8420aad7300b39040c9eddf0b5e2",
+      "before_bytes_normalized": 2410,
+      "after_bytes_normalized": 2337,
+      "tokens": {
+        "o200k_base": {
+          "before": 564,
+          "after": 485
+        },
+        "cl100k_base": {
+          "before": 664,
+          "after": 486
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/pixel-art-prompt-authoring/assets/templates/sprite-prompt.md",
+      "before_sha256": "6b9f4db2a2416b017d9d54b150a350666a91b5a097d89e5e5413d2e2806e173f",
+      "after_sha256": "08c92cc054df886bfd62b520ec81566afbe22688033bfae1cd93461c6913c635",
+      "before_bytes_normalized": 1867,
+      "after_bytes_normalized": 1794,
+      "tokens": {
+        "o200k_base": {
+          "before": 418,
+          "after": 373
+        },
+        "cl100k_base": {
+          "before": 466,
+          "after": 373
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/pixel-art-prompt-authoring/references/local-prompt-contract.md",
+      "before_sha256": "23992df7d715927870f2f102e7dbdae007327746432fca6daffc5d1bb3c1b20e",
+      "after_sha256": "170e9f77f5e94e0f5eaf365ffb8a55c141c60e68287e3a028208cd78288822b4",
+      "before_bytes_normalized": 2676,
+      "after_bytes_normalized": 2550,
+      "tokens": {
+        "o200k_base": {
+          "before": 626,
+          "after": 557
+        },
+        "cl100k_base": {
+          "before": 704,
+          "after": 555
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/pixel-art-prompt-authoring/references/examples/dock-prompt.md",
+      "before_sha256": "a81db6d54d2804aff7418c5f06bdec8e214b439a0bc838263d6f80c801c4cfdb",
+      "after_sha256": "c4d86470eff551061e5e64e422ce45c77181536b802f71ed2232786860c7dfa6",
+      "before_bytes_normalized": 2382,
+      "after_bytes_normalized": 2321,
+      "tokens": {
+        "o200k_base": {
+          "before": 519,
+          "after": 456
+        },
+        "cl100k_base": {
+          "before": 604,
+          "after": 456
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/delegated-execution/SKILL.md",
+      "before_sha256": "5ef87f67ae728ea06ea3733aff96ba32976b2663368f4367b65113b8134f175c",
+      "after_sha256": "d73507616297166d04cecec0bdcef8a7750a2a345607ed0477f39df108d70fb9",
+      "before_bytes_normalized": 2511,
+      "after_bytes_normalized": 2433,
+      "tokens": {
+        "o200k_base": {
+          "before": 542,
+          "after": 499
+        },
+        "cl100k_base": {
+          "before": 630,
+          "after": 501
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/delegated-execution/assets/templates/delegation-packet.md",
+      "before_sha256": "d1f16d1cbfc46468dea276ea78d26436c3025e492ebebbf2f1edf32355583916",
+      "after_sha256": "7927625832a4cc29c4bd11443c6539c1ed06aed318014a5315bda5d3ed7dd4a2",
+      "before_bytes_normalized": 1232,
+      "after_bytes_normalized": 1159,
+      "tokens": {
+        "o200k_base": {
+          "before": 328,
+          "after": 267
+        },
+        "cl100k_base": {
+          "before": 365,
+          "after": 265
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/delegated-execution/references/examples/delegation-packet-example.md",
+      "before_sha256": "65210dc6257c74ab7fa07c30b51fb1675f8e57905efb1e23e976f64a7a86434e",
+      "after_sha256": "208670fb7bfc1866292dbd5263e161ba009d27d769350fa0b944e520a42297dd",
+      "before_bytes_normalized": 1306,
+      "after_bytes_normalized": 1223,
+      "tokens": {
+        "o200k_base": {
+          "before": 280,
+          "after": 244
+        },
+        "cl100k_base": {
+          "before": 337,
+          "after": 246
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/solid-refactoring/SKILL.md",
+      "before_sha256": "b1536364f01dce67098ebdef723dd7213da13751d7512dc5d3bbafe9bd05aec1",
+      "after_sha256": "f644d3e5cfca27e94efc8d0b4909a644ed358d1d703bc805c8b440866fec306b",
+      "before_bytes_normalized": 5927,
+      "after_bytes_normalized": 5597,
+      "tokens": {
+        "o200k_base": {
+          "before": 1309,
+          "after": 1150
+        },
+        "cl100k_base": {
+          "before": 1513,
+          "after": 1146
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/solid-refactoring/assets/templates/behavior-seam-plan.md",
+      "before_sha256": "7d79c766f85f6010ac836c066f86d73b6b30d7cba8fa05d6024fb4277bbed92d",
+      "after_sha256": "63e24188305ff6abe72a45c906895aeb4b621ee013fdeb067b994c8b5d118b9a",
+      "before_bytes_normalized": 1140,
+      "after_bytes_normalized": 1047,
+      "tokens": {
+        "o200k_base": {
+          "before": 334,
+          "after": 268
+        },
+        "cl100k_base": {
+          "before": 370,
+          "after": 267
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/solid-refactoring/references/examples/behavior-seam-example.md",
+      "before_sha256": "e1acc1211a983b5a5001c67c1166c7d65a65f51e7a18992fd31151f40ee438f7",
+      "after_sha256": "3ca7b9c09da0a21354e650cfc6b0907bfe9454303f1ad4a86a61d358c369906e",
+      "before_bytes_normalized": 1620,
+      "after_bytes_normalized": 1527,
+      "tokens": {
+        "o200k_base": {
+          "before": 363,
+          "after": 299
+        },
+        "cl100k_base": {
+          "before": 433,
+          "after": 301
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/unity-validation/SKILL.md",
+      "before_sha256": "55584895f05e3c4a9fdd2fcf995858cf1efa3e28b2569bf710fbd90229bad6a7",
+      "after_sha256": "da312d65322b3928cb843df6ea95c461cf823fe5ce353cd9d33a395ec21bacd6",
+      "before_bytes_normalized": 3395,
+      "after_bytes_normalized": 3246,
+      "tokens": {
+        "o200k_base": {
+          "before": 765,
+          "after": 696
+        },
+        "cl100k_base": {
+          "before": 858,
+          "after": 688
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/unity-validation/TESTING_QUALITY_GATE_ADDENDUM.md",
+      "before_sha256": "b2329ef4d3db9c2ef01fd8f263d97ebf7e503accaa818430df12fe5fb311bc22",
+      "after_sha256": "b2329ef4d3db9c2ef01fd8f263d97ebf7e503accaa818430df12fe5fb311bc22",
+      "before_bytes_normalized": 959,
+      "after_bytes_normalized": 959,
+      "tokens": {
+        "o200k_base": {
+          "before": 200,
+          "after": 200
+        },
+        "cl100k_base": {
+          "before": 195,
+          "after": 195
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/unity-validation/assets/templates/scoped-validation-report.md",
+      "before_sha256": "77d77fc55779e7232cdbaed52b824cea0573c8fc85b7422604deef29a0d167fb",
+      "after_sha256": "7203a4e2c470e59f2f5c987ea01c8aa1491c8c8be40783774329f93c23c044ae",
+      "before_bytes_normalized": 1314,
+      "after_bytes_normalized": 1238,
+      "tokens": {
+        "o200k_base": {
+          "before": 360,
+          "after": 297
+        },
+        "cl100k_base": {
+          "before": 395,
+          "after": 296
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/unity-validation/references/examples/scoped-validation-report-example.md",
+      "before_sha256": "dcdae26240e89699fd411b4e180f78d02dadf62a2c46388033241f7dca64996d",
+      "after_sha256": "8426f8c20a03458b12af08f170ade7fd1d088ecc92667f7d5f43debcb982b702",
+      "before_bytes_normalized": 1448,
+      "after_bytes_normalized": 1369,
+      "tokens": {
+        "o200k_base": {
+          "before": 311,
+          "after": 266
+        },
+        "cl100k_base": {
+          "before": 373,
+          "after": 266
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/spec-authoring/SKILL.md",
+      "before_sha256": "8dfd02ed709ab35e3449074872ffeee721c2073babb0d5008246766234a2eacd",
+      "after_sha256": "cabae717ce2df39752412a65a4c4ac019bb7958f5a03c4f153a2055a7bdf000a",
+      "before_bytes_normalized": 7551,
+      "after_bytes_normalized": 7154,
+      "tokens": {
+        "o200k_base": {
+          "before": 1942,
+          "after": 1679
+        },
+        "cl100k_base": {
+          "before": 2123,
+          "after": 1678
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/spec-authoring/assets/templates/maintenance-spec.md",
+      "before_sha256": "77867257f812f813f1210b4c520e1283254086f12e4e964e9b7de776fee32e29",
+      "after_sha256": "37b1c7675dedf6a4be8c21809bb088c336d7e9737d1f166724ba43af9ccd148d",
+      "before_bytes_normalized": 1428,
+      "after_bytes_normalized": 1382,
+      "tokens": {
+        "o200k_base": {
+          "before": 460,
+          "after": 364
+        },
+        "cl100k_base": {
+          "before": 490,
+          "after": 361
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/spec-authoring/references/examples/maintenance-spec-example.md",
+      "before_sha256": "e54f9a52cb6843f94eacf13d14a1817d45210c894caf09ee31648a91f278abc8",
+      "after_sha256": "9c9331417b9f85b7b9f0ecc5620dd6dbc4993a4a0597f564fd1fab704c8932c0",
+      "before_bytes_normalized": 1677,
+      "after_bytes_normalized": 1666,
+      "tokens": {
+        "o200k_base": {
+          "before": 362,
+          "after": 317
+        },
+        "cl100k_base": {
+          "before": 432,
+          "after": 317
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/harness-authoring/SKILL.md",
+      "before_sha256": "5b2f46fc8e04317197d5e5684ec07717eeac0c520392b549ad57e3882122231d",
+      "after_sha256": "0f88ced0cfa3c915dc81763eb7fa438f82e0e5c124e7ceda8057f21b7cf0fc51",
+      "before_bytes_normalized": 2883,
+      "after_bytes_normalized": 2692,
+      "tokens": {
+        "o200k_base": {
+          "before": 632,
+          "after": 542
+        },
+        "cl100k_base": {
+          "before": 749,
+          "after": 543
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/harness-authoring/assets/templates/skill-entry.md",
+      "before_sha256": "18010fd5c2c63d7b34ee570424e03a1b56adbd67c7cd942a7438102bb573c2e4",
+      "after_sha256": "c059db5a599b8bb31ba2fddd03153d50942ff20d483b1c8f3d6ce8943e00e5af",
+      "before_bytes_normalized": 1296,
+      "after_bytes_normalized": 1247,
+      "tokens": {
+        "o200k_base": {
+          "before": 285,
+          "after": 248
+        },
+        "cl100k_base": {
+          "before": 335,
+          "after": 247
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/harness-authoring/references/artifact-types.md",
+      "before_sha256": "8fffb6fd877b818932b29ec0bf8f801a4241fe3417fd91f7418a44ed681cc638",
+      "after_sha256": "d39386c4a74dd852ad6e15eee3f8fb836314c5e693517b188cde70a14cd6db45",
+      "before_bytes_normalized": 3147,
+      "after_bytes_normalized": 2971,
+      "tokens": {
+        "o200k_base": {
+          "before": 685,
+          "after": 599
+        },
+        "cl100k_base": {
+          "before": 820,
+          "after": 599
+        }
+      }
+    },
+    {
+      "path": ".claude/skills/harness-authoring/references/examples/conditional-art-review.md",
+      "before_sha256": "c3c8397ddde58fcce25989aa6be83d23a1b9dee2f1823aa8f9579da62c25f601",
+      "after_sha256": "c47cd6b8c21012ca60c37cfced144f838302b3d83a67668efa3359c1643f0b4c",
+      "before_bytes_normalized": 1899,
+      "after_bytes_normalized": 1869,
+      "tokens": {
+        "o200k_base": {
+          "before": 404,
+          "after": 372
+        },
+        "cl100k_base": {
+          "before": 496,
+          "after": 373
+        }
+      }
+    },
+    {
+      "path": "CLAUDE.md",
+      "before_sha256": "942ea7d47ff0feb898738be977c7b074c1a09ccd6390b790bff2bea4f0eb032a",
+      "after_sha256": "0b797820a59c32570d88e7362b83375bb187045ec349e6d46283242c2a877604",
+      "before_bytes_normalized": 2665,
+      "after_bytes_normalized": 3002,
+      "tokens": {
+        "o200k_base": {
+          "before": 581,
+          "after": 593
+        },
+        "cl100k_base": {
+          "before": 683,
+          "after": 593
+        }
+      }
+    },
+    {
+      "path": ".claude/HARNESS_AUTHORING_STANDARD.md",
+      "before_sha256": "61925812cb027c535d74e6ae64f7859a1956ced952105280b4c91583c450a943",
+      "after_sha256": "de453d0f4fa8245f1f77f39f102b60ab9f1c40aab400d756e91d202991c686d6",
+      "before_bytes_normalized": 5222,
+      "after_bytes_normalized": 5289,
+      "tokens": {
+        "o200k_base": {
+          "before": 1146,
+          "after": 1056
+        },
+        "cl100k_base": {
+          "before": 1361,
+          "after": 1056
+        }
+      }
+    },
+    {
+      "path": ".claude/agents/pixel-art-scene-reviewer.md",
+      "before_sha256": "7b096c5cbdfd6396d7b819601184000a4a9c3641e72ff25587c148e7501ea960",
+      "after_sha256": "007d3d4ece10aa7961f7e33a0608eaf0ad4af227f11483451992706af0c1b897",
+      "before_bytes_normalized": 2529,
+      "after_bytes_normalized": 2387,
+      "tokens": {
+        "o200k_base": {
+          "before": 547,
+          "after": 472
+        },
+        "cl100k_base": {
+          "before": 654,
+          "after": 475
+        }
+      }
+    }
+  ]
+}

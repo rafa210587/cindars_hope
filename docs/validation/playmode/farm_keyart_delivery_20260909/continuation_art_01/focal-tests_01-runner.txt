@@ -1,0 +1,2 @@
+Unity project version: 6000.5.7f1; editor: C:\Program Files\Unity\Hub\Editor\6000.5.7f1\Editor\Unity.exe
+UNITY_EDITMODE: FAIL; Unity process exit 2. Log: D:\Projetos\Cindars_Hope\cindars_hope\docs\validation\playmode\farm_keyart_delivery_20260909\continuation_art_01\focal-tests_01.log

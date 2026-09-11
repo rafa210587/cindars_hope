@@ -1,16 +1,16 @@
-﻿# SPEC_INDEX (gerado)
+# SPEC_INDEX (gerado)
 
 > Gerado por `tools/generate_spec_index.ps1`. NAO editar a mao -- rode o script.
 > Indice compacto para descoberta barata de specs (status por pasta + cabecalho).
 
-Total: **423** specs
+Total: **485** specs
 - Fila-FABLE: 5
-- Fila: 13
+- Fila: 66
 - Closeout-MVP: 12
 - Build-Validated: 12
 - Implementado: 308
 - Automatica: 1
-- Outro: 72
+- Outro: 81
 
 | ID | Bucket | Status | Wave | Domain | Path |
 |---|---|---|---|---|---|
@@ -27,10 +27,63 @@ Total: **423** specs
 | spec_cleanup_uac_serialization_6000_5_v1 | Fila | A implementar | WAVE CLEANUP — Higiene pós-upgrade 6000.5 | Core / NPC / Save / World | .specs/a_implementar/spec_cleanup_uac_serialization_6000_5_v1.md |
 | spec_codex_12_dead_code_removal_batch2 | Fila | A implementar | WAVE CODEX CONVERGENCE — Honestidade de Validação (Lote 2) | Cross-cutting (Farm, Quests, UI, World, City, Loot, Core, Save, Cave) | .specs/a_implementar/spec_codex_12_dead_code_removal_batch2.md |
 | spec_enemy_attack_kits_v1 | Fila | A implementar | Lote ENEMY_ATTACK_KITS (design-first, gerado 2026-07-03) | Combat / Cave / Enemy AI / Bestiary | .specs/a_implementar/spec_enemy_attack_kits_v1.md |
+| spec_farm_boat_chicken_motion_v18 | Fila | - | - | - | .specs/a_implementar/spec_farm_boat_chicken_motion_v18.md |
+| spec_farm_clipped_props_v17 | Fila | - | - | - | .specs/a_implementar/spec_farm_clipped_props_v17.md |
+| spec_farm_contact_pixel_consistency_v16 | Fila | - | - | - | .specs/a_implementar/spec_farm_contact_pixel_consistency_v16.md |
+| spec_farm_enclosed_valley_keyart_v2 | Fila | IN_PROGRESS — reaberta por rejeição visual humana; reconstrução v4 autorizada. Promoção NO. | - | FarmScene | .specs/a_implementar/spec_farm_enclosed_valley_keyart_v2.md |
+| spec_farm_groundcover_v20 | Fila | - | - | - | .specs/a_implementar/spec_farm_groundcover_v20.md |
+| spec_farm_herd_motion_v19 | Fila | - | - | - | .specs/a_implementar/spec_farm_herd_motion_v19.md |
+| spec_farm_outskirts_composition_v1 | Fila | CODE_COMPLETE — evidência Unity no escopo; DEFERRED_TO_FINAL_HUMAN_VALIDATION. | - | FarmScene outskirts | .specs/a_implementar/spec_farm_outskirts_composition_v1.md |
+| spec_farm_pixelart_cohesion_and_ingame_review_v1 | Fila | IN_PROGRESS — revisão G01–G04 SCOPED_PASS técnico; FarmScene final proportion_pass/02 entregue, aceite visual/humano final pendente | FARM KEYART — continuação baseada em produção modular | Farm / Player / Editor | .specs/a_implementar/spec_farm_pixelart_cohesion_and_ingame_review_v1.md |
+| spec_farm_scene_biome_decoration_v1 | Fila | A implementar | WAVE FARM KEYART — Densidade e acabamento | Farm | .specs/a_implementar/spec_farm_scene_biome_decoration_v1.md |
+| spec_farm_scene_collision_navigation_v1 | Fila | A implementar | WAVE FARM KEYART — Física espacial | Farm | .specs/a_implementar/spec_farm_scene_collision_navigation_v1.md |
+| spec_farm_scene_keyart_macro_composition_v1 | Fila | A implementar | WAVE FARM KEYART — Composição | Farm | .specs/a_implementar/spec_farm_scene_keyart_macro_composition_v1.md |
+| spec_farm_scene_keyart_playmode_acceptance_v1 | Fila | A implementar | WAVE FARM KEYART — Closeout | Farm | .specs/a_implementar/spec_farm_scene_keyart_playmode_acceptance_v1.md |
+| spec_farm_scene_keyart_richness_completion_v1 | Fila | - | - | - | .specs/a_implementar/spec_farm_scene_keyart_richness_completion_v1.md |
+| spec_farm_scene_keyart_scale_physics_correction_v1 | Fila | A implementar | FARM KEYART — corrective slice | Farm | .specs/a_implementar/spec_farm_scene_keyart_scale_physics_correction_v1.md |
+| spec_farm_scene_keyart_visual_corrections_v1 | Fila | - | - | - | .specs/a_implementar/spec_farm_scene_keyart_visual_corrections_v1.md |
+| spec_farm_scene_landmarks_and_agriculture_v1 | Fila | A implementar | WAVE FARM KEYART — Conteúdo espacial | Farm | .specs/a_implementar/spec_farm_scene_landmarks_and_agriculture_v1.md |
+| spec_farm_scene_organic_terrain_water_v1 | Fila | A implementar | WAVE FARM KEYART — Terreno | Farm | .specs/a_implementar/spec_farm_scene_organic_terrain_water_v1.md |
 | spec_farm_scene_relayout_v4 | Fila | A implementar | WAVE FARM — Coerência da FarmScene (pós WAVE 05/07 + fable_15/17) | Farm | .specs/a_implementar/spec_farm_scene_relayout_v4.md |
+| spec_farm_scene_spatial_contract_v1 | Fila | A implementar | WAVE FARM KEYART — Fundação espacial | Farm | .specs/a_implementar/spec_farm_scene_spatial_contract_v1.md |
+| spec_farmer_animation_visual_revision_v1 | Fila | CODE_COMPLETE — laboratório SCOPED_PASS; aprovação artística humana PENDING | FARMER_REVIEW — estudos anteriores à integração | Player / Combat / Art | .specs/a_implementar/spec_farmer_animation_visual_revision_v1.md |
+| spec_inventory_operations_and_action_readiness_v1 | Fila | CODE_COMPLETE | QUALITY_IMPROVEMENTS | - | .specs/a_implementar/spec_inventory_operations_and_action_readiness_v1.md |
+| spec_progressive_harness_visual_workflows_v1 | Fila | CODE_COMPLETE; harness validado, docs global FAIL; sem promoção. | - | Harness / Art workflows | .specs/a_implementar/spec_progressive_harness_visual_workflows_v1.md |
+| spec_skills_01_avatar_execucao_v1 | Fila | PLAYMODE_VALIDATED — fundação técnica; aceitação final da wave pendente | SKILLS_SDD_V1 | Prioridade: P0 | Domínio: Skills | - | .specs/a_implementar/spec_skills_01_avatar_execucao_v1.md |
+| spec_skills_02_pontos_respec_save_v1 | Fila | UNITY_VALIDATED — 131 testes integrados; aceitação final da wave pendente | SKILLS_SDD_V1 | Prioridade: P0 | Domínio: Skills / Save | - | .specs/a_implementar/spec_skills_02_pontos_respec_save_v1.md |
+| spec_skills_03_shared_cooldowns_v1 | Fila | PLAYMODE_VALIDATED — aceitação final da wave pendente | SKILLS_SDD_V1 | Skills | .specs/a_implementar/spec_skills_03_shared_cooldowns_v1.md |
+| spec_skills_10_mechanics_data_rank_readiness_v1 | Fila | IMPLEMENTADA E VALIDADA — 2026-09-10 | SKILLS_SDD_V1 | Skills | .specs/a_implementar/spec_skills_10_mechanics_data_rank_readiness_v1.md |
+| spec_skills_10b_action_timing_commit_v1 | Fila | IMPLEMENTADA E VALIDADA — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_10b_action_timing_commit_v1.md |
+| spec_skills_11_melee_equipment_shapes_v1 | Fila | IMPLEMENTADA E VALIDADA — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_11_melee_equipment_shapes_v1.md |
+| spec_skills_12_melee_movement_posture_v1 | Fila | IMPLEMENTADA E VALIDADA — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_12_melee_movement_posture_v1.md |
+| spec_skills_13_ranged_identity_v1 | Fila | IMPLEMENTADA E VALIDADA — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_13_ranged_identity_v1.md |
+| spec_skills_14_magic_shapes_v1 | Fila | IMPLEMENTADA E VALIDADA — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_14_magic_shapes_v1.md |
+| spec_skills_15_survival_actions_v1 | Fila | PLAYMODE_VALIDATED — implementação e validação automatizada concluídas em 2026-09-10; aceite humano agrupado no fechamento da wave | - | - | .specs/a_implementar/spec_skills_15_survival_actions_v1.md |
+| spec_skills_16_crafting_actions_v1 | Fila | PLAYMODE_VALIDATED — implementação e validação automatizada concluídas em 2026-09-10; aceite humano agrupado no fechamento da wave | - | - | .specs/a_implementar/spec_skills_16_crafting_actions_v1.md |
+| spec_skills_17_combat_survival_passives_v1 | Fila | PLAYMODE_VALIDATED — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_17_combat_survival_passives_v1.md |
+| spec_skills_18_crafting_economy_passives_v1 | Fila | PLAYMODE_VALIDATED — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_18_crafting_economy_passives_v1.md |
+| spec_skills_19_combat_capstones_v1 | Fila | APROVADA — autorização humana de 2026-09-10; refinada após audits técnico e de balanceamento | - | - | .specs/a_implementar/spec_skills_19_combat_capstones_v1.md |
+| spec_skills_20_survival_crafting_capstones_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_20_survival_crafting_capstones_v1.md |
+| spec_skills_21_balance_acceptance_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_21_balance_acceptance_v1.md |
+| spec_skills_22_skill_tree_canvas_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_22_skill_tree_canvas_v1.md |
+| spec_skills_23_skill_loadout_hud_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_23_skill_loadout_hud_v1.md |
+| spec_skills_24_ui_pixel_art_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_24_ui_pixel_art_v1.md |
+| spec_skills_25_action_presentation_foundation_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_25_action_presentation_foundation_v1.md |
+| spec_skills_26_action_animation_catalog_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_26_action_animation_catalog_v1.md |
+| spec_solid_ai_harness_hardening_v1 | Fila | CODE_COMPLETE_WITH_GLOBAL_GATES_FAILING — execução autorizada pelo pedido humano desta conversa | SOLID_AI — Qualidade estrutural e ferramentas | Core / Save | .specs/a_implementar/spec_solid_ai_harness_hardening_v1.md |
+| spec_solid_class_context_v1 | Fila | CODE_COMPLETE_WITH_GLOBAL_GATES_FAILING | SOLID_AI | Architecture | .specs/a_implementar/spec_solid_class_context_v1.md |
+| spec_solid_inventory_save_refactor_v1 | Fila | CODE_COMPLETE_WITH_GLOBAL_GATES_FAILING — execução e evidência em docs/validation | SOLID_AI — manutenção autorizada pelo pedido humano desta sessão | Inventory / Save / Quest | .specs/a_implementar/spec_solid_inventory_save_refactor_v1.md |
 | spec_town_building_visuals | Fila | - | - | - | .specs/a_implementar/spec_town_building_visuals.md |
+| spec_town_components_doors_and_collision_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_components_doors_and_collision_v1.md |
+| spec_town_integrated_acceptance_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_integrated_acceptance_v1.md |
+| spec_town_keyart_fidelity_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_keyart_fidelity_v1.md |
 | spec_town_layout_v9_organic | Fila | - | - | - | .specs/a_implementar/spec_town_layout_v9_organic.md |
+| spec_town_native_architecture_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_native_architecture_v1.md |
+| spec_town_npc_visuals_navigation_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_npc_visuals_navigation_v1.md |
+| spec_town_spatial_expansion_and_access_v1 | Fila | DEFERRED_TO_FINAL_HUMAN_VALIDATION — Unity/PlayMode/AC12 independente PASS; cenário humano final pendente | TOWN EXPANSION V1 | City / TownScene | .specs/a_implementar/spec_town_spatial_expansion_and_access_v1.md |
+| spec_validation_efficiency_harness_v1 | Fila | CODE_COMPLETE — contratos de tooling PASS; integração real coordenada separadamente | SOLID_AI — continuidade de qualidade e organização | Core | .specs/a_implementar/spec_validation_efficiency_harness_v1.md |
 | spec_validation_human_playmode_smoke_v1 | Fila | A implementar | WAVE VALIDATION — Rede de Validação Humana Final | Core / Validation | .specs/a_implementar/spec_validation_human_playmode_smoke_v1.md |
+| spec_validation_outcomes_and_test_cleanup_v1 | Fila | CODE_COMPLETE | QUALITY_IMPROVEMENTS | - | .specs/a_implementar/spec_validation_outcomes_and_test_cleanup_v1.md |
 | spec_village_orders_board | Fila | A implementar | WAVE VILLAGE ECONOMY — slice 1/5 (demanda) | Quest | .specs/a_implementar/spec_village_orders_board.md |
 | SPEC_18_BASELINE_VALIDATION_AND_SPEC_CLEANUP | Closeout-MVP | - | - | - | .specs/a_implementar/closeout_mvp/SPEC_18_BASELINE_VALIDATION_AND_SPEC_CLEANUP.md |
 | spec_mvp_closeout_19_save_inventory_farm_world_closeout | Closeout-MVP | A implementar | - | - | .specs/a_implementar/closeout_mvp/SPEC_19_SAVE_INVENTORY_FARM_WORLD_CLOSEOUT.md |
@@ -433,8 +486,17 @@ Total: **423** specs
 | SPEC_INDEX | Outro | - | - | - | .specs/SPEC_INDEX.md |
 | SPEC_REGISTRY_IMPLEMENTED | Outro | registry ativo da documentacao reorganizada. | - | - | .specs/SPEC_REGISTRY_IMPLEMENTED.md |
 | SPEC_REGISTRY_TO_IMPLEMENT | Outro | - | - | - | .specs/SPEC_REGISTRY_TO_IMPLEMENT.md |
+| spec_skills_00_decisoes_catalogo_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_00_decisoes_catalogo_v1.md |
+| spec_skills_01_avatar_execucao_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_01_avatar_execucao_v1.md |
+| spec_skills_02_pontos_respec_save_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_02_pontos_respec_save_v1.md |
+| spec_skills_03_dados_rank_readiness_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_03_dados_rank_readiness_v1.md |
+| spec_skills_04_passivas_capstones_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_04_passivas_capstones_v1.md |
+| spec_skills_05_mecanicas_ativas_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_05_mecanicas_ativas_v1.md |
+| spec_skills_06_ui_canvas_skills_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_06_ui_canvas_skills_v1.md |
+| spec_skills_07_pixelart_feedback_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_07_pixelart_feedback_v1.md |
+| spec_skills_08_equilibrio_aceitacao_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_08_equilibrio_aceitacao_v1.md |
 | SPEC_SOURCE_OF_TRUTH | Outro | - | - | - | .specs/SPEC_SOURCE_OF_TRUTH.md |
 | spec_ui_ux_full_gameplay_inventory_hotbar_menus | Outro | Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md |
-| SPEC_VALIDATION_MATRIX_MASTER | Outro | matriz canônica de validação por tipo de mudança. | - | - | .specs/SPEC_VALIDATION_MATRIX_MASTER.md |
+| SPEC_VALIDATION_MATRIX_MASTER | Outro | - | - | - | .specs/SPEC_VALIDATION_MATRIX_MASTER.md |
 | SPEC_WAVE_EXECUTION_PROTOCOL | Outro | documento canônico de governança de execução por waves. | - | - | .specs/SPEC_WAVE_EXECUTION_PROTOCOL.md |
 

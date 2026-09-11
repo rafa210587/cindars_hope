@@ -1,0 +1,1802 @@
+[
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_0.png",
+    "before": "2F8765A6B1EAC64F9D3F6F3FB8D76E259F6C17D3DC9B52F88D226B543466094F",
+    "after": "2F8765A6B1EAC64F9D3F6F3FB8D76E259F6C17D3DC9B52F88D226B543466094F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_0.png.meta",
+    "before": "C33B43834B4D6C10B39EAE334E7A4B623F1E01416BA38E736EBA5AADAD5FAF9D",
+    "after": "C33B43834B4D6C10B39EAE334E7A4B623F1E01416BA38E736EBA5AADAD5FAF9D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_1.png",
+    "before": "161CE0A4308AA0A4A42EA07F79B8D80A2D1EE100565E51C3DDC949C30EC19CFC",
+    "after": "161CE0A4308AA0A4A42EA07F79B8D80A2D1EE100565E51C3DDC949C30EC19CFC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_1.png.meta",
+    "before": "EE551B5E30C7BCE7AF44F71C25281490B7C89D04EBBA9D6F9BC892C68D6BBFCD",
+    "after": "EE551B5E30C7BCE7AF44F71C25281490B7C89D04EBBA9D6F9BC892C68D6BBFCD",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_2.png",
+    "before": "85866B910A6733E8C5A7324B7E121AFFEDF157351DE3A76C98E60EBDC9117C8D",
+    "after": "85866B910A6733E8C5A7324B7E121AFFEDF157351DE3A76C98E60EBDC9117C8D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_2.png.meta",
+    "before": "81AA1EFD5D8472BC2ACB804833C66BA4100DB2E2451F1026711CBF1E5C084560",
+    "after": "81AA1EFD5D8472BC2ACB804833C66BA4100DB2E2451F1026711CBF1E5C084560",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_3.png",
+    "before": "DF83F190062D561812DF91A7AA525E342C7856D01AB680825297C3FE0EF329C5",
+    "after": "DF83F190062D561812DF91A7AA525E342C7856D01AB680825297C3FE0EF329C5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_3.png.meta",
+    "before": "0AD125DE9520E509DE66AE2AD081BF8EDE02AF5293472478A27785C19AD977FC",
+    "after": "0AD125DE9520E509DE66AE2AD081BF8EDE02AF5293472478A27785C19AD977FC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_4.png",
+    "before": "91A54E111A4987DB8BC30A6A2FB453FAA0966D7CA683FB821690F360310F8A32",
+    "after": "91A54E111A4987DB8BC30A6A2FB453FAA0966D7CA683FB821690F360310F8A32",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/animals/animal_4.png.meta",
+    "before": "85C56B69E134728BE2A6333ED9808D47797FC1A49C2DB852A00279E0E07A1D30",
+    "after": "85C56B69E134728BE2A6333ED9808D47797FC1A49C2DB852A00279E0E07A1D30",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/barn.png",
+    "before": "61593C58CBACBEF990A0CA7F2FDF3F9AB6EC9C69C77466F8771965F7AF8BBDE9",
+    "after": "61593C58CBACBEF990A0CA7F2FDF3F9AB6EC9C69C77466F8771965F7AF8BBDE9",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/barn.png.meta",
+    "before": "80958723C18296DE81FE42E6B423A71A1BC82B9E84D803933844BCB1B4F48E0C",
+    "after": "80958723C18296DE81FE42E6B423A71A1BC82B9E84D803933844BCB1B4F48E0C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/barrel_shed.png",
+    "before": "FA8122D6C421CBDC3A46E425CB1E820054ADA1C62C31EA41DE74A58A313FA6A3",
+    "after": "FA8122D6C421CBDC3A46E425CB1E820054ADA1C62C31EA41DE74A58A313FA6A3",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/barrel_shed.png.meta",
+    "before": "4EB4135C130CDCBA69839A04D8639A89ACE6A937B849BC1A614173E9002FC976",
+    "after": "4EB4135C130CDCBA69839A04D8639A89ACE6A937B849BC1A614173E9002FC976",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/cheese_hut.png",
+    "before": "E9B57F3367D1D0D5F70FD514F80B138B2D739D7A152121D3484F0087F8D4EA6C",
+    "after": "E9B57F3367D1D0D5F70FD514F80B138B2D739D7A152121D3484F0087F8D4EA6C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/cheese_hut.png.meta",
+    "before": "E710DAA997FA235DF30000DB1887F67DC6DBF24879D910F9E7D967F9A3CCA2A7",
+    "after": "E710DAA997FA235DF30000DB1887F67DC6DBF24879D910F9E7D967F9A3CCA2A7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/coop.png",
+    "before": "6BFEC97C1FA61D114F7C7A6B575D415559B905EE100EC38C45CF1118F9AC8F8D",
+    "after": "6BFEC97C1FA61D114F7C7A6B575D415559B905EE100EC38C45CF1118F9AC8F8D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/coop.png.meta",
+    "before": "03DF43CD10DAFF3F36996A77A58670EF006AD04F0D9C3863AC2AF9B2D37FCC22",
+    "after": "03DF43CD10DAFF3F36996A77A58670EF006AD04F0D9C3863AC2AF9B2D37FCC22",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/door_wood.png",
+    "before": "0C6CD96FA946536F9B01F37671220C6F88C1665993CE9AA5F39F2690DF37B559",
+    "after": "0C6CD96FA946536F9B01F37671220C6F88C1665993CE9AA5F39F2690DF37B559",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/door_wood.png.meta",
+    "before": "268D021AFAA005E56EF7942D74A52E65800E05FCEAA85DD2B8DB7D93E167E6B1",
+    "after": "268D021AFAA005E56EF7942D74A52E65800E05FCEAA85DD2B8DB7D93E167E6B1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/farmhouse_keyart_v2.png",
+    "before": "0CAFB6D418E11AFF51D7B2E57F3E8A935EB3F37851887EBA3D6EB739F3182DAE",
+    "after": "0CAFB6D418E11AFF51D7B2E57F3E8A935EB3F37851887EBA3D6EB739F3182DAE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/farmhouse_keyart_v2.png.meta",
+    "before": "0C1F3BE1F68D61EFAA5253818925087D5AD0A9FB0572588F084A1666C4819A2B",
+    "after": "0C1F3BE1F68D61EFAA5253818925087D5AD0A9FB0572588F084A1666C4819A2B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/farmhouse.png",
+    "before": "2ABE3BBD92B6664701843C55B1C707D092D859DDF5CFDC3529FA5C30AEC9B2C2",
+    "after": "2ABE3BBD92B6664701843C55B1C707D092D859DDF5CFDC3529FA5C30AEC9B2C2",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/farmhouse.png.meta",
+    "before": "498062610A81C37E1A830E49755FF377763E25CA06388F1338C80DCF3B062DF3",
+    "after": "498062610A81C37E1A830E49755FF377763E25CA06388F1338C80DCF3B062DF3",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/greenhouse.png",
+    "before": "98A07BE317B743291FFB3B43E2513EF1E93D532D8F397E17ECFA701BD8802A10",
+    "after": "98A07BE317B743291FFB3B43E2513EF1E93D532D8F397E17ECFA701BD8802A10",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/greenhouse.png.meta",
+    "before": "0B4BB06146AE7A40E838C111A10A69362FDEF9E5A92DBBCE21D2427FAAA56A6A",
+    "after": "0B4BB06146AE7A40E838C111A10A69362FDEF9E5A92DBBCE21D2427FAAA56A6A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/door_A.png",
+    "before": "E2E7C77F083B82620065687516E95168F2D42D99F22BB726C7AD30F5724A06E0",
+    "after": "E2E7C77F083B82620065687516E95168F2D42D99F22BB726C7AD30F5724A06E0",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/door_A.png.meta",
+    "before": "06EFD13E587626EA5AAA3E552D4CA5473381FA034F2E4D52BE44532D2117DC96",
+    "after": "06EFD13E587626EA5AAA3E552D4CA5473381FA034F2E4D52BE44532D2117DC96",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/door_B.png",
+    "before": "76866DC2AF18A27562A6DB18C3282C56AE807099F73101B39CCA4A2D0EF57DC1",
+    "after": "76866DC2AF18A27562A6DB18C3282C56AE807099F73101B39CCA4A2D0EF57DC1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/door_B.png.meta",
+    "before": "A16DF630F420B55A265F4CCF15DE905D182F0193BF5579414B48FBCBB182E1C1",
+    "after": "A16DF630F420B55A265F4CCF15DE905D182F0193BF5579414B48FBCBB182E1C1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/door_C.png",
+    "before": "BF8069DFC42B1E3CCDF861DA1F25F773B88F03ABB0708E34EB15ECDBA9E9A876",
+    "after": "BF8069DFC42B1E3CCDF861DA1F25F773B88F03ABB0708E34EB15ECDBA9E9A876",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/door_C.png.meta",
+    "before": "D3F440C24640BAB396DC5D3D1BC3BDDDC41CF2CC9C68A1E5F2DC75444E1F6BC9",
+    "after": "D3F440C24640BAB396DC5D3D1BC3BDDDC41CF2CC9C68A1E5F2DC75444E1F6BC9",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/roof_A_aerial.png",
+    "before": "5606A500AEB2145080C519A860A30D1F1E74074C1FE89DD62AECEACC5CB8A868",
+    "after": "5606A500AEB2145080C519A860A30D1F1E74074C1FE89DD62AECEACC5CB8A868",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/roof_A_aerial.png.meta",
+    "before": "94B930C7D9F734AC824BFB9D3C9F09C77E695AA0A75F28CED081B9474E7D18D7",
+    "after": "94B930C7D9F734AC824BFB9D3C9F09C77E695AA0A75F28CED081B9474E7D18D7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/roof_B_aerial.png",
+    "before": "A6B5873179C70D3C9A9CE01604D7351C06F9C6E56919AC2FD048E71B0C216056",
+    "after": "A6B5873179C70D3C9A9CE01604D7351C06F9C6E56919AC2FD048E71B0C216056",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/roof_B_aerial.png.meta",
+    "before": "81BD38513362BD0BB9F1D2DAD347EE2B6DCD5806AA3656212884078A40E8AE3D",
+    "after": "81BD38513362BD0BB9F1D2DAD347EE2B6DCD5806AA3656212884078A40E8AE3D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/roof_C_aerial.png",
+    "before": "8922268178926BA7E5BD207D6EC0E77DFF7055CCD44F4ED09697BA13DD5A6831",
+    "after": "8922268178926BA7E5BD207D6EC0E77DFF7055CCD44F4ED09697BA13DD5A6831",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/roof_C_aerial.png.meta",
+    "before": "EB02581CFBCC1034F341CCAED332CD0BA4CFB1F93B4CD156E0CD8D8D6667E78B",
+    "after": "EB02581CFBCC1034F341CCAED332CD0BA4CFB1F93B4CD156E0CD8D8D6667E78B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/walls_A_topdown.png",
+    "before": "713099924FD4A8AD3F33532B9C99C240082F8DC3CA9230CD871842721AD281C5",
+    "after": "713099924FD4A8AD3F33532B9C99C240082F8DC3CA9230CD871842721AD281C5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/walls_A_topdown.png.meta",
+    "before": "F013FFC3A84A9FAECBE5EE21DFC2935A9880C84E06712140B2E5CC7962C23153",
+    "after": "F013FFC3A84A9FAECBE5EE21DFC2935A9880C84E06712140B2E5CC7962C23153",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/walls_B_topdown.png",
+    "before": "859B20F9167823A78FF2F506C038285217246E87067986FB675C2E7D449EB3FF",
+    "after": "859B20F9167823A78FF2F506C038285217246E87067986FB675C2E7D449EB3FF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/walls_B_topdown.png.meta",
+    "before": "864FCFD06B3D2A264BAEA7AE91CAF555CE6542ADCEB31CB391968BDD510D4CAF",
+    "after": "864FCFD06B3D2A264BAEA7AE91CAF555CE6542ADCEB31CB391968BDD510D4CAF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/walls_C_topdown.png",
+    "before": "6C506DB9E3D426D1FAD6AD8670AE0BAFA712CC2B90DEB4F56C7C4F3E01DE170E",
+    "after": "6C506DB9E3D426D1FAD6AD8670AE0BAFA712CC2B90DEB4F56C7C4F3E01DE170E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/houses_modular/walls_C_topdown.png.meta",
+    "before": "7F2288785EA488D8147A29DB4828636313CD8A70E7D1AB1AB580413989281B3D",
+    "after": "7F2288785EA488D8147A29DB4828636313CD8A70E7D1AB1AB580413989281B3D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/roof_redtile.png",
+    "before": "810A1799679FBF67C0BC55C2443514948D6255849888459DDD937362C5D9C81F",
+    "after": "810A1799679FBF67C0BC55C2443514948D6255849888459DDD937362C5D9C81F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/roof_redtile.png.meta",
+    "before": "5BFA2B50F86CB9A1C1A020F27F7B67C0AD004D86C6CCDA6A349027E01482E0EE",
+    "after": "5BFA2B50F86CB9A1C1A020F27F7B67C0AD004D86C6CCDA6A349027E01482E0EE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/wall_plank.png",
+    "before": "4E0FD0C47C3AC6DD557CDEBD54DE327CF7079A3A6EE1F7DA1256FB079004B2A6",
+    "after": "4E0FD0C47C3AC6DD557CDEBD54DE327CF7079A3A6EE1F7DA1256FB079004B2A6",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/wall_plank.png.meta",
+    "before": "ADA849F75EB98EC5AF5B8B1681F476075792F229652F5F04031B1460FC5EC36B",
+    "after": "ADA849F75EB98EC5AF5B8B1681F476075792F229652F5F04031B1460FC5EC36B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/wall_plaster.png",
+    "before": "F926F9A96F67401F2A1B1244E3E60104E4C0B0803DEF0D40F5D23EB26626828F",
+    "after": "F926F9A96F67401F2A1B1244E3E60104E4C0B0803DEF0D40F5D23EB26626828F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/wall_plaster.png.meta",
+    "before": "22C27BF676CA44E7E8C1E03484B09673BB55AB2E1DB7CE499392817100A75A60",
+    "after": "22C27BF676CA44E7E8C1E03484B09673BB55AB2E1DB7CE499392817100A75A60",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/wall_stone.png",
+    "before": "2839F78E1E33D103055FCDAFFA7D52E8BF072E76ACE30B1B256A68DE0C33B905",
+    "after": "2839F78E1E33D103055FCDAFFA7D52E8BF072E76ACE30B1B256A68DE0C33B905",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/wall_stone.png.meta",
+    "before": "62A26312978DC76B544B82C046B71AF5A60FB8FB3D75A73834FFA0670B42EFD5",
+    "after": "62A26312978DC76B544B82C046B71AF5A60FB8FB3D75A73834FFA0670B42EFD5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/window_wood.png",
+    "before": "EFB359B1A09C34025EE99A75DC5267B14FFB9FC0F77F3AF81860E483DB9B643B",
+    "after": "EFB359B1A09C34025EE99A75DC5267B14FFB9FC0F77F3AF81860E483DB9B643B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/building/window_wood.png.meta",
+    "before": "C8890BD790108F21D2D16197A824E7D4A1B591731CE22245385F5AFD149E62CE",
+    "after": "C8890BD790108F21D2D16197A824E7D4A1B591731CE22245385F5AFD149E62CE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_closed.png",
+    "before": "B7DD0758F183BFA6444542BDBBCAC2B50D3E411922196C3EB87FA24A437C1FDF",
+    "after": "B7DD0758F183BFA6444542BDBBCAC2B50D3E411922196C3EB87FA24A437C1FDF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_closed.png.meta",
+    "before": "16644FA454473E1C348412E9EF81B59F04BA0DA24275C7E89A758F0D368C6240",
+    "after": "16644FA454473E1C348412E9EF81B59F04BA0DA24275C7E89A758F0D368C6240",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_false.png",
+    "before": "AB8A1EB46AF1AB3A61EAC8F3CB007D49B5E898D014819CC1ED189381B12CF7C5",
+    "after": "AB8A1EB46AF1AB3A61EAC8F3CB007D49B5E898D014819CC1ED189381B12CF7C5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_false.png.meta",
+    "before": "2984761C6A1B8511C7A7959441992143AF3AD8612A0836269913EDD510E83EEC",
+    "after": "2984761C6A1B8511C7A7959441992143AF3AD8612A0836269913EDD510E83EEC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_open.png",
+    "before": "D02F63D0DADB03DC92A55506754DAA26E25827D8CF1EBF14E2D075F3DB28D0B1",
+    "after": "D02F63D0DADB03DC92A55506754DAA26E25827D8CF1EBF14E2D075F3DB28D0B1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_open.png.meta",
+    "before": "F9F45C62CCD44FBBEC3F2D48CFD0161A9D196EA9ED19B03EB79C2524AD8CB0E4",
+    "after": "F9F45C62CCD44FBBEC3F2D48CFD0161A9D196EA9ED19B03EB79C2524AD8CB0E4",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_mushrooms_giant.png",
+    "before": "554BC2C178CDCBD32483440E7DE3BECB078ACFA3F9AD1EC58E1745FE84C0E29C",
+    "after": "554BC2C178CDCBD32483440E7DE3BECB078ACFA3F9AD1EC58E1745FE84C0E29C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_mushrooms_giant.png.meta",
+    "before": "E93D097BEADBBC6CBD626C6BA7D7B7EA993786AA0F35031CE2CAA77861753D33",
+    "after": "E93D097BEADBBC6CBD626C6BA7D7B7EA993786AA0F35031CE2CAA77861753D33",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_ore_mound.png",
+    "before": "341207CA50B4B4DA87251DDC794AA3B04FAE7CEA25C80C0E4B20F7FAFC9401C7",
+    "after": "341207CA50B4B4DA87251DDC794AA3B04FAE7CEA25C80C0E4B20F7FAFC9401C7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_ore_mound.png.meta",
+    "before": "1DB03BEB9AEE753C25DF6B61795C04A45A0294AA275D72C5CB7CABF4C0B6F910",
+    "after": "1DB03BEB9AEE753C25DF6B61795C04A45A0294AA275D72C5CB7CABF4C0B6F910",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_rubble.png",
+    "before": "EACD97F01D3E1673A988850BE42A5FF77018DD191B9FEB1E6256C057F5284D52",
+    "after": "EACD97F01D3E1673A988850BE42A5FF77018DD191B9FEB1E6256C057F5284D52",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_rubble.png.meta",
+    "before": "FCEFC5354156EAFEC2D71571B0D4A2047B033F77CFFC4BC32ABB3BF33FDA68D2",
+    "after": "FCEFC5354156EAFEC2D71571B0D4A2047B033F77CFFC4BC32ABB3BF33FDA68D2",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_stalactites.png",
+    "before": "21EEDA5D81FE7D14E2EBB8A03276A83434A49928E467463A2D7DCB9E98787C00",
+    "after": "21EEDA5D81FE7D14E2EBB8A03276A83434A49928E467463A2D7DCB9E98787C00",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chunk_stalactites.png.meta",
+    "before": "FFB284C88D1AAC05BAD0C2D1BBE10F24DE9275A92BC075DD01B70D4BF26605A0",
+    "after": "FFB284C88D1AAC05BAD0C2D1BBE10F24DE9275A92BC075DD01B70D4BF26605A0",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/exit_down.png",
+    "before": "B1454C754FA877828E9FAB3B1FBFC50382933FEF35C171BD7C9E72AB41458D02",
+    "after": "B1454C754FA877828E9FAB3B1FBFC50382933FEF35C171BD7C9E72AB41458D02",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/exit_down.png.meta",
+    "before": "DB7A3419997FC4BE58281DCA328EF99CFF2A19079F781D320C8804AC428F8215",
+    "after": "DB7A3419997FC4BE58281DCA328EF99CFF2A19079F781D320C8804AC428F8215",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/exit_up.png",
+    "before": "01A179A8AB16E137049C3B44C461DD1C179DC6AF59B217A199853FABABCDC9EB",
+    "after": "01A179A8AB16E137049C3B44C461DD1C179DC6AF59B217A199853FABABCDC9EB",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/exit_up.png.meta",
+    "before": "66430CA7BAF5782587B3A953E9827CC876F680C3D484B70914083F32E40A24D0",
+    "after": "66430CA7BAF5782587B3A953E9827CC876F680C3D484B70914083F32E40A24D0",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_a.png",
+    "before": "BDEB0C71E2E444FA362328D89D89E7D40FF6A58A3AD7A5AACCB198DDB51F3398",
+    "after": "BDEB0C71E2E444FA362328D89D89E7D40FF6A58A3AD7A5AACCB198DDB51F3398",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_a.png.meta",
+    "before": "DA2B50820989D6A5F82B12D30D00DAD6E1792BB5D2906258A52FDE9A5BF6915D",
+    "after": "DA2B50820989D6A5F82B12D30D00DAD6E1792BB5D2906258A52FDE9A5BF6915D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_b.png",
+    "before": "38F6EA1AC8508937AD8844970A7D6FD9D77BB1C28D9C5E62115895147B582654",
+    "after": "38F6EA1AC8508937AD8844970A7D6FD9D77BB1C28D9C5E62115895147B582654",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_b.png.meta",
+    "before": "EEEEB709CF0BC34785049BFB75F36FEE458EDD0E2CC04A8641982C58A290F60A",
+    "after": "EEEEB709CF0BC34785049BFB75F36FEE458EDD0E2CC04A8641982C58A290F60A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_c.png",
+    "before": "1A8A92E0CD1B46634424161AA88BD4C4B51468D6681E81F4E90676C1C58DA7F2",
+    "after": "1A8A92E0CD1B46634424161AA88BD4C4B51468D6681E81F4E90676C1C58DA7F2",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_c.png.meta",
+    "before": "E41DFE4694354836014E84DB830F86BD0F800E99B399C6DA206A51FCE386E3EA",
+    "after": "E41DFE4694354836014E84DB830F86BD0F800E99B399C6DA206A51FCE386E3EA",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_detail.png",
+    "before": "512672C044217F73D5109414A3B659D7385964D4C2747D2F89D0C31D1D0BE4D0",
+    "after": "512672C044217F73D5109414A3B659D7385964D4C2747D2F89D0C31D1D0BE4D0",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_detail.png.meta",
+    "before": "59099B65AFB94BB80A2FF87747E64C1D2C36F2E29448FDB54CB9A8E34A32602B",
+    "after": "59099B65AFB94BB80A2FF87747E64C1D2C36F2E29448FDB54CB9A8E34A32602B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/hazard_ice.png",
+    "before": "ED6D298F0CAEAC55C3147AD25450060893FA88C1A12DD1976B8C4C47DE820AD3",
+    "after": "ED6D298F0CAEAC55C3147AD25450060893FA88C1A12DD1976B8C4C47DE820AD3",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/hazard_ice.png.meta",
+    "before": "6393788492C26740995509C1A63D84A8DF0A209AFC07139C3AA0F68544D00456",
+    "after": "6393788492C26740995509C1A63D84A8DF0A209AFC07139C3AA0F68544D00456",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/hazard_rock.png",
+    "before": "D606F00B1C6DBD9B41AF5200540863846586C1D5C2F666F9FE51E76830D4502D",
+    "after": "D606F00B1C6DBD9B41AF5200540863846586C1D5C2F666F9FE51E76830D4502D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/hazard_rock.png.meta",
+    "before": "0D523AC1E7B91EA6771AB758B68B1F8E7F82585455691F5A49B127565EE9EA83",
+    "after": "0D523AC1E7B91EA6771AB758B68B1F8E7F82585455691F5A49B127565EE9EA83",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/hazard_toxic.png",
+    "before": "E6ED60269971AFA72826D798E7DAA3B3BC61DF49C91D8481A84F3797CC5EBF64",
+    "after": "E6ED60269971AFA72826D798E7DAA3B3BC61DF49C91D8481A84F3797CC5EBF64",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/hazard_toxic.png.meta",
+    "before": "47BE30DE690B984F69A4483C45F103EF1B692FE22488EB2D750A86BBA12ED55E",
+    "after": "47BE30DE690B984F69A4483C45F103EF1B692FE22488EB2D750A86BBA12ED55E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/light_shaft.png",
+    "before": "4582AAC9919E6DBB2FB09182B5188E015DAEC78CC253D42EB3BA4CE6B4118BFC",
+    "after": "4582AAC9919E6DBB2FB09182B5188E015DAEC78CC253D42EB3BA4CE6B4118BFC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/light_shaft.png.meta",
+    "before": "7D9FCAB33F5360DA8C3ABD39DEFAA51958DF2B49FE8F34B150B1A9781993B95D",
+    "after": "7D9FCAB33F5360DA8C3ABD39DEFAA51958DF2B49FE8F34B150B1A9781993B95D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_bone.png",
+    "before": "F2F721F39E69504BF9BC7DCA96576C18B98D0970BC76EA84D151B7471B1697C4",
+    "after": "F2F721F39E69504BF9BC7DCA96576C18B98D0970BC76EA84D151B7471B1697C4",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_bone.png.meta",
+    "before": "23087AC28F154F69D976CBDCB2DC855F198277AE907B604EB451FD541B836FD9",
+    "after": "23087AC28F154F69D976CBDCB2DC855F198277AE907B604EB451FD541B836FD9",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_crack_a.png",
+    "before": "79CB1D1BF35B026F3DAAFAB25E27EF42187D57EBC16B3D4C17F3D9D79447EA19",
+    "after": "79CB1D1BF35B026F3DAAFAB25E27EF42187D57EBC16B3D4C17F3D9D79447EA19",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_crack_a.png.meta",
+    "before": "6CF93AF52AD786DA1B04D48FC8A18DB33130E84EE140C6602589EA05C8B98AE8",
+    "after": "6CF93AF52AD786DA1B04D48FC8A18DB33130E84EE140C6602589EA05C8B98AE8",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_crack_b.png",
+    "before": "AB55FB279BB3118289D75DF9CEC1E0A265BD426F9792370477BF4C0BC058A654",
+    "after": "AB55FB279BB3118289D75DF9CEC1E0A265BD426F9792370477BF4C0BC058A654",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_crack_b.png.meta",
+    "before": "C1F14559BE29AD9CFC1C18966946676B2CE38D9655F44C4DBD633B20F20862B5",
+    "after": "C1F14559BE29AD9CFC1C18966946676B2CE38D9655F44C4DBD633B20F20862B5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_gravel.png",
+    "before": "BF7CB2C4A682CA62A4D89B11B66C889082CF27A759F88908AC8C3B5C0562CA03",
+    "after": "BF7CB2C4A682CA62A4D89B11B66C889082CF27A759F88908AC8C3B5C0562CA03",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_gravel.png.meta",
+    "before": "C9639465CEDBE7202191508B2F8A124F5415EA8E8E38A7F836AC45E955828CDB",
+    "after": "C9639465CEDBE7202191508B2F8A124F5415EA8E8E38A7F836AC45E955828CDB",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_moss.png",
+    "before": "DB598F54B56DE3CA17E3F3B7AEBF780955E1C0BACFACD9C3DA574B77B707493F",
+    "after": "DB598F54B56DE3CA17E3F3B7AEBF780955E1C0BACFACD9C3DA574B77B707493F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_moss.png.meta",
+    "before": "860B05DE54C73EAD8228A6766558A56460CEB700607481BE90E7666612AD9FE0",
+    "after": "860B05DE54C73EAD8228A6766558A56460CEB700607481BE90E7666612AD9FE0",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_mushrooms_small.png",
+    "before": "D7E8441349024BFAE6AF958D67A01AE433BDF9D69CDF325DFC367D6F66B658FE",
+    "after": "D7E8441349024BFAE6AF958D67A01AE433BDF9D69CDF325DFC367D6F66B658FE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_mushrooms_small.png.meta",
+    "before": "0F38115D02620D4374156EFA57DCCF108B890B877780F7025E701BD4F07CD329",
+    "after": "0F38115D02620D4374156EFA57DCCF108B890B877780F7025E701BD4F07CD329",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_pebbles.png",
+    "before": "C0F62E1D43FC566F1120ED23B77FE803249F80EEC89A287142EF5B87F0D4A245",
+    "after": "C0F62E1D43FC566F1120ED23B77FE803249F80EEC89A287142EF5B87F0D4A245",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_pebbles.png.meta",
+    "before": "9A6232DB391D2DD4AC499F96DB043ABA5D29926004AAF7FCEF80935E4958A0BA",
+    "after": "9A6232DB391D2DD4AC499F96DB043ABA5D29926004AAF7FCEF80935E4958A0BA",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_rock_single.png",
+    "before": "7B810F8784CEE4750AF78A2D279FDAAB85E01BAAFE17C079E8BB83E47E69652A",
+    "after": "7B810F8784CEE4750AF78A2D279FDAAB85E01BAAFE17C079E8BB83E47E69652A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_rock_single.png.meta",
+    "before": "67F2555EA6D3E2C316E0F4C45277D0CFAA46B7C283DEB6032498DC9E7AA27B7D",
+    "after": "67F2555EA6D3E2C316E0F4C45277D0CFAA46B7C283DEB6032498DC9E7AA27B7D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_rocks.png",
+    "before": "2E388CCF6DC2F4963B1A3035744B03F808B9B80BA3875835ADBDC4C9B0612FD7",
+    "after": "2E388CCF6DC2F4963B1A3035744B03F808B9B80BA3875835ADBDC4C9B0612FD7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/litter_rocks.png.meta",
+    "before": "94B44A02F769FF3892D4D15378EEB02683E3686E3001030FD78E58A3D1E6E7CB",
+    "after": "94B44A02F769FF3892D4D15378EEB02683E3686E3001030FD78E58A3D1E6E7CB",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_broken_pickaxe.png",
+    "before": "843826CEAC29250F3FCD9C91688E2AF95A621A327619E5A67EF60EE21524D32F",
+    "after": "843826CEAC29250F3FCD9C91688E2AF95A621A327619E5A67EF60EE21524D32F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_broken_pickaxe.png.meta",
+    "before": "B736D834154A7791B0B3403D40D674682C93EE48649660CAD5E7BD37FE8BE3B6",
+    "after": "B736D834154A7791B0B3403D40D674682C93EE48649660CAD5E7BD37FE8BE3B6",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_mine_cart.png",
+    "before": "BC3C33834770ED0C8B6970861F635F3848200A4678BAC551B21386634D811617",
+    "after": "BC3C33834770ED0C8B6970861F635F3848200A4678BAC551B21386634D811617",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_mine_cart.png.meta",
+    "before": "A022F5C78E62209576BC64DE19C27D6CD11E534634F9A198085EA6F4006E18C2",
+    "after": "A022F5C78E62209576BC64DE19C27D6CD11E534634F9A198085EA6F4006E18C2",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_planks_rail.png",
+    "before": "B04AF93AAC3119D41A48610D716D558DDF93CE2B401AEB9A11B74FF513071EFE",
+    "after": "B04AF93AAC3119D41A48610D716D558DDF93CE2B401AEB9A11B74FF513071EFE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_planks_rail.png.meta",
+    "before": "8D5669AD7D8CF635D63EA56568F78172F60E0203F2FB83BBE319F07E0820E85F",
+    "after": "8D5669AD7D8CF635D63EA56568F78172F60E0203F2FB83BBE319F07E0820E85F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_water_puddle.png",
+    "before": "15EE7520FD8202957BA8A3904A7AABDBBE699F4B6593BAB0C2878C4DBA06126B",
+    "after": "15EE7520FD8202957BA8A3904A7AABDBBE699F4B6593BAB0C2878C4DBA06126B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/prop_water_puddle.png.meta",
+    "before": "01D4C25429CE46CF002154BCA9B2A79B5B32689C0EB4B2DBCA87FED7538290AB",
+    "after": "01D4C25429CE46CF002154BCA9B2A79B5B32689C0EB4B2DBCA87FED7538290AB",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_corner_a.png",
+    "before": "3F386380756371FC35F576E94D2D8B1F9A23FE2E98C870AEC6B6F96143017860",
+    "after": "3F386380756371FC35F576E94D2D8B1F9A23FE2E98C870AEC6B6F96143017860",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_corner_a.png.meta",
+    "before": "8AC09357A12FE8521FD9BA4334C52292CE3F795376778F99C9723434E3EB3CA5",
+    "after": "8AC09357A12FE8521FD9BA4334C52292CE3F795376778F99C9723434E3EB3CA5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_corner_b.png",
+    "before": "4BD9175C2588443DBE854CC84D79DAD13EC29DB521A1D2CB01788F6F073A6E26",
+    "after": "4BD9175C2588443DBE854CC84D79DAD13EC29DB521A1D2CB01788F6F073A6E26",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_corner_b.png.meta",
+    "before": "A2154E3FBC85E4CF93FACDAE5B40D29C7A1BD5F13185979F07C3C847C641E0C3",
+    "after": "A2154E3FBC85E4CF93FACDAE5B40D29C7A1BD5F13185979F07C3C847C641E0C3",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_side.png",
+    "before": "285572CEB97300156EC977785FE1E6D21AABC55E42077984D529E6BD1DF60548",
+    "after": "285572CEB97300156EC977785FE1E6D21AABC55E42077984D529E6BD1DF60548",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_side.png.meta",
+    "before": "7328CD56E3BBC0D7DAE4EC75FA833DA47CE6C9E43511BF5ACB612DA1A2550B31",
+    "after": "7328CD56E3BBC0D7DAE4EC75FA833DA47CE6C9E43511BF5ACB612DA1A2550B31",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_top.png",
+    "before": "A3686FA6C86245A794F074D8D60C82BBABE6B858DD3DFBF39F15EC80D616CE90",
+    "after": "A3686FA6C86245A794F074D8D60C82BBABE6B858DD3DFBF39F15EC80D616CE90",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_edge_top.png.meta",
+    "before": "8EAA46C19F047C58279F5B723AF46ECC0CB98558AF927365EFA75B4DBAECA423",
+    "after": "8EAA46C19F047C58279F5B723AF46ECC0CB98558AF927365EFA75B4DBAECA423",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_face.png",
+    "before": "4080322FEAC077B74902645969B54AA449DEBB3D146CCCDB1006AB3E1164FF84",
+    "after": "4080322FEAC077B74902645969B54AA449DEBB3D146CCCDB1006AB3E1164FF84",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_face.png.meta",
+    "before": "0B1AFC1F56AB3A53BF240FE1067580B756E623FA56B422A135A6B05DE5E8B885",
+    "after": "0B1AFC1F56AB3A53BF240FE1067580B756E623FA56B422A135A6B05DE5E8B885",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_top.png",
+    "before": "4080322FEAC077B74902645969B54AA449DEBB3D146CCCDB1006AB3E1164FF84",
+    "after": "4080322FEAC077B74902645969B54AA449DEBB3D146CCCDB1006AB3E1164FF84",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/wall_top.png.meta",
+    "before": "8B9CAD5A5BC9191FFD3AE0D32D62C4457A328F2FB3727E5C2A0B77331DD6B0CF",
+    "after": "8B9CAD5A5BC9191FFD3AE0D32D62C4457A328F2FB3727E5C2A0B77331DD6B0CF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_0.png",
+    "before": "06ACD3286D82E95C290DC80FF588AC1F61DAF9127E4B0065A22AF9245A85C845",
+    "after": "06ACD3286D82E95C290DC80FF588AC1F61DAF9127E4B0065A22AF9245A85C845",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_0.png.meta",
+    "before": "886F84D1E2F1CFA1D3DB5C606441A1BAE9441B607E78D0A7A971D49B0F0B1EB1",
+    "after": "886F84D1E2F1CFA1D3DB5C606441A1BAE9441B607E78D0A7A971D49B0F0B1EB1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_1.png",
+    "before": "5786F8BC1CDF42D23DCA1F120D09044BED0DF8A62513013EC1CE1F86CD6EF2A5",
+    "after": "5786F8BC1CDF42D23DCA1F120D09044BED0DF8A62513013EC1CE1F86CD6EF2A5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_1.png.meta",
+    "before": "2F82C74B324345686BEEF8F73F4AF7862831510F462E6EE3C382D5586C3A2260",
+    "after": "2F82C74B324345686BEEF8F73F4AF7862831510F462E6EE3C382D5586C3A2260",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_2.png",
+    "before": "DBFD3FB99FC311EA99567FDCC3EDD07799A367D938DE65EAF38ED3D197C66A01",
+    "after": "DBFD3FB99FC311EA99567FDCC3EDD07799A367D938DE65EAF38ED3D197C66A01",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_2.png.meta",
+    "before": "E2A434DD2953126276FD44125FC07729B8DC098436172CA5060C7C314DB4B7DB",
+    "after": "E2A434DD2953126276FD44125FC07729B8DC098436172CA5060C7C314DB4B7DB",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_3.png",
+    "before": "CD4B50B805183C13F96C72860C7931E6553B4645F389E29E36709792E29876D8",
+    "after": "CD4B50B805183C13F96C72860C7931E6553B4645F389E29E36709792E29876D8",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_3.png.meta",
+    "before": "E57B6B0882ABA64755FA3B8895C061E3E1B419ED3F39AEB1DBE8771C70107236",
+    "after": "E57B6B0882ABA64755FA3B8895C061E3E1B419ED3F39AEB1DBE8771C70107236",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_4.png",
+    "before": "582187ACA1DAD8F9D3B5C48864C0C4611B91DBB36CBD5F709B42D627A8AD13B1",
+    "after": "582187ACA1DAD8F9D3B5C48864C0C4611B91DBB36CBD5F709B42D627A8AD13B1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_4.png.meta",
+    "before": "E2325913DB02507ED3DDC934284E8939CB32846D51BEF3D80D44B162A8FBA87B",
+    "after": "E2325913DB02507ED3DDC934284E8939CB32846D51BEF3D80D44B162A8FBA87B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_5.png",
+    "before": "A4F1DB62AC892B49576F77F320AE0BC70DA17F91BA032645BA55EC3989CB7BFA",
+    "after": "A4F1DB62AC892B49576F77F320AE0BC70DA17F91BA032645BA55EC3989CB7BFA",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/crop_5.png.meta",
+    "before": "8FF52718BE976CB4F92E038AB059ADA410D97CF9E34659A850CFDE58312A7B2F",
+    "after": "8FF52718BE976CB4F92E038AB059ADA410D97CF9E34659A850CFDE58312A7B2F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_0.png",
+    "before": "35540BA1B7333630735A64F0AE88D0A39868A9795F41B80C0D0A90545FFB7C3F",
+    "after": "35540BA1B7333630735A64F0AE88D0A39868A9795F41B80C0D0A90545FFB7C3F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_0.png.meta",
+    "before": "5F6F398333ED0134E2B2291CCA2759ED1A28F75F3B7DEC6176095AC8367541F4",
+    "after": "5F6F398333ED0134E2B2291CCA2759ED1A28F75F3B7DEC6176095AC8367541F4",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_1.png",
+    "before": "CC11D77777C4DDE27083E0EE3D681097655025686342DF6348D245A166F29ABD",
+    "after": "CC11D77777C4DDE27083E0EE3D681097655025686342DF6348D245A166F29ABD",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_1.png.meta",
+    "before": "4C9B80283D34F38B0190BB6C2DD8149474BF8B35EDFDD5AAEB56F2E32719A3DE",
+    "after": "4C9B80283D34F38B0190BB6C2DD8149474BF8B35EDFDD5AAEB56F2E32719A3DE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_2.png",
+    "before": "B9EE907C107B45F467EA81A58F5D75C1A2E85AF33D026E76563DC7A9061A4284",
+    "after": "B9EE907C107B45F467EA81A58F5D75C1A2E85AF33D026E76563DC7A9061A4284",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_2.png.meta",
+    "before": "C70170789BA8A7DBE4779DC7AD9B97649D79E21605A0B503672CC2F2E849498C",
+    "after": "C70170789BA8A7DBE4779DC7AD9B97649D79E21605A0B503672CC2F2E849498C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_3.png",
+    "before": "BD6405C7DED293F66AE2E8E8A582476F9F463F47DAB3D1CE1E246461881ABC0C",
+    "after": "BD6405C7DED293F66AE2E8E8A582476F9F463F47DAB3D1CE1E246461881ABC0C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_3.png.meta",
+    "before": "5EB9FD5A31293EF54DF6D4A71E803F46CCCDE4C36F38B0A516ED6A0C9FC6D70B",
+    "after": "5EB9FD5A31293EF54DF6D4A71E803F46CCCDE4C36F38B0A516ED6A0C9FC6D70B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_4.png",
+    "before": "51F8B2218F0926F69C542BBCFA392EA0208823207E3E50AADEFFD48D85C94141",
+    "after": "51F8B2218F0926F69C542BBCFA392EA0208823207E3E50AADEFFD48D85C94141",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_4.png.meta",
+    "before": "7D124E87C8BDB56B75F9F258574FF4981F285C22B31632AC1806E60EB94B57CA",
+    "after": "7D124E87C8BDB56B75F9F258574FF4981F285C22B31632AC1806E60EB94B57CA",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_5.png",
+    "before": "E48B60EEAC2A1F61A36B73B3BDA800AB6E97C7C66AE22C924BA29A1921F114FF",
+    "after": "E48B60EEAC2A1F61A36B73B3BDA800AB6E97C7C66AE22C924BA29A1921F114FF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/crops/seed_5.png.meta",
+    "before": "80CA2ACD17A467508E98C8E76EC8B758AD3516F79A48A17984CBC317B9207992",
+    "after": "80CA2ACD17A467508E98C8E76EC8B758AD3516F79A48A17984CBC317B9207992",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/bush_berry.png",
+    "before": "850DC42AF884CFFA28DAA54052B2B533133EA057ACAA2E7E80963A7FF25922C5",
+    "after": "850DC42AF884CFFA28DAA54052B2B533133EA057ACAA2E7E80963A7FF25922C5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/bush_berry.png.meta",
+    "before": "33CD446A29FED1F8895673FE0DB4AF5C19F93319A310570074D1C223672F5403",
+    "after": "33CD446A29FED1F8895673FE0DB4AF5C19F93319A310570074D1C223672F5403",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/bush_leafy.png",
+    "before": "4F938B3C84BB92E7BD8D87F3E8E1146753FDC482AB6FDA417CE8611141E2D441",
+    "after": "4F938B3C84BB92E7BD8D87F3E8E1146753FDC482AB6FDA417CE8611141E2D441",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/bush_leafy.png.meta",
+    "before": "A2012F8D6E0DC2E41CA6EE6BE22A6C8CC38C540BC43163D924FD151BC3A5AAB9",
+    "after": "A2012F8D6E0DC2E41CA6EE6BE22A6C8CC38C540BC43163D924FD151BC3A5AAB9",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+    "before": "4BD8DFFFE16AEA1CC3BCBDBF6628F9F18BB88B5E5404A5177C6ABE2656F3CB98",
+    "after": "4BD8DFFFE16AEA1CC3BCBDBF6628F9F18BB88B5E5404A5177C6ABE2656F3CB98",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png.meta",
+    "before": "5EE70629E29406C7613BCC273F95B5FED84DB55861968640AC32A2C442AE545B",
+    "after": "5EE70629E29406C7613BCC273F95B5FED84DB55861968640AC32A2C442AE545B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/log_fallen.png",
+    "before": "D9FDAE1BC1D433ABFFF7A47DA1F44C90D65F252ACB327894D40F61736011C7B1",
+    "after": "D9FDAE1BC1D433ABFFF7A47DA1F44C90D65F252ACB327894D40F61736011C7B1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/log_fallen.png.meta",
+    "before": "EB57DC48C21EEFACC8653D133EF08F3D16C6FE50E567A6777DDA4C54A6902A1C",
+    "after": "EB57DC48C21EEFACC8653D133EF08F3D16C6FE50E567A6777DDA4C54A6902A1C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/mushroom_cluster.png",
+    "before": "25E3AA7D971A1C589FF643FD99D7B819420BD76CE3E3633DFC18A31AE8ABA26C",
+    "after": "25E3AA7D971A1C589FF643FD99D7B819420BD76CE3E3633DFC18A31AE8ABA26C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/mushroom_cluster.png.meta",
+    "before": "59D88943D3B18C6A21597F8D04C5DAE42ACC030B8585A0F7E9586C371F68E3E1",
+    "after": "59D88943D3B18C6A21597F8D04C5DAE42ACC030B8585A0F7E9586C371F68E3E1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/tree_stump.png",
+    "before": "8F4685BB4E8178455C99EC14C08341DA35CC4A0B1804C80BA93C5F24F9BCDE12",
+    "after": "8F4685BB4E8178455C99EC14C08341DA35CC4A0B1804C80BA93C5F24F9BCDE12",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/foliage/tree_stump.png.meta",
+    "before": "4E2559BF0652F6B58B3DF2E6290BC442DDFDB60A338159410073EB58FD4E94CD",
+    "after": "4E2559BF0652F6B58B3DF2E6290BC442DDFDB60A338159410073EB58FD4E94CD",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/armchair.png",
+    "before": "3BC2F16A2730559A93F0FD53EA7B5EBCC7F7C798FCC71E3BDE765D9D1961E552",
+    "after": "3BC2F16A2730559A93F0FD53EA7B5EBCC7F7C798FCC71E3BDE765D9D1961E552",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/armchair.png.meta",
+    "before": "AE2F74BE4D0356A4F881B27B6782E4E99F85C839526FCB92F7EB36A949042D89",
+    "after": "AE2F74BE4D0356A4F881B27B6782E4E99F85C839526FCB92F7EB36A949042D89",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/bed.png",
+    "before": "753F48AF3B49522020891FAAB3028284772D4C997BD2534047D0D05ACEAE6DA6",
+    "after": "753F48AF3B49522020891FAAB3028284772D4C997BD2534047D0D05ACEAE6DA6",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/bed.png.meta",
+    "before": "CC7F962405CFE1DE6094D9D88C55425994BACEB763121A691BE9D86BE03AFAC1",
+    "after": "CC7F962405CFE1DE6094D9D88C55425994BACEB763121A691BE9D86BE03AFAC1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/chair.png",
+    "before": "F9CD9EB45C7952C0D57758972ECF38753C5529EB3A890DCC379119312FDC9454",
+    "after": "F9CD9EB45C7952C0D57758972ECF38753C5529EB3A890DCC379119312FDC9454",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/chair.png.meta",
+    "before": "B33F65E567C09BFDAB5648E932B4D5075F99D71F165D46F8847CECC08D4EF98B",
+    "after": "B33F65E567C09BFDAB5648E932B4D5075F99D71F165D46F8847CECC08D4EF98B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/cupboard.png",
+    "before": "A183858DB162E536D0CF2B6CF006F9C8D54E7BC0813308D46225606C5B1BBA6A",
+    "after": "A183858DB162E536D0CF2B6CF006F9C8D54E7BC0813308D46225606C5B1BBA6A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/cupboard.png.meta",
+    "before": "8621128C51CFAB4D4D401870B727FBCDE5C656F6E98E02D20EB3C37DD8713E1A",
+    "after": "8621128C51CFAB4D4D401870B727FBCDE5C656F6E98E02D20EB3C37DD8713E1A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/fireplace.png",
+    "before": "5AE85CEA8D17BF84D72C9C2508CDBD5F9CEBD7BA5355EFADE8491CE3641D955B",
+    "after": "5AE85CEA8D17BF84D72C9C2508CDBD5F9CEBD7BA5355EFADE8491CE3641D955B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/fireplace.png.meta",
+    "before": "6B12509F4F654EEB5F6C1FFFF085CF11C11965C3CDB12227A531A61775C65B82",
+    "after": "6B12509F4F654EEB5F6C1FFFF085CF11C11965C3CDB12227A531A61775C65B82",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/kitchen_counter.png",
+    "before": "50E302CC95A9B763BBD82B03EE12BC09C806782F389EA0C0DF0CDF390F6D11FD",
+    "after": "50E302CC95A9B763BBD82B03EE12BC09C806782F389EA0C0DF0CDF390F6D11FD",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/kitchen_counter.png.meta",
+    "before": "0386F41057D8768AEAB70ED791C7D9147EE50465B0DC0856BA3939EDD70E90DC",
+    "after": "0386F41057D8768AEAB70ED791C7D9147EE50465B0DC0856BA3939EDD70E90DC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/rug.png",
+    "before": "7EF918A560CBA5F3C0E481B540814F8D83A554E74353D34CBDFA621DFA5B5056",
+    "after": "7EF918A560CBA5F3C0E481B540814F8D83A554E74353D34CBDFA621DFA5B5056",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/rug.png.meta",
+    "before": "E42C7195641E9FF380EA05C7D9DA17812E8378276687F9A0D82F40A76AA20016",
+    "after": "E42C7195641E9FF380EA05C7D9DA17812E8378276687F9A0D82F40A76AA20016",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/table.png",
+    "before": "E0EB8CCC347786D2A29993243251B68AA28387771CD409FEC693D3E6AB2FCB34",
+    "after": "E0EB8CCC347786D2A29993243251B68AA28387771CD409FEC693D3E6AB2FCB34",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/interior/table.png.meta",
+    "before": "2888D23A842022792F7CBCB2F0CE7ABEA3228BC9885007A7C1360BC28F0B8EA5",
+    "after": "2888D23A842022792F7CBCB2F0CE7ABEA3228BC9885007A7C1360BC28F0B8EA5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/locations/blacksmith/blacksmith.png",
+    "before": "208E89D9E239AD4FD877FB9512B3203C04F5C7C2BC448A23EF089898E8122C3D",
+    "after": "208E89D9E239AD4FD877FB9512B3203C04F5C7C2BC448A23EF089898E8122C3D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/locations/blacksmith/blacksmith.png.meta",
+    "before": "F50C04647E56C5F82AF0811F7072BE3CB2CF337B80F2FCE6D468353F82B0BFC9",
+    "after": "F50C04647E56C5F82AF0811F7072BE3CB2CF337B80F2FCE6D468353F82B0BFC9",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/locations/temple/temple.png",
+    "before": "61B9148E4520BC0455B19D61B81BF2258EE6D91175D86406DE155BF998AA4FE9",
+    "after": "61B9148E4520BC0455B19D61B81BF2258EE6D91175D86406DE155BF998AA4FE9",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/locations/temple/temple.png.meta",
+    "before": "12DBFE63C76AB5DA3A8B4B4D747C374E5E6E45DB9E53656DF97840A2215D6E25",
+    "after": "12DBFE63C76AB5DA3A8B4B4D747C374E5E6E45DB9E53656DF97840A2215D6E25",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/locations/town_hall/town_hall.png",
+    "before": "FED4056EC10AA9411590FA46E40F1AD54202A87DC213DD8D886C2CE30206A4CE",
+    "after": "FED4056EC10AA9411590FA46E40F1AD54202A87DC213DD8D886C2CE30206A4CE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/locations/town_hall/town_hall.png.meta",
+    "before": "55D0B40CE4B5444A626C3B5582DC853F0F9C29EC398CE6FE5044DBD0ABFD995E",
+    "after": "55D0B40CE4B5444A626C3B5582DC853F0F9C29EC398CE6FE5044DBD0ABFD995E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/beehive.png",
+    "before": "5DBFAAA06C448DC2D7218E5BF6144956AB90E4D4C335752354504D6360758C48",
+    "after": "5DBFAAA06C448DC2D7218E5BF6144956AB90E4D4C335752354504D6360758C48",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/beehive.png.meta",
+    "before": "9740E20ABD0A9E28D9AF55D8D1063D5F1CFFDD958A900B848A6D6B033E95A041",
+    "after": "9740E20ABD0A9E28D9AF55D8D1063D5F1CFFDD958A900B848A6D6B033E95A041",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/bench.png",
+    "before": "B512DBC3F7B5BC214D342F77063120128BE6F8B5B9D0EEAAFE88D9325A97A388",
+    "after": "B512DBC3F7B5BC214D342F77063120128BE6F8B5B9D0EEAAFE88D9325A97A388",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/bench.png.meta",
+    "before": "8D7235B3942A265B6B6B963600F006317A161AC50B0F725E9364C59223AE9977",
+    "after": "8D7235B3942A265B6B6B963600F006317A161AC50B0F725E9364C59223AE9977",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/bridge_keyart_v2.png",
+    "before": "E6F4C3081D6A3617D6BA4EE30E6C6B1519A406A839BB1E908887F1C7B7037999",
+    "after": "E6F4C3081D6A3617D6BA4EE30E6C6B1519A406A839BB1E908887F1C7B7037999",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/bridge_keyart_v2.png.meta",
+    "before": "2EA37B26676E6CAEEA456D24821CAE18BE8069A51B1A965124EAF2B4FC118727",
+    "after": "2EA37B26676E6CAEEA456D24821CAE18BE8069A51B1A965124EAF2B4FC118727",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/bridge.png",
+    "before": "F97D2F8381D8159185F274C09D0A924863A4B7AE9CF8020C91FDED461E41AB4B",
+    "after": "F97D2F8381D8159185F274C09D0A924863A4B7AE9CF8020C91FDED461E41AB4B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/bridge.png.meta",
+    "before": "1DB96EA8FD7867CEA465DFB1D9A40D0C4E64233C3533304F618A5813ADFEFFA7",
+    "after": "1DB96EA8FD7867CEA465DFB1D9A40D0C4E64233C3533304F618A5813ADFEFFA7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/cave_entrance.png",
+    "before": "D302D5E75C777A19405A3189DA2759D83DB103047F1DAA6E0AA9E29E045C5B91",
+    "after": "D302D5E75C777A19405A3189DA2759D83DB103047F1DAA6E0AA9E29E045C5B91",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/cave_entrance.png.meta",
+    "before": "0870AFA35E5C609BE0C34FC0DC0365C6C3EAAC11862380114E8A234B583CEB46",
+    "after": "0870AFA35E5C609BE0C34FC0DC0365C6C3EAAC11862380114E8A234B583CEB46",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/cliff_keyart_v1.png",
+    "before": "981CF92F32E9C6A713A59FF96824E9E1CF0B69BFDDB07813EA15AA8D9FC4F028",
+    "after": "981CF92F32E9C6A713A59FF96824E9E1CF0B69BFDDB07813EA15AA8D9FC4F028",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/cliff_keyart_v1.png.meta",
+    "before": "73D1788DF81F77794164907BF055D02FC54C6C2EA843A09EF889F4CE4324300E",
+    "after": "73D1788DF81F77794164907BF055D02FC54C6C2EA843A09EF889F4CE4324300E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/compost_bin.png",
+    "before": "B4BF97C8C6D8A31F387CD3C6CDC5DD8465483ACEC79DD3245072D0756D1E22A3",
+    "after": "B4BF97C8C6D8A31F387CD3C6CDC5DD8465483ACEC79DD3245072D0756D1E22A3",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/compost_bin.png.meta",
+    "before": "E5385653FFD31747B4B69C9A154C20B0A34BC7316A47B128D61BADA1738A8523",
+    "after": "E5385653FFD31747B4B69C9A154C20B0A34BC7316A47B128D61BADA1738A8523",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/cooking_station.png",
+    "before": "486FB1036B5A3006C6E5350063AAFECCC5D1837553ABA504F61439C4603A30B2",
+    "after": "486FB1036B5A3006C6E5350063AAFECCC5D1837553ABA504F61439C4603A30B2",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/cooking_station.png.meta",
+    "before": "4F27173A2683EAF17DA4E30C8D9E5D3E121DE4F1F673251D58DD03DA002BF18D",
+    "after": "4F27173A2683EAF17DA4E30C8D9E5D3E121DE4F1F673251D58DD03DA002BF18D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/crate.png",
+    "before": "DDEE4A3CEF8D09276829615462010CA9E46745446BF2C38811C15F9CF271FB8D",
+    "after": "DDEE4A3CEF8D09276829615462010CA9E46745446BF2C38811C15F9CF271FB8D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/crate.png.meta",
+    "before": "98FD6BFC3EFAA179E4523C3A1FEFB33F8B6565F01C0833209D52F75CC0869F8A",
+    "after": "98FD6BFC3EFAA179E4523C3A1FEFB33F8B6565F01C0833209D52F75CC0869F8A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/feeding_trough.png",
+    "before": "B29107BC89212DEACCA3A7F738BADC1A71D6F98CDEB9D7CD929B9288F07E2670",
+    "after": "B29107BC89212DEACCA3A7F738BADC1A71D6F98CDEB9D7CD929B9288F07E2670",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/feeding_trough.png.meta",
+    "before": "66A311326500274AAEB97CBCCFD75089C8D1955D60FB6FA785DEED483724692F",
+    "after": "66A311326500274AAEB97CBCCFD75089C8D1955D60FB6FA785DEED483724692F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fence.png",
+    "before": "5355D969A2053E51EB4D209F56CF14290B33450FD93BA370839393DE47854BB8",
+    "after": "5355D969A2053E51EB4D209F56CF14290B33450FD93BA370839393DE47854BB8",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fence.png.meta",
+    "before": "D7F30B2CDE849E77BF6D20216FF521F2CD0A113444BEAA0B24258F6CF09225D2",
+    "after": "D7F30B2CDE849E77BF6D20216FF521F2CD0A113444BEAA0B24258F6CF09225D2",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fishing_dock_keyart_v1.png",
+    "before": "955F3619449C1387E31E0455D3ADB039A2ADA916EB8674A88F98A8921700876C",
+    "after": "955F3619449C1387E31E0455D3ADB039A2ADA916EB8674A88F98A8921700876C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fishing_dock_keyart_v1.png.meta",
+    "before": "94EFDD93A6BC57E011CF6A19E68403B8CE499333ABB984235BC97425995A5C43",
+    "after": "94EFDD93A6BC57E011CF6A19E68403B8CE499333ABB984235BC97425995A5C43",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fonte_anya.png",
+    "before": "549D83272E8CE10441787CE7B06137398E550E00B6F4C045093E59E5D7A64E3E",
+    "after": "549D83272E8CE10441787CE7B06137398E550E00B6F4C045093E59E5D7A64E3E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fonte_anya.png.meta",
+    "before": "3CB2A186CF65F82D13F72D6FEEE00A6CC711054CD5236450964F5B706B197938",
+    "after": "3CB2A186CF65F82D13F72D6FEEE00A6CC711054CD5236450964F5B706B197938",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/forge.png",
+    "before": "EACE16E6804ECA527FD836282B01839ECD36693533FE65980096D874AF57253C",
+    "after": "EACE16E6804ECA527FD836282B01839ECD36693533FE65980096D874AF57253C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/forge.png.meta",
+    "before": "0EEB8EDAB43163746C4C231B9ABAC2DCCA9D1BB17F1D438ADCFC064FF12CEAE9",
+    "after": "0EEB8EDAB43163746C4C231B9ABAC2DCCA9D1BB17F1D438ADCFC064FF12CEAE9",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fountain.png",
+    "before": "9FDAD5EEEB7BDF99067C7818740C07D4EA4DBFDDB9094CECD8E98D6AA77DBD12",
+    "after": "9FDAD5EEEB7BDF99067C7818740C07D4EA4DBFDDB9094CECD8E98D6AA77DBD12",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/fountain.png.meta",
+    "before": "7EAC518103FC6C3DC30FD62F96E2E210999CB2302A4301E69C8E0A964335BC86",
+    "after": "7EAC518103FC6C3DC30FD62F96E2E210999CB2302A4301E69C8E0A964335BC86",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/hay_bale.png",
+    "before": "038269E205DFECA2B2043A7EAA8D914A1FF29C0C4F3BE814671A55F171C14DBE",
+    "after": "038269E205DFECA2B2043A7EAA8D914A1FF29C0C4F3BE814671A55F171C14DBE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/hay_bale.png.meta",
+    "before": "540B06497D1F25472AA3EA008CDA46F2654C065738C81C2969533E54CD2F9673",
+    "after": "540B06497D1F25472AA3EA008CDA46F2654C065738C81C2969533E54CD2F9673",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/lily_pads_keyart_v1.png",
+    "before": "DF0CFFC4E191DA24C3D49E6B41DCDEA03951D88ABC9328FAC63876372FC38AA0",
+    "after": "DF0CFFC4E191DA24C3D49E6B41DCDEA03951D88ABC9328FAC63876372FC38AA0",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/lily_pads_keyart_v1.png.meta",
+    "before": "2EB74BE22BA0969FE52066F4699FDAE9A192D60BB6A5A2129A49A78A94EEE180",
+    "after": "2EB74BE22BA0969FE52066F4699FDAE9A192D60BB6A5A2129A49A78A94EEE180",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/reeds_keyart_v1.png",
+    "before": "CE5A93008A30DB06B6396C2061D5174EF621A2604842FAAB5C3A8F3740624F12",
+    "after": "CE5A93008A30DB06B6396C2061D5174EF621A2604842FAAB5C3A8F3740624F12",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/reeds_keyart_v1.png.meta",
+    "before": "48BA0435B3009BB1F150DD23E612B4781EE129E99F39FA38079D4F4238F44847",
+    "after": "48BA0435B3009BB1F150DD23E612B4781EE129E99F39FA38079D4F4238F44847",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_0.png",
+    "before": "FEBCD52516FF49565D3760840344066A933DE8A7D5EEEAF74E5C1800E7F113C1",
+    "after": "FEBCD52516FF49565D3760840344066A933DE8A7D5EEEAF74E5C1800E7F113C1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_0.png.meta",
+    "before": "49BE7E82D3E726C8A473CD3E2D6897336FD7D5BDB4F8462F26DA49F2F4AC258E",
+    "after": "49BE7E82D3E726C8A473CD3E2D6897336FD7D5BDB4F8462F26DA49F2F4AC258E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_1.png",
+    "before": "19FA729C93D7455F69D7239F3C06E2DD8BE12F16182530ED262003360298F5BF",
+    "after": "19FA729C93D7455F69D7239F3C06E2DD8BE12F16182530ED262003360298F5BF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_1.png.meta",
+    "before": "3EF48C6F9478046D49F0C4369E4863F65E4A926E3B7F21905301F3EA86436626",
+    "after": "3EF48C6F9478046D49F0C4369E4863F65E4A926E3B7F21905301F3EA86436626",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_2.png",
+    "before": "DD6B6EEA9793ABDFB6968BF0195D495C2AB913AD4638A38DB308396B986A5DE5",
+    "after": "DD6B6EEA9793ABDFB6968BF0195D495C2AB913AD4638A38DB308396B986A5DE5",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_2.png.meta",
+    "before": "0E81DE614E782828499C7B4C8C26AE97BC1EF5DFA2105A7ABF8F34075DF28F91",
+    "after": "0E81DE614E782828499C7B4C8C26AE97BC1EF5DFA2105A7ABF8F34075DF28F91",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_3.png",
+    "before": "29F88D31678A0EAF94F06A0F72D84A3CB9764A7417390CB4DE5F00791D68F080",
+    "after": "29F88D31678A0EAF94F06A0F72D84A3CB9764A7417390CB4DE5F00791D68F080",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_3.png.meta",
+    "before": "909B3CEBB87674B48EA5B0822E3E04B950FE04A1D9A46A9991EE2A931C409406",
+    "after": "909B3CEBB87674B48EA5B0822E3E04B950FE04A1D9A46A9991EE2A931C409406",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_4.png",
+    "before": "05D36676DB21638A1A7BBB6B66EFBD352CD4BE602F57D486A61CEA003091A022",
+    "after": "05D36676DB21638A1A7BBB6B66EFBD352CD4BE602F57D486A61CEA003091A022",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_4.png.meta",
+    "before": "0537B09A092F38EC8F9C27E2B809D2E8DF5A662A017465987E9A901AD9D786DE",
+    "after": "0537B09A092F38EC8F9C27E2B809D2E8DF5A662A017465987E9A901AD9D786DE",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_5.png",
+    "before": "5458383A0F2FE2145EA80B8B82E7273F397E31BD8808BA4772F97A6454612A2F",
+    "after": "5458383A0F2FE2145EA80B8B82E7273F397E31BD8808BA4772F97A6454612A2F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/rock_ore_5.png.meta",
+    "before": "3C82ABA5C3C5C91997F4AE0D52596DF6E9EA7842005BF9A6DD8544B00096F3E7",
+    "after": "3C82ABA5C3C5C91997F4AE0D52596DF6E9EA7842005BF9A6DD8544B00096F3E7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/scarecrow.png",
+    "before": "6B4CF617CAE49999AE02AF9FE286A0E22333A67E32091AC8D3F802A406A9879D",
+    "after": "6B4CF617CAE49999AE02AF9FE286A0E22333A67E32091AC8D3F802A406A9879D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/scarecrow.png.meta",
+    "before": "A8CA09641F1E6A04E9D45C7FBD3199B2E639770F3C9AC486520B073901ACE939",
+    "after": "A8CA09641F1E6A04E9D45C7FBD3199B2E639770F3C9AC486520B073901ACE939",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+    "before": "72787CAE1BA7BCF5B67F492BDB36982701C36BE283FBCD487E36A2AAC27CCFCF",
+    "after": "72787CAE1BA7BCF5B67F492BDB36982701C36BE283FBCD487E36A2AAC27CCFCF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/shipping_bin.png.meta",
+    "before": "4DBA6EF83AD48845A220BB04A5311798DC8AF907CFD80C4D0D01E4E6097A559B",
+    "after": "4DBA6EF83AD48845A220BB04A5311798DC8AF907CFD80C4D0D01E4E6097A559B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/shore_bank_keyart_v1.png",
+    "before": "328F1FBE10AB9E57D7C7C43A99B4D9261DBB3C4EE82301468152544347A6605D",
+    "after": "328F1FBE10AB9E57D7C7C43A99B4D9261DBB3C4EE82301468152544347A6605D",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/shore_bank_keyart_v1.png.meta",
+    "before": "0A682473271CF5CD69EBDF52D115CFE9F202D8C179BE4267087944A414051566",
+    "after": "0A682473271CF5CD69EBDF52D115CFE9F202D8C179BE4267087944A414051566",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/sign_post.png",
+    "before": "46B885C876A4CD44E9ED5221D2619929992D1535B54F53E9C83F2845C094D8C0",
+    "after": "46B885C876A4CD44E9ED5221D2619929992D1535B54F53E9C83F2845C094D8C0",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/sign_post.png.meta",
+    "before": "BFC8E0FB494423A48D8D663C1BAFBF6F54B7CA438057791911A346527A698C0A",
+    "after": "BFC8E0FB494423A48D8D663C1BAFBF6F54B7CA438057791911A346527A698C0A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/streetlamp.png",
+    "before": "AF427108F5ED3440A3A926A3495951796A5805AE35EB4CF7AAEA3910A4276B31",
+    "after": "AF427108F5ED3440A3A926A3495951796A5805AE35EB4CF7AAEA3910A4276B31",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/streetlamp.png.meta",
+    "before": "AE3029B43E67248762E2478A98A386D6E0AA77A9F7E4AC77799F722DDF616A8C",
+    "after": "AE3029B43E67248762E2478A98A386D6E0AA77A9F7E4AC77799F722DDF616A8C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/waterfall_keyart_v1.png",
+    "before": "CA8EF8BF5809C4C659E8E1552CD97514C0777AA1280B1A35E312D6DB6F983160",
+    "after": "CA8EF8BF5809C4C659E8E1552CD97514C0777AA1280B1A35E312D6DB6F983160",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/waterfall_keyart_v1.png.meta",
+    "before": "DD39A7D8A481F89218664019807FBA7FED714865116A615A09B5B39EC2FD40EC",
+    "after": "DD39A7D8A481F89218664019807FBA7FED714865116A615A09B5B39EC2FD40EC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/well.png",
+    "before": "0A774D1867FA14C2FA3241A14CBA6902EC28DAD4830D9B5217B1EA9BE9AE5011",
+    "after": "0A774D1867FA14C2FA3241A14CBA6902EC28DAD4830D9B5217B1EA9BE9AE5011",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/well.png.meta",
+    "before": "EAB9010B402739A5C847BE380DF825AD26EA33B790A30911D5FA1D112050ABE6",
+    "after": "EAB9010B402739A5C847BE380DF825AD26EA33B790A30911D5FA1D112050ABE6",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/workbench.png",
+    "before": "ACA77BC970EF3DF73030BB87197D5E24F1BA308E6D8C701B4DD235F964F8906F",
+    "after": "ACA77BC970EF3DF73030BB87197D5E24F1BA308E6D8C701B4DD235F964F8906F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/props/workbench.png.meta",
+    "before": "1CC6760A07CCCDC6B086B96DB230BA98B5A05C5D1278FE1D156A2CD7F843646B",
+    "after": "1CC6760A07CCCDC6B086B96DB230BA98B5A05C5D1278FE1D156A2CD7F843646B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cliff_rock.png",
+    "before": "5F87DD2916719F8BA3F238931A1B2B87B2713D89607729BF1ED2477FAD27725B",
+    "after": "5F87DD2916719F8BA3F238931A1B2B87B2713D89607729BF1ED2477FAD27725B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cliff_rock.png.meta",
+    "before": "CBACC1A317D23399D07EBB1AB11B2D1F6BFD67B8D24672785E8F285DF59C68EC",
+    "after": "CBACC1A317D23399D07EBB1AB11B2D1F6BFD67B8D24672785E8F285DF59C68EC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cliff_top.png",
+    "before": "B5F9ECEA96C84C33226907B20734CD6055B981E511529806FC3C7C4D09AA45C8",
+    "after": "B5F9ECEA96C84C33226907B20734CD6055B981E511529806FC3C7C4D09AA45C8",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cliff_top.png.meta",
+    "before": "08866180D7BCF170C5E131D7E617204BB53971BD09FF912CFEE91ECE6F7947D7",
+    "after": "08866180D7BCF170C5E131D7E617204BB53971BD09FF912CFEE91ECE6F7947D7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cliff_wall.png",
+    "before": "C5547167AB064DDB71838146F2F487189F9D31DBB46530F83142415588D23C3A",
+    "after": "C5547167AB064DDB71838146F2F487189F9D31DBB46530F83142415588D23C3A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cliff_wall.png.meta",
+    "before": "CAADADEECFA86FAEAB4279565C9C79F6BBBBC2691BAFF14EDA0AC0BECD92BAF1",
+    "after": "CAADADEECFA86FAEAB4279565C9C79F6BBBBC2691BAFF14EDA0AC0BECD92BAF1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cobble.png",
+    "before": "3CD669805E79B3E289108C17ADA1FF5636B8F6178843A38525216C41EFC3E037",
+    "after": "3CD669805E79B3E289108C17ADA1FF5636B8F6178843A38525216C41EFC3E037",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_cobble.png.meta",
+    "before": "F73AEE769C1075CE61E44906EB4E369B6E646DDAA4A21DB56C761E872C2C7144",
+    "after": "F73AEE769C1075CE61E44906EB4E369B6E646DDAA4A21DB56C761E872C2C7144",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_deck.png",
+    "before": "28B93E6335B728FEC384DF84418EF9A61854BAB6B12ED5F2CCA0F719463FE47F",
+    "after": "28B93E6335B728FEC384DF84418EF9A61854BAB6B12ED5F2CCA0F719463FE47F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_deck.png.meta",
+    "before": "108AE4D856C6A0661526429F2EB78E9A157D966B31D7CB2BE28B4F728877266E",
+    "after": "108AE4D856C6A0661526429F2EB78E9A157D966B31D7CB2BE28B4F728877266E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_a.png",
+    "before": "A1584D76B6E052B68E0072E6AC3E04C263976D1B8CDE5EE23E5A83DC79E8DA37",
+    "after": "A1584D76B6E052B68E0072E6AC3E04C263976D1B8CDE5EE23E5A83DC79E8DA37",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_a.png.meta",
+    "before": "E16882167EFECD3063930B247099102724E4D542FB94E5B1E411BD8D4C0CFD9E",
+    "after": "E16882167EFECD3063930B247099102724E4D542FB94E5B1E411BD8D4C0CFD9E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_b.png",
+    "before": "6414C65AA474289974844A4AA5375EA153857374F58B58F5240EC87FE6FFF91F",
+    "after": "6414C65AA474289974844A4AA5375EA153857374F58B58F5240EC87FE6FFF91F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_b.png.meta",
+    "before": "140993FB663615010E2A184F3C8FE5E3E2DBB02AD527FB0DAD4C9A884C68DB03",
+    "after": "140993FB663615010E2A184F3C8FE5E3E2DBB02AD527FB0DAD4C9A884C68DB03",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_flower.png",
+    "before": "C2FEE164C07E2BA150429A3C3567F3C687C4FEB02ED52442EF0793E376E598DF",
+    "after": "C2FEE164C07E2BA150429A3C3567F3C687C4FEB02ED52442EF0793E376E598DF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_flower.png.meta",
+    "before": "673FC0E619CF3CDC37A719311A8855F8CAEC1B3B2C60C98229CD52840BF1074C",
+    "after": "673FC0E619CF3CDC37A719311A8855F8CAEC1B3B2C60C98229CD52840BF1074C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_keyart_v2.png",
+    "before": "6B5419E57A843071D26F1B2F58FC1F4D079D170E5BAF4278945ADD3231299E4A",
+    "after": "6B5419E57A843071D26F1B2F58FC1F4D079D170E5BAF4278945ADD3231299E4A",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_keyart_v2.png.meta",
+    "before": "B2FDF823BDD61EAD22713076B1C221067BE4372276E37C40CCE0D030E199B244",
+    "after": "B2FDF823BDD61EAD22713076B1C221067BE4372276E37C40CCE0D030E199B244",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_pebble.png",
+    "before": "81D0A0B0E8803572A3032773F631E82782B17C6BCB95E867D00F17A3CA61C494",
+    "after": "81D0A0B0E8803572A3032773F631E82782B17C6BCB95E867D00F17A3CA61C494",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass_pebble.png.meta",
+    "before": "25CEDA69FD7F4333E9B120967C376A99E2F7772CD7D8DF29A9DA09B8A3154569",
+    "after": "25CEDA69FD7F4333E9B120967C376A99E2F7772CD7D8DF29A9DA09B8A3154569",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass.png",
+    "before": "6414C65AA474289974844A4AA5375EA153857374F58B58F5240EC87FE6FFF91F",
+    "after": "6414C65AA474289974844A4AA5375EA153857374F58B58F5240EC87FE6FFF91F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_grass.png.meta",
+    "before": "9ED5191B26F231CCEE90E0214F184B029A0FC4F5BD9DFF39B26BED905877A20F",
+    "after": "9ED5191B26F231CCEE90E0214F184B029A0FC4F5BD9DFF39B26BED905877A20F",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_ore_rock.png",
+    "before": "A46B020F0533F76B5F07A603341EADC6BDAF6D3B132FDE2608DDC9E6E938E4BB",
+    "after": "A46B020F0533F76B5F07A603341EADC6BDAF6D3B132FDE2608DDC9E6E938E4BB",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_ore_rock.png.meta",
+    "before": "8881F35FDBCF8197A07FF93051BE70390A2AEA01F20A5B6D1A6D421C35394615",
+    "after": "8881F35FDBCF8197A07FF93051BE70390A2AEA01F20A5B6D1A6D421C35394615",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_path_cobble.png",
+    "before": "8D96E219DD37DA0A9709F24B2B574B81AF19442607189DE719BD44AB60C9BE25",
+    "after": "8D96E219DD37DA0A9709F24B2B574B81AF19442607189DE719BD44AB60C9BE25",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_path_cobble.png.meta",
+    "before": "7ECC3FF2C45CE4952A6841C4236BC08B38AB0F9054583386CDA61A5CCB003B0C",
+    "after": "7ECC3FF2C45CE4952A6841C4236BC08B38AB0F9054583386CDA61A5CCB003B0C",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_path_dirt.png",
+    "before": "C0F2AE9DF56CC1752E8464235FC13129ABB27978DA67EB51ECD9ECEC14A69FA4",
+    "after": "C0F2AE9DF56CC1752E8464235FC13129ABB27978DA67EB51ECD9ECEC14A69FA4",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_path_dirt.png.meta",
+    "before": "E6EB115A6DB57C6D9A814CF5088A1E9BCCF0AFF4C8D3B2B22CB4BA42AB85C142",
+    "after": "E6EB115A6DB57C6D9A814CF5088A1E9BCCF0AFF4C8D3B2B22CB4BA42AB85C142",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_rubble.png",
+    "before": "666578DF201A4F6F43C5BF4083AD1BE0EA6C6F02EC3F5915AE8459B002D77F1E",
+    "after": "666578DF201A4F6F43C5BF4083AD1BE0EA6C6F02EC3F5915AE8459B002D77F1E",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_rubble.png.meta",
+    "before": "C92CB035232AE8E59DE4645211F53661DF7BB15B25A1F472ABEC182B026DC7DC",
+    "after": "C92CB035232AE8E59DE4645211F53661DF7BB15B25A1F472ABEC182B026DC7DC",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_sand_shore.png",
+    "before": "3568C398527FADBF864F841A50C8C7D05184658D487FF0AA70A8D115E3464CAA",
+    "after": "3568C398527FADBF864F841A50C8C7D05184658D487FF0AA70A8D115E3464CAA",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_sand_shore.png.meta",
+    "before": "DF556ED0383DDE9004AA379B601B370059FCC03A6F4431B3493B99D9ED4CD849",
+    "after": "DF556ED0383DDE9004AA379B601B370059FCC03A6F4431B3493B99D9ED4CD849",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_sand.png",
+    "before": "12A68EB8D158A34CD893DD7F2628032F5E52FB3381CA53F675EE0D16F640ECB8",
+    "after": "12A68EB8D158A34CD893DD7F2628032F5E52FB3381CA53F675EE0D16F640ECB8",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_sand.png.meta",
+    "before": "900109A292CFE451C5EB62268E66E26DA9BB033089F100F87FBD00F61AD0287B",
+    "after": "900109A292CFE451C5EB62268E66E26DA9BB033089F100F87FBD00F61AD0287B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_soil.png",
+    "before": "B1BD7DCDC581E7917A43A952A998BC76103C5CDB19B537DD29A2D6B213657F5B",
+    "after": "B1BD7DCDC581E7917A43A952A998BC76103C5CDB19B537DD29A2D6B213657F5B",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_soil.png.meta",
+    "before": "1EFC3CAE250ABDE878B4D27139080EA54922F7E293128012C23DCA38C7FA0713",
+    "after": "1EFC3CAE250ABDE878B4D27139080EA54922F7E293128012C23DCA38C7FA0713",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_water_keyart_v1.png",
+    "before": "8ADA4301738B0BD523B81979084B5691086830AD4EE2BBC4BB4388FED68B7409",
+    "after": "8ADA4301738B0BD523B81979084B5691086830AD4EE2BBC4BB4388FED68B7409",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_water_keyart_v1.png.meta",
+    "before": "E9C26E19560EDEF272D53B472D932E38728AED3A35696BDB954EA2B333A86496",
+    "after": "E9C26E19560EDEF272D53B472D932E38728AED3A35696BDB954EA2B333A86496",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_water.png",
+    "before": "40B4200FC0C391AB7073375D1AD193D4C655ED6CD275047E5FF162FD31995563",
+    "after": "40B4200FC0C391AB7073375D1AD193D4C655ED6CD275047E5FF162FD31995563",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/tiles/ground_water.png.meta",
+    "before": "A87BBF471A1F79B98EEF5A9DD15A6310B5DC27A18C15E1F82D8DDBBC3EF1CAEF",
+    "after": "A87BBF471A1F79B98EEF5A9DD15A6310B5DC27A18C15E1F82D8DDBBC3EF1CAEF",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_apple.png",
+    "before": "311AE6C8B8BEA1AB71D1A1D5C3E6B41B75504151AF5A0B44E9FCDA0F690F7D05",
+    "after": "311AE6C8B8BEA1AB71D1A1D5C3E6B41B75504151AF5A0B44E9FCDA0F690F7D05",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_apple.png.meta",
+    "before": "CE504FE10FD72AB6F1620774C626D5199C5AA60393DC04A7020258C8EFB1DD70",
+    "after": "CE504FE10FD72AB6F1620774C626D5199C5AA60393DC04A7020258C8EFB1DD70",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_oak.png",
+    "before": "6A27D707D86078DF0D917D0A9456284E394286D4C244E3A6DD831F262D21D1D7",
+    "after": "6A27D707D86078DF0D917D0A9456284E394286D4C244E3A6DD831F262D21D1D7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_oak.png.meta",
+    "before": "592F567B367EFF537BD5021BD3F1CF4B3E8CD595B3ABFEB7409AA6A02F0B1BB1",
+    "after": "592F567B367EFF537BD5021BD3F1CF4B3E8CD595B3ABFEB7409AA6A02F0B1BB1",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_pine.png",
+    "before": "2AC9CF4A7A46C4C52D8082FF806D25680DA91BBA7EDB320338BC152ADDCD6425",
+    "after": "2AC9CF4A7A46C4C52D8082FF806D25680DA91BBA7EDB320338BC152ADDCD6425",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_pine.png.meta",
+    "before": "D30F5FAE8C1140F52DA6A753CA15CEDBD60A665C69EE6F923AB73E8BB83DF811",
+    "after": "D30F5FAE8C1140F52DA6A753CA15CEDBD60A665C69EE6F923AB73E8BB83DF811",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_sapling.png",
+    "before": "7EE56D1E2A110AABA747AFBD6D5D895DB9517C5A594A53D101E0A56AFA5B8D57",
+    "after": "7EE56D1E2A110AABA747AFBD6D5D895DB9517C5A594A53D101E0A56AFA5B8D57",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_sapling.png.meta",
+    "before": "64E600123A89726FEDDFC2E9914DD550ADDB476784D3B983EBF90D540BF349D7",
+    "after": "64E600123A89726FEDDFC2E9914DD550ADDB476784D3B983EBF90D540BF349D7",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_stump.png",
+    "before": "8F4685BB4E8178455C99EC14C08341DA35CC4A0B1804C80BA93C5F24F9BCDE12",
+    "after": "8F4685BB4E8178455C99EC14C08341DA35CC4A0B1804C80BA93C5F24F9BCDE12",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_stump.png.meta",
+    "before": "5E422F452E2664F075D43A1A59D1F2A444E18E79D82197A18B2FCA97D26B2536",
+    "after": "5E422F452E2664F075D43A1A59D1F2A444E18E79D82197A18B2FCA97D26B2536",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_willow.png",
+    "before": "E4CB454DB7DB8005E475B1B177F7933BBFC59B3E0D62BC5030EA3012B501C209",
+    "after": "E4CB454DB7DB8005E475B1B177F7933BBFC59B3E0D62BC5030EA3012B501C209",
+    "same": true
+  },
+  {
+    "path": "Assets/_Game/Art/Generated/World/trees/tree_willow.png.meta",
+    "before": "CBFB9A410ABEF27C7C25E5479DA4C0B2F8D3C77A4A1DD463CC192F7E0CBF71C6",
+    "after": "CBFB9A410ABEF27C7C25E5479DA4C0B2F8D3C77A4A1DD463CC192F7E0CBF71C6",
+    "same": true
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "startedUtc": "2026-09-09T02:10:36.9433512Z",
+  "finishedUtc": "2026-09-09T02:10:57.6609371Z",
+  "exitCode": 0,
+  "command": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.7f1\\Editor\\Unity.exe \"-batchmode\" \"-projectPath\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\" \"-executeMethod\" \"CindarsHope.Editor.Dev.FarmSceneCapture.CaptureFarmGameplayBatch\" \"-logFile\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\\docs\\validation\\playmode\\farm_gameplay_capture.log\"",
+  "helperSha256": "4002F449A27FBD3C6ECD9C5FC618D722FBAD3B5FFCF2377BC7C1C7AA70D901DD",
+  "sceneBeforeSha256": "1036E1D21A5B501218F86D1937D66D34C77D155525A2B78CFE2E4202402EDC74",
+  "sceneAfterSha256": "1036E1D21A5B501218F86D1937D66D34C77D155525A2B78CFE2E4202402EDC74"
+}

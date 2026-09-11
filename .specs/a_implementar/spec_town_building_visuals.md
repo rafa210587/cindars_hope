@@ -1,9 +1,12 @@
 # SPEC — Town Building Visuals (kits 3-partes por arquétipo)
 
-**Status:** A_IMPLEMENTAR
+**Status:** SUPERSEDED — não executar; substituída por `spec_town_native_architecture_v1` em 2026-09-10
 **Tipo:** arte + asset wiring (editor-only) — 2 tracks: geração GPT + wiring no gerador
 **Dependências:** Rendering v2 (concluída 2026-07-03) e `spec_town_layout_v9_organic.md` (relayout).
 **Origem:** Pedido do usuário (2026-07-03): toda construção em 3 partes — (1) BASE/paredes, (2) TELHADO que some quando o player entra (RoofReveal), (3) PORTA que abre/fecha.
+
+> Este documento preserva o inventário histórico. A meta fixa de 15 kits/45 imagens e a dependência do
+> layout 120×90 não representam o estado 160×112 atual. Não executar nem usar para reverter assets.
 
 ---
 

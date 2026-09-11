@@ -1,4 +1,19 @@
-# Keyart de referência da fazenda (APROVADA)
+# Keyarts de referência de mundo
+
+## Cidade — candidata gerada no ChatGPT Web
+
+`town_keyart_layout_chatgpt_web_candidate_v2.png` (1536×1024) é a candidata selecionada para orientar a próxima spec visual da `TownScene`.
+
+- Origem: ChatGPT Web, conversa **“Gerar key art da cidade”**, modo `Chat` ativo e `Work` inativo, em 2026-09-09.
+- Referências enviadas: key art aprovada da fazenda, `town_hall.png`, `temple.png` e `blacksmith.png`.
+- `candidate_v1` preserva a primeira geração web; `candidate_v2` é a correção selecionada dos brasões/remates de Kanthor.
+- Revisão: composição, distritos, escala aparente e identidade dos três landmarks estão fortes. Risco residual: o vitral frontal do templo ainda tem motivo cruciforme e deve ser corrigido no sprite final, sem regerar o layout inteiro.
+- Status: **CANDIDATA**, ainda requer aprovação humana; não é asset importado nem evidência de Play Mode.
+- Regra de tradução para a cena: `docs/design/gameplay/city/CITY_KEYART_PROPORTION_RULE_v1.md`.
+
+`town_keyart_layout_candidate_v1.png` é a exploração anterior feita pelo gerador nativo do Codex e não é a referência selecionada para o fluxo web.
+
+## Fazenda — aprovada
 
 `farm_keyart_layout_aprovado_v1.png` (1672×941) — keyart **aprovada pelo usuário em 2026-08-14**
 como o alvo visual/estrutural da FarmScene. Gerada no ChatGPT (projeto "Sprites - Fazendeiro",

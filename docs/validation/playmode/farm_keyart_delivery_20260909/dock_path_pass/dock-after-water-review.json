@@ -1,0 +1,78 @@
+{
+  "sceneSha256": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803",
+  "textureSize": [
+    1245,
+    1263
+  ],
+  "method": "Serialized transforms, 128PPU, importer BottomCenter alignment7; alpha>=128 pixel centers vs canonical visual Lake polygon. No raster modifications. Hull ROI is approximate and not an acceptance gate.",
+  "regions": [
+    {
+      "label": "whole dock+boat sprite",
+      "opaqueSamples": 450287,
+      "waterSamples": 404635,
+      "waterPercent": 89.86157717189259,
+      "worldBounds": [
+        8.617292970625002,
+        -11.8187967165625,
+        12.993232751875,
+        -7.623308060312501
+      ]
+    },
+    {
+      "label": "approximate visible boat hull ROI x800..1150/y650..900",
+      "opaqueSamples": 66746,
+      "waterSamples": 66746,
+      "waterPercent": 100.0,
+      "worldBounds": [
+        11.13007488625,
+        -11.137593719687501,
+        12.70902223,
+        -10.0097741884375
+      ]
+    }
+  ],
+  "lakePolygon": [
+    [
+      6.0,
+      -16.0
+    ],
+    [
+      8.0,
+      -10.0
+    ],
+    [
+      12.0,
+      -7.0
+    ],
+    [
+      21.0,
+      -6.0
+    ],
+    [
+      27.0,
+      -8.0
+    ],
+    [
+      28.0,
+      -12.0
+    ],
+    [
+      27.0,
+      -17.0
+    ],
+    [
+      22.0,
+      -18.0
+    ],
+    [
+      13.0,
+      -18.0
+    ],
+    [
+      8.0,
+      -17.0
+    ]
+  ],
+  "playerHeightWorld": 1.1875,
+  "dockOpaqueHeightToPlayer": 3.5444399921052625
+}

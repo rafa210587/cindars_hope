@@ -1,0 +1,369 @@
+{
+    "status": "FAIL",
+    "stage": "exiting",
+    "failure": "System.InvalidOperationException: Scale profile/contract input files changed or hash evidence is missing.\r\n  at CindarsHope.Editor.SceneCreation.TownKeyartActorScale.RequireSameStamps (CindarsHope.Editor.SceneCreation.TownKeyartActorScale+FileStamp[] before, CindarsHope.Editor.SceneCreation.TownKeyartActorScale+FileStamp[] after) [0x0006e] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\SceneCreation\\City\\TownKeyartActorScale.cs:207 \r\n  at CindarsHope.Editor.Dev.TownKeyartPlayModeCapture.Complete () [0x000b4] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Dev\\TownKeyartPlayModeCapture.cs:792 ",
+    "startedUtc": "2026-09-11T05:36:56.2019981Z",
+    "playStartedUtc": "",
+    "finishedUtc": "2026-09-11T05:36:58.1726998Z",
+    "output": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\docs\\validation\\town_components_doors_and_collision_v1\\playmode-20260911",
+    "unityVersion": "6000.5.7f1",
+    "scenePath": "Assets/_Game/Scenes/TownScene.unity",
+    "sceneHashBefore": "EB6A6296B59B9A0DBC57202E9FAECE89A1709D38A0EA2021F7752938E0CC9C4E",
+    "sceneHashAfter": "EB6A6296B59B9A0DBC57202E9FAECE89A1709D38A0EA2021F7752938E0CC9C4E",
+    "saveRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\\saves",
+    "physicsPath": "",
+    "physicsStatus": "NOT_RUN",
+    "obstacleName": "",
+    "obstacleFront": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "obstacleBehind": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "requested": {
+        "x": 0.0,
+        "y": 0.0
+    },
+    "limitations": "Eight overview views plus four house phases from the actual CameraFollow2D camera after Awake and settling. Teleports frame only; no walking input, interaction selection, animation fluency or visual acceptance is proven. The house report separately records actual public door calls and automatic physics-trigger reveal observations. Camera.Render excludes ScreenSpaceOverlay UI. Output target640x480 may differ from editor-window aspect; orthographicSize/sorting/actor scale are not overridden. Route physics is a bounded live collider snapshot; work endpoints use1.25u approach radius, doors/mural exact swept endpoints. Active NPC census is a technical gate, not an art-quality gate; builtin/UI/empty-path sprite flags are reported separately.",
+    "saveIsolation": "SaveInput disabled in memory before EnterPlaymode. No save/load calls or scene saves. All player saves recursively hashed before/after; original editor scene setup restored.",
+    "disabledSaveInputs": 0,
+    "totalNpcCount": 0,
+    "activeNpcCount": 0,
+    "npcControllerObjectCount": 0,
+    "activeCanonicalNpcCount": 0,
+    "extraNpcPreserved": false,
+    "npcIdentityErrors": [],
+    "originalSetup": [],
+    "saveHashesBefore": [],
+    "saveHashesAfter": [],
+    "views": [],
+    "runtimeErrors": [],
+    "npcs": [],
+    "visiblePlaceholderNpcIds": [],
+    "placeholderEvidence": "NOT_MEASURED",
+    "house": {
+        "houseId": "House_Prison",
+        "status": "NOT_RUN",
+        "reason": "",
+        "restorationReason": "",
+        "method": "HouseDoorInteractable.Interact(player) is called directly and its synchronous feedback is observed. Real player collider casts measure the same portal segment closed/open. Teleport framing is followed by normal Play Mode physics ticks; RoofReveal alpha/interior enabled state is observed, never assigned or invoked privately. This does not prove interaction selection, E input, walking, animation fluency or human visual acceptance. Door state is polled each Editor update; two autonomous changes between samples cannot be excluded.",
+        "initialized": false,
+        "initialOpen": false,
+        "expectedOpen": false,
+        "unstable": false,
+        "restored": false,
+        "originalPlayer": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "originalVelocity": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "outside": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "inside": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "phaseFixedStart": 0.0,
+        "restoreFixedStart": 0.0,
+        "restoreStarted": 0.0,
+        "originalState": {
+            "stage": "",
+            "doorOpen": false,
+            "blockerEnabled": false,
+            "leafEnabled": false,
+            "valid": false,
+            "playerRoofOverlapCount": 0,
+            "fixedTime": 0.0,
+            "settledFixedSeconds": 0.0,
+            "roofs": [],
+            "interiors": []
+        },
+        "restoredState": {
+            "stage": "",
+            "doorOpen": false,
+            "blockerEnabled": false,
+            "leafEnabled": false,
+            "valid": false,
+            "playerRoofOverlapCount": 0,
+            "fixedTime": 0.0,
+            "settledFixedSeconds": 0.0,
+            "roofs": [],
+            "interiors": []
+        },
+        "phases": [],
+        "actions": []
+    },
+    "actorScale": {
+        "status": "NOT_RUN",
+        "generationReportPath": "",
+        "generationReportHash": "",
+        "method": "Read-only comparison of all 30 actors after normal Awake against the generator's global post-Awake baseline and the saved Town scene. World shape offsets are relative to the actor origin to permit normal NPC movement. No scale/profile/collider correction is applied by this capture.",
+        "transitionIsolation": "NOT_RUN: hashes protect shared profile files, but Farm-to-Town-to-Farm behavior requires a separate real-router session; this house/camera session does not switch scenes during Play Mode.",
+        "maximumWorldShapeDelta": 0.0,
+        "originalBaseline": [],
+        "authored": [],
+        "afterAwake": [],
+        "globalsBefore": [],
+        "globalsAfter": [
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_cave_portal.asset",
+                "sha256": "b89c73df5642a581a713cdb84b8f7b64dde17aa93453cb9c21b4d9dae41c4bb4"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_cave_portal.asset.meta",
+                "sha256": "00ac644704b6e57845739022310df3e31a6a94ce944bc9413fbc0203bea65566"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_checkpoint_portal.asset",
+                "sha256": "c826db2a1293b7e7efb8fa7a4f7165a2ba6de6a8cc789fdfd9cecd875cefb325"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_checkpoint_portal.asset.meta",
+                "sha256": "b2eb2bb590d0d5cbdf4541201d01edc1cae507b26a06a46fe7b2c7d03cd80c51"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_chest.asset",
+                "sha256": "95bc5919a98a9620b1eb99cecb2b2beeec9c800dcc106c80119d6dbd9075ad88"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_chest.asset.meta",
+                "sha256": "a242dcd0636655694444601a251d5a53e109b09c39124aeefd427a1c26ead474"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_contract_board.asset",
+                "sha256": "c71a54fc510bc600238b7440a9294e1f5549576d4f6cadab1af3e60cb9aca2d5"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_contract_board.asset.meta",
+                "sha256": "e01f1203bfab7861da73034ad48706853d5440751da2da70f1b7ffdaf228ba35"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_cooking_station.asset",
+                "sha256": "ea8a667f0470d1ac2d8cf65d430ec153709eb464cb9807e5b09d2959ea1fdfa6"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_cooking_station.asset.meta",
+                "sha256": "f15965e7f822935a71029525e238f5e9734a1ef1c31d5f166207c8f5305cc038"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_corpse.asset",
+                "sha256": "30358f9bb91088ecb1597c9923eff28868ae0e0e91a2c3c15a733d0cd9e2fdb2"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_corpse.asset.meta",
+                "sha256": "cf0a7134f14ded7531ac9cd1259b651771b99e0dc68909aa262f83e69acc25f0"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_boss.asset",
+                "sha256": "8b8f2b35444d1729baa44f2baddce0d5f0b582f8f5bfac2a9a4a9152692c155b"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_boss.asset.meta",
+                "sha256": "bf755a962479e4b8c1b9a2b485171bd8c95e3b94f3330e6192b157da21b7b3b3"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_huge.asset",
+                "sha256": "1c0d36b9a546771c41ae62f6c2f1fc27a473869c5dc7ac58e212bbe91ab8c353"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_huge.asset.meta",
+                "sha256": "6d6fb660cdce69c35943cde945a46232e59b84b6d116d42183bc8af083c86615"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_large.asset",
+                "sha256": "afe0ab0f0ac512b73952f4549653ecc483131432ebac467eb9f4c732aabcf837"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_large.asset.meta",
+                "sha256": "d6fc32d8c23f9f9bb0e5c656a6c8d45794cd5a6ee60f93311baf5b6625c26992"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_medium.asset",
+                "sha256": "a9afc056c32d6f0776046a363609e5220b3d09660b820ee9184b88247c6445ce"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_medium.asset.meta",
+                "sha256": "89c6e6c320ef2db8f9a022c87070e56701d49fd37aa030ab80d8ee539b63b960"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_small.asset",
+                "sha256": "391aae002494995eea496bbddac0713d191d57e69c7383b276052938673b4bb8"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_small.asset.meta",
+                "sha256": "9938b6e06c1665fab12760d98e023658f2a17e876ac6c27e93745202da62102d"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_tiny.asset",
+                "sha256": "47467b3ce0769d61e11d6cb8f5de01e93fb8c68440ea6379429cc9fde803f85c"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_enemy_tiny.asset.meta",
+                "sha256": "ce90e1b8fc4b1c44aae1c2faf02625cd539129d4dda4fc01ebbd5b760b96445c"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_farm_object.asset",
+                "sha256": "ed1aba2d680e5ab0c41ac065a563894b508735f2dd904ecfcae41a6bec150189"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_farm_object.asset.meta",
+                "sha256": "272c5102c316621c69622513444a30d91bc8e2652dd23c57ec84d5c5eadc85ed"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_forage_point.asset",
+                "sha256": "03d5e95d11a940e40b94da8061d94f8ce4d7be3b38b037ca6dac77ae8a236787"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_forage_point.asset.meta",
+                "sha256": "a461cf6a9d98eb0ef7a465639ed6e985c251bf40b3e39d6af6515fb571073e79"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_forge.asset",
+                "sha256": "4a62ba12919c7ff48ac144b353dcc7aab9504ebb470c8d0ed01d3577311d8719"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_forge.asset.meta",
+                "sha256": "c9097b77a0e898037dee474f41b0f414103a9c17714bf0ad228a161741868092"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc.asset",
+                "sha256": "db4620b929964c87e0fe85f53a47fee20a7fea5d5a8345c8edad7bf50a04250d"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc.asset.meta",
+                "sha256": "6f863216d7793ce6dafa8a2eb50509ca42b60c890ac17c2136bd7faaa9bc3bc0"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_dragonborn.asset",
+                "sha256": "a56fc591a6d592a08d6a45198ef5041ceafd078efba6e9ccf992469988cc9b5f"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_dragonborn.asset.meta",
+                "sha256": "6b1fa7ccab4c98d8c78f26c6b9184399b55a5465f2ba4df37c886388a42f08bc"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_dwarf.asset",
+                "sha256": "e7ffded36e0df259a7d5b597cd640f5c7e46489a5f088343ff40e4f65178cbab"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_dwarf.asset.meta",
+                "sha256": "53306527c89a5d3ef4e4b458e06935b7fa034f4b0bb8f5128c48506300ec3b85"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_orc.asset",
+                "sha256": "66171edad4440d76e04c642460442345e0eeeb24725d81df41e5f38fedef3074"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_orc.asset.meta",
+                "sha256": "b375714df258f61643c437465482a3d386949b3a6f52336456ff3e1d204499a5"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_smallfolk.asset",
+                "sha256": "d7b2225f98d25114a43048d12768a99eb4bebbcebe8ac3ea1df34287d3954a79"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_npc_smallfolk.asset.meta",
+                "sha256": "a42cd779044681f6c02f9e6d5fda9648b83c6b4a1f20b1f903b85ee60f926613"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_pickup.asset",
+                "sha256": "af9a68812d4e3fb166de88ca150e1c56961979669bd20ef830b78b4ffe3f19d6"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_pickup.asset.meta",
+                "sha256": "637ae93acef3000a23cfdf57e28d959ab3cf487dbea49914eabec6544fc70346"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                "sha256": "9671e079752b1ff19b94b783af0dc52369981bb4b4db3a71315adee75b1468ee"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset.meta",
+                "sha256": "6183de4e02347485f8b29885ca7fb33c90a9835f3db2a44c1476d31af3bac693"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_resource_rock.asset",
+                "sha256": "2942dd79cae2f853a01c302b3b42ef5e4828b19ab338737e55413d7569da4b16"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_resource_rock.asset.meta",
+                "sha256": "f4b0d52eb0d917623e0c3457fcb62a7e7d4b2a270881381385580a63939de732"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_resource_tree.asset",
+                "sha256": "3e1efb61ffc4c71812138169eb3d92e417b0ec64a8a2d5b02a819090acbbc08a"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_resource_tree.asset.meta",
+                "sha256": "d5ebd5a096086069d6a36e0f46cb1f1335f75ac8441c431b5415619401f37a35"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_rock_medium.asset",
+                "sha256": "7256f1327af23e674308033a3b5134ed229696230d7c99a92a348ef704a97781"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_rock_medium.asset.meta",
+                "sha256": "a8ce8d1f9c981e0f31a6f5b2fe531586cba5993c3a836c6be40665093008862d"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_rock_small.asset",
+                "sha256": "492c8c72db95ccc294ab4ad34ffd6c4fac2989d5549c7136cafeecd424bb94eb"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_rock_small.asset.meta",
+                "sha256": "254ba35c5401903fdb40c6684cdf201760ce962da040ee1ca3b6fcae43c1ff3f"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                "sha256": "ecbff433bbf7837bcaa309a050dbe4b45605a23b952f5d1243c3f42509c121d5"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset.meta",
+                "sha256": "f78b968d87caece04b501eb6e81df5a940b3d401c7ca69f66f682bf9f46cc77b"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_tree_large.asset",
+                "sha256": "2b2c2ff834e30dbbd0dfc3aa664761521125f0fe08d5083363e3329e53c80d5d"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_tree_large.asset.meta",
+                "sha256": "a0458c06ea5adbaf81c17ee5526eef377ccfb241fb6e06529e69dc9572a6b3c4"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_tree_medium.asset",
+                "sha256": "ac112fa545d4bc69431148fc30ff713a8d1c81e429f2a1de8d0d6321dc8149a9"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_tree_medium.asset.meta",
+                "sha256": "ca72ed0c1ee44d9e6a1959374efb464ff5c9c19a851f1560f540559392051f7a"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_tree_small.asset",
+                "sha256": "0d19361adc611e695e336abda2d258213b8048099f39ab4cee4e8b3f10294fff"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_tree_small.asset.meta",
+                "sha256": "7ba3bbf0693f1d30d12b7a0b6b36a57cb17e10f03af404e2ebeb655c49619b05"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_workbench.asset",
+                "sha256": "89a55ba724e765a95cbc998852683dff6e673279d5f18517bc54877f3adbdf34"
+            },
+            {
+                "path": "Assets/_Game/Data/Scale/VisualScaleProfile_workbench.asset.meta",
+                "sha256": "a8403fac61c90869e89dac7094382f121e1dcd42c78648f428cd4c29159cf4e8"
+            }
+        ],
+        "contractInputs": []
+    },
+    "sceneUnchanged": true,
+    "savesUnchanged": true,
+    "setupRestored": true
+}

@@ -1,0 +1,1245 @@
+{
+    "status": "FAIL",
+    "stage": "exiting",
+    "failure": "System.InvalidOperationException: No collision-free framing setup for fountain_3\r\n  at CindarsHope.Editor.Dev.FarmContactCapture.Prepare () [0x00283] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Dev\\FarmContactCapture.cs:176 \r\n  at CindarsHope.Editor.Dev.FarmContactCapture.Tick () [0x0037e] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Dev\\FarmContactCapture.cs:149 \r\n  at CindarsHope.Editor.Dev.FarmPlayModeCaptureSession.Tick () [0x002dc] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Dev\\FarmPlayModeCaptureSession.cs:236 ",
+    "startedUtc": "2026-09-10T21:08:23.7298152Z",
+    "finishedUtc": "2026-09-10T21:08:33.4238545Z",
+    "playStartedUtc": "2026-09-10T21:08:27.5351483Z",
+    "scenePath": "Assets/_Game/Scenes/FarmScene.unity",
+    "sceneSha256Before": "e2ae569ea6dd087f420893ed05e5446bbc3452aff6856c895dd692275f4a9c6e",
+    "sceneSha256After": "e2ae569ea6dd087f420893ed05e5446bbc3452aff6856c895dd692275f4a9c6e",
+    "unityVersion": "6000.5.7f1",
+    "persistentRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope",
+    "saveRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\\saves",
+    "saveHashScope": "All files recursively under SaveManager's saves directory; Unity Editor Analytics is outside the player save directory.",
+    "saveIsolation": "Direct Farm bootstrap; SaveInput disabled in memory before Play Mode. No save/load calls. Scene reopened without saving on exit.",
+    "limitations": "Controlled-body contact and live fishing selection only. No successful cast, input, complete circulation or human visual acceptance claimed; inspect contact.method.",
+    "disabledSaveInputs": 1,
+    "saveHashesBefore": [],
+    "saveHashesAfter": [],
+    "views": [],
+    "runtimeErrors": [],
+    "npcs": [],
+    "physicalRoutes": {
+        "status": "FAIL",
+        "reason": "",
+        "colliderType": "",
+        "method": "Cardinal BFS at 0.5 world units; actual player collider OverlapCollider and Cast with Physics2D layer collision mask; each route starts at captured spawn. No movement input, interaction or animation is simulated.",
+        "step": 0.5,
+        "approachTolerance": 1.25,
+        "visitedNodes": 0,
+        "nodeLimit": 12000,
+        "layerMask": 0,
+        "origin": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "colliderOffset": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "colliderWorldSize": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "colliderLossyScale": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "missingLandmarks": [],
+        "routes": [],
+        "dockWaterChecks": [],
+        "boundaryChecks": [],
+        "houseTillingChecks": [],
+        "landmarkTillingChecks": [],
+        "fenceTillingChecks": [],
+        "greenhouseTillingChecks": [],
+        "landmarkPhysicsChecks": [],
+        "authoredSolidChecks": [],
+        "authoredApproachChecks": [],
+        "authoredTillingChecks": []
+    },
+    "physicalRoutesEvaluated": false,
+    "interactionSelection": {
+        "status": "RUNNING",
+        "method": "Real InteractionSystem.GetCurrentInteractable after >=2 physics steps, from BFS endpoint or a collider-swept local position within 2u; no Interact or injected candidates. House door, three craft stations, exterior farm cave entrance FishingSpot and town portal; decorative well excluded. Selection never executes a scene transition or fishing action.",
+        "selections": []
+    },
+    "interactionSelectionStarted": false,
+    "interactionSelectionEvaluated": false,
+    "motionRequested": false,
+    "motionStarted": false,
+    "motionEvaluated": false,
+    "motionResultStatus": "NOT REQUESTED",
+    "motion": {
+        "status": "RUNNING",
+        "reason": "",
+        "traversalCaptureInterval": 0.09000000357627869,
+        "timing": "Every PNG carries its observed Time.time and fixedTime; preview timing must use consecutive timestamp deltas, never an invented constant playback rate. Moving-body snapshots target 0.09s intervals; stationary duplicates are omitted. Door poses are captured when observed to change. Water PNGs are sampled periodically regardless of frame changes and tagged after Camera.Render; identical frames are retained as evidence.",
+        "method": "Initial framing at the earlier physically validated house selection position. Thereafter actual Rigidbody2D.MovePosition in FixedUpdate with PlayerController temporarily disabled. PlayerWalkAnimator observes actual physical velocity. Live selector invokes only HouseDoorInteractable. No forced sprite, facing, alpha, door state, injected input, portal, save or load. Water reads actual Tilemap.GetAnimationFrame after rendering. This is controlled-body traversal, not a movement-input test or human playthrough.",
+        "originalPlayerPosition": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "preparedPlayerPosition": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "houseCameraPosition": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "lakeCameraPosition": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "cameraAspect": 0.0,
+        "orthographicSize": 0.0,
+        "width": 0,
+        "height": 0,
+        "waterAnimationFrameCount": 0,
+        "waterColliderStateBefore": "",
+        "waterColliderStateAfter": "",
+        "waterAnimationFlagsBefore": "",
+        "waterAdvancedObserved": false,
+        "waterWrapObserved": false,
+        "waterDistinctFrames": 0,
+        "waterSampleDuration": 0.0,
+        "checks": [],
+        "samples": []
+    },
+    "ambientOnlyRequested": false,
+    "ambientStarted": false,
+    "ambientEvaluated": false,
+    "ambient": {
+        "status": "RUNNING",
+        "reason": "",
+        "method": "41 seconds of real Play Mode. Native Animators run normally; no Animator.Update/Play, animation sampling, state seek, frame/alpha writes or time-scale changes. Camera keeps gameplay orthographic zoom/aspect; PNGs are unscaled pixel crops of its render. Fountain/cascade receive >=1.4s continuous observation each. Fish jump windows receive ~10fps and idle windows sparse captures. Use actual timestamps for playback. This is camera-only animation evidence, not movement/input, overlay UI or human acceptance.",
+        "startedTime": 0.0,
+        "endedTime": 0.0,
+        "startedRealtime": 0.0,
+        "endedRealtime": 0.0,
+        "cameraAspect": 0.0,
+        "orthographicSize": 0.0,
+        "fishPeriod": 0.0,
+        "fishActiveStart": 0.0,
+        "observedJumpSpacing": 0.0,
+        "renderWidth": 0,
+        "renderHeight": 0,
+        "fountainDistinctFrames": 0,
+        "cascadeDistinctFrames": 0,
+        "fishIdleSamples": 0,
+        "samples": [],
+        "jumps": []
+    },
+    "contactOnlyRequested": true,
+    "contactStarted": true,
+    "contactEvaluated": false,
+    "contact": {
+        "status": "FAIL",
+        "reason": "System.InvalidOperationException: No collision-free framing setup for fountain_3\r\n  at CindarsHope.Editor.Dev.FarmContactCapture.Prepare () [0x00283] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Dev\\FarmContactCapture.cs:176 \r\n  at CindarsHope.Editor.Dev.FarmContactCapture.Tick () [0x0037e] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Dev\\FarmContactCapture.cs:149 \r\n  at CindarsHope.Editor.Dev.FarmPlayModeCaptureSession.Tick () [0x002dc] in D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Editor\\Dev\\FarmPlayModeCaptureSession.cs:236 ",
+        "method": "Controlled actual Rigidbody2D pushes via existing FarmProbeBodyDriver; PlayerController temporarily disabled. Safe initial placements are framing setup, not traversals. Live native animation, collision and interaction selection are observed; no sorting/sprite/alpha forcing, save/load, portal or fishing rewards invoked. PASS covers listed contact/selection checks, not input, actual cast success, visual acceptance or complete circulation. PNGs plus world collider geometry support separate overlay review.",
+        "orthographicSize": 8.5,
+        "cameraAspect": 1.3333333730697632,
+        "width": 640,
+        "height": 480,
+        "samples": [
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0000.png",
+                "fountainSprite": "fountain_v15_frame_00",
+                "selected": "FonteAnya",
+                "touchingSolids": [],
+                "time": 0.019999992102384568,
+                "fixedTime": 0.019999992102384568,
+                "feet": {
+                    "x": -24.539688110351564,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.539688110351564,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 1
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0001.png",
+                "fountainSprite": "fountain_v15_frame_01",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 0.22019357979297639,
+                "fixedTime": 0.21999992430210114,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 11
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0002.png",
+                "fountainSprite": "fountain_v15_frame_03",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 0.4202204942703247,
+                "fixedTime": 0.4199998378753662,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 21
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0003.png",
+                "fountainSprite": "fountain_v15_frame_04",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 0.6204429864883423,
+                "fixedTime": 0.6199997663497925,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 31
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0004.png",
+                "fountainSprite": "fountain_v15_frame_00",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 0.8207541704177856,
+                "fixedTime": 0.8199996948242188,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 41
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0005.png",
+                "fountainSprite": "fountain_v15_frame_02",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 1.0211526155471802,
+                "fixedTime": 1.019999623298645,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 51
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0006.png",
+                "fountainSprite": "fountain_v15_frame_03",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 1.2212042808532715,
+                "fixedTime": 1.2199995517730713,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 61
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0007.png",
+                "fountainSprite": "fountain_v15_frame_00",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 1.4213588237762452,
+                "fixedTime": 1.4199994802474976,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 71
+            },
+            {
+                "phase": "fountain_0",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_0_0008.png",
+                "fountainSprite": "fountain_v15_frame_01",
+                "selected": "FonteAnya",
+                "touchingSolids": [
+                    "FountainColumnSE"
+                ],
+                "time": 1.600429892539978,
+                "fixedTime": 1.5999994277954102,
+                "feet": {
+                    "x": -24.65009307861328,
+                    "y": 3.6875
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.65009307861328,
+                        "y": 4.25,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 80
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0009.png",
+                "fountainSprite": "fountain_v15_frame_01",
+                "selected": "none",
+                "touchingSolids": [],
+                "time": 1.624218225479126,
+                "fixedTime": 1.6199994087219239,
+                "feet": {
+                    "x": -24.47125816345215,
+                    "y": 5.793788433074951
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.47125816345215,
+                        "y": 6.356288433074951,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 81
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0010.png",
+                "fountainSprite": "fountain_v15_frame_03",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 1.8244073390960694,
+                "fixedTime": 1.81999933719635,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.623280048370361
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 6.185780048370361,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 91
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0011.png",
+                "fountainSprite": "fountain_v15_frame_04",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 2.0244548320770265,
+                "fixedTime": 2.0199992656707765,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.536891460418701
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 6.099391460418701,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 101
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0012.png",
+                "fountainSprite": "fountain_v15_frame_00",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 2.2248919010162355,
+                "fixedTime": 2.219999313354492,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.462349891662598
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 6.024849891662598,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 111
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0013.png",
+                "fountainSprite": "fountain_v15_frame_02",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 2.425192356109619,
+                "fixedTime": 2.419999122619629,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.398229598999023
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 5.960729598999023,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 121
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0014.png",
+                "fountainSprite": "fountain_v15_frame_03",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 2.625575542449951,
+                "fixedTime": 2.6199991703033449,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.343222618103027
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 5.905722618103027,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 131
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0015.png",
+                "fountainSprite": "fountain_v15_frame_00",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 2.8256540298461916,
+                "fixedTime": 2.8199989795684816,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.296137809753418
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 5.858637809753418,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 141
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0016.png",
+                "fountainSprite": "fountain_v15_frame_01",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 3.0292742252349855,
+                "fixedTime": 3.0199990272521974,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.255910873413086
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 5.818410873413086,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 151
+            },
+            {
+                "phase": "fountain_1",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_1_0017.png",
+                "fountainSprite": "fountain_v15_frame_02",
+                "selected": "none",
+                "touchingSolids": [
+                    "FountainColumnNE"
+                ],
+                "time": 3.200730085372925,
+                "fixedTime": 3.1999988555908205,
+                "feet": {
+                    "x": -24.647008895874025,
+                    "y": 5.224787712097168
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -24.647008895874025,
+                        "y": 5.787287712097168,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 160
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0018.png",
+                "fountainSprite": "fountain_v15_frame_03",
+                "selected": "none",
+                "touchingSolids": [],
+                "time": 3.2231009006500246,
+                "fixedTime": 3.219998836517334,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.490000247955322
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 6.052500247955322,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 161
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0019.png",
+                "fountainSprite": "fountain_v15_frame_04",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 3.4231197834014894,
+                "fixedTime": 3.41999888420105,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.06498384475708
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.62748384475708,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 171
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0020.png",
+                "fountainSprite": "fountain_v15_frame_00",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 3.6234986782073976,
+                "fixedTime": 3.6199986934661867,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.064999103546143
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.627499103546143,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 181
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0021.png",
+                "fountainSprite": "fountain_v15_frame_02",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 3.8238413333892824,
+                "fixedTime": 3.8199987411499025,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.064999103546143
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.627499103546143,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 191
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0022.png",
+                "fountainSprite": "fountain_v15_frame_03",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 4.024083137512207,
+                "fixedTime": 4.019998550415039,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.064999103546143
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.627499103546143,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 201
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0023.png",
+                "fountainSprite": "fountain_v15_frame_00",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 4.224177360534668,
+                "fixedTime": 4.219998359680176,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.064999103546143
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.627499103546143,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 211
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0024.png",
+                "fountainSprite": "fountain_v15_frame_01",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 4.42443323135376,
+                "fixedTime": 4.419998645782471,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.064999103546143
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.627499103546143,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 221
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0025.png",
+                "fountainSprite": "fountain_v15_frame_03",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 4.6245245933532719,
+                "fixedTime": 4.619998455047607,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.064999103546143
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.627499103546143,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 231
+            },
+            {
+                "phase": "fountain_2",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/contact_v16/gameplay_b\\contact\\fountain_2_0026.png",
+                "fountainSprite": "fountain_v15_frame_04",
+                "selected": "none",
+                "touchingSolids": [
+                    "SolidBasin"
+                ],
+                "time": 4.8009257316589359,
+                "fixedTime": 4.7999982833862309,
+                "feet": {
+                    "x": -28.0,
+                    "y": 5.064999103546143
+                },
+                "bodyBounds": {
+                    "m_Center": {
+                        "x": -28.0,
+                        "y": 5.627499103546143,
+                        "z": 0.0
+                    },
+                    "m_Extent": {
+                        "x": 0.3203125,
+                        "y": 0.5625,
+                        "z": 0.0
+                    }
+                },
+                "cameraPosition": {
+                    "x": -28.0,
+                    "y": 5.1875,
+                    "z": -10.0
+                },
+                "canFish": false,
+                "fixedSteps": 240
+            }
+        ],
+        "checks": [
+            "fountain_0: physical push blocked without penetration",
+            "fountain_1: physical push blocked without penetration",
+            "fountain_2: physical push blocked without penetration"
+        ],
+        "fountainBodies": [
+            {
+                "m_Center": {
+                    "x": -28.0,
+                    "y": 4.25,
+                    "z": 0.0
+                },
+                "m_Extent": {
+                    "x": 2.299999237060547,
+                    "y": 0.8000000715255737,
+                    "z": 0.0
+                }
+            },
+            {
+                "m_Center": {
+                    "x": -30.963502883911134,
+                    "y": 6.625547409057617,
+                    "z": 0.0
+                },
+                "m_Extent": {
+                    "x": 0.40875816345214846,
+                    "y": 0.20437955856323243,
+                    "z": 0.0
+                }
+            },
+            {
+                "m_Center": {
+                    "x": -25.445255279541017,
+                    "y": 6.599999904632568,
+                    "z": 0.0
+                },
+                "m_Extent": {
+                    "x": 0.4598541259765625,
+                    "y": 0.22992706298828126,
+                    "z": 0.0
+                }
+            },
+            {
+                "m_Center": {
+                    "x": -30.91240882873535,
+                    "y": 3.508759021759033,
+                    "z": 0.0
+                },
+                "m_Extent": {
+                    "x": 0.4598541259765625,
+                    "y": 0.20437955856323243,
+                    "z": 0.0
+                }
+            },
+            {
+                "m_Center": {
+                    "x": -25.445255279541017,
+                    "y": 3.508759021759033,
+                    "z": 0.0
+                },
+                "m_Extent": {
+                    "x": 0.4598541259765625,
+                    "y": 0.20437955856323243,
+                    "z": 0.0
+                }
+            }
+        ],
+        "lakePolygon": [
+            {
+                "x": 12.25,
+                "y": -14.0
+            },
+            {
+                "x": 11.5600004196167,
+                "y": -8.75
+            },
+            {
+                "x": 11.90999984741211,
+                "y": -8.487500190734864
+            },
+            {
+                "x": 11.90999984741211,
+                "y": -10.79800033569336
+            },
+            {
+                "x": 15.210000038146973,
+                "y": -10.79800033569336
+            },
+            {
+                "x": 15.210000038146973,
+                "y": -7.355000019073486
+            },
+            {
+                "x": 14.055000305175782,
+                "y": -7.355000019073486
+            },
+            {
+                "x": 14.055000305175782,
+                "y": -6.878749847412109
+            },
+            {
+                "x": 15.5600004196167,
+                "y": -5.75
+            },
+            {
+                "x": 23.0,
+                "y": -3.940000057220459
+            },
+            {
+                "x": 31.0,
+                "y": -6.0
+            },
+            {
+                "x": 34.0,
+                "y": -10.0
+            },
+            {
+                "x": 32.0,
+                "y": -14.5
+            },
+            {
+                "x": 26.0,
+                "y": -16.200000762939454
+            },
+            {
+                "x": 17.0,
+                "y": -16.200000762939454
+            }
+        ],
+        "lowerRiverPolygon": [
+            {
+                "x": 25.0,
+                "y": 2.0
+            },
+            {
+                "x": 29.0,
+                "y": 2.0
+            },
+            {
+                "x": 30.049999237060548,
+                "y": 0.25
+            },
+            {
+                "x": 31.149999618530275,
+                "y": -1.75
+            },
+            {
+                "x": 31.25,
+                "y": -3.5
+            },
+            {
+                "x": 30.850000381469728,
+                "y": -5.5
+            },
+            {
+                "x": 30.5,
+                "y": -7.0
+            },
+            {
+                "x": 27.100000381469728,
+                "y": -7.0
+            },
+            {
+                "x": 27.149999618530275,
+                "y": -5.25
+            },
+            {
+                "x": 27.450000762939454,
+                "y": -3.5999999046325685
+            },
+            {
+                "x": 27.049999237060548,
+                "y": -1.899999976158142
+            },
+            {
+                "x": 26.100000381469728,
+                "y": 0.20000000298023225
+            }
+        ],
+        "fountainDistinctFrames": 0
+    }
+}

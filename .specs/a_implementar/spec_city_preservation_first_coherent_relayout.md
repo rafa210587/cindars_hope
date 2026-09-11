@@ -2,6 +2,11 @@
 
 > **Spec ID:** `spec_city_preservation_first_coherent_relayout`
 > **Status:** BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE
+>
+> **Reconciliação 2026-09-10:** cláusulas residuais que congelam76×64 estão obsoletas; o estado
+> materializado já é120×90. A spec aprovada `spec_town_spatial_expansion_and_access_v1`
+> substitui o contrato dimensional por160×112. Esta spec continua sendo piso de preservação,
+> não fonte dimensional para reverter a Town.
 > **Wave:** WAVE CITY — Preservation-First TownScene
 > **Priority:** P0
 > **Type:** Editor tooling + Scene composition + Runtime integration + Validation

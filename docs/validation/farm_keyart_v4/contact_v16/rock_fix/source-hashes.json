@@ -1,0 +1,17 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "43D38593FF1E6BFF8ABBAE8D2F5A8320DD9DFCE14481DAD920B6F18D3A0BCFAF",
+    "Path": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Farm\\Scene\\FarmSceneSpatialContract.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C93011FB8D317086BCF01F9A94E0C8717EA59D9AAD2551C5BECFDF91800CED9A",
+    "Path": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scripts\\Farm\\Scene\\FarmSceneNavigationRaster.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0E707F3294E221C4353A890CE0C316FF9341AE2C448E529DAFA16C519117FCEC",
+    "Path": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Tests\\EditMode\\Farm\\FarmSceneNavigationContractTests.cs"
+  }
+]

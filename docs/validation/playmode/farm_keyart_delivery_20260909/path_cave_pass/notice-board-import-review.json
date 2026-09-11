@@ -1,0 +1,43 @@
+{
+  "asset": "Assets/_Game/Art/Generated/World/props/notice_board_keyart_v1.png",
+  "raw": "art/farm-pixelart-review/raw/notice-board-keyart-v1.png",
+  "assetSha256": "677197328A1BB9FFA9124870E7C41C414CAD9F0193E6E6F9DB1583750B610EC5",
+  "rawSha256": "677197328A1BB9FFA9124870E7C41C414CAD9F0193E6E6F9DB1583750B610EC5",
+  "byteExact": true,
+  "metaSha256": "612081914E6A0F69E909F9CACCC4E9A195B4AD57965E951D4758810D39FE4707",
+  "dimensions": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "filterMode": 0,
+  "enableMipMap": 0,
+  "pixelsPerUnit": 128,
+  "serializedLegacyRootMaxTextureSize": 2048,
+  "platforms": [
+    {
+      "target": "DefaultTexturePlatform",
+      "maxTextureSize": 2048,
+      "compression": 0,
+      "overridden": 0
+    },
+    {
+      "target": "Standalone",
+      "maxTextureSize": 2048,
+      "compression": 1,
+      "overridden": 0
+    },
+    {
+      "target": "WebGL",
+      "maxTextureSize": 2048,
+      "compression": 1,
+      "overridden": 0
+    }
+  ],
+  "scope": "Serialized importer + raw PNG verification. DefaultTexturePlatform max2048, adequate for source1254 square; runtime imported texture width was not separately queried.",
+  "pass": true
+}

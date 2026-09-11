@@ -1,0 +1,31 @@
+{
+  "scope": "SCOPED saved-scene Edit Mode capture",
+  "compile": "PASS",
+  "logScan": "PASS",
+  "scanExit": 0,
+  "capture": "PASS",
+  "playMode": "NOT RUN",
+  "visualAcceptance": "NOT RUN",
+  "note": "Capture uses diagnostic cameras; no runtime animation, controls, physics or visual human acceptance proved.",
+  "outputs": [
+    {
+      "path": "docs\\validation\\playmode\\farm_pixelart_20260908\\before\\farm_capture.png",
+      "sha256": "568B589F27474FE32584BC405775F8046285CAD27C0526869ABA71006225372C",
+      "bytes": 2090455,
+      "lastWriteUtc": "2026-09-09T01:48:42.4981928Z"
+    },
+    {
+      "path": "docs\\validation\\playmode\\farm_pixelart_20260908\\before\\farm_capture_closeup.png",
+      "sha256": "BCA0D81D25A9A9E0C8A949C503085313ECC0974E196BFD8D100A86106B4C6E77",
+      "bytes": 2535890,
+      "lastWriteUtc": "2026-09-09T01:48:42.5958191Z"
+    },
+    {
+      "path": "docs\\validation\\playmode\\farm_pixelart_20260908\\before\\farm_capture_animals.png",
+      "sha256": "35A02458BDB68D7165BE92966B133E46EA87781E311009AD0B25DE1357141184",
+      "bytes": 1702635,
+      "lastWriteUtc": "2026-09-09T01:48:42.6656515Z"
+    }
+  ],
+  "captureToolSha256": "7367682B0F56BF093FE011644128FB06B3A173144F83CAC965CF7B12AFCAB6E2"
+}

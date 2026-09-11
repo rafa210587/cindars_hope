@@ -1,0 +1,4452 @@
+{
+    "status": "PASS",
+    "stage": "exiting",
+    "failure": "",
+    "startedUtc": "2026-09-09T02:51:49.2266632Z",
+    "finishedUtc": "2026-09-09T02:52:10.1706985Z",
+    "playStartedUtc": "2026-09-09T02:51:53.1501373Z",
+    "scenePath": "Assets/_Game/Scenes/FarmScene.unity",
+    "sceneSha256Before": "9f0e5b000c5dfe76dbbfbfa20fd82443efbde1d3081c8e2061795b3a423fd837",
+    "sceneSha256After": "9f0e5b000c5dfe76dbbfbfa20fd82443efbde1d3081c8e2061795b3a423fd837",
+    "unityVersion": "6000.5.7f1",
+    "persistentRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope",
+    "saveRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\\saves",
+    "saveHashScope": "All files recursively under SaveManager's saves directory; Unity Editor Analytics is outside the player save directory.",
+    "saveIsolation": "Direct Farm bootstrap; SaveInput disabled in memory before Play Mode. No save/load calls. Scene reopened without saving on exit.",
+    "limitations": "Static camera views at current gameplay aspect. Teleports are framing only; do not prove movement, collision traversal, animation fluidity or human acceptance. Bounds include sprite geometry, not alpha-only silhouette. Screen Space Overlay UI is not rendered by Camera.Render.",
+    "disabledSaveInputs": 1,
+    "saveHashesBefore": [],
+    "saveHashesAfter": [],
+    "views": [
+        {
+            "id": "spawn",
+            "utc": "2026-09-09T02:51:55.2727041Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\spawn.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": 16.0,
+                "y": 3.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": 15.65625,
+                "y": 2.65625,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_04.png",
+                    "spriteName": "idle_right_04",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 16.0,
+                        "y": 3.59375,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.58528137207031,
+                        "y": 56.470611572265628
+                    }
+                }
+            ]
+        },
+        {
+            "id": "bridge",
+            "utc": "2026-09-09T02:51:57.4098747Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\bridge.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": 27.0,
+                "y": 2.5,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": 26.5859375,
+                "y": 2.84375,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_01.png",
+                    "spriteName": "idle_right_01",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 27.0,
+                        "y": 3.09375,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.585289001464847,
+                        "y": 56.470611572265628
+                    }
+                }
+            ]
+        },
+        {
+            "id": "cultivation",
+            "utc": "2026-09-09T02:51:59.4279762Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\cultivation.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": -3.0,
+                "y": -1.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": -2.6796875,
+                "y": -0.6328125,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_01.png",
+                    "spriteName": "idle_right_01",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": -3.0,
+                        "y": -0.40625,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.52939987182617
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.5853271484375,
+                        "y": 56.470584869384769
+                    }
+                }
+            ]
+        },
+        {
+            "id": "homestead",
+            "utc": "2026-09-09T02:52:01.4513820Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\homestead.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": 16.0,
+                "y": 4.5,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": 15.5546875,
+                "y": 4.03125,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_01.png",
+                    "spriteName": "idle_right_01",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 16.0,
+                        "y": 5.09375,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.585296630859378,
+                        "y": 56.47060012817383
+                    }
+                }
+            ]
+        },
+        {
+            "id": "forest",
+            "utc": "2026-09-09T02:52:03.4769951Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\forest.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": -24.0,
+                "y": 8.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": -23.546875,
+                "y": 7.5859375,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_01.png",
+                    "spriteName": "idle_right_01",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": -24.0,
+                        "y": 8.59375,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.58540344238281,
+                        "y": 56.470584869384769
+                    }
+                }
+            ]
+        },
+        {
+            "id": "mountain",
+            "utc": "2026-09-09T02:52:05.4999391Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\mountain.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": -23.0,
+                "y": 15.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": -23.4140625,
+                "y": 14.640625,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_01.png",
+                    "spriteName": "idle_right_01",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": -23.0,
+                        "y": 15.59375,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.58540344238281,
+                        "y": 56.470584869384769
+                    }
+                }
+            ]
+        },
+        {
+            "id": "animals",
+            "utc": "2026-09-09T02:52:07.5186966Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\animals.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": -5.5,
+                "y": -20.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": -5.9296875,
+                "y": -19.609375,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_01.png",
+                    "spriteName": "idle_right_01",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": -5.5,
+                        "y": -19.40625,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.5853271484375,
+                        "y": 56.470584869384769
+                    }
+                }
+            ]
+        },
+        {
+            "id": "lake",
+            "utc": "2026-09-09T02:52:09.5418658Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\lake.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": 3.0,
+                "y": -12.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": 2.6328125,
+                "y": -12.3671875,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_01.png",
+                    "spriteName": "idle_right_01",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 3.0,
+                        "y": -11.40625,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 10.0,
+                        "y": 4.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.5853271484375,
+                        "y": 56.47064208984375
+                    }
+                }
+            ]
+        }
+    ],
+    "runtimeErrors": [],
+    "physicalRoutes": {
+        "status": "PASS",
+        "reason": "All requested approaches connected by collider sweeps.",
+        "colliderType": "BoxCollider2D",
+        "method": "Cardinal BFS at 0.5 world units; actual player collider OverlapCollider and Cast with Physics2D layer collision mask; each route starts at captured spawn. No movement input, interaction or animation is simulated.",
+        "step": 0.5,
+        "approachTolerance": 1.25,
+        "visitedNodes": 6833,
+        "nodeLimit": 12000,
+        "layerMask": -1,
+        "origin": {
+            "x": 16.0,
+            "y": 3.0
+        },
+        "colliderOffset": {
+            "x": 0.0,
+            "y": 0.28125
+        },
+        "colliderWorldSize": {
+            "x": 0.640625,
+            "y": 1.125,
+            "z": 0.0
+        },
+        "colliderLossyScale": {
+            "x": 2.0,
+            "y": 2.0,
+            "z": 2.0
+        },
+        "missingLandmarks": [],
+        "routes": [
+            {
+                "id": "house",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 16.0,
+                    "y": 5.25
+                },
+                "reachedApproach": {
+                    "x": 16.0,
+                    "y": 4.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 16.0,
+                        "y": 3.5
+                    },
+                    {
+                        "x": 16.0,
+                        "y": 4.0
+                    }
+                ]
+            },
+            {
+                "id": "cultivation",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": -3.0,
+                    "y": -1.0
+                },
+                "reachedApproach": {
+                    "x": -2.5,
+                    "y": 0.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 2.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 1.5
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 1.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 0.5
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 0.0
+                    }
+                ]
+            },
+            {
+                "id": "well_visual",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": -7.0,
+                    "y": 9.0
+                },
+                "reachedApproach": {
+                    "x": -6.5,
+                    "y": 8.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 3.5
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 4.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 4.5
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 5.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 5.5
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 6.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 6.5
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 7.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 7.5
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 8.0
+                    }
+                ]
+            },
+            {
+                "id": "fountain_approach",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": -24.0,
+                    "y": 3.0
+                },
+                "reachedApproach": {
+                    "x": -23.0,
+                    "y": 3.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -16.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -17.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -17.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -18.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -18.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -19.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -19.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -20.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -20.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -21.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -21.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -22.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -22.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -23.0,
+                        "y": 3.0
+                    }
+                ]
+            },
+            {
+                "id": "cave_entrance_approach",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": -28.0,
+                    "y": 15.75
+                },
+                "reachedApproach": {
+                    "x": -27.0,
+                    "y": 15.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -16.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -17.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -17.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -18.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -18.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -19.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -19.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -20.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -20.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -21.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -21.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -22.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -22.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -23.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -23.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -24.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -24.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -25.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -25.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -26.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -26.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 3.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 4.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 4.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 5.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 5.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 6.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 6.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 7.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 7.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 8.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 8.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 9.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 9.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 10.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 10.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 11.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 11.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 12.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 12.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 13.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 13.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 14.0
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 14.5
+                    },
+                    {
+                        "x": -27.0,
+                        "y": 15.0
+                    }
+                ]
+            },
+            {
+                "id": "greenhouse_approach",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 23.0,
+                    "y": 5.25
+                },
+                "reachedApproach": {
+                    "x": 22.0,
+                    "y": 4.5
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 16.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 20.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 20.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 21.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 21.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 22.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 22.0,
+                        "y": 3.5
+                    },
+                    {
+                        "x": 22.0,
+                        "y": 4.0
+                    },
+                    {
+                        "x": 22.0,
+                        "y": 4.5
+                    }
+                ]
+            },
+            {
+                "id": "fishing_approach",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 5.699999809265137,
+                    "y": -9.5
+                },
+                "reachedApproach": {
+                    "x": 6.0,
+                    "y": -8.5
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 2.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 1.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 1.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 0.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 0.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -0.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -1.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -1.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -2.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -2.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -3.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -4.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -4.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -5.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -5.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -6.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -6.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -7.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -7.5
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -8.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": -8.5
+                    }
+                ]
+            },
+            {
+                "id": "workbench",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 12.0,
+                    "y": -2.0
+                },
+                "reachedApproach": {
+                    "x": 13.0,
+                    "y": -1.5
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 2.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 1.5
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 1.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 0.5
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 0.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": -0.5
+                    },
+                    {
+                        "x": 13.0,
+                        "y": -1.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": -1.5
+                    }
+                ]
+            },
+            {
+                "id": "forge",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 16.0,
+                    "y": -2.0
+                },
+                "reachedApproach": {
+                    "x": 15.0,
+                    "y": -1.5
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 2.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 1.5
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 1.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 0.5
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 0.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": -0.5
+                    },
+                    {
+                        "x": 15.0,
+                        "y": -1.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": -1.5
+                    }
+                ]
+            },
+            {
+                "id": "cooking",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 20.0,
+                    "y": -2.0
+                },
+                "reachedApproach": {
+                    "x": 19.0,
+                    "y": -1.5
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 16.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 2.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 1.5
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 1.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 0.5
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 0.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": -0.5
+                    },
+                    {
+                        "x": 19.0,
+                        "y": -1.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": -1.5
+                    }
+                ]
+            },
+            {
+                "id": "bridge",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 27.0,
+                    "y": 3.0
+                },
+                "reachedApproach": {
+                    "x": 26.0,
+                    "y": 2.5
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 16.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 20.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 20.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 21.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 21.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 22.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 22.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 23.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 23.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 24.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 24.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 24.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 25.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 25.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 26.0,
+                        "y": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "east_bridge_exit",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 30.0,
+                    "y": 3.0
+                },
+                "reachedApproach": {
+                    "x": 29.0,
+                    "y": 2.5
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 16.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 17.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 18.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 19.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 20.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 20.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 21.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 21.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 22.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 22.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 23.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 23.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 24.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 24.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 24.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 25.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 25.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 26.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 26.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 27.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 27.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 28.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 28.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 29.0,
+                        "y": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "animals_west",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": -16.0,
+                    "y": -20.0
+                },
+                "reachedApproach": {
+                    "x": -15.5,
+                    "y": -19.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 2.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 1.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 1.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 0.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 0.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -0.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -1.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -1.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -2.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -2.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -3.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -4.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -4.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -5.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -5.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -6.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -6.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -7.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -7.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -8.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -8.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -9.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -9.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -10.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -10.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -11.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -11.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -14.5,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -15.0,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -12.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -13.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -13.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -14.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -14.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -15.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -15.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -16.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -16.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -17.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -17.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -18.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -18.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -19.0
+                    }
+                ]
+            },
+            {
+                "id": "animals_east",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": 5.0,
+                    "y": -20.0
+                },
+                "reachedApproach": {
+                    "x": 5.5,
+                    "y": -19.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 2.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 1.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 1.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 0.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 0.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -0.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -1.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -1.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -2.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -2.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -3.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -4.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -4.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -5.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -5.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -6.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -6.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -7.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -7.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -8.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -8.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -9.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -9.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -10.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -10.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -11.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -11.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -12.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -12.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -13.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -13.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -14.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -14.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -15.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -15.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -16.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -16.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -17.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -17.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -18.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -18.5
+                    },
+                    {
+                        "x": 5.5,
+                        "y": -19.0
+                    }
+                ]
+            },
+            {
+                "id": "coop_door_approach",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": -16.0,
+                    "y": -19.0
+                },
+                "reachedApproach": {
+                    "x": -15.5,
+                    "y": -18.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 2.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 2.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 1.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 1.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 0.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": 0.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -0.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -1.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -1.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -2.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -2.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -3.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -3.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -4.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -4.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -5.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -5.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -6.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -6.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -7.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -7.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -8.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -8.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -9.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -9.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -10.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -10.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -11.0
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -11.5
+                    },
+                    {
+                        "x": -14.0,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -14.5,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -15.0,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -12.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -13.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -13.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -14.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -14.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -15.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -15.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -16.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -16.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -17.0
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -17.5
+                    },
+                    {
+                        "x": -15.5,
+                        "y": -18.0
+                    }
+                ]
+            },
+            {
+                "id": "barn_door_approach",
+                "status": "PASS",
+                "requestedApproach": {
+                    "x": -9.0,
+                    "y": -19.0
+                },
+                "reachedApproach": {
+                    "x": -8.5,
+                    "y": -18.0
+                },
+                "path": [
+                    {
+                        "x": 16.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 15.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 14.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 13.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 12.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 11.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 10.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 9.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": 0.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -0.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -1.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -2.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -3.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -4.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -5.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -6.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -7.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.0,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 3.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 2.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 2.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 1.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 1.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 0.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": 0.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -0.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -1.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -1.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -2.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -2.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -3.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -3.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -4.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -4.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -5.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -5.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -6.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -6.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -7.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -7.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -8.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -8.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -9.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -9.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -10.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -10.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -11.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -11.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -12.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -12.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -13.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -13.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -14.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -14.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -15.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -15.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -16.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -16.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -17.0
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -17.5
+                    },
+                    {
+                        "x": -8.5,
+                        "y": -18.0
+                    }
+                ]
+            }
+        ]
+    },
+    "physicalRoutesEvaluated": true
+}

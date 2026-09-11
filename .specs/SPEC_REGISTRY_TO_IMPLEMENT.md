@@ -1,5 +1,11 @@
 # Registry de specs a implementar
 
+## Lote SKILLS_SDD_V1 — planejamento de 2026-09-09
+
+[Nove rascunhos com Spec/Plan/Tasks](features_futuras/skills_sdd_v1/README.md) ficam fora da fila executável.
+Incluem fundação de runtime/save, dados/ranks, mecânicas, Canvas, pixel art e aceitação de equilíbrio.
+Não há promoção ou aprovação de implementação nesta entrada; cada documento registra suas pendências.
+
 ## Reconciliação canônica de 2026-07-05
 
 O estado executável foi re-auditado e registrado em
@@ -38,6 +44,12 @@ docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
 | 01.05 | [01_spec_save_provider_architecture_runtime.md](a_implementar/01_spec_save_provider_architecture_runtime.md) | A implementar - gradual/residual | 01.04 + save ownership registry | Consolida arquitetura incremental de save providers sem substituir SaveManager, sem schema change e sem migração massiva de sections. |
 | 01Q | [spec_test_harness_editmode_playmode_quality_gate.md](a_implementar/spec_test_harness_editmode_playmode_quality_gate.md) | A implementar - quality gate fundacional | 01 validacao Unity + rules/skills atuais | Deve ser executada antes das novas waves runtime para exigir EditMode tests, PlayMode/manual scenarios, regression tests e evidencia de risco residual. |
 | CITY.P0 | [spec_city_preservation_first_coherent_relayout.md](a_implementar/spec_city_preservation_first_coherent_relayout.md) | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | TownScene materializada pós F40 + contratos atuais | Implementada com manifesto before/after: 24 casas, 29 barracas, 497 árvores, 84 anchors e IDs preservados; 22/22 tests e 21/21 validator. Play Mode humano pendente. |
+| TOWN.P0 | [spec_town_spatial_expansion_and_access_v1.md](a_implementar/spec_town_spatial_expansion_and_access_v1.md) | DEFERRED_TO_FINAL_HUMAN_VALIDATION | Unity/PlayMode/AC12 independente PASS; cenário humano final pendente | Expande a Town para160×112 preservando escala1,20, conteúdo, IDs e contratos verificáveis de circulação/entrada. |
+| TOWN.V1 | [spec_town_keyart_fidelity_v1.md](a_implementar/spec_town_keyart_fidelity_v1.md) | A implementar | TOWN.P0 | Corrige macrocomposição, praça, caminhos, água, muralha, curral, vegetação e densidade narrativa. |
+| TOWN.A1 | [spec_town_native_architecture_v1.md](a_implementar/spec_town_native_architecture_v1.md) | A implementar | TOWN.P0 + contrato visual TOWN.V1 | Reconstrói famílias arquitetônicas em pixels nativos; sucede `spec_town_building_visuals`. |
+| TOWN.C1 | [spec_town_components_doors_and_collision_v1.md](a_implementar/spec_town_components_doors_and_collision_v1.md) | A implementar | TOWN.V1 + TOWN.A1 | Fecha portas, interiores, colisão censitária e feedback audiovisual. |
+| TOWN.N1 | [spec_town_npc_visuals_navigation_v1.md](a_implementar/spec_town_npc_visuals_navigation_v1.md) | A implementar | TOWN.V1 + TOWN.A1 + TOWN.C1 | Remove placeholders e valida agenda/circulação por rotas e portas reais. |
+| TOWN.G1 | [spec_town_integrated_acceptance_v1.md](a_implementar/spec_town_integrated_acceptance_v1.md) | A implementar — gate | TOWN.V1 + TOWN.A1 + TOWN.C1 + TOWN.N1 | Gate visual >=80, funcional, transições, ambiente e performance; não implementa correções. |
 
 > `CITY.P0` foi registrada como spec concreta aprovada. Esta inclusão **não altera** `SPEC_EXECUTION_ORDER.md` e não autoriza execução automática.
 
