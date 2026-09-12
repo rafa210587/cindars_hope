@@ -2487,10 +2487,12 @@ namespace CindarsHope.Editor.SceneCreation
         /// into the connected street network.
         /// </summary>
         /// <summary>How far a schedule anchor may reach to re-enter the road mesh.</summary>
-        /// <remarks>Covers the measured gap between an anchor and its genuinely nearest road node
-        /// (0.00u to 2.58u on the worst cases) with margin, without inventing long shortcuts across
-        /// terrain. Candidates beyond a wall are still dropped by PrunePhysicallyBlockedEdges.</remarks>
-        private const float AnchorReentryRadius = 4f;
+        /// <remarks>Calibrated, not assumed: detouring anchor transitions measured 15/162 at 4u,
+        /// 10/162 at 6u and 10/162 at 8u, so 6u is the plateau and 8u only adds 60% more candidate
+        /// edges for no gain. Six units is also still a plain walk across open ground rather than an
+        /// implausible shortcut, and candidates crossing a solid are dropped by
+        /// PrunePhysicallyBlockedEdges regardless.</remarks>
+        private const float AnchorReentryRadius = 6f;
 
         private static void CreateNpcTownRouteGraph(Transform parent)
         {

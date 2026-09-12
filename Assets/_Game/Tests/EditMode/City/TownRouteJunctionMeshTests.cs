@@ -29,10 +29,8 @@ namespace CindarsHope.Tests.EditMode.City
         private const float DetourRatioLimit = 3f;
         private const float MinimumPairDistance = 2f;
 
-        /// <summary>How far an anchor may reach to re-enter the road mesh.</summary>
-        /// <remarks>Covers the measured gap between an anchor and its genuinely nearest road node
-        /// (0.00u to 2.58u on the worst cases) with margin, without inventing long shortcuts.</remarks>
-        private const float AnchorReentryRadius = 4f;
+        /// <summary>Radius shipped by the generator; kept in sync with CreateMvpTownScene.</summary>
+        private const float AnchorReentryRadius = 6f;
 
         [Test]
         public void JunctionMesh_ReducesAnchorDetours_WithoutRegeneratingTheScene()
@@ -91,14 +89,36 @@ namespace CindarsHope.Tests.EditMode.City
                 // Anchor re-entry alone: join every anchor to road nodes within reach instead of
                 // keeping the single unbounded connector edge the generator serialized (measured
                 // 57-73u on maelor/tibbet/thalindra, while a road node sits 0.00-2.58u away).
-                var connectorOnly = new List<NpcTownRouteEdge>(baseEdges);
-                var connectors = AddAnchorReentry(nodes, anchors, connectorOnly, AnchorReentryRadius);
-                var connectorDetours = Measure(probe, nodes, connectorOnly, pairs, out var cWorst,
-                    out var cWorstLabel);
-                TestContext.WriteLine($"anchor-reentry {AnchorReentryRadius:F1}u: candidates={connectors} " +
-                                      $"edgesKept={probe.Edges.Count} detours={connectorDetours}/{pairs.Count} " +
-                                      $"worst={cWorst:F1}x on {cWorstLabel}");
-
+                // Calibrates the shipped radius instead of assuming it. A larger reach could connect an
+                // anchor across open ground the player would not read as a path, so a better number
+                // here is a finding to weigh, not an automatic adoption.
+                var connectorDetours = int.MaxValue;
+                var cWorst = 0f;
+                var cWorstLabel = "none";
+                var connectors = 0;
+                var residual = new List<string>();
+                foreach (var radius in new[] { AnchorReentryRadius, 6f, 8f })
+                {
+                    var candidateEdges = new List<NpcTownRouteEdge>(baseEdges);
+                    var added = AddAnchorReentry(nodes, anchors, candidateEdges, radius);
+                    var detail = new List<string>();
+                    var detours = Measure(probe, nodes, candidateEdges, pairs, out var worst,
+                        out var worstLabel, detail);
+                    TestContext.WriteLine($"anchor-reentry {radius:F1}u: candidates={added} " +
+                                          $"edgesKept={probe.Edges.Count} detours={detours}/{pairs.Count} " +
+                                          $"worst={worst:F1}x on {worstLabel}");
+                    if (Mathf.Approximately(radius, AnchorReentryRadius))
+                    {
+                        connectorDetours = detours;
+                        cWorst = worst;
+                        cWorstLabel = worstLabel;
+                        connectors = added;
+                        residual = detail;
+                    }
+                }
+                // The pairs the shipped fix does NOT resolve, so the remainder is scoped rather than
+                // hidden behind the headline reduction.
+                foreach (var line in residual) TestContext.WriteLine($"residual: {line}");
                 // Both together.
                 var bothEdges = new List<NpcTownRouteEdge>(baseEdges);
                 AddJunctionCandidates(nodes, baseEdges, bothEdges, 2.5f);
@@ -259,7 +279,7 @@ namespace CindarsHope.Tests.EditMode.City
 
         private static int Measure(NpcTownRouteGraph probe, List<NpcTownRouteNode> nodes,
             List<NpcTownRouteEdge> edges, List<(Vector3 from, Vector3 to, string label)> pairs,
-            out float worstRatio, out string worstLabel)
+            out float worstRatio, out string worstLabel, List<string> detailOut = null)
         {
             probe.Configure(nodes, edges);
             // Reuses the production clearance path so a candidate crossing a solid is dropped exactly
@@ -272,13 +292,23 @@ namespace CindarsHope.Tests.EditMode.City
             var route = new List<Vector3>();
             foreach (var pair in pairs)
             {
-                if (!probe.TryBuildRoute(pair.from, pair.to, route)) { detours++; continue; }
+                if (!probe.TryBuildRoute(pair.from, pair.to, route))
+                {
+                    detours++;
+                    detailOut?.Add($"{pair.label} NO ROUTE: {probe.LastFailureDiagnostic}");
+                    continue;
+                }
                 var travelled = 0f;
                 for (var k = 1; k < route.Count; k++) travelled += Vector3.Distance(route[k - 1], route[k]);
                 var straight = Vector2.Distance(pair.from, pair.to);
                 var ratio = straight > 0.001f ? travelled / straight : 0f;
                 if (ratio > worstRatio) { worstRatio = ratio; worstLabel = pair.label; }
-                if (ratio > DetourRatioLimit) detours++;
+                if (ratio > DetourRatioLimit)
+                {
+                    detours++;
+                    detailOut?.Add($"{pair.label} straight={straight:F2}u graph={travelled:F2}u " +
+                                   $"ratio={ratio:F1}x waypoints={route.Count}");
+                }
             }
             return detours;
         }
