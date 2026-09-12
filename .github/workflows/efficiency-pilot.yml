@@ -1,0 +1,58 @@
+name: Efficiency CI Pilot
+
+on:
+  push:
+    branches:
+      - codex/efficiency-ci-pilot
+
+permissions:
+  contents: read
+
+concurrency:
+  group: efficiency-ci-pilot-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    name: Preflight (project, image, activation gate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout project metadata only
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          lfs: false
+          persist-credentials: false
+          sparse-checkout: |
+            ProjectSettings/ProjectVersion.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify Unity project version
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='m_EditorVersion: 6000.5.7f1'
+          actual="$(tr -d '\r' < ProjectSettings/ProjectVersion.txt | grep '^m_EditorVersion:')"
+          test "$actual" = "$expected"
+
+      - name: Verify Unity container manifest without pulling
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker manifest inspect unityci/editor:ubuntu-6000.5.7f1-base-3.2.2 >/dev/null
+
+      - name: Stop without an approved activation mechanism
+        if: always()
+        shell: bash
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_LICENSE_SERVER: ${{ secrets.UNITY_LICENSE_SERVER }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${UNITY_LICENSE:-}" || -n "${UNITY_LICENSE_SERVER:-}" ]]; then
+            echo 'Activation mechanism is configured; this pilot intentionally runs no Unity test job.'
+            exit 0
+          fi
+          echo '::error title=Unity activation blocked::No UNITY_LICENSE or UNITY_LICENSE_SERVER is configured. EditMode was intentionally not run.'
+          exit 1
