@@ -2486,6 +2486,12 @@ namespace CindarsHope.Editor.SceneCreation
         /// classes. Road endpoints are merged by position so every anchor gets a deterministic route
         /// into the connected street network.
         /// </summary>
+        /// <summary>How far a schedule anchor may reach to re-enter the road mesh.</summary>
+        /// <remarks>Covers the measured gap between an anchor and its genuinely nearest road node
+        /// (0.00u to 2.58u on the worst cases) with margin, without inventing long shortcuts across
+        /// terrain. Candidates beyond a wall are still dropped by PrunePhysicallyBlockedEdges.</remarks>
+        private const float AnchorReentryRadius = 4f;
+
         private static void CreateNpcTownRouteGraph(Transform parent)
         {
             Physics2D.SyncTransforms();
@@ -2787,6 +2793,45 @@ namespace CindarsHope.Editor.SceneCreation
                     Debug.LogError($"[TOWN.N1] No final-physics connector for anchor {anchor.AnchorId} at {target}.");
                 }
             }
+
+            // Anchor re-entry. The single connector chosen above comes from an unbounded search, so a
+            // rejected neighbour sends the anchor tens of units into the mesh: npc_maelor_work sat ON a
+            // road node (0.00u) yet its only edge spanned 73.05u, and npc_maelor_home reached 57.44u
+            // with a road node 2.58u away. Because the island join below links islands by a single
+            // nearest pair, the graph is a tree (measured 2576 nodes / 2577 edges) and those long
+            // entry edges have no alternative, so a 2.58u trip costs 288u.
+            //
+            // Offering every road node within reach is additive: Dijkstra never takes a worse path for
+            // having more options, and PrunePhysicallyBlockedEdges below drops any candidate that
+            // crosses a solid, using the real 0.55x0.4 body rather than the generator's padded probe.
+            // Measured on the materialized graph (TownRouteJunctionMeshTests): detouring anchor
+            // transitions 85/162 -> 15/162 and worst ratio 111.9x -> 9.5x, for 1120 extra candidates.
+            // A junction mesh between road nodes was measured too and rejected: 6.6x more edges for
+            // 85 -> 81, and it adds nothing once re-entry is in place.
+            var anchorReentryEdges = 0;
+            foreach (var anchor in anchors)
+            {
+                if (anchor == null || string.IsNullOrWhiteSpace(anchor.AnchorId)) continue;
+                // Anchor nodes are not registered in nodePositions (only EnsureRoadNode populates it),
+                // so read the entry point from the anchor itself.
+                var entryId = anchor.HasApproach ? $"{anchor.AnchorId}__approach" : anchor.AnchorId;
+                var entryPosition = anchor.HasApproach ? anchor.ApproachPoint : anchor.GetPosition();
+                foreach (var roadId in roadIds)
+                {
+                    var roadPosition = nodePositions[roadId];
+                    var distance = Vector2.Distance(entryPosition, roadPosition);
+                    if (distance > AnchorReentryRadius) continue;
+                    edges.Add(new NpcTownRouteEdge
+                    {
+                        From = entryId,
+                        To = roadId,
+                        Cost = Mathf.Max(0.01f, distance)
+                    });
+                    anchorReentryEdges++;
+                }
+            }
+            Debug.Log($"[TOWN.N1] Anchor re-entry offered {anchorReentryEdges} edge(s) within " +
+                      $"{AnchorReentryRadius:F1}u; blocked candidates are pruned below.");
 
             // Road geometry is authored as independent curves. Join its disconnected endpoint
             // islands by the nearest pair so the serialized graph has one deterministic component;

@@ -140,7 +140,32 @@ namespace CindarsHope.Editor.Dev
                     Debug.Log($"{Tag}   adj {id} @{origin}: {list.Count} edge(s) -> {string.Join(", ", parts)}");
                 }
 
+                // Distinguishes "no road authored near this anchor" from "a road node is right there
+                // but the generator's clearance probe rejected it". Those need opposite fixes.
+                void DumpNearestRoad(string id)
+                {
+                    if (!positionById.TryGetValue(id, out var origin)) return;
+                    NpcTownRouteNode nearest = null;
+                    var nearestDistance = float.PositiveInfinity;
+                    foreach (var node in graph.Nodes)
+                    {
+                        if (node == null || string.IsNullOrWhiteSpace(node.Id)) continue;
+                        if (!node.Id.StartsWith("town_road_", System.StringComparison.Ordinal) &&
+                            !node.Id.StartsWith("town_detour_", System.StringComparison.Ordinal)) continue;
+                        var d = Vector2.Distance(origin, node.Position);
+                        if (d < nearestDistance) { nearestDistance = d; nearest = node; }
+                    }
+                    Debug.Log($"{Tag}   nearestRoad {id} @{origin}: " +
+                              $"{nearest?.Id ?? "none"} @{nearest?.Position} at {nearestDistance:F2}u");
+                }
+
                 Debug.Log($"{Tag} graph totals: nodes={graph.Nodes.Count} edges={graph.Edges.Count}");
+                foreach (var id in new[]
+                         {
+                             "npc_thalindra_work", "npc_maelor_home", "npc_maelor_work",
+                             "npc_tibbet_home", "npc_tibbet_work"
+                         })
+                    DumpNearestRoad(id);
                 foreach (var id in new[]
                          {
                              "npc_thalindra_home", "npc_thalindra_home__approach", "npc_thalindra_work",
