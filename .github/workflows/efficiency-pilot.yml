@@ -18,22 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout project metadata only
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          fetch-depth: 1
-          lfs: false
-          persist-credentials: false
-          sparse-checkout: |
-            ProjectSettings/ProjectVersion.txt
-          sparse-checkout-cone-mode: false
+      - name: Fetch project version metadata at this commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            --header 'Accept: application/vnd.github.raw+json' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/ProjectSettings/ProjectVersion.txt?ref=${GITHUB_SHA}" \
+            --output ProjectVersion.txt
 
       - name: Verify Unity project version
         shell: bash
         run: |
           set -euo pipefail
           expected='m_EditorVersion: 6000.5.7f1'
-          actual="$(tr -d '\r' < ProjectSettings/ProjectVersion.txt | grep '^m_EditorVersion:')"
+          actual="$(tr -d '\r' < ProjectVersion.txt | grep '^m_EditorVersion:')"
           test "$actual" = "$expected"
 
       - name: Verify Unity container manifest without pulling
