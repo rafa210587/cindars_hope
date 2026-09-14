@@ -70,6 +70,7 @@
 | `docs/validation/spec_arch_reorg_00-12*` | Architecture reorg evidence (14 reports) |
 | `docs/validation/SPEC06-17*` | Historical validation evidence (20+ reports) |
 | `docs/validation/current/LAST_VALIDATION_STATUS.md` | Most recent automated results |
+| `D:/Projetos/Cindars_Hope/validation-evidence-archive.zip` | Arquivo local externo: 51 snapshots/backups históricos; SHA-256 `334a48e4077c0bc652e94af559e3961d3531183d5988b274f3b6fd6536d2a217`. Extraia na raiz do repo para restaurar os caminhos originais. PNGs referenciados e relatórios permanecem disponíveis. |
 
 ---
 
