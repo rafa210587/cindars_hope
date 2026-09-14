@@ -11,7 +11,7 @@ Batch já solicitado, com dependências e ownership definidos. Não iniciar wave
 ## Procedimento
 
 1. Ler CURRENT_STATE, specs do batch e a matriz canônica.
-2. Uma spec por iteração, usando execute-spec-strict e report individual.
+2. One spec per iteration, using execute-spec-strict and its proportional evidence table.
 3. Resolver dependências same-wave autorizadas depth-first e voltar à spec original.
 4. Executar testes/gates pertinentes por fatia; reutilizar evidência verificável sobre
    os mesmos inputs. Não repetir strict global e builds idênticos por spec.
@@ -23,7 +23,7 @@ Batch já solicitado, com dependências e ownership definidos. Não iniciar wave
 
 ## Saída esperada
 
-Por spec: critérios, report, arquivos, testes/gates/mode/exit/evidência, status e pendências.
+Por spec: critérios, evidência proporcional, arquivos, testes/gates/mode/exit, status e pendências.
 No checkpoint: resultado integrado separado dos resultados das fatias.
 Batch concluído não prova aceitação humana da wave.
 

@@ -26,8 +26,8 @@ Implementação de uma spec. Fila vem de CURRENT_STATE e da tarefa, não de path
    não executar build por fase nem pedir reexecução só porque veio de subagent.
 7. Usar /validate-spec: strict global no checkpoint; `-Gates` para seleção explícita.
    Com `-ScopePath`, conferir manifesto contra escopo autorizado e diff real.
-8. Criar report individual com Acceptance criteria extracted, Existing systems audit,
-   Spec Compliance Matrix, Validation e Honest status rationale.
+8. Record evidence by the spec-execution risk table: diff for docs/harness; EditMode XML
+   + commit exit for pure logic; tests + one integration paragraph in the conditional report.
 9. Atualizar docs autorizadas e revalidar inputs documentais alterados. Conferir status
    pela matriz; /finish-spec decide promoção. Não fazer commit/push sem autorização aplicável.
 10. Parar após a spec, salvo batch/continuidade já solicitados.

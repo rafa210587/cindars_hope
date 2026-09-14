@@ -50,9 +50,10 @@ Get-ChildItem -Path "<asset-folder>" -Filter "*.asset" -Recurse |
   Select-Object -ExpandProperty Count
 ```
 
-## Documentação obrigatória
+## Documentation
 
-Registre em `docs/validation/<SPEC>_<date>.md`:
+Use tests plus one paragraph in the existing spec report (maximum 60 lines). Reuse
+`docs/validation/<spec_id>/REPORT.md`; overwrite reruns, no timestamp folders. Record:
 
 - Método de generator tentado.
 - Arquivo de log.
@@ -77,6 +78,8 @@ Se nenhum `error CS` existe mas package/test assemblies estão "not valid", trat
 
 ## Regras
 
+- Only scenes with approved keyart may add one comparative capture. No default index.html.
+- Never copy .unity/.prefab/.asset as evidence snapshots/backups; cite the commit hash.
 - Não rode generators do Unity em paralelo para o mesmo projeto.
 - Não trate um nome de menu ausente como falha se existe um editor method equivalente; documente a divergência.
 - Não forje manualmente assets gerados, a menos que a spec permita explicitamente.

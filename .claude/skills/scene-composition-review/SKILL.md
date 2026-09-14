@@ -10,7 +10,9 @@ This is an audit, not authorization to edit art, regenerate scenes or start paid
 
 ## Evidence before judgment
 
-- Open the exact latest scene capture and the approved reference, if available. Identify revision,
+- Generate only one comparative evidence capture for a scene with approved keyart; overwrite
+  it on rerun in the stable spec folder. Otherwise inspect existing images or live scene state.
+  Open the exact latest result and approved reference when available. Identify revision,
   camera framing/resolution and whether each image is a concept, mockup or actual Unity render.
   Link runtime captures to their scene/revision through capture metadata, input hashes or another
   verifiable identifier; a filename ending in "final" is not evidence of freshness.

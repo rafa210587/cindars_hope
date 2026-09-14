@@ -50,25 +50,10 @@ Debt de wave anterior?            listar
 
 ---
 
-## Phase 2 — Doc de decisão
+## Phase 2 — Decision
 
-```
-docs/validation/WAVE_INTEGRATION_<N>_<SLUG>_DECISION.md
-```
-
-```markdown
-## Strategy
-REUSE_EXISTING_<SYSTEM> | NEW_SYSTEM | EXTEND_EXISTING
-
-## Rationale
-<por quê>
-
-## Sistemas reutilizados
-- <sistema>: <o que é reutilizado>
-
-## Deferidos
-- <debt tag>: <motivo>
-```
+Record reuse/extend/new and the reason in the integration paragraph of the spec report.
+Do not create a separate decision document; use the existing systems found in Phase 1.
 
 ---
 
@@ -96,47 +81,22 @@ Para ability com movimento → ver skill `player-ability-runtime`.
 
 ---
 
-## Phase 4 — Docs (obrigatórios)
+## Phase 4 — Evidence
 
-| Doc | Path |
-|-----|------|
-| Report | `docs/validation/WAVE_INTEGRATION_<N>_<SLUG>_REPORT.md` |
-| Human checklist | `docs/validation/WAVE_INTEGRATION_<N>_HUMAN_PLAYMODE_CHECKLIST.md` |
-| Wiring instructions (se Unity action necessária) | `docs/validation/WAVE_INTEGRATION_<N>_HUMAN_UNITY_<SLUG>_WIRING_INSTRUCTIONS.md` |
-
-**Report mínimo:**
-```markdown
-## Status
-BUILD_VALIDATED_WITH_UI_DEBT | BUILD_VALIDATED | BLOCKED
-
-## Strategy applied
-REUSE_EXISTING_X
-
-## Assembly-CSharp: PASS | FAIL
-## Assembly-CSharp-Editor: PASS | FAIL
-## Docs validation: PASS | EXPECTED_FAIL_LEGACY_ONLY
-
-## Human Play Mode needed: YES | NO
-## Can continue to next WAVE_INTEGRATION: YES | NO
-```
-
-**Human checklist mínimo:**
-```markdown
-| Step | Expected | Pass/Fail |
-|------|----------|-----------|
-| Open scene, Press Play | No red errors | |
-| <ação específica da spec> | <resultado esperado> | |
-| Stop Play | Scene not corrupted | |
-```
+Use applicable tests plus one paragraph in `docs/validation/<spec_id>/REPORT.md` (or the
+existing spec report), at most 60 lines total. Include strategy, wiring, action/expected
+result, command/inputs/XML/exit and PASS/FAIL/NOT RUN. Reuse a wave checklist when relevant.
+One folder per spec; overwrite reruns. Only approved-keyart scenes allow one comparative
+capture. No asset snapshots/backups (cite commit hash), per-run folders or default index.html.
+Docs/harness use the diff; pure logic/bugfix use EditMode + exit code in the commit.
 
 ---
 
 ## Phase 5 — Build Validation
 
-```powershell
-.\tools\docs\run_strict_validation.ps1
-if ($LASTEXITCODE -ne 0) { Write-Host "VALIDATION FAILED"; exit 1 }
-```
+Select tests/checks from `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`; reuse evidence for
+unchanged inputs. Keep actual exit codes and FAIL/NOT RUN; never label a legacy failure PASS.
+Preserve save/migration, IDs, secrets and data-integrity checks.
 
 ---
 

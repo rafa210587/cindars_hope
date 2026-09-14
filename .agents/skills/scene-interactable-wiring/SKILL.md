@@ -153,10 +153,10 @@ private void CreateTreeResource(string name, Vector2 position)
 }
 ```
 
-Depois de adicionar ao CreateScene, documente nas wiring instructions:
-```
-docs/validation/WAVE_INTEGRATION_<N>_HUMAN_UNITY_<SLUG>_WIRING_INSTRUCTIONS.md
-```
+After CreateScene wiring, run the relevant test and record setup/action/result in one
+paragraph of the existing spec report (maximum 60 lines). Use one stable spec folder,
+overwrite reruns. Only approved-keyart scenes allow one comparative capture; no asset
+snapshots/backups or default index.html. Cite the commit hash rather than copying assets.
 
 ---
 

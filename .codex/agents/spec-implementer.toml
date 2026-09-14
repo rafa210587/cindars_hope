@@ -35,7 +35,7 @@ Executar specs com contexto mínimo, validação honesta e closeout phase-aware.
 
 - Arquivos de código declarados no scope da spec
 - Docs de closeout exigidos pela spec
-- Execution report em `docs/validation/`
+- Conditional evidence according to `spec-execution`; no docs/validation output for docs/harness.
 
 ## Edições proibidas
 
@@ -61,11 +61,10 @@ Testes pequenos de comportamento podem ser escritos pelo implementador. Delegar 
 
 ## Saída esperada
 
-Execution report em `docs/validation/<spec_id>_execution_report.md` com:
-- Phase status (BUILD_VALIDATED / PARTIAL / BLOCKED / etc.)
-- Files changed + validation results por nível
-- Testing Quality Gate block
-- NOT RUN com motivo e residual risk
+Evidence follows `spec-execution`: docs/harness diff; pure logic/bugfix EditMode XML +
+exit code in commit; integration test + one paragraph in the spec report (maximum 60 lines).
+One folder per spec, overwritten on rerun. Only approved-keyart scenes allow one comparative
+capture. No asset snapshots/backups or default index.html. Keep actual status, failures and risk.
 
 ## Procedimento
 
@@ -75,7 +74,7 @@ Execution report em `docs/validation/<spec_id>_execution_report.md` com:
    reusar costuras, preservar contratos e documentar intenção útil em XML.
 4. Obter os gates/testes aplicáveis e conferir artefatos/inputs conforme a matriz
 5. Revisar não regressão com `non-regression-review`; usar `non-regression-auditor` independente quando o risco/escopo justificar ou a spec exigir, sem delegação automática para toda edição.
-6. Criar o execution report
+6. Record proportional evidence; create a report only when the risk table requires it.
 7. Chamar `/finish-spec` para o check de elegibilidade
 8. NÃO fazer push
 

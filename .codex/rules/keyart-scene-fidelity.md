@@ -13,7 +13,9 @@ Register new keyart when approved. Do not assume Farm-specific criteria apply to
 
 ## Evidence before reporting
 1. Open the canonical PNG rather than validating from memory or description.
-2. Capture the result without Gizmos. Materialize the generator when it changed and capture requires
+2. Keep one comparative capture without Gizmos in the stable spec folder, overwriting on rerun.
+   Only scenes with approved keyart may generate evidence images; inspect existing art directly elsewhere.
+   Materialize the generator when it changed and capture requires
    that output. Never regenerate routinely when it could overwrite concurrent scene work.
 3. Compare affected regions with the keyart: shape, color, density, paths, enclosure language and props.
    Include adjacent context when composition or scale changes.
@@ -27,7 +29,7 @@ Register new keyart when approved. Do not assume Farm-specific criteria apply to
 
 FarmScene uses `FarmSceneCapture` in `Assets/_Game/Scripts/Editor/Dev/FarmSceneCapture.cs`.
 Review the capture method and effects before running it. `RegenAndCapture` also regenerates; use it only
-when regeneration is in scope and preserves existing work. Collider captures help inspect walkability;
+when regeneration is in scope and preserves existing work. Use physics tests to inspect walkability;
 an Editor capture does not prove traversal in Play Mode. Run Unity batchmode sequentially with Unity closed,
 as required by `unity-assets`.
 

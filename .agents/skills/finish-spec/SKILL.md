@@ -7,11 +7,11 @@ description: "Confere evidência e decide promoção sem repetir gates válidos.
 
 Confere evidência e decide promoção sem repetir gates válidos.
 
-**Arguments:** `$ARGUMENTS` — spec e execution report.
+**Arguments:** `$ARGUMENTS` — spec and diff/commit evidence or conditional execution report.
 
 ## Procedimento
 
-1. Ler spec/report, CURRENT_STATE e SPEC_VALIDATION_MATRIX_MASTER; consultar protocolo
+1. Read the spec and its proportional evidence, CURRENT_STATE and SPEC_VALIDATION_MATRIX_MASTER; consultar protocolo
    da wave para promoção. Identificar requisitos aplicáveis e autorização da sessão.
 2. Conferir critérios/integração e artefatos reais. Resumo de subagent sozinho não é prova;
    log/XML vigente verificado não exige reexecução automática.

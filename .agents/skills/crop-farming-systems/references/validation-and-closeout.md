@@ -11,7 +11,11 @@ Toda essa lógica é determinística e pura ⇒ EditMode tests obrigatórios (Te
 - `FarmResourceRefreshProcessor`: cada política (FixedDays/NextDayChance/SeasonStart/WeatherTriggered); forbidden zones; same-day guard; zone/farm-level gates; determinismo do roll.
 - `CropYieldResolver`: yield dentro do range por seed + bônus de Excellent.
 
-A parte de feel (plantar/regar/colher na scene) precisa de human scenario em `docs/validation/playmode/<spec_id>_human_test_scenario.md`.
+Pure logic uses EditMode XML + command/exit in the commit message. Scene integration
+uses tests + one paragraph in the existing spec report (maximum 60 lines), reusing the
+wave scenario where relevant. One spec folder; overwrite reruns, no separate scenario file.
+Only approved-keyart scenes allow one comparative capture; no asset snapshots/backups or
+default index.html. Save/migration, IDs and integrity checks remain mandatory.
 
 ## Red flags (pare e reveja o escopo)
 

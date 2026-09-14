@@ -9,7 +9,11 @@ Lógica de tempo é deterministic logic ⇒ EditMode tests obrigatórios (Testin
 - `WorldEventResolver`: `ResolveFestival`/`ResolveLunarPeak` por `(Season, DayInSeason)`; `ResolveRandomEvent` estável para `(worldSeed, day)`; `NextKnownFestivals` em ordem cronológica;
 - round-trip de save: capturar dia/year/lua → restaurar → clima/eventos re-derivados iguais.
 
-O relógio em `GameTimeManager.Update()` (Day/Night phase, `CurrentHourOfDay`) depende de `Time.deltaTime`/Play Mode — para a parte de feel da virada, anexe human scenario em `docs/validation/playmode/<spec_id>_human_test_scenario.md`.
+Pure logic uses EditMode XML + command/exit in the commit message. Scene integration
+uses tests + one paragraph in the existing spec report (maximum 60 lines), reusing the
+wave scenario where relevant. One spec folder; overwrite reruns, no separate scenario file.
+Only approved-keyart scenes allow one comparative capture; no asset snapshots/backups or
+default index.html. Save/migration, IDs and integrity checks remain mandatory.
 
 ## Red flags (pare e reveja o escopo)
 

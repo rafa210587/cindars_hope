@@ -29,7 +29,8 @@ Ao finalizar spec, refactor, tooling, bugfix ou alteração documental relevante
    que compile não prova; não precisa repetir testes confiáveis do executor.
 2. Conferir evidência vigente. Executar somente gates faltantes/invalidados ou necessários
    para uma preocupação nova. Consultar SPEC_VALIDATION_MATRIX_MASTER.
-3. Atualizar report e índices/status dentro do escopo autorizado; não mover specs
+3. Update evidence using spec-execution (diff/commit or conditional report) and authorized
+   indices/status; não mover specs
    automaticamente. /finish-spec determina elegibilidade.
 4. Após editar/mover docs, obter docs validation sobre esse estado. Isso não invalida
    compile/testes C# cujos inputs não mudaram.
@@ -41,8 +42,9 @@ Ao finalizar spec, refactor, tooling, bugfix ou alteração documental relevante
 ## Saída esperada
 
 Arquivos, comportamento/contratos entregues, evidência e limites.
-Report de spec contém Acceptance criteria extracted, Existing systems audit,
-Spec Compliance Matrix, Validation e Honest status rationale.
+Only when the risk table requires a spec report: at most 60 lines with criteria, reused
+systems, requirement/test mapping, validation and honest status; one integration paragraph.
+No new docs/validation folder for docs/harness or pure logic; use diff or commit + XML.
 
 ## Quando NÃO usar
 

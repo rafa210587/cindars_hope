@@ -126,14 +126,16 @@
 
 ## 6.5. Human Test Scenario Rules
 
-For any spec that changes gameplay, UI, save/load, cave, combat, events, or asset behavior at runtime:
+Evidence follows `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` and `spec-execution`:
 
-1. **Mandatory deliverable:** Human test scenario file at `docs/validation/playmode/<spec_id>_human_test_scenario.md`
-2. **Created by:** `/gameplay-test-scenario` skill (invoked before `/finish-spec`)
-3. **Content:** Follows `PLAYMODE_TEST_SCENARIO_TEMPLATE.md` — feature summary, scenes, initial state, test scenarios, expected results, console expectations, pass/fail checklist
-4. **Phase 3 evidence:** Human tester executes scenario, records results in checklist, signs off
-5. **Closeout requirement:** Test scenario must be referenced in execution report Phase 3 section; without Phase 3 evidence, max promotion status is `BUILD_VALIDATED`, not `ACCEPTED`
-6. **For docs-only or code-only specs:** Test scenario NOT required
+1. Docs/harness: diff, no validation folder or report.
+2. Pure logic/bugfix: EditMode XML and command/exit code in the commit message.
+3. Wiring/integration: applicable test + setup/action/result in one paragraph of the spec report.
+4. Scene with approved keyart: one comparative capture; only this case permits an evidence image.
+5. Reuse one folder per spec and overwrite reruns; a report is at most 60 lines. No asset
+   snapshots/backups or default index.html. Cite commit hashes and keep raw test outputs ignored.
+6. Preserve save/migration, IDs, secrets and data-integrity checks. A written human scenario
+   is not execution; actual human acceptance is required when part of the acceptance gate.
 
 ---
 

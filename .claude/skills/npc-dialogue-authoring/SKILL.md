@@ -87,26 +87,18 @@ SHOP_RUNTIME_BASIC_WITH_ADVANCED_SERVICE_DEBT
 NpcScenePlacementMarker: npcId, zone, position (Vector2), facingDirection
 ```
 
-Documente posições em:
-```
-docs/validation/WAVE_INTEGRATION_<N>_NPC_PLACEMENT_MAP.md
-
-| NPC     | Zone            | Position | Facing | Service         |
-|---------|-----------------|----------|--------|-----------------|
-| Sylveth | CraftingQuarter | (12, -4) | right  | blacksmith_shop |
-```
+Record changed placement IDs and the scene test result in one paragraph of the existing
+spec report (maximum 60 lines). Read positions from the catalog/markers; do not duplicate them
+in a placement-map document.
 
 ---
 
 ## Docs exigidos
 
-| Doc | Quando |
-|-----|--------|
-| `WAVE_INTEGRATION_<N>_NPC_CANONICAL_ROSTER.md` | Novo batch de NPCs |
-| `WAVE_INTEGRATION_<N>_NPC_DIALOGUE_SETS.md` | Conteúdo de dialogue |
-| `WAVE_INTEGRATION_<N>_NPC_SHOP_SERVICES.md` | Definições de shop/service |
-| `WAVE_INTEGRATION_<N>_NPC_PLACEMENT_MAP.md` | Posições na scene |
-| `WAVE_INTEGRATION_<N>_NPC_MOVEMENT_SCHEDULES.md` | Patrol/wander (se houver) |
+Keep roster/dialogue/service/schedule content in existing canonical specs or data assets.
+Wiring needs its test + the integration paragraph, not five generated companion documents.
+Use one stable spec folder and overwrite reruns. Only approved-keyart scenes allow one
+comparative capture. No asset snapshots/backups or default index.html; cite the commit hash.
 
 ---
 

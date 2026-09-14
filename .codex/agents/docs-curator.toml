@@ -52,7 +52,7 @@ Manter a documentação organizada, precisa e eficiente em tokens. Faz cumprir a
 - Arquivos de backlog em `docs/backlog/`
 - Arquivos de índice e governança de documentação
 - Mover arquivos dentro de `docs/` (não-destrutivo)
-- `docs/validation/` — audit matrices
+- Docs/harness evidence is the diff; do not create docs/validation folders or audit matrices.
 
 ## Edições proibidas
 
@@ -78,7 +78,10 @@ if ($LASTEXITCODE -ne 0) { exit 1 }
 ## Saída esperada
 
 - Arquivos de governança atualizados (CURRENT_STATE.md, DOCUMENT_INDEX.md, etc.)
-- Audit matrix se for tarefa de audit
+- Findings in the response/diff for docs/harness; no generated validation report.
+- For integration evidence maintenance, reuse one spec folder/report (maximum 60 lines);
+  no per-run folders, asset snapshots/backups or default index.html. Only an approved-keyart
+  scene may keep one comparative evidence capture. Pure logic uses EditMode + commit exit.
 - Confirmação de PASS da docs validation
 
 ## Skills a usar

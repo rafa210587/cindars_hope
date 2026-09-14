@@ -42,23 +42,29 @@ PROJECT_LOG, ROADMAP ou relatórios não relacionados por padrão.
    inputs; pode reutilizar evidência de subagent verificada. Não exigir builds por fase.
 5. **Revisão:** conferir diff, critérios, consumidores, falhas, wiring e save afetados.
    Usar non-regression-review; refactor relevante usa solid-refactoring.
-6. **Report:** criar arquivo individual em docs/validation, com seções abaixo.
-   Documentar cenários de integração pertinentes ou referenciar o cenário da wave.
+6. **Evidence:** use the risk table below; create a report only for integration/keyart.
+   Keep relevant integration scenarios in that report or reference an existing wave scenario.
 7. **Closeout:** /finish-spec decide promoção por evidência da matriz/protocolo.
    Não mover spec nem criar commits/push automaticamente contra instruções da sessão.
 
-## Report obrigatório
+## Proportional evidence
 
-- Acceptance criteria extracted: critério binário e evidência esperada.
-- Existing systems audit: encontrado/reutilizado/criado e motivo.
-- Spec Compliance Matrix: requirement -> implementação/teste -> OK/FAIL/DEFERRED/N/A.
-- Validation: gates e modo GLOBAL/SCOPED, comandos, versões/configuração, inputs,
-  exit codes, artefatos reais, contagens e resultados; NOT RUN com motivo/risco.
-- Honest status rationale: o que foi comprovado, pendências e trabalho restante.
+| Change | Required evidence |
+|---|---|
+| Docs / harness | Diff and applicable checks; no folder or report in docs/validation |
+| Pure logic / bugfix | EditMode test XML; command, inputs, result and exit code in the commit message |
+| Wiring / integration | Applicable test plus one paragraph in the spec report |
+| Scene with approved keyart | Applicable checks plus one comparative capture; only this case permits an evidence image |
 
-Status/taxonomia ficam somente na matriz. BUILD_VALIDATED exige critérios centrais
-implementados, compile/gates pertinentes PASS e report; não equivale a global PASS,
-PlayMode nem aceitação humana. Cenário escrito não é cenário executado.
+Use one stable folder `docs/validation/<spec_id>/` only when required; reuse an existing
+spec report in place. Reruns overwrite outputs, never create timestamp/run subfolders.
+Keep raw logs/XML in ignored `Logs/<spec_id>/` or `TestResults/`, accessible for verification.
+A spec report is at most 60 lines: criteria, reused systems, requirement-to-test mapping,
+commands/inputs/exit codes, real artifacts and honest status; integration needs one paragraph.
+Do not copy .unity/.prefab/.asset as snapshots/backups for evidence; cite the commit hash.
+No generated index.html unless the human explicitly requests it. These are storage rules,
+not permission to weaken save/migration, IDs, secrets or data-integrity checks.
+Status comes from the canonical matrix. A written scenario is not executed human acceptance.
 
 ## Testes e proteção comportamental
 
@@ -83,7 +89,7 @@ Code-only sem esse risco não exige PlayMode indiscriminado.
 
 ## Batch
 
-Uma spec por iteração e report individual; critérios continuam rastreáveis.
+One spec per iteration with evidence from the risk table; keep criteria traceable.
 Gates/testes pertinentes por fatia, integração global no checkpoint; não repetir a mesma
 evidência por spec. Falha obrigatória impede ações dependentes; diagnóstico/correção
 autorizados e trabalho independente podem continuar. Batch não prova aceitação da wave.

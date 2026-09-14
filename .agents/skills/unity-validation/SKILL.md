@@ -41,14 +41,19 @@ for instance identity, ownership and reload recovery. MCP does not replace the e
    to define effective-solid coverage and motion evidence. For scene visual acceptance, use
    [scene-composition-review](../scene-composition-review/SKILL.md); a green runner is not its verdict.
 5. For compile-only paths, run `RunUnityCompileValidation.ps1` and parse integrated scan once; do not rescan the same log.
-6. For visual or UX-sensitive regressions, obtain real runtime captures/playback with available tools and inspect them. Record scenario, viewport, timing and reviewer; distinguish agent visual review from human acceptance. Missing native UI control does not prevent headless PlayMode or camera captures, but camera-only renders do not prove screen-overlay UI or keyboard interaction. Request human work only for acceptance that actually requires it and cannot be obtained through authorized tools.
+6. For scenes with approved keyart, keep one comparative runtime capture in the stable
+   spec folder, overwritten on rerun. Otherwise use tests/live observation and inspect existing
+   art without generating evidence images. Record actual scenario/result; camera-only renders
+   do not prove screen-overlay UI or keyboard interaction, nor human acceptance.
 7. Preserve command, editor version (`ProjectSettings/ProjectVersion.txt`), exit code, log paths, XML path, counts, seed/clock, and changed input list.
 8. Reuse equivalent evidence only with explicit rationale; no redundant runs.
 9. If evidence is missing, stale, or inconsistent: set status to NOT RUN or FAIL with residual risk.
 
 ## Expected output
 
-Each output uses PASS / FAIL / NOT RUN / NOT APPLICABLE with:
+Use the spec-execution evidence table: commit + XML for pure logic, tests + one paragraph
+for integration, report maximum 60 lines. No per-run folders, asset snapshots/backups or
+default index.html. Each output uses PASS / FAIL / NOT RUN / NOT APPLICABLE with:
 
 - Gate ID(s) and scope
 - Command/version/exit

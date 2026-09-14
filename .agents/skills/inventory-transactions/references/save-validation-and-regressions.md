@@ -5,7 +5,11 @@
 - O snapshot persiste **só id + quantidade por slot** (`InventorySlotSaveData`: `SlotIndex`, `ItemId`, `Amount`, `IsEquipped`, `EquipmentBindingId`). Nenhum `ItemDataSO`, `Sprite`, `GameObject` (rule `save-dto-simple-types-only`).
 - `RestoreFromSaveData` resolve cada id pelo `ItemDatabaseSO` (`TryGetItemData`) e **descarta com warning** ids desconhecidos — fallback seguro, sem crash (rule `error-handling-resilience`, categoria 2).
 - Save legado sem `Slots` cai no path `RestoreLegacyItems` (lista id+amount). Preserve esse fallback ao mudar o schema.
-- Mudança de schema de inventory → seguir a skill `save-load-pattern` (version + migration) e documentar em `docs/validation/`.
+- Schema changes retain `save-load-pattern` version/migration/ID/integrity checks. Pure logic
+  uses EditMode XML + command/exit in the commit; restore wiring adds one paragraph in the
+  existing spec report (maximum 60 lines). Reuse one spec folder; overwrite reruns.
+  Only approved-keyart scenes allow one comparative capture; no asset evidence backups
+  or default index.html. Gameplay save snapshots remain required, unaffected by this rule.
 
 ## Testes
 

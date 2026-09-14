@@ -28,7 +28,14 @@ a matriz canônica em `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`.**
 | Human validation PASS | Cenário realmente executado, com resultado |
 | BUILD_VALIDATED/ACCEPTED | Somente requisitos satisfeitos conforme matriz e spec |
 
-## Report
+## Evidence
+
+A commit message plus the actual test XML is valid evidence; a new folder is not required.
+Docs/harness use the diff; pure logic/bugfix use EditMode + commit exit code.
+Wiring/integration use tests + one paragraph in the spec report (maximum 60 lines).
+Only a scene with approved keyart may add one comparative image. Reuse one spec folder,
+overwrite reruns, keep raw outputs ignored; no asset snapshots/backups or default index.html.
+Keep save/migration, IDs, secrets and data-integrity checks unchanged.
 
 Registrar modo GLOBAL/SCOPED, gates selecionados e razão, comando/versões/configuração,
 exit code por execução, arquivos de log/XML realmente produzidos, inputs validados,
