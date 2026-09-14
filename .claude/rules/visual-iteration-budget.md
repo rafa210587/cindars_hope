@@ -1,6 +1,6 @@
 # Bounded visual iteration
 
-Apply when iterating a scene or asset toward approved reference art.
+Apply to code debugging and visual iteration; visual checks below apply only to art/scene work.
 
 - Only scenes with approved keyart generate evidence images: keep one comparative capture,
   overwritten in the stable spec folder. Otherwise inspect existing art and use tests/live observation.
@@ -21,8 +21,12 @@ Apply when iterating a scene or asset toward approved reference art.
   owner and wait for a changed, ready input state rather than retrying the same blocked build.
 - A probe failure must be classified as product, instrumentation or environment before fixing.
   Never change production behavior solely to make a nonrepresentative demonstration look correct.
-- After two attempts without observable improvement, stop that approach, preserve evidence,
-  show the result and revise the method. This is not task cancellation or permission escalation.
+- After two attempts without measurable improvement, stop the affected debug/visual work and
+  ask the human how to proceed. Use the existing failed assertion, error count or observable
+  acceptance criterion; do not create measurement tooling for this rule. Record discarded
+  hypotheses and the unchanged result in three lines in the existing commit/report/response.
+  Wait for the answer before a third attempt; independent authorized work may continue.
+  This is a pause for direction, not task cancellation.
 - Record the baseline, findings, changed files, attempts, results and next decision in the
   existing report. Record elapsed time and usage only when measured; no new logging system.
 - Reuse the spec report (maximum 60 lines), never a per-run folder. No default index.html;
