@@ -1,5 +1,7 @@
 # Harness — catálogo sob demanda
 
+Harness freeze: no new skill, rule, agent, command or hook until 10 specs are promoted after this freeze; corrections to existing artifacts remain allowed.
+
 Fonte canônica de descoberta: este índice. Leia apenas a seção e o artefato correspondentes ao trabalho; links não exigem carregamento recursivo.
 Skills: `skills/<id>/SKILL.md`; commands: `commands/<id>.md`; agents: `agents/<id>.md`.
 No Codex, os mesmos IDs ficam em `.agents/skills/` e `.codex/agents/`; commands também são skills.
