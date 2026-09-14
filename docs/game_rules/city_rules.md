@@ -34,7 +34,31 @@ This rule is the canon source cited by `fable_11` (interiors / doors / schedule 
 
 ---
 
-## Amendment operacional — Town expandida (2026-09-11)
+## Town — interiores híbridos (aprovado em 2026-09-12)
+
+Contrato aprovado em [S01](../../.specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_catalog_v1.md).
+É alvo autorizado de migração, **não evidência de runtime já implementado**. Até o rollout validado,
+os edifícios não migrados conservam o comportamento anterior. Prevalece sobre Rule3 e sobre a
+modalidade walk-in do amendment de 2026-09-11, sem revogar colisão, identidade ou avisos de horário.
+
+- D01: preservar 24 lotes/IDs e 28 perfis; 23 residentes Indoor em 21 endereços e cinco Outdoor.
+- D02: 22 fachadas com portal; GateKeeper preserva posto cutaway com aposento anexo;
+  AnimalYard preserva curral aberto com aposento anexo. São 24 destinos.
+- D03: uma cena aditiva de conteúdo por vez; Town permanece carregada e ativa, sem duplicar managers/NPCs.
+- D04: programa espacial segue cada ficha e o corpo final dos atores; não reduzir personagens ou móveis para caber.
+- D05: 13 provedores principais internos/10 externos; ShopIds, estoques e serviços únicos, custos inalterados.
+- D06: porta animada → cruzamento físico → blackout → colocação validada → fade in; abrir não carrega cena.
+- D07: agenda é autoridade de atendimento. Inn tem salão público 24h, nunca serviço de NPC indisponível.
+  Lojas-moradias fechadas não permitem contornar o bloqueio com visita residencial. Casas puras:06–22;
+  Temple/MarketHall:06–22, Chamber/Prison:09–18. Saída sempre livre; morador autorizado pode entrar.
+- D08: save guarda HouseId/pose local; posição legada aponta a exterior seguro, inclusive fallback.
+- D09: móveis pessoais não dão loot/descanso grátis; camas pagas e estações existentes preservam efeitos/IDs.
+- D10: validar Renko, CarvalhoTorto e GateKeeper antes dos outros 21 interiores.
+
+Regra4 continua vinculante com a exceção explícita de circulação pública da Inn acima.
+Revisão de dados não aprova arte, passagem real, save ou migração em produção.
+
+## Amendment operacional — Town expandida (2026-09-11; modalidade de interior histórica após migração)
 
 Este amendment aplica a decisão humana e a implementação validada de
 `.specs/a_implementar/spec_town_spatial_expansion_and_access_v1.md`. Em caso de conflito com as seções

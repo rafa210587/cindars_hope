@@ -5,14 +5,13 @@
 
 ---
 
-## Official Execution Context (agents must read)
+## Execution Context (follow CLAUDE.md reading policy)
 
 | Document | Purpose |
 |----------|---------|
 | `AGENTS.md` | Agent rules, skills, protocol |
 | `CLAUDE.md` | Claude Code project instructions |
 | `docs/project/CURRENT_STATE.md` | Current project status; active queue |
-| `docs/validation/current/LAST_VALIDATION_STATUS.md` | Latest automated validation results |
 
 ---
 
@@ -48,6 +47,8 @@
 | `docs/validation/QUALITY_IMPROVEMENTS_EXECUTION.md` | Continuação executada: inventário/UI, validações, testes e resultados |
 | `docs/validation/TEST_VALIDATION_EFFICIENCY_REVIEW.md` | Auditoria histórica de redundância; aplicação referenciada no report atual |
 | `docs/archive/CURRENT_STATE_before_SOLID_AI_2026_09_08.md` | Snapshot histórico preservado integralmente; não usar como fila atual |
+| [Snapshot anterior à manutenção de eficiência](../archive/CURRENT_STATE_before_efficiency_20260912.md) | Estado preservado antes da consolidação de 2026-09-12 |
+| [Pacote de eficiência do workflow](../validation/efficiency_20260912/QUEUE.md) | Fila autorizada, owners, dependências e links para evidência e benchmark; consulta sob demanda |
 
 ---
 

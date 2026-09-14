@@ -1,71 +1,50 @@
 # Guia de Eficiência de Custo — Cindar's Hope
 
-> Como gastar menos tokens sem perder qualidade. Criado 2026-06-23 após uma semana de custo alto.
-> Os números são estimativas estruturais (não há billing por sessão exposto), mas as alavancas são reais.
+> Princípios operacionais para reduzir contexto, retrabalho e chamadas sem degradar qualidade.
+> Não há tabela de preços, contagem de billing ou garantia de cache exposta neste repositório.
 
-## TL;DR das alavancas (por impacto)
+## Roteamento
 
-1. **Escolha o modelo certo para a tarefa** — maior economia, sob seu controle direto.
-2. **Sessões longas e contínuas** — mantêm o cache de prompt quente; evita re-pagar ~25-30k tokens de contexto fixo.
-3. **Script > reasoning para trabalho homogêneo** — edição em massa (catálogos, assets, IDs) por gerador, não por agent item-a-item.
-4. **Delegue trabalho mecânico a agents Sonnet** — já configurado nos agents abaixo.
+Use [.claude/rules/task-model-routing.md](../../.claude/rules/task-model-routing.md) como fonte
+canônica. Ela orienta o modelo mais econômico que atenda ao risco e à validação, com escalada quando
+necessário; a escolha efetiva depende dos controles disponíveis no host. Não transforme aliases,
+esforço de raciocínio ou tamanho de arquivo em promessa de preço ou economia.
 
----
+- Documentação local, catálogos seguindo padrão e validações estabelecidas: candidato econômico inicial.
+- Bug isolado e implementação delimitada: candidato intermediário; escale por risco, não por volume.
+- Integração multi-componente, regressão desconhecida ou arquitetura/save: candidato mais capaz.
 
-## 1. Roteamento de modelo
+Registre uma frase com modelo herdado/escolhido, justificativa e gatilho de escalada quando houver
+delegação. Se o host não aceitar override, mantenha a configuração e declare a limitação.
 
-O loop principal e os agents não precisam todos ser Opus. Opus ≈ 5x o custo de Sonnet; Haiku é ainda mais barato.
+## Contexto, tokens e saída
 
-> **Regra de ouro:** **Opus (última versão)** SÓ para pensar, debater, planejar ou propor. **Toda execução — construir, editar, fazer, validar — vai para Sonnet (última versão).** Sempre a última versão de cada modelo; use os aliases `opus` / `sonnet` / `haiku`, que já resolvem para a versão mais nova (hoje Opus 4.8, Sonnet 5, Haiku 4.5) — não fixe número de versão no `model:`.
+- Contexto estimado (arquivos/instruções carregáveis) é uma medida de planejamento; não é contagem de
+  tokens faturados. Billing, descontos e cache são determinados pelo produto/provedor e não devem ser
+  inferidos deste guia.
+- Leia somente a política de contexto e os arquivos citados pela tarefa. Reutilize uma evidência válida
+  quando entradas, código e critérios não mudaram; não reexecute gate equivalente apenas para atualizar número.
+- Limite saídas de comandos e relatórios ao trecho necessário (`rg`, filtros, `max_output_tokens`).
+  Saída menor reduz ruído de contexto, mas não prova economia financeira.
+- Agrupe trabalho relacionado quando isso preservar estado e critérios; não mantenha sessão aberta por
+  expectativa de TTL ou “cache quente”.
 
-| Tipo de tarefa | Modelo | Por quê |
-|---|---|---|
-| Pensar, debater, planejar, propor: arquitetura, design de spec/refinamento, debug difícil, game design review, decisões | **Opus (última versão)** | Exige julgamento real |
-| Executar / construir / fazer: implementar spec, asset wiring, docs migration, rodar validação, EditMode tests, edição de catálogo/bestiário, bugfix mecânico | **Sonnet (última versão)** | Padrão claro, baixo julgamento |
-| Reconcile status, docs-health, harness audit, commit messages, lookups simples | **Haiku (última versão)** | Quase mecânico |
+## Automação e delegação
 
-**Como aplicar:**
-- **Loop principal:** mantenha Opus (última versão) só enquanto a sessão for pensar/debater/planejar/propor. No momento de **executar** (construir, editar, fazer, validar), delegue a um subagent Sonnet (última versão) — não execute no loop Opus.
-- **Agents:** já configurados via `model:` no frontmatter, usando o alias `sonnet` (resolve para a última versão automaticamente). Sonnet em: `spec-implementer`, `unity-validator`, `docs-curator`, `asset-wiring-specialist`, `test-author`, `non-regression-auditor`, `performance-auditor`, `bugfix-investigator`. Opus (herdado) em: `architecture-reviewer`, `game-design-reviewer`.
-- **`/fast` NÃO economiza:** é Opus com saída mais rápida, mesmo preço.
+Para conteúdo homogêneo, prefira um gerador/script e uma revisão do resultado a iteração item a item.
+Delegue somente fatias independentes ou revisão justificada por risco, definindo escopo, entradas,
+critérios e evidência. Coordenação, retries e revisão contam no custo total; não reivindique economia
+antes de medir o resultado real.
 
----
+A fila e o protocolo de benchmark desta iniciativa estão em
+[efficiency queue](../validation/efficiency_20260912/QUEUE.md); resultados medidos devem substituir
+estimativas, sem virar promessa universal.
 
-## 2. Disciplina de cache de prompt
+## Checklist
 
-O cache de prompt da Anthropic expira em ~5 minutos. O contexto fixo deste projeto (CLAUDE.md + ~33 rules + descrições de skills/agents) é **~25-30k tokens carregados em todo turno**.
-
-- **Cache quente** (turnos seguidos, < 5 min): esse contexto sai com desconto.
-- **Cache frio** (sessão nova OU sessão retomada após ociosa): re-paga tudo cheio.
-
-**Regras práticas:**
-- Agrupe trabalho relacionado numa **única sessão contínua**. Não abra 4 sessões curtas pro que era 1 fluxo.
-- Não deixe uma sessão parada 20 min e volte — isso é cache miss garantido. Se vai pausar, pause de vez e retome num bloco dedicado.
-- Batch de specs homogêneas: rode em sequência na mesma sessão (`/loop-spec-batch-strict`) em vez de uma sessão por spec.
-
----
-
-## 3. Script > reasoning para trabalho homogêneo
-
-Conteúdo repetitivo (ex.: 60+ `bestiary_*.asset`, catálogos de itens, IDs em massa) custa caro se cada item passa por reasoning de um agent. Prefira:
-- Um **editor script Unity** ou **script PowerShell** que faz o passe inteiro.
-- O modelo entra só para **escrever o gerador** e **revisar o resultado** — não para iterar item-a-item.
-
-As skills `data-catalog-authoring` e `editor-validator-authoring` já apontam esse caminho.
-
----
-
-## 4. Higiene de contexto (manutenção contínua)
-
-- Os 14 stubs de rules já foram encolhidos para ~300 chars cada (feito). Não os deixe crescer de novo.
-- Skills dormentes inflam o system prompt. Ver auditoria periódica via `/audit-harness` e a memória `project_skill_system_review_*`.
-- A `context-reading-policy` (não ler PROJECT_LOG/IMPLEMENTATION_STATUS por padrão) é uma rule de custo — respeite-a.
-
----
-
-## Checklist rápido antes de uma sessão
-
-- [ ] A tarefa é mecânica? → Sonnet no loop principal (ou delegue a agent Sonnet).
-- [ ] É design/decisão difícil? → Opus.
-- [ ] Vou tocar conteúdo em massa? → escrever gerador, não iterar.
-- [ ] É trabalho relacionado ao que já fiz hoje? → mesma sessão, não uma nova.
+- [ ] A tarefa está roteada pela regra canônica e o risco justifica o modelo?
+- [ ] A leitura está limitada à política e às referências necessárias?
+- [ ] Saídas estão filtradas e os gates válidos foram reutilizados quando aplicável?
+- [ ] Trabalho repetitivo foi automatizado sem esconder falhas?
+- [ ] Delegação tem ownership, critérios e evidência verificável?
+- [ ] Nenhum texto promete preço, desconto, TTL ou percentual de economia não medido?

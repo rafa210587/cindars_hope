@@ -329,6 +329,18 @@ ProcessingMultiplier (+ optional station-tier flat)`. Crop formula (direction):
 - **Applies to:** every new gold source or sink a spec introduces.
 - **Source:** ECONOMY_PRICING §2, §28, §29; LOOT_CRAFTING_ECONOMY_DIRECTION §"sinks".
 
+**Approved design amendment for purchased-item origin (pending runtime, spec 21F):**
+the price inequality above is a catalog-level diagnostic, not a license to reduce
+the sale value of every unit of a SKU. A unit purchased by the player carries its
+actual paid gold basis and may return at most `max(0, paidBasis-1)` gold after all
+sale bonuses. A derived unit inherits a finite residual resale cap from consumed
+purchased inputs; genuinely produced/earned units keep their normal price. Mixed
+stacks must quote and consume the same origin lots. This rule becomes operative
+only when the inventory, every sale/transform path, and save v6 migration in
+`spec_skills_21f_purchased_origin_v1` pass their acceptance gates. Until then,
+the existing catalog validator and observed cross-channel arbitrage remain open;
+the amendment is a design decision, not a claim that runtime already enforces it.
+
 ---
 
 ## Edge Cases

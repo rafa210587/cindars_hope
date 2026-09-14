@@ -66,3 +66,17 @@ idempotência, recusa de Assets e falha de sintaxe sem sobrescrever índice vál
 Consulta de 2026-09-08: 1698 arquivos próprios incluindo testes; 2633 declarações de tipos,
 2618 nomes distintos na configuração corrente; 1120 declarações com summary XML. São números
 do snapshot, não metas ou contagens a copiar para regras.
+
+## Serena opcional
+
+A integração local em `tools/serena/README.md` oferece consultas semânticas de símbolos e
+referências sobre uma cópia externa dos projetos Foundation, Gameplay e Runtime. Consulte
+o status naquele arquivo: configuração presente não significa servidor habilitado ou
+carregado na tarefa atual. Não cobre automaticamente Editor, testes ou novas fontes que
+ainda não entraram nos projetos gerados pelo Unity.
+
+Use consultas pequenas quando a resolução de referências ajudar a tarefa; para texto
+simples, indisponibilidade ou falha de integridade, continue com `rg`. Após mudanças,
+uma cópia desatualizada exige reconexão, não respostas presumidas como atuais.
+Referências XML não são chamadas de método. O piloto de consultas reais não mede economia
+de tokens, não comprova todo o grafo e não substitui validação Unity.
