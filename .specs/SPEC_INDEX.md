@@ -3,14 +3,14 @@
 > Gerado por `tools/generate_spec_index.ps1`. NAO editar a mao -- rode o script.
 > Indice compacto para descoberta barata de specs (status por pasta + cabecalho).
 
-Total: **485** specs
+Total: **496** specs
 - Fila-FABLE: 5
-- Fila: 66
+- Fila: 73
 - Closeout-MVP: 12
 - Build-Validated: 12
 - Implementado: 308
 - Automatica: 1
-- Outro: 81
+- Outro: 85
 
 | ID | Bucket | Status | Wave | Domain | Path |
 |---|---|---|---|---|---|
@@ -49,6 +49,8 @@ Total: **485** specs
 | spec_farmer_animation_visual_revision_v1 | Fila | CODE_COMPLETE — laboratório SCOPED_PASS; aprovação artística humana PENDING | FARMER_REVIEW — estudos anteriores à integração | Player / Combat / Art | .specs/a_implementar/spec_farmer_animation_visual_revision_v1.md |
 | spec_inventory_operations_and_action_readiness_v1 | Fila | CODE_COMPLETE | QUALITY_IMPROVEMENTS | - | .specs/a_implementar/spec_inventory_operations_and_action_readiness_v1.md |
 | spec_progressive_harness_visual_workflows_v1 | Fila | CODE_COMPLETE; harness validado, docs global FAIL; sem promoção. | - | Harness / Art workflows | .specs/a_implementar/spec_progressive_harness_visual_workflows_v1.md |
+| spec_semantic_navigation_pilot_v1 | Fila | - | - | - | .specs/a_implementar/spec_semantic_navigation_pilot_v1.md |
+| spec_serena_unity_readonly_integration_v1 | Fila | CODE_COMPLETE — project-local MCP enabled; scoped integration checks PASS; no global acceptance. | - | - | .specs/a_implementar/spec_serena_unity_readonly_integration_v1.md |
 | spec_skills_01_avatar_execucao_v1 | Fila | PLAYMODE_VALIDATED — fundação técnica; aceitação final da wave pendente | SKILLS_SDD_V1 | Prioridade: P0 | Domínio: Skills | - | .specs/a_implementar/spec_skills_01_avatar_execucao_v1.md |
 | spec_skills_02_pontos_respec_save_v1 | Fila | UNITY_VALIDATED — 131 testes integrados; aceitação final da wave pendente | SKILLS_SDD_V1 | Prioridade: P0 | Domínio: Skills / Save | - | .specs/a_implementar/spec_skills_02_pontos_respec_save_v1.md |
 | spec_skills_03_shared_cooldowns_v1 | Fila | PLAYMODE_VALIDATED — aceitação final da wave pendente | SKILLS_SDD_V1 | Skills | .specs/a_implementar/spec_skills_03_shared_cooldowns_v1.md |
@@ -64,7 +66,8 @@ Total: **485** specs
 | spec_skills_18_crafting_economy_passives_v1 | Fila | PLAYMODE_VALIDATED — 2026-09-10 | - | - | .specs/a_implementar/spec_skills_18_crafting_economy_passives_v1.md |
 | spec_skills_19_combat_capstones_v1 | Fila | APROVADA — autorização humana de 2026-09-10; refinada após audits técnico e de balanceamento | - | - | .specs/a_implementar/spec_skills_19_combat_capstones_v1.md |
 | spec_skills_20_survival_crafting_capstones_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_20_survival_crafting_capstones_v1.md |
-| spec_skills_21_balance_acceptance_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_21_balance_acceptance_v1.md |
+| spec_skills_21_balance_acceptance_v1 | Fila | APROVADA — autorização humana de 2026-09-10; matriz AC01 revisada com autorização humana de 2026-09-12 | - | - | .specs/a_implementar/spec_skills_21_balance_acceptance_v1.md |
+| spec_skills_21f_purchased_origin_v1 | Fila | PARCIAL — T1–T6 IMPLEMENTADAS, T7 EM VALIDAÇÃO, T8 SEM PROMOÇÃO**. A decisão humana é rastrear origem de itens comprados; o Depth Gate estático independente passou em 2026-09-13. A migração save v6 está ativa. Unity EditMode focal passou 200/200, incluindo transporte, transformação, UI, recuperação com flecha esgotada e arco inicial. PlayMode de venda, envio, save/load e wood/forge passou no recorte; cadeias perch/leather e renda global ainda não são aceitas. O ratchet global permanece FAIL por alterações concorrentes fora da 21F; as três regressões T5 de Resources.Load foram removidas e seu contador voltou ao baseline. | - | - | .specs/a_implementar/spec_skills_21f_purchased_origin_v1.md |
 | spec_skills_22_skill_tree_canvas_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_22_skill_tree_canvas_v1.md |
 | spec_skills_23_skill_loadout_hud_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_23_skill_loadout_hud_v1.md |
 | spec_skills_24_ui_pixel_art_v1 | Fila | APROVADA — autorização humana de 2026-09-10 | - | - | .specs/a_implementar/spec_skills_24_ui_pixel_art_v1.md |
@@ -76,6 +79,10 @@ Total: **485** specs
 | spec_town_building_visuals | Fila | - | - | - | .specs/a_implementar/spec_town_building_visuals.md |
 | spec_town_components_doors_and_collision_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_components_doors_and_collision_v1.md |
 | spec_town_integrated_acceptance_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_integrated_acceptance_v1.md |
+| spec_town_interior_catalog_v1 | Fila | - | - | - | .specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_catalog_v1.md |
+| spec_town_interior_materialization_v1 | Fila | - | - | - | .specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_materialization_v1.md |
+| spec_town_interior_npc_commerce_v1 | Fila | - | - | - | .specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_npc_commerce_v1.md |
+| spec_town_interior_transition_save_v1 | Fila | - | - | - | .specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_transition_save_v1.md |
 | spec_town_keyart_fidelity_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_keyart_fidelity_v1.md |
 | spec_town_layout_v9_organic | Fila | - | - | - | .specs/a_implementar/spec_town_layout_v9_organic.md |
 | spec_town_native_architecture_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_native_architecture_v1.md |
@@ -475,6 +482,8 @@ Total: **485** specs
 | spec_14a_cave_enemy_spawnplan_materialization_run_stability | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md |
 | spec_14a_fix2_spawn_density_combat_feedback_damage_numbers | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md |
 | spec_14b_cave_snapshot_replay_enemy_plan | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14b_cave_snapshot_replay_enemy_plan.md |
+| spec_cave_elite_spawn_semantics_v1 | Outro | RASCUNHO — não aprovado para implementação | - | - | .specs/features_futuras/spec_cave_elite_spawn_semantics_v1.md |
+| spec_cave_enemy_blocking_decor_overlap_v1 | Outro | RASCUNHO — não aprovado para implementação | - | - | .specs/features_futuras/spec_cave_enemy_blocking_decor_overlap_v1.md |
 | spec_cave_runtime_generation_checkpoints_boss_gates | Outro | Implementado parcial - escopo residual ativo | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_cave_runtime_generation_checkpoints_boss_gates.md |
 | spec_city_real_walkin_houses_no_teleport | Outro | ABSORVIDA / NÃO EXECUTAR | WAVE CITY — Coerência da TownScene (pós fable_40) | City | .specs/absorvidas/city_relayout_reconciliation/spec_city_real_walkin_houses_no_teleport.md |
 | spec_combat_movement_projectiles_melee_visuals_runtime | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_combat_movement_projectiles_melee_visuals_runtime.md |
@@ -495,6 +504,8 @@ Total: **485** specs
 | spec_skills_06_ui_canvas_skills_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_06_ui_canvas_skills_v1.md |
 | spec_skills_07_pixelart_feedback_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_07_pixelart_feedback_v1.md |
 | spec_skills_08_equilibrio_aceitacao_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_08_equilibrio_aceitacao_v1.md |
+| spec_skills_21e_cross_channel_arbitrage_v1 | Outro | SUPERADA COMO POLÍTICA — teto universal por SKU rejeitado após decisão humana de 2026-09-13; somente diagnóstico histórico, implementação NÃO autorizada | - | - | .specs/features_futuras/skills_sdd_v1/spec_skills_21e_cross_channel_arbitrage_v1.md |
+| spec_skills_21g_recipe_activation_v1 | Outro | DRAFT — decisões de balanceamento pendentes; implementação NÃO autorizada; fora de .specs/a_implementar/ | - | - | .specs/features_futuras/skills_sdd_v1/spec_skills_21g_recipe_activation_v1.md |
 | SPEC_SOURCE_OF_TRUTH | Outro | - | - | - | .specs/SPEC_SOURCE_OF_TRUTH.md |
 | spec_ui_ux_full_gameplay_inventory_hotbar_menus | Outro | Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md |
 | SPEC_VALIDATION_MATRIX_MASTER | Outro | - | - | - | .specs/SPEC_VALIDATION_MATRIX_MASTER.md |

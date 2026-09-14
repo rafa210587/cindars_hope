@@ -1,5 +1,22 @@
 # Registry de specs a implementar
 
+## Town — interiores híbridos — execução autorizada em 2026-09-12
+
+[Quatro specs com catálogo das24 construções, Spec/Plan/Tasks](a_implementar/town_interiors_hybrid_v1/README.md)
+aprovadas pelo humano para execução delegada e validação proporcional: **S01 UNITY_VALIDATED (dados)**.
+S02 PARTIAL: contratos/FSM6/6PASS, integração de transição/save pendente; S03/S04 mantêm dependências.
+Ordem local: catálogo → transição/save → NPC/comércio → três pilotos → demais interiores.
+Sem mudança de prioridade ou ordem das macro-waves.
+
+## Manutenção de eficiência — 2026-09-12
+
+| Spec | Status | Dependência / escopo |
+|---|---|---|
+| [spec_serena_unity_readonly_integration_v1.md](a_implementar/spec_serena_unity_readonly_integration_v1.md) | CODE_COMPLETE — MCP local habilitado | Consultas reais e guards PASS; novas tarefas; sem gameplay. Closeout em docs/validation/serena_unity_20260912/ORCHESTRATOR_REVIEW.md; sem aceite global. |
+| [spec_semantic_navigation_pilot_v1.md](a_implementar/spec_semantic_navigation_pilot_v1.md) | PARTIAL — experimental, não adotado | 13 casos locais PASS; Runtime INCOMPLETE; sem runtime/Assets. [Fila e evidência](../docs/validation/efficiency_20260912/QUEUE.md). |
+
+Não altera a ordem de execução das waves nem autoriza instalar dependências externas.
+
 ## Lote SKILLS_SDD_V1 — planejamento de 2026-09-09
 
 [Nove rascunhos com Spec/Plan/Tasks](features_futuras/skills_sdd_v1/README.md) ficam fora da fila executável.

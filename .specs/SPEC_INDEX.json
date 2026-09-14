@@ -385,6 +385,28 @@
     "path": ".specs/a_implementar/spec_progressive_harness_visual_workflows_v1.md"
   },
   {
+    "id": "spec_semantic_navigation_pilot_v1",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Semantic navigation pilot v1",
+    "path": ".specs/a_implementar/spec_semantic_navigation_pilot_v1.md"
+  },
+  {
+    "id": "spec_serena_unity_readonly_integration_v1",
+    "bucket": "Fila",
+    "status": "CODE_COMPLETE — project-local MCP enabled; scoped integration checks PASS; no global acceptance.",
+    "wave": "",
+    "priority": "",
+    "type": "Tooling / local integration",
+    "domain": "",
+    "title": "Serena Unity read-only integration",
+    "path": ".specs/a_implementar/spec_serena_unity_readonly_integration_v1.md"
+  },
+  {
     "id": "spec_skills_01_avatar_execucao_v1",
     "bucket": "Fila",
     "status": "PLAYMODE_VALIDATED — fundação técnica; aceitação final da wave pendente",
@@ -552,13 +574,24 @@
   {
     "id": "spec_skills_21_balance_acceptance_v1",
     "bucket": "Fila",
-    "status": "APROVADA — autorização humana de 2026-09-10",
+    "status": "APROVADA — autorização humana de 2026-09-10; matriz AC01 revisada com autorização humana de 2026-09-12",
     "wave": "",
     "priority": "",
     "type": "",
     "domain": "",
     "title": "Skills — fase mecânica 9: aceitação comparativa de equilíbrio",
     "path": ".specs/a_implementar/spec_skills_21_balance_acceptance_v1.md"
+  },
+  {
+    "id": "spec_skills_21f_purchased_origin_v1",
+    "bucket": "Fila",
+    "status": "PARCIAL — T1–T6 IMPLEMENTADAS, T7 EM VALIDAÇÃO, T8 SEM PROMOÇÃO**. A decisão humana é rastrear origem de itens comprados; o Depth Gate estático independente passou em 2026-09-13. A migração save v6 está ativa. Unity EditMode focal passou 200/200, incluindo transporte, transformação, UI, recuperação com flecha esgotada e arco inicial. PlayMode de venda, envio, save/load e wood/forge passou no recorte; cadeias perch/leather e renda global ainda não são aceitas. O ratchet global permanece FAIL por alterações concorrentes fora da 21F; as três regressões T5 de Resources.Load foram removidas e seu contador voltou ao baseline.",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Skills 21F — procedência de compra e arbitragem entre canais",
+    "path": ".specs/a_implementar/spec_skills_21f_purchased_origin_v1.md"
   },
   {
     "id": "spec_skills_22_skill_tree_canvas_v1",
@@ -680,6 +713,50 @@
     "domain": "",
     "title": "SPEC — Town Integrated Acceptance v1",
     "path": ".specs/a_implementar/spec_town_integrated_acceptance_v1.md"
+  },
+  {
+    "id": "spec_town_interior_catalog_v1",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC — catálogo, moradores e programa das construções",
+    "path": ".specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_catalog_v1.md"
+  },
+  {
+    "id": "spec_town_interior_materialization_v1",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC — materialização, arte e aceitação das 24 construções",
+    "path": ".specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_materialization_v1.md"
+  },
+  {
+    "id": "spec_town_interior_npc_commerce_v1",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC — moradores entre espaços e comércio sem duplicação",
+    "path": ".specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_npc_commerce_v1.md"
+  },
+  {
+    "id": "spec_town_interior_transition_save_v1",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC — transição orgânica, cena aditiva e save dos interiores",
+    "path": ".specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_transition_save_v1.md"
   },
   {
     "id": "spec_town_keyart_fidelity_v1",
@@ -5071,6 +5148,28 @@
     "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_14b_cave_snapshot_replay_enemy_plan.md"
   },
   {
+    "id": "spec_cave_elite_spawn_semantics_v1",
+    "bucket": "Outro",
+    "status": "RASCUNHO — não aprovado para implementação",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Cave — semântica Elite do spawn ao combate e ao replay",
+    "path": ".specs/features_futuras/spec_cave_elite_spawn_semantics_v1.md"
+  },
+  {
+    "id": "spec_cave_enemy_blocking_decor_overlap_v1",
+    "bucket": "Outro",
+    "status": "RASCUNHO — não aprovado para implementação",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Cave — impedir spawn dentro de decor bloqueante em novas runs",
+    "path": ".specs/features_futuras/spec_cave_enemy_blocking_decor_overlap_v1.md"
+  },
+  {
     "id": "spec_cave_runtime_generation_checkpoints_boss_gates",
     "bucket": "Outro",
     "status": "Implementado parcial - escopo residual ativo",
@@ -5289,6 +5388,28 @@
     "domain": "Skills",
     "title": "Equilíbrio reproduzível e aceitação integrada das builds",
     "path": ".specs/features_futuras/skills_sdd_v1/spec_skills_08_equilibrio_aceitacao_v1.md"
+  },
+  {
+    "id": "spec_skills_21e_cross_channel_arbitrage_v1",
+    "bucket": "Outro",
+    "status": "SUPERADA COMO POLÍTICA — teto universal por SKU rejeitado após decisão humana de 2026-09-13; somente diagnóstico histórico, implementação NÃO autorizada",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Skills 21E — reconciliar preços de compra e revenda entre canais",
+    "path": ".specs/features_futuras/skills_sdd_v1/spec_skills_21e_cross_channel_arbitrage_v1.md"
+  },
+  {
+    "id": "spec_skills_21g_recipe_activation_v1",
+    "bucket": "Outro",
+    "status": "DRAFT — decisões de balanceamento pendentes; implementação NÃO autorizada; fora de .specs/a_implementar/",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Skills 21G — ativação auditada de receitas de peixe e couro",
+    "path": ".specs/features_futuras/skills_sdd_v1/spec_skills_21g_recipe_activation_v1.md"
   },
   {
     "id": "SPEC_SOURCE_OF_TRUTH",

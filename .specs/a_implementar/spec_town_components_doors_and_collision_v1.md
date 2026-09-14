@@ -41,7 +41,7 @@ timing da folha, AnimationClips quando exigidos pelo consumidor, interiores, col
 validator/captura/testes e wiring correspondente. Reusar paths e IDs existentes. Novos frames de porta
 usam prefixo `town_`, sem mudar import de sprites compartilhados. Runtime compartilhado exige lock único.
 
-Sem alteração de NPC IDs/schedules/dialogue, House IDs, saves, inventário/economia, FarmScene ou CaveScene. Não tocar runtime compartilhado sem novo acordo explícito de ownership. Não substituir casas físicas por teleporte ou outra cena. Não atribuir interação a toda decoração só porque ela tem collider.
+Sem alteração de NPC IDs/schedules/dialogue, House IDs, saves, inventário/economia, FarmScene ou CaveScene nesta spec. Não tocar runtime compartilhado sem novo acordo explícito de ownership. A migração de interiores está autorizada exclusivamente pelo pacote [Town híbrida](town_interiors_hybrid_v1/README.md) e amendment canônico de 2026-09-12; não é implementação adicional implícita desta spec. Não atribuir interação a toda decoração só porque ela tem collider.
 
 # /speckit.plan
 
@@ -78,12 +78,12 @@ esses números são baseline de investigação, não contagem de aceite a ser ha
 - C-1: casas piloto/família nativas reabertas em Aseprite e aprovadas em escala de jogo, não apenas por dimensões do PNG.
 - C-2: nenhuma porta fechada permanece pintada sobre o vão quando a folha abre; observar sequência completa e cronometrada no Unity, além dos frames.
 - C-3: fechado bloqueia o corpo real, aberto permite atravessar; interação continua disponível dos dois lados e não fecha sobre um ator preso no vão. Testar manual e autoabertura NPC, com estados finais coerentes.
-- C-4: entrada/saída reais por passos de física revelam/recobrem interior; proximidade pelo InteractionTrigger não revela; móveis sólidos colidem e não bloqueiam percurso útil.
+- C-4: entrada/saída reais por passos de física revelam/recobrem interior nos walk-ins preservados; nas casas migradas pelo pacote híbrido, crossing físico aciona transição orgânica validada. Proximidade pelo InteractionTrigger não revela/carrega; móveis sólidos colidem e não bloqueiam percurso útil.
 - C-5: igualdade entre IDs elegíveis materializados e IDs do censo, zero desconhecido/duplicado/não
   classificado, zero collider sem suporte visual. Exceções decorativas possuem motivo explícito.
-- C-6: rotas e acessos com collider real passam no estado final; preservação de IDs, profiles/saves/globais por evidência, sem mudanças de Farm/Cave feitas pela Town.
+- C-6: rotas e acessos com collider real passam no estado final, incluindo segmentos exterior/limiar/interior nas casas migradas; preservação de IDs, profiles/saves/globais por evidência, sem mudanças de Farm/Cave feitas pela Town.
 - C-7: arte estática, reprodução externa da animação, observação Unity, input humano e transições entre cenas têm status separados. NOT RUN nunca vira PASS por inferência.
-- C-8: 24/24 lotes têm classificação de porta/interior aplicável; três famílias distintas completam o
+- C-8: 24/24 lotes têm classificação de entrada e acesso aplicável; alvo híbrido aprovado:22 portais + GateKeeper/AnimalYard com anexos, conforme amendment canônico. Até migração, baseline23 walk-ins permanece observado, não aprovação futura. Três famílias distintas completam o
   ciclo aprofundado por física real. Todas as famílias aplicáveis passam validação estrutural de
   fachada/vão/frames/blocker/interior; todos os interiores aplicáveis têm piso, limite, saída e móveis.
 - C-9: abrir/fechar produz um único SFX físico distinto por transição concluída, sem spam e sem quebrar
