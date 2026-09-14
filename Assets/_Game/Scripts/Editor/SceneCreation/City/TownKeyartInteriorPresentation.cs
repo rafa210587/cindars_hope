@@ -165,6 +165,16 @@ namespace CindarsHope.Editor.SceneCreation
                 case "Furniture_Altar": return 1.8f;
                 case "Furniture_Pew": return 1.8f;
                 case "Furniture_ServiceCounter": return 2.2f;
+                case "Furniture_ArchiveShelfWest": case "Furniture_ArchiveShelfNorth":
+                case "Furniture_ArchiveShelfEast": case "Furniture_RegistryRecordsWest":
+                case "Furniture_RegistryRecordsEast": return .9f;
+                case "Furniture_ArchiveDesk": case "Furniture_RegistryServiceDesk": return 1.53f;
+                case "Furniture_GateKeeperDesk": return 1.8f;
+                case "Furniture_PrisonBed": return 1.6f;
+                case "Furniture_PrisonBench": return 1.07f;
+                case "Furniture_PrisonStorage": return .8f;
+                case "Furniture_GateKeeperStorage": return .95f;
+                case "Furniture_GateKeeperRest": return 2.08f;
                 case "Station_Forge": case "Station_CookingStation": case "Station_Alchemy": return 1.6f;
                 case "Station_Sewing": return 1.8f;
                 case "Station_Carpentry": case "Station_Workbench": return 1.8f;

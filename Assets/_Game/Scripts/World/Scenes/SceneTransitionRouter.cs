@@ -1,5 +1,6 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,20 @@ namespace CindarsHope.World.Scenes
             new ProfilerMarker("CindarsHope.SceneTransition.Execute");
 
         private static bool _transitionInProgress;
+        private static ITownInteriorVisitAdmission _interiorAdmission;
+
+        public static bool RegisterTownInteriorVisitAdmission(ITownInteriorVisitAdmission admission)
+        {
+            if (admission == null || (_interiorAdmission != null && !ReferenceEquals(_interiorAdmission, admission)))
+                return false;
+            _interiorAdmission = admission;
+            return true;
+        }
+
+        public static void UnregisterTownInteriorVisitAdmission(ITownInteriorVisitAdmission admission)
+        {
+            if (ReferenceEquals(_interiorAdmission, admission)) _interiorAdmission = null;
+        }
 
         // O guard precisa SEMPRE ser liberado quando a cena destino carrega. Antes so o
         // PlayerSpawnResolver/SceneSpawnInstaller (Farm/Town) chamavam ClearTransitionGuard; a
@@ -41,6 +56,7 @@ namespace CindarsHope.World.Scenes
         private static void InstallGuardReset()
         {
             _transitionInProgress = false; // reset defensivo (enter-playmode sem domain reload)
+            _interiorAdmission = null;
             SceneManager.sceneLoaded -= OnSceneLoadedClearGuard;
             SceneManager.sceneLoaded += OnSceneLoadedClearGuard;
         }
@@ -79,6 +95,16 @@ namespace CindarsHope.World.Scenes
                 var reason = "A transition is already in progress.";
                 Debug.LogWarning($"[SceneTransitionRouter] {reason}");
                 return SceneTransitionResult.Failure(reason);
+            }
+
+            if (request.Kind == SceneTransitionKind.TownInteriorVisit)
+            {
+                if (SceneManager.GetActiveScene().name != request.SourceSceneId || _interiorAdmission == null)
+                    return SceneTransitionResult.Failure("Interior runtime is not ready in the active source scene.");
+                if (!_interiorAdmission.CanBegin(request.InteriorVisit, out var reason))
+                    return SceneTransitionResult.Failure(reason);
+                GameEventBus.Publish(new TownInteriorVisitRequestedEvent(request.InteriorVisit));
+                return SceneTransitionResult.Success; // Accepted, not visually completed.
             }
 
             _transitionInProgress = true;

@@ -82,7 +82,17 @@ namespace CindarsHope.Editor.SceneCreation
                 case "Table": case "Furniture_Altar": case "Furniture_KitchenCounter":
                 case "Furniture_ServiceCounter": return WorldRoot + "interior/kitchen_counter.png";
                 case "Furniture_Shelf": case "Furniture_Cupboard": return WorldRoot + "interior/chair.png";
+                case "Furniture_ArchiveShelfWest": case "Furniture_ArchiveShelfNorth":
+                case "Furniture_ArchiveShelfEast": case "Furniture_RegistryRecordsWest":
+                case "Furniture_RegistryRecordsEast": case "Furniture_PrisonStorage":
+                    return WorldRoot + "interior/chair.png";
+                case "Furniture_GateKeeperStorage": return WorldRoot + "props/crate.png";
                 case "Furniture_Rug": return WorldRoot + "interior/cupboard.png";
+                case "Furniture_ArchiveDesk": case "Furniture_RegistryServiceDesk":
+                case "Furniture_PrisonBench": case "Furniture_GateKeeperDesk":
+                    return WorldRoot + "interior/kitchen_counter.png";
+                case "Furniture_PrisonBed": case "Furniture_GateKeeperRest":
+                    return WorldRoot + "interior/bed.png";
                 case "Furniture_Pew": return WorldRoot + "props/bench.png";
                 case "Furniture_Stove": return WorldRoot + "interior/fireplace.png";
                 case "Station_Forge": return WorldRoot + "props/forge.png";

@@ -12,6 +12,49 @@ namespace CindarsHope.Tests.EditMode.World
 
     public class HouseDoorInteractableTests
     {
+        private sealed class ClosedHoursPolicy : IHouseDoorAccessPolicy
+        {
+            public bool CanOpen(out string reason) { reason = "Loja fechada"; return false; }
+        }
+
+        [Test]
+        public void ClosedShop_BlocksEntryButAllowsSafeExit_WithoutRepeatedCloseEvents()
+        {
+            ConfigureFrames();
+            var room = new GameObject("Interior");
+            room.transform.SetParent(_root.transform, false);
+            room.transform.localPosition = Vector3.up * 2f;
+            var interior = room.AddComponent<BoxCollider2D>();
+            interior.isTrigger = true;
+            interior.size = new Vector2(4f, 3f);
+            _door.ConfigureAccessPolicy(new ClosedHoursPolicy(), interior);
+            _door.Interact(_actor);
+            Advance(0.4f);
+            Assert.That(_door.IsOpen, Is.False, "Outside actor cannot open a closed shop");
+            _actor.transform.position = _root.transform.position + Vector3.up;
+            Physics2D.SyncTransforms();
+            _door.Interact(_actor);
+            Advance(0.4f);
+            Assert.That(_door.IsOpen, Is.True, "Inside actor can leave after closing time");
+            _actor.transform.position = _root.transform.position;
+            Physics2D.SyncTransforms();
+            Advance(1.3f);
+            Assert.That(_blocker.enabled, Is.False, "Doorway occupancy protects exit");
+            _actor.transform.position = _root.transform.position + Vector3.down * 3f;
+            Physics2D.SyncTransforms();
+            Advance(1.3f);
+            Advance(0.4f);
+            Assert.That(_door.IsOpen, Is.False);
+            var events = 0;
+            var subscription = GameEventBus.Subscribe<HouseDoorTransitionCompletedEvent>(_ => events++);
+            try
+            {
+                for (var i = 0; i < 10; i++) { _door.EnforceAccessPolicy(); Advance(0.4f); }
+                Assert.That(events, Is.Zero, "Already closed policy enforcement must not emit transitions");
+            }
+            finally { subscription.Dispose(); }
+        }
+
         private GameObject _root, _actor;
         private HouseDoorInteractable _door;
         private BoxCollider2D _blocker, _actorCollider;

@@ -7,6 +7,7 @@ using CindarsHope.Core.Time;
 using CindarsHope.Craft;
 using CindarsHope.Craft.Data;
 using CindarsHope.City;
+using CindarsHope.City.Interiors;
 using CindarsHope.Economy;
 using CindarsHope.Enemy;
 using CindarsHope.Inventory;
@@ -53,6 +54,343 @@ namespace CindarsHope.Editor.SceneCreation
         private const string SpellDatabasePath = "Assets/_Game/Data/Combat/SpellDatabase.asset";
         private const string StatusEffectDatabasePath = "Assets/_Game/Data/Combat/StatusEffectDatabase.asset";
         private const string BuiltinSpritePath = "UI/Skin/UISprite.psd";
+
+        /// <summary>
+        /// Materializa apenas a cena aditiva vazia e o config de transição S02.
+        /// Não recria TownScene, não altera NPCs e não habilita o piloto ou gera arte.
+        /// Assets existentes são preservados; a cena nova é acrescentada ao build.
+        /// </summary>
+        public static void PrepareTownInteriorInfrastructure()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new System.InvalidOperationException("Exit Play Mode before preparing interior assets.");
+            const string interiorScenePath = "Assets/_Game/Scenes/TownInteriorScene.unity";
+            const string configPath = "Assets/_Game/Data/City/Interiors/TownInteriorTransitionConfig.asset";
+            EnsureFolder("Assets/_Game", "Scenes");
+            EnsureFolder("Assets/_Game/Data", "City");
+            EnsureFolder("Assets/_Game/Data/City", "Interiors");
+            PrepareRenkoTechnicalInteriorPrefab();
+            var config = AssetDatabase.LoadAssetAtPath<TownInteriorTransitionConfigSO>(configPath);
+            if (config == null)
+            {
+                if (AssetDatabase.LoadMainAssetAtPath(configPath) != null)
+                    throw new System.InvalidOperationException("Interior config path contains an incompatible asset.");
+                config = ScriptableObject.CreateInstance<TownInteriorTransitionConfigSO>();
+                AssetDatabase.CreateAsset(config, configPath);
+            }
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(interiorScenePath) == null)
+            {
+                var previous = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                string previousName = previous.name;
+                var content = default(UnityEngine.SceneManagement.Scene);
+                try
+                {
+                    // Unity rejects Additive creation beside an unnamed startup scene. Give
+                    // only that in-memory scene a temporary name; never save or discard it.
+                    if (string.IsNullOrEmpty(previousName)) previous.name = "TownInfrastructurePreparation";
+                    // A fresh batch Editor has no normal scene-editing stage after preview
+                    // prefab generation. Its startup scene can be replaced without saving it;
+                    // interactive Editors always retain their existing scenes additively.
+                    content = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,
+                        Application.isBatchMode ? NewSceneMode.Single : NewSceneMode.Additive);
+                    var root = new GameObject("TownInteriorContentRoot");
+                    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, content);
+                    if (!EditorSceneManager.SaveScene(content, interiorScenePath))
+                        throw new System.InvalidOperationException("Could not save the additive interior scene.");
+                }
+                finally
+                {
+                    if (content.IsValid()) EditorSceneManager.CloseScene(content, true);
+                    if (previous.IsValid() && previous.isLoaded)
+                    {
+                        previous.name = previousName;
+                        UnityEngine.SceneManagement.SceneManager.SetActiveScene(previous);
+                    }
+                }
+            }
+            var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
+            int index = scenes.FindIndex(entry => entry.path == interiorScenePath);
+            if (index < 0) scenes.Add(new EditorBuildSettingsScene(interiorScenePath, true));
+            else if (!scenes[index].enabled) scenes[index] = new EditorBuildSettingsScene(interiorScenePath, true);
+            EditorBuildSettings.scenes = scenes.ToArray();
+            AssetDatabase.SaveAssetIfDirty(config);
+            Debug.Log("[TownInterior] Infrastructure ready: additive scene and transition config; Town pilot remains OFF.");
+        }
+
+        // S02 smoke-content only. This deliberately has no art, furniture, Town references or runtime
+        // controller: S04 owns the authored presentation and a later integration owns Town wiring.
+        private static void PrepareRenkoTechnicalInteriorPrefab()
+        {
+            const string definitionPath = "Assets/_Game/Data/City/Interiors/House_Residential_2_Interior.asset";
+            const string prefabParentPath = "Assets/_Game/Prefabs";
+            const string cityPrefabParentPath = "Assets/_Game/Prefabs/City";
+            const string prefabFolderPath = "Assets/_Game/Prefabs/City/Interiors";
+            const string prefabPath = prefabFolderPath + "/House_Residential_2.prefab";
+
+            var definition = AssetDatabase.LoadAssetAtPath<TownInteriorDefinitionSO>(definitionPath);
+            if (definition == null || definition.HouseId != "House_Residential_2" ||
+                string.IsNullOrWhiteSpace(definition.EntryAnchorId) ||
+                string.IsNullOrWhiteSpace(definition.ReturnAnchorId) ||
+                definition.UsableFloorSize.x <= 0f || definition.UsableFloorSize.y <= 0f ||
+                float.IsNaN(definition.UsableFloorSize.x) || float.IsNaN(definition.UsableFloorSize.y) ||
+                float.IsInfinity(definition.UsableFloorSize.x) || float.IsInfinity(definition.UsableFloorSize.y))
+                throw new System.InvalidOperationException("Renko S01 interior definition is missing or invalid.");
+
+            var existing = AssetDatabase.LoadMainAssetAtPath(prefabPath);
+            if (existing != null)
+            {
+                if (!(existing is GameObject))
+                    throw new System.InvalidOperationException("Renko interior prefab path contains an incompatible asset.");
+                return;
+            }
+
+            EnsureFolder("Assets/_Game", "Prefabs");
+            EnsureFolder(prefabParentPath, "City");
+            EnsureFolder(cityPrefabParentPath, "Interiors");
+
+            GameObject root = null;
+            var previewScene = EditorSceneManager.NewPreviewScene();
+            try
+            {
+                root = new GameObject("House_Residential_2_Interior");
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, previewScene);
+                var instance = root.AddComponent<TownInteriorInstance>();
+                var entry = new GameObject(definition.EntryAnchorId).transform;
+                entry.SetParent(root.transform, false);
+                entry.localPosition = new Vector3(0f, -definition.UsableFloorSize.y * .5f + 2f, 0f);
+                var exit = new GameObject("town_exit_House_Residential_2").transform;
+                exit.SetParent(root.transform, false);
+                exit.localPosition = new Vector3(0f, -definition.UsableFloorSize.y * .5f + .4f, 0f);
+
+                var marker = new SerializedObject(instance);
+                marker.FindProperty("_houseId").stringValue = definition.HouseId;
+                marker.FindProperty("_entryAnchor").objectReferenceValue = entry;
+                marker.FindProperty("_exitAnchor").objectReferenceValue = exit;
+                marker.FindProperty("_usableCenter").vector2Value = Vector2.zero;
+                marker.FindProperty("_usableSize").vector2Value = definition.UsableFloorSize;
+                marker.ApplyModifiedPropertiesWithoutUndo();
+
+                var exitThresholdObject = new GameObject("ExitThreshold");
+                exitThresholdObject.transform.SetParent(root.transform, false);
+                exitThresholdObject.transform.localPosition = new Vector3(0f,
+                    -definition.UsableFloorSize.y * .5f + .8f, 0f);
+                var exitCollider = exitThresholdObject.AddComponent<BoxCollider2D>();
+                exitCollider.isTrigger = true;
+                exitCollider.size = new Vector2(2f, .8f);
+                var exitThreshold = exitThresholdObject.AddComponent<TownInteriorThreshold>();
+                exitThreshold.Configure(definition.HouseId, definition.EntryAnchorId, definition.ReturnAnchorId,
+                    null, true, Vector2.down);
+
+                if (PrefabUtility.SaveAsPrefabAsset(root, prefabPath) == null)
+                    throw new System.InvalidOperationException("Could not save the Renko technical interior prefab.");
+            }
+            finally
+            {
+                if (root != null) UnityEngine.Object.DestroyImmediate(root);
+                EditorSceneManager.ClosePreviewScene(previewScene);
+            }
+        }
+
+        /// <summary>
+        /// Wires only the disabled Renko pilot into the existing TownScene. Never rebuilds Town.
+        /// Deliberately has no MenuItem: rollout requires a separate, explicit decision.
+        /// </summary>
+        public static void WireRenkoInteriorPilotDisabled()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new System.InvalidOperationException("Exit Play Mode before wiring the Town pilot.");
+
+            const string houseId = "House_Residential_2";
+            const string definitionPath = "Assets/_Game/Data/City/Interiors/House_Residential_2_Interior.asset";
+            const string prefabPath = "Assets/_Game/Prefabs/City/Interiors/House_Residential_2.prefab";
+            const string configPath = "Assets/_Game/Data/City/Interiors/TownInteriorTransitionConfig.asset";
+            var definition = AssetDatabase.LoadAssetAtPath<TownInteriorDefinitionSO>(definitionPath);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            var config = AssetDatabase.LoadAssetAtPath<TownInteriorTransitionConfigSO>(configPath);
+            if (definition == null || definition.HouseId != houseId ||
+                string.IsNullOrWhiteSpace(definition.EntryAnchorId) ||
+                string.IsNullOrWhiteSpace(definition.ReturnAnchorId) || prefab == null || config == null ||
+                AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/_Game/Scenes/TownInteriorScene.unity") == null)
+                throw new System.InvalidOperationException("Renko interior assets are missing or invalid; run infrastructure preparation first.");
+            if (!TownCityLayout.TryGetBuilding(houseId, out var lot) || lot.DoorSide != TownDoorSide.South)
+                throw new System.InvalidOperationException("Renko lot or its south-facing door contract changed.");
+
+            var scene = default(UnityEngine.SceneManagement.Scene);
+            bool openedHere = false;
+            foreach (var loaded in EnumerableLoadedTownScenes())
+            {
+                if (scene.IsValid()) throw new System.InvalidOperationException("Multiple TownScene instances are loaded.");
+                scene = loaded;
+            }
+            if (scene.IsValid())
+            {
+                if (!Application.isBatchMode || scene.isDirty)
+                    throw new System.InvalidOperationException("TownScene is open interactively or dirty; refusing to alter user scene work.");
+            }
+            else
+            {
+                scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+                openedHere = true;
+            }
+
+            try
+            {
+                if (scene.isDirty) throw new System.InvalidOperationException("TownScene became dirty before pilot preflight.");
+                var houses = RequiredTownRoot(scene, "TownHouses");
+                var house = RequiredDirectChild(houses, houseId);
+                var doorTransform = RequiredDirectChild(house, "Door");
+                var door = doorTransform.GetComponent<HouseDoorInteractable>();
+                var player = RequiredTownRoot(scene, "Player");
+                var body = player.GetComponent<Collider2D>();
+                var spawn = RequiredDirectChild(RequiredTownRoot(scene, "SpawnPoints"), "Spawn_town_default");
+                var installer = RequiredTownRoot(scene, "SceneRuntimeReferences")
+                    .GetComponent<TownSceneRuntimeReferenceInstaller>();
+                if (door == null || body == null || installer == null ||
+                    player.GetComponent<Rigidbody2D>() == null ||
+                    spawn.GetComponent<SceneSpawnPoint>() == null)
+                    throw new System.InvalidOperationException("Renko door, Player body, default spawn or Town installer is missing.");
+                if (Vector2.Distance(doorTransform.position, lot.DoorPosition) > 1f)
+                    throw new System.InvalidOperationException("Renko scene door differs from catalog; inspect Town before wiring.");
+
+                var runtimeRoot = RequiredTownRoot(scene, "SceneRuntimeReferences");
+                var existingController = DirectChildOrNull(runtimeRoot, "RenkoInteriorPilot_DISABLED");
+                var existingThreshold = DirectChildOrNull(house, "RenkoInteriorEntryThreshold_DISABLED");
+                var existingPocket = DirectChildOrNull(house, "town_return_House_Residential_2_DISABLED");
+                if ((existingController != null && (existingController.GetComponent<TownInteriorVisitController>() == null ||
+                     existingController.childCount != 0 || existingController.gameObject.activeSelf)) ||
+                    (existingThreshold != null && (existingThreshold.GetComponent<TownInteriorThreshold>() == null ||
+                     existingThreshold.GetComponent<BoxCollider2D>() == null || existingThreshold.gameObject.activeSelf)) ||
+                    (existingPocket != null && existingPocket.GetComponents<Component>().Length != 1))
+                    throw new System.InvalidOperationException("An owned Renko pilot object has incompatible contents.");
+                int npcBefore = CountSceneComponents<NpcController>(scene);
+                int houseBefore = houses.childCount;
+                int colliderBefore = CountSceneComponents<Collider2D>(scene);
+                var npcPositions = new Dictionary<NpcController, Vector3>();
+                foreach (var root in scene.GetRootGameObjects())
+                    foreach (var npc in root.GetComponentsInChildren<NpcController>(true))
+                        npcPositions.Add(npc, npc.transform.position);
+                var housePositions = new Dictionary<Transform, Vector3>();
+                foreach (Transform child in houses) housePositions.Add(child, child.position);
+
+                var controllerRoot = existingController ?? new GameObject("RenkoInteriorPilot_DISABLED").transform;
+                controllerRoot.gameObject.SetActive(false);
+                if (existingController == null) controllerRoot.SetParent(runtimeRoot, false);
+                var controller = controllerRoot.GetComponent<TownInteriorVisitController>();
+                if (controller == null) controller = controllerRoot.gameObject.AddComponent<TownInteriorVisitController>();
+                controller.enabled = false;
+
+                var pocket = existingPocket ?? new GameObject("town_return_House_Residential_2_DISABLED").transform;
+                if (existingPocket == null) pocket.SetParent(house, false);
+                var outward = TownAccessMetrics.Outward(lot.DoorSide);
+                Vector2 pocketPosition = (Vector2)lot.DoorPosition + outward * 1.5f;
+                if (!TownAccessMetrics.DoorApron(lot).Contains(pocketPosition) ||
+                    Vector2.Distance(pocketPosition, doorTransform.position) < TownAccessMetrics.ActorBodyRadius * 2f)
+                    throw new System.InvalidOperationException("Renko return pocket is outside the verified door apron.");
+                pocket.position = new Vector3(pocketPosition.x, pocketPosition.y, 0f);
+
+                var thresholdRoot = existingThreshold ?? new GameObject("RenkoInteriorEntryThreshold_DISABLED").transform;
+                thresholdRoot.gameObject.SetActive(false);
+                if (existingThreshold == null) thresholdRoot.SetParent(house, false);
+                thresholdRoot.position = doorTransform.position;
+                var trigger = thresholdRoot.GetComponent<BoxCollider2D>();
+                if (trigger == null) trigger = thresholdRoot.gameObject.AddComponent<BoxCollider2D>();
+                trigger.isTrigger = true;
+                trigger.size = new Vector2(1.4f, .5f);
+                trigger.enabled = false;
+                var threshold = thresholdRoot.GetComponent<TownInteriorThreshold>();
+                if (threshold == null) threshold = thresholdRoot.gameObject.AddComponent<TownInteriorThreshold>();
+                threshold.Configure(houseId, definition.EntryAnchorId, definition.ReturnAnchorId,
+                    door, false, -outward);
+                threshold.enabled = false;
+
+                var binding = new TownInteriorVisitController.HouseBinding
+                {
+                    HouseId = houseId, EntryAnchorId = definition.EntryAnchorId,
+                    ReturnAnchorId = definition.ReturnAnchorId, Prefab = prefab,
+                    ReturnPockets = new[] { pocket }
+                };
+                var townBounds = new Bounds(Vector3.zero,
+                    new Vector3(TownDistrictLayout.HalfWidth * 2f, TownDistrictLayout.HalfHeight * 2f, 0f));
+                controller.Configure(player, body, new[] { binding }, "TownInteriorScene", townBounds,
+                    config.PresentationOrigin, config.FadeOutSeconds, config.FadeInSeconds,
+                    config.LoadingHintAfterSeconds, config.TimeoutSeconds, null, null, spawn, null);
+                var serializedInstaller = new SerializedObject(installer);
+                serializedInstaller.FindProperty("_enableInteriorPilot").boolValue = false;
+                serializedInstaller.FindProperty("_interiorVisits").objectReferenceValue = controller;
+                serializedInstaller.FindProperty("_interiorPlayerBody").objectReferenceValue = body;
+                serializedInstaller.FindProperty("_defaultTownSpawn").objectReferenceValue = spawn;
+                serializedInstaller.ApplyModifiedPropertiesWithoutUndo();
+
+                int npcAfter = CountSceneComponents<NpcController>(scene);
+                int houseAfter = houses.childCount;
+                int colliderAfter = CountSceneComponents<Collider2D>(scene);
+                int expectedColliderDelta = existingThreshold == null ? 1 : 0;
+                if (npcAfter != npcBefore || houseAfter != houseBefore ||
+                    colliderAfter != colliderBefore + expectedColliderDelta ||
+                    controller.enabled || threshold.enabled || trigger.enabled ||
+                    controllerRoot.gameObject.activeSelf || thresholdRoot.gameObject.activeSelf ||
+                    serializedInstaller.FindProperty("_enableInteriorPilot").boolValue)
+                    throw new System.InvalidOperationException("Renko pilot invariant failed; TownScene was not saved.");
+                foreach (var entry in npcPositions)
+                    if (entry.Key == null || entry.Key.transform.position != entry.Value)
+                        throw new System.InvalidOperationException("NPC position changed; TownScene was not saved.");
+                foreach (var entry in housePositions)
+                    if (entry.Key == null || entry.Key.position != entry.Value)
+                        throw new System.InvalidOperationException("House position changed; TownScene was not saved.");
+                EditorSceneManager.MarkSceneDirty(scene);
+                if (!EditorSceneManager.SaveScene(scene, ScenePath))
+                    throw new System.InvalidOperationException("Could not save the disabled Renko wiring.");
+                Debug.Log($"[TownInterior] Renko pilot OFF; NPCs {npcBefore}->{npcAfter}, houses {houseBefore}->{houseAfter}, colliders {colliderBefore}->{colliderAfter}; door={doorTransform.position}, return={pocket.position}.");
+            }
+            finally
+            {
+                if (openedHere && scene.IsValid()) EditorSceneManager.CloseScene(scene, true);
+            }
+        }
+
+        private static IEnumerable<UnityEngine.SceneManagement.Scene> EnumerableLoadedTownScenes()
+        {
+            for (int index = 0; index < UnityEngine.SceneManagement.SceneManager.sceneCount; index++)
+            {
+                var candidate = UnityEngine.SceneManagement.SceneManager.GetSceneAt(index);
+                if (candidate.path == ScenePath) yield return candidate;
+            }
+        }
+
+        private static Transform RequiredTownRoot(UnityEngine.SceneManagement.Scene scene, string name)
+        {
+            Transform found = null;
+            foreach (var root in scene.GetRootGameObjects())
+                if (root.name == name)
+                {
+                    if (found != null) throw new System.InvalidOperationException("Ambiguous Town root: " + name);
+                    found = root.transform;
+                }
+            return found != null ? found : throw new System.InvalidOperationException("Missing Town root: " + name);
+        }
+
+        private static Transform RequiredDirectChild(Transform parent, string name)
+            => DirectChildOrNull(parent, name) ?? throw new System.InvalidOperationException("Missing Town child: " + parent.name + "/" + name);
+
+        private static Transform DirectChildOrNull(Transform parent, string name)
+        {
+            Transform found = null;
+            foreach (Transform child in parent)
+                if (child.name == name)
+                {
+                    if (found != null) throw new System.InvalidOperationException("Ambiguous Town child: " + parent.name + "/" + name);
+                    found = child;
+                }
+            return found;
+        }
+
+        private static int CountSceneComponents<T>(UnityEngine.SceneManagement.Scene scene) where T : Component
+        {
+            int count = 0;
+            foreach (var root in scene.GetRootGameObjects())
+                count += root.GetComponentsInChildren<T>(true).Length;
+            return count;
+        }
 
         [MenuItem("CindarsHope/Dev/Recriar somente TownScene %#t", priority = 41)]
         public static void CreateSceneFromMenu()
@@ -812,6 +1150,8 @@ namespace CindarsHope.Editor.SceneCreation
             camera.orthographicSize = 8f; // calibrate in Play Mode with CameraScaleConfigSO
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = new Color(0.6211765f, 0.6086274f, 0.5584314f);
+            // Camera overrides are not persisted: reuse the Farm runtime Y-sort restoration.
+            cameraObject.AddComponent<CindarsHope.Camera.CameraTransparencySort2D>();
 
             var cameraFollow = cameraObject.AddComponent<CindarsHope.Camera.CameraFollow2D>();
             var serializedFollow = new SerializedObject(cameraFollow);
@@ -1535,25 +1875,29 @@ namespace CindarsHope.Editor.SceneCreation
             // deixava uma faixa sem chão junto às paredes — como a fachada sul é baixa (transparente
             // acima), via-se grama dentro da casa.
             // Uma pequena margem garante que o chão passe por baixo das paredes até a borda do lote.
-            var floorSize = new Vector2(size.x + 0.5f, size.y + 0.5f);
+            var floorSize = name == "House_GateKeeper" ? interiorSize : new Vector2(size.x + 0.5f, size.y + 0.5f);
             var floor = new GameObject("Floor");
             floor.transform.SetParent(house.transform);
             var floorRenderer = floor.AddComponent<SpriteRenderer>();
             var floorTile = WorldSpriteLibrary.Ground(name == "House_AnimalYard" ? "ground_grass" : "ground_deck");
+            float floorPixelScale = 1f;
+            float pivotXNorm = 0.5f;
+            float pivotYNorm = 0.5f;
             if (floorTile != null)
             {
-                floor.transform.localScale = Vector3.one;
+                floorPixelScale = name == "House_GateKeeper" ? floorTile.pixelsPerUnit / 32f : 1f;
+                floor.transform.localScale = Vector3.one * floorPixelScale;
                 floorRenderer.sprite = floorTile;
                 floorRenderer.color = Color.white;
                 floorRenderer.drawMode = SpriteDrawMode.Tiled;
                 floorRenderer.tileMode = SpriteTileMode.Continuous;
-                floorRenderer.size = floorSize;
+                floorRenderer.size = floorSize / floorPixelScale;
                 // O retângulo Tiled é ancorado no PIVOT do sprite. ground_deck deveria ser center
                 // (meta), mas o import pode deixá-lo BottomCenter em runtime — o que fazia o chão
                 // cobrir só a metade de cima do lote (o retângulo crescia pra cima a partir do centro).
                 // Lê o pivot REAL e desloca o retângulo para ficar centrado no lote, seja qual for.
-                float pivotXNorm = floorTile.rect.width > 0.0001f ? floorTile.pivot.x / floorTile.rect.width : 0.5f;
-                float pivotYNorm = floorTile.rect.height > 0.0001f ? floorTile.pivot.y / floorTile.rect.height : 0.5f;
+                pivotXNorm = floorTile.rect.width > 0.0001f ? floorTile.pivot.x / floorTile.rect.width : 0.5f;
+                pivotYNorm = floorTile.rect.height > 0.0001f ? floorTile.pivot.y / floorTile.rect.height : 0.5f;
                 floor.transform.localPosition = new Vector3(
                     floorSize.x * (pivotXNorm - 0.5f),
                     floorSize.y * (pivotYNorm - 0.5f),
@@ -1568,6 +1912,24 @@ namespace CindarsHope.Editor.SceneCreation
             }
             floorRenderer.sortingOrder = 5;
             TrySetSortingLayer(floorRenderer, "Ground", floorRenderer.sortingOrder);
+            if (name == "House_GateKeeper" && floorTile != null)
+            {
+                // The physical south wall is centred on Door y=-2.5; bridge only its 1.8u gap.
+                // Keep the threshold a Floor child so RoofReveal owns it with the main decking.
+                var threshold = new GameObject("GateKeeperDoorThreshold");
+                threshold.transform.SetParent(floor.transform, false);
+                threshold.transform.localPosition = new Vector3(
+                    (doorLocalPosition.x + DoorGapWidth * (pivotXNorm - 0.5f) - floor.transform.localPosition.x) / floorPixelScale,
+                    (doorLocalPosition.y + pivotYNorm - 0.5f - floor.transform.localPosition.y) / floorPixelScale, 0f);
+                var thresholdRenderer = threshold.AddComponent<SpriteRenderer>();
+                thresholdRenderer.sprite = floorTile;
+                thresholdRenderer.drawMode = SpriteDrawMode.Tiled;
+                thresholdRenderer.tileMode = SpriteTileMode.Continuous;
+                thresholdRenderer.size = new Vector2(DoorGapWidth, 1f) / floor.transform.localScale.x;
+                thresholdRenderer.color = Color.white;
+                thresholdRenderer.sortingOrder = floorRenderer.sortingOrder;
+                TrySetSortingLayer(thresholdRenderer, "Ground", thresholdRenderer.sortingOrder);
+            }
 
             // Kit modular (residenciais A/B/C, 64 px/tile): casca de paredes visual acima do chão e
             // abaixo do telhado. Os colliders/quads de parede procedurais abaixo continuam existindo
@@ -1607,7 +1969,9 @@ namespace CindarsHope.Editor.SceneCreation
             // Paredes sólidas (colliders). Nas casas com kit, o visual de pedra é suprimido (a arte
             // walls_*_topdown já pinta as paredes) — só o collider fica; nas casas de placeholder o
             // visual de pedra procedural continua.
-            bool showWallStone = modularVariant == '\0';
+            // Civic interiors need a visible boundary after the modular shell fades.
+            // RoofReveal owns these Wall_ renderers, keeping them hidden outside.
+            bool showWallStone = modularVariant == '\0' || IsCivicInterior(name);
             if (horizontalDoor)
             {
                 CreateInteriorWall(house.transform, "Wall_Left", new Vector3(-wallX, 0f, 0f), new Vector2(WallThickness, size.y), showWallStone);
@@ -1633,35 +1997,48 @@ namespace CindarsHope.Editor.SceneCreation
                 CreateInteriorWall(house.transform, $"Wall_{doorWall}B", new Vector3(doorLocalPosition.x, -sideCenter, 0f), new Vector2(WallThickness, sideHeight), showWallStone);
             }
 
+            // Pilot only: the gatekeeper keeps the complete physical shell, but its revealed room
+            // reads as a guard post rather than a tall stone box. This runs before RoofReveal gathers
+            // Wall_ renderers, so the replacement boundary fades with the exterior shell.
+            if (name == "House_GateKeeper")
+                ConfigureGateKeeperWallPresentation(house.transform);
+
             // Porta funcional no vão: FECHADA tranca a passagem; aperte E para ABRIR (desliza) e entrar.
             CreateHouseDoor(house.transform, doorLocalPosition, doorSide, modularVariant);
 
-            // Móveis (andáveis — CreateInteriorProp não põe collider). Cama sempre; mesa/estante nas maiores.
-            var bedProp = CreateInteriorProp(house.transform, "Bed", new Vector3(-ihw + 0.9f, ihh - 0.7f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
-            if (name == "House_Inn")
+            // Estes quatro lotes são postos cívicos, não casas genéricas. Eles não recebem o núcleo
+            // doméstico (cama/mesa/cozinha) abaixo: o mobiliário específico é materializado depois
+            // da divisória, mantendo o corredor central de entrada inteiramente desobstruído.
+            bool civicInterior = IsCivicInterior(name);
+            if (!civicInterior)
             {
-                // fable_57: a cama da estalagem é interagível e paga.
-                bedProp.name = "GuestBed_Inn";
-                var trigger = bedProp.AddComponent<BoxCollider2D>();
-                trigger.isTrigger = true;
-                trigger.size = new Vector2(1.6f, 1.0f);
-                var gate = bedProp.AddComponent<InnBedPaymentGate>();
-                gate.Configure(InnLodgingPaymentResolver.DefaultNightlyRate);
-                EditorUtility.SetDirty(gate);
-            }
-            CreateInteriorProp(house.transform, "Table", new Vector3(ihw - 0.9f, -ihh + 0.8f, 0f), new Vector3(1.3f, 0.9f, 1f), new Color(0.46f, 0.34f, 0.22f));
-            if (big)
-            {
-                CreateInteriorProp(house.transform, "Furniture_Shelf", new Vector3(ihw - 1.0f, ihh - 0.55f, 0f), new Vector3(1.7f, 0.7f, 1f), new Color(0.42f, 0.32f, 0.22f));
-                CreateInteriorProp(house.transform, "Furniture_Rug", new Vector3(0.4f, -0.2f, 0f), new Vector3(2.6f, 1.6f, 1f), new Color(0.40f, 0.26f, 0.24f));
-            }
-            if (standardNpcHouse)
-            {
-                // Núcleo doméstico obrigatório dentro dos 6x5 úteis: cozinha compacta na parede sul,
-                // fogão no canto e armário. São props caminháveis para não estreitar a circulação.
-                CreateInteriorProp(house.transform, "Furniture_KitchenCounter", new Vector3(-ihw + 1.1f, -ihh + 0.45f, 0f), new Vector3(2.2f, 0.7f, 1f), new Color(0.54f, 0.38f, 0.22f));
-                CreateInteriorProp(house.transform, "Furniture_Stove", new Vector3(-ihw + 0.55f, -0.85f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.30f, 0.29f, 0.28f));
-                CreateInteriorProp(house.transform, "Furniture_Cupboard", new Vector3(ihw - 0.45f, 0.65f, 0f), new Vector3(0.7f, 1.3f, 1f), new Color(0.46f, 0.33f, 0.20f));
+                // Furniture bases are solid; only rugs are decorative and non-blocking.
+                var bedProp = CreateInteriorProp(house.transform, "Bed", new Vector3(-ihw + 0.9f, ihh - 0.7f, 0f), new Vector3(1.6f, 1f, 1f), new Color(0.5f, 0.36f, 0.5f));
+                if (name == "House_Inn")
+                {
+                    // fable_57: a cama da estalagem é interagível e paga.
+                    bedProp.name = "GuestBed_Inn";
+                    var trigger = bedProp.AddComponent<BoxCollider2D>();
+                    trigger.isTrigger = true;
+                    trigger.size = new Vector2(1.6f, 1.0f);
+                    var gate = bedProp.AddComponent<InnBedPaymentGate>();
+                    gate.Configure(InnLodgingPaymentResolver.DefaultNightlyRate);
+                    EditorUtility.SetDirty(gate);
+                }
+                CreateInteriorProp(house.transform, "Table", new Vector3(ihw - 0.9f, -ihh + 0.8f, 0f), new Vector3(1.3f, 0.9f, 1f), new Color(0.46f, 0.34f, 0.22f));
+                if (big)
+                {
+                    CreateInteriorProp(house.transform, "Furniture_Shelf", new Vector3(ihw - 1.0f, ihh - 0.55f, 0f), new Vector3(1.7f, 0.7f, 1f), new Color(0.42f, 0.32f, 0.22f));
+                    CreateInteriorProp(house.transform, "Furniture_Rug", new Vector3(0.4f, -0.2f, 0f), new Vector3(2.6f, 1.6f, 1f), new Color(0.40f, 0.26f, 0.24f));
+                }
+                if (standardNpcHouse)
+                {
+                    // Núcleo doméstico obrigatório dentro dos 6x5 úteis: cozinha compacta na parede sul,
+                    // fogão no canto e armário. Preservar circulação ao redor das bases sólidas.
+                    CreateInteriorProp(house.transform, "Furniture_KitchenCounter", new Vector3(-ihw + 1.1f, -ihh + 0.45f, 0f), new Vector3(2.2f, 0.7f, 1f), new Color(0.54f, 0.38f, 0.22f));
+                    CreateInteriorProp(house.transform, "Furniture_Stove", new Vector3(-ihw + 0.55f, -0.85f, 0f), new Vector3(0.8f, 0.8f, 1f), new Color(0.30f, 0.29f, 0.28f));
+                    CreateInteriorProp(house.transform, "Furniture_Cupboard", new Vector3(ihw - 0.45f, 0.65f, 0f), new Vector3(0.7f, 1.3f, 1f), new Color(0.46f, 0.33f, 0.20f));
+                }
             }
 
             // Construções especiais grandes ganham um segundo ambiente. Casas residenciais 8x7
@@ -1682,6 +2059,9 @@ namespace CindarsHope.Editor.SceneCreation
                     CreateInteriorProp(house.transform, "Furniture_ServiceCounter", new Vector3(0f, ihh - 0.6f, 0f), new Vector3(2.8f, 0.8f, 1f), Color.Lerp(baseColor, Color.black, 0.25f));
                 }
             }
+
+            if (civicInterior)
+                CreateCivicInteriorFurniture(house.transform, name, ihw, ihh);
 
             // Estação de ofício da casa (forja/alambique/tear/fogão/bancada): aperte E para abrir o craft
             // filtrado por aquele WorkshopType. Só casas-ofício recebem; o resto ignora.
@@ -1904,6 +2284,7 @@ namespace CindarsHope.Editor.SceneCreation
                 interiorRenderers: interiorRenderers.ToArray());
             if (name != "House_AnimalYard")
                 reveal.ConfigureFeetOccupancy(revealTrigger);
+            TownShopDoorHoursWiring.Configure(name, house.GetComponentInChildren<HouseDoorInteractable>(), revealTrigger);
             EditorUtility.SetDirty(reveal);
         }
 
@@ -2796,6 +3177,35 @@ namespace CindarsHope.Editor.SceneCreation
                 }
             }
 
+            // Hund and Gurd share the Carvalho-Torto frontage in the south corral. Their work,
+            // home-door and social connectors can otherwise leave on opposite sides of the house,
+            // forcing a trip to the main avenue before returning to the same neighbourhood. Keep
+            // those schedule lanes local, but materialize them through final scene physics so they
+            // remain real walkable detours rather than links through the facade.
+            NpcScheduleAnchor FindAnchor(string anchorId)
+            {
+                foreach (var anchor in anchors)
+                    if (anchor != null && anchor.AnchorId == anchorId) return anchor;
+                return null;
+            }
+            bool TryAddCorralScheduleLane(string fromAnchorId, string toAnchorId)
+            {
+                var from = FindAnchor(fromAnchorId);
+                var to = FindAnchor(toAnchorId);
+                if (from == null || to == null) return false;
+                var fromId = from.HasApproach ? $"{from.AnchorId}__approach" : from.AnchorId;
+                var fromPosition = from.HasApproach ? from.ApproachPoint : from.GetPosition();
+                var toId = to.HasApproach ? $"{to.AnchorId}__approach" : to.AnchorId;
+                var toPosition = to.HasApproach ? to.ApproachPoint : to.GetPosition();
+                return TryAddFinalPhysicsDetour(fromId, fromPosition, toId, toPosition);
+            }
+            foreach (var npcId in new[] { "npc_hund", "npc_gurd" })
+            {
+                if (!TryAddCorralScheduleLane($"{npcId}_work", $"{npcId}_social") ||
+                    !TryAddCorralScheduleLane($"{npcId}_home", $"{npcId}_work"))
+                    Debug.LogError($"[TOWN.N1] No final-physics corral schedule lane for {npcId}.");
+            }
+
             // Anchor re-entry. The single connector chosen above comes from an unbounded search, so a
             // rejected neighbour sends the anchor tens of units into the mesh: npc_maelor_work sat ON a
             // road node (0.00u) yet its only edge spanned 73.05u, and npc_maelor_home reached 57.44u
@@ -3097,6 +3507,186 @@ namespace CindarsHope.Editor.SceneCreation
                 solid.offset = new Vector2(0f, -scale.y * 0.12f);
             }
             return prop;
+        }
+
+        private static bool IsCivicInterior(string houseName)
+        {
+            return houseName == "House_Prison" ||
+                   houseName == "House_Archive" ||
+                   houseName == "House_Registry" ||
+                   houseName == "House_GateKeeper";
+        }
+
+        // Local curation for the four civic interiors. The generated filenames are historical and
+        // misleading: chair is the bookcase image, kitchen_counter is a plain wooden service desk,
+        // rug is a wooden chair, and bed is the actual bed. Do not alter InteriorSpriteFor: the
+        // remaining houses deliberately retain their existing mapping.
+        private static void CreateCivicInteriorFurniture(Transform house, string houseName, float ihw, float ihh)
+        {
+            GameObject Prop(string propName, string visualKey, Vector3 localPos, Vector2 maxVisualSize, Color color)
+            {
+                // Create the stable root/collider first. Its scale is then recalculated from the
+                // actual sprite bounds below; PPU 128 means a 64px sprite is only 0.5 world units.
+                var prop = CreateInteriorProp(house, propName, localPos, Vector3.one, color);
+                var renderer = prop.GetComponentInChildren<SpriteRenderer>();
+                var sprite = propName == "Furniture_GateKeeperStorage"
+                    ? WorldSpriteLibrary.Prop("crate")
+                    : WorldSpriteLibrary.Interior(visualKey);
+                if (renderer != null && sprite != null)
+                {
+                    renderer.sprite = sprite;
+                    renderer.color = Color.white;
+                    // Player uses a center pivot while generated world furniture uses BottomCenter.
+                    // Sorting the civic prop by its visual center keeps a desk at the same floor
+                    // location from drawing over the player's head solely because its child pivot
+                    // was shifted south to preserve legacy center placement.
+                    if (houseName == "House_GateKeeper") renderer.spriteSortPoint = SpriteSortPoint.Center;
+                    float spriteWidth = Mathf.Max(0.0001f, sprite.bounds.size.x);
+                    float spriteHeight = Mathf.Max(0.0001f, sprite.bounds.size.y);
+                    float uniformScale = Mathf.Min(maxVisualSize.x / spriteWidth, maxVisualSize.y / spriteHeight);
+                    renderer.transform.localScale = new Vector3(uniformScale, uniformScale, 1f);
+                    float visualWidth = spriteWidth * uniformScale;
+                    float visualHeight = spriteHeight * uniformScale;
+                    renderer.transform.localPosition = new Vector3(
+                        (sprite.pivot.x / sprite.rect.width - 0.5f) * visualWidth,
+                        (sprite.pivot.y / sprite.rect.height - 0.5f) * visualHeight,
+                        0f);
+                    var solid = prop.GetComponent<BoxCollider2D>();
+                    if (solid != null)
+                    {
+                        solid.size = new Vector2(Mathf.Max(0.35f, visualWidth * 0.82f), Mathf.Max(0.30f, visualHeight * 0.70f));
+                        solid.offset = new Vector2(0f, -visualHeight * 0.12f);
+                        if (propName == "Furniture_GateKeeperStorage")
+                        {
+                            // Existing crate recipe: native lower band x=2..59, y=42..64.
+                            solid.size = new Vector2(visualWidth * 57f / 61f, visualHeight * 22f / 64f);
+                            solid.offset = new Vector2(visualWidth * (30.5f / 61f - 0.5f),
+                                visualHeight * (0.5f - 53f / 64f));
+                        }
+                    }
+                }
+                return prop;
+            }
+
+            Color darkWood = new Color(0.30f, 0.25f, 0.20f);
+            Color serviceWood = new Color(0.46f, 0.34f, 0.22f);
+            Color mutedLinen = new Color(0.42f, 0.39f, 0.34f);
+            switch (houseName)
+            {
+                case "House_Archive":
+                    // Research room: three bookcases on the north/east perimeter and a reading desk.
+                    Prop("Furniture_ArchiveShelfWest", "chair", new Vector3(-ihw + 0.55f, ihh - 0.80f, 0f), new Vector2(0.90f, 1.50f), darkWood);
+                    Prop("Furniture_ArchiveShelfNorth", "chair", new Vector3(0f, ihh - 0.80f, 0f), new Vector2(0.90f, 1.50f), darkWood);
+                    Prop("Furniture_ArchiveShelfEast", "chair", new Vector3(ihw - 0.55f, ihh - 0.80f, 0f), new Vector2(0.90f, 1.50f), darkWood);
+                    Prop("Furniture_ArchiveDesk", "kitchen_counter", new Vector3(-ihw + 1.1f, -0.10f, 0f), new Vector2(1.80f, 1.00f), serviceWood);
+                    break;
+
+                case "House_Registry":
+                    // Public counter stays at the rear, leaving the south door's central approach free.
+                    Prop("Furniture_RegistryRecordsWest", "chair", new Vector3(-ihw + 0.60f, ihh - 0.80f, 0f), new Vector2(0.90f, 1.50f), darkWood);
+                    Prop("Furniture_RegistryServiceDesk", "kitchen_counter", new Vector3(0f, ihh - 0.75f, 0f), new Vector2(1.80f, 1.00f), serviceWood);
+                    Prop("Furniture_RegistryRecordsEast", "chair", new Vector3(ihw - 0.60f, ihh - 0.80f, 0f), new Vector2(0.90f, 1.50f), darkWood);
+                    break;
+
+                case "House_Prison":
+                    // Austere holding room: simple bed, guard bench and locked-looking perimeter storage.
+                    Prop("Furniture_PrisonBed", "bed", new Vector3(-ihw + 1.00f, ihh - 1.15f, 0f), new Vector2(1.60f, 2.00f), mutedLinen);
+                    Prop("Furniture_PrisonBench", "kitchen_counter", new Vector3(1.00f, ihh - 0.70f, 0f), new Vector2(1.70f, 0.70f), darkWood);
+                    Prop("Furniture_PrisonStorage", "chair", new Vector3(ihw - 0.55f, 0.15f, 0f), new Vector2(0.80f, 1.30f), darkWood);
+                    break;
+
+                case "House_GateKeeper":
+                    // Compact guard post: west bunk, north-east work table, low supply crate.
+                    Prop("Furniture_GateKeeperDesk", "kitchen_counter", new Vector3(1.55f, 1.15f, 0f), new Vector2(1.65f, 1.08f), serviceWood);
+                    Prop("Furniture_GateKeeperStorage", "crate", new Vector3(2.10f, -0.40f, 0f), new Vector2(0.95f, 1.00f), darkWood);
+                    Prop("Furniture_GateKeeperRest", "bed", new Vector3(-1.65f, 0.45f, 0f), new Vector2(2.08f, 2.18f), mutedLinen);
+                    break;
+            }
+        }
+
+        private static void ConfigureGateKeeperWallPresentation(Transform house)
+        {
+            const float playerOpaqueHeight = 2.49609375f;
+            const float northFaceHeight = playerOpaqueHeight * 0.65f;
+            const float sideVisualWidth = 0.30f;
+            const float interiorHalfWidth = 3f;
+            const float interiorHalfHeight = 2f;
+
+            Transform Wall(string wallName) => house.Find(wallName);
+            void ClearLegacyVisuals(Transform wall)
+            {
+                if (wall == null) return;
+                for (int i = wall.childCount - 1; i >= 0; i--)
+                    UnityEngine.Object.DestroyImmediate(wall.GetChild(i).gameObject);
+            }
+            void AddStone(Transform wall, string visualName, Vector2 size, Vector2 worldCenter, Color tint)
+            {
+                if (wall == null) return;
+                var visual = new GameObject(visualName);
+                visual.transform.SetParent(wall, false);
+                var renderer = visual.AddComponent<SpriteRenderer>();
+                renderer.sprite = WorldSpriteLibrary.Building("wall_stone");
+                if (renderer.sprite != null)
+                {
+                    // 64px tile at 128 PPU becomes 2u at 32 effective px/u. Keep the tile
+                    // square, and express the required world rectangle in inverse local units.
+                    float pixelScale = renderer.sprite.pixelsPerUnit / 32f;
+                    visual.transform.localScale = Vector3.one * pixelScale;
+                    renderer.drawMode = SpriteDrawMode.Tiled;
+                    renderer.tileMode = SpriteTileMode.Continuous;
+                    renderer.size = size / pixelScale;
+                    var sprite = renderer.sprite;
+                    float pivotX = sprite.pivot.x / sprite.rect.width;
+                    float pivotY = sprite.pivot.y / sprite.rect.height;
+                    visual.transform.localPosition = new Vector3(
+                        worldCenter.x - wall.localPosition.x + size.x * (pivotX - 0.5f),
+                        worldCenter.y - wall.localPosition.y + size.y * (pivotY - 0.5f), 0f);
+                    renderer.color = tint;
+                }
+                else
+                {
+                    renderer.sprite = GetBuiltinSprite();
+                    var bounds = renderer.sprite.bounds.size;
+                    visual.transform.localScale = new Vector3(size.x / bounds.x, size.y / bounds.y, 1f);
+                    visual.transform.localPosition = worldCenter - (Vector2)wall.localPosition;
+                    renderer.color = tint;
+                }
+                renderer.sortingOrder = 0;
+                renderer.spriteSortPoint = SpriteSortPoint.Center;
+                TrySetSortingLayer(renderer, "World", renderer.sortingOrder);
+            }
+
+            var left = Wall("Wall_Left");
+            var right = Wall("Wall_Right");
+            var north = Wall("Wall_Top");
+            var frontLeft = Wall("Wall_BottomL");
+            var frontRight = Wall("Wall_BottomR");
+            ClearLegacyVisuals(left); ClearLegacyVisuals(right); ClearLegacyVisuals(north);
+            ClearLegacyVisuals(frontLeft); ClearLegacyVisuals(frontRight);
+
+            // Physical shell remains 8x6. The revealed drawing describes only the 6x4
+            // useful room: north face starts at y=2, side returns end at y=-2.
+            AddStone(north, "GateKeeperNorthFace", new Vector2(6f, northFaceHeight),
+                new Vector2(0f, interiorHalfHeight + northFaceHeight * 0.5f),
+                new Color(0.90f, 0.88f, 0.84f));
+            AddStone(north, "GateKeeperNorthBase", new Vector2(6f, 0.12f),
+                new Vector2(0f, interiorHalfHeight + 0.06f), new Color(0.69f, 0.65f, 0.59f));
+            foreach (var side in new[] { left, right })
+            {
+                // Return occupies the wall side, never the usable floor / actor clearance.
+                float x = side == left ? -interiorHalfWidth - sideVisualWidth * 0.5f : interiorHalfWidth + sideVisualWidth * 0.5f;
+                AddStone(side, "GateKeeperSideTrim", new Vector2(sideVisualWidth, 4f),
+                    new Vector2(x, 0f), new Color(0.78f, 0.75f, 0.70f));
+                AddStone(side, "GateKeeperNorthCorner", new Vector2(sideVisualWidth, 0.30f),
+                    new Vector2(x, interiorHalfHeight), new Color(0.74f, 0.70f, 0.64f));
+                AddStone(side, "GateKeeperFrontCap", new Vector2(sideVisualWidth, 0.30f),
+                    new Vector2(x, -interiorHalfHeight), new Color(0.69f, 0.65f, 0.59f));
+            }
+            // Cutaway jambs show the real 1.8u opening without a foreground wall face.
+            AddStone(frontLeft, "GateKeeperDoorJamb", new Vector2(0.30f, 1f),
+                new Vector2(-DoorGapWidth * 0.5f - 0.15f, -2.5f), new Color(0.78f, 0.75f, 0.70f));
+            AddStone(frontRight, "GateKeeperDoorJamb", new Vector2(0.30f, 1f),
+                new Vector2(DoorGapWidth * 0.5f + 0.15f, -2.5f), new Color(0.78f, 0.75f, 0.70f));
         }
 
         // Mapeia o nome do movel interno -> sprite em Art/Generated/World/interior. null = sem match

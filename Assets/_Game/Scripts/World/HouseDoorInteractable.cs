@@ -18,6 +18,9 @@ namespace CindarsHope.World
         [SerializeField] private bool _isOpen;
         [SerializeField] private Sprite[] _closedToOpenFrames;
         [SerializeField] private float _secondsPerFrame = 0.08f;
+        [SerializeField] private BoxCollider2D _accessInterior;
+        private IHouseDoorAccessPolicy _accessPolicy;
+        private bool _policyClosePending;
 
         private readonly Collider2D[] _occupancyResults = new Collider2D[32];
         private int _npcNearby;
@@ -40,6 +43,7 @@ namespace CindarsHope.World
         private void OnEnable() => ApplyImmediate(_isOpen);
         private void OnDisable()
         {
+            _policyClosePending = false;
             _npcNearby = 0;
             _autoCloseTimer = 0f;
             _autoOpened = false;
@@ -50,11 +54,51 @@ namespace CindarsHope.World
         {
             if (interactor == null) return;
             var open = !(_animating ? _targetOpen : _isOpen);
+            if (open && !IsInteriorActor(interactor) && _accessPolicy != null &&
+                !_accessPolicy.CanOpen(out var reason))
+            {
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(reason));
+                return;
+            }
             if (!SetOpen(open)) return;
             // A manual choice supersedes the NPC's pending automatic close.
             _autoOpened = false;
             _autoCloseTimer = 0f;
             GameEventBus.Publish(new PlayerActionFeedbackEvent(open ? "Porta aberta" : "Porta fechada"));
+            // A closed shop permits exit, then closes safely after the occupant clears the vane.
+            if (open && _accessPolicy != null && !_accessPolicy.CanOpen(out _))
+            {
+                _policyClosePending = true;
+                _autoCloseTimer = AutoCloseDelaySeconds;
+            }
+        }
+
+        public void ConfigureAccessPolicy(IHouseDoorAccessPolicy policy, BoxCollider2D interior = null)
+        {
+            _accessPolicy = policy;
+            if (interior != null) _accessInterior = interior;
+            EnforceAccessPolicy();
+        }
+
+        public void EnforceAccessPolicy()
+        {
+            if (_accessPolicy == null || _accessPolicy.CanOpen(out _))
+            {
+                _policyClosePending = false;
+                return;
+            }
+            if (!_targetOpen || _animating || _npcNearby > 0 || _autoCloseTimer > 0f)
+            {
+                _policyClosePending = _targetOpen;
+                return;
+            }
+            _policyClosePending = !SetOpen(false);
+        }
+
+        private bool IsInteriorActor(GameObject actor)
+        {
+            return _accessInterior != null && actor != null &&
+                _accessInterior.OverlapPoint(actor.transform.position);
         }
 
         private bool SetOpen(bool open)
@@ -142,6 +186,7 @@ namespace CindarsHope.World
 
         private void Advance(float deltaTime)
         {
+            if (_policyClosePending && !_animating) EnforceAccessPolicy();
             if (_autoCloseTimer > 0f)
             {
                 _autoCloseTimer -= deltaTime;

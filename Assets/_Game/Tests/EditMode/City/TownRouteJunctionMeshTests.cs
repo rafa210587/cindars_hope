@@ -143,6 +143,41 @@ namespace CindarsHope.Tests.EditMode.City
             }
         }
 
+        [Test]
+        public void CorralScheduleLanes_KeepHundAndGurdTransitionsWithinDetourLimit()
+        {
+            var scene = SceneManager.GetSceneByPath(ScenePath);
+            var openedHere = !scene.isLoaded;
+            if (openedHere) scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+
+            try
+            {
+                NpcTownRouteGraph graph = null;
+                var anchors = new List<NpcScheduleAnchor>();
+                foreach (var root in scene.GetRootGameObjects())
+                {
+                    if (graph == null) graph = root.GetComponentInChildren<NpcTownRouteGraph>(true);
+                    anchors.AddRange(root.GetComponentsInChildren<NpcScheduleAnchor>(true));
+                }
+                Assert.IsNotNull(graph);
+                var route = new List<Vector3>();
+                foreach (var pair in BuildAnchorPairs(anchors))
+                {
+                    if (!pair.label.StartsWith("npc_hund_", System.StringComparison.Ordinal) &&
+                        !pair.label.StartsWith("npc_gurd_", System.StringComparison.Ordinal)) continue;
+                    Assert.IsTrue(graph.TryBuildRoute(pair.from, pair.to, route), pair.label);
+                    var travelled = 0f;
+                    for (var i = 1; i < route.Count; i++) travelled += Vector3.Distance(route[i - 1], route[i]);
+                    var straight = Vector2.Distance(pair.from, pair.to);
+                    Assert.LessOrEqual(travelled / straight, DetourRatioLimit, pair.label);
+                }
+            }
+            finally
+            {
+                if (openedHere && scene.isLoaded) EditorSceneManager.CloseScene(scene, true);
+            }
+        }
+
         private static List<(Vector3 from, Vector3 to, string label)> BuildAnchorPairs(
             List<NpcScheduleAnchor> anchors)
         {

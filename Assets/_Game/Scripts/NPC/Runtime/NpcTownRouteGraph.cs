@@ -167,10 +167,10 @@ namespace CindarsHope.NPC.Runtime
                 return false;
             }
             RebuildIndex();
-            // Safe restricts recovery/snap destinations, not route origins. A resident inside an
-            // authored non-safe home node must depart through its home->approach edge.
+            // Safe restricts recovery/snap destinations, not ordinary navigation. Residents must
+            // both enter and leave authored home nodes through their home/approach edges.
             var start = NearestReachableNode(from, safeOnly: false, self);
-            var goal = NearestReachableNode(to, safeOnly: true, self);
+            var goal = NearestReachableNode(to, safeOnly: false, self);
             if (start == null || goal == null)
             {
                 var nearestStart = NearestNode(from, true);

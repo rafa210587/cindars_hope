@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Gameplay.Input;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace CindarsHope.Interaction
         private bool _missingTriggerWarningLogged;
         private bool _lastPublishedHasCandidate;
         private string _lastPublishedPrompt = string.Empty;
+        private readonly HashSet<string> _townInteriorLockTokens = new HashSet<string>();
 
         public string CurrentPrompt
         {
@@ -54,11 +56,14 @@ namespace CindarsHope.Interaction
 
         private void OnEnable()
         {
+            GameEventBus.Subscribe<TownInteriorPlayerLockEvent>(OnTownInteriorPlayerLock);
             PublishPrompt(false, string.Empty, true);
         }
 
         private void OnDisable()
         {
+            GameEventBus.Unsubscribe<TownInteriorPlayerLockEvent>(OnTownInteriorPlayerLock);
+            _townInteriorLockTokens.Clear();
             PublishPrompt(false, string.Empty, true);
         }
 
@@ -77,6 +82,12 @@ namespace CindarsHope.Interaction
 
         private void Update()
         {
+            if (_townInteriorLockTokens.Count > 0)
+            {
+                PublishPromptIfChanged();
+                return;
+            }
+
             if (GameplayInputBlocker.IsBlockedBy(GameplayInputBlockReason.FarmActionMenu))
             {
                 PublishPromptIfChanged();
@@ -107,10 +118,17 @@ namespace CindarsHope.Interaction
             PublishPromptIfChanged();
         }
 
+        private void OnTownInteriorPlayerLock(TownInteriorPlayerLockEvent evt)
+        {
+            if (string.IsNullOrWhiteSpace(evt.OperationId)) return;
+            if (evt.Locked) _townInteriorLockTokens.Add(evt.OperationId);
+            else _townInteriorLockTokens.Remove(evt.OperationId);
+        }
+
         public void RegisterCandidate(Collider2D other)
         {
             var interactable = GetInteractable(other);
-            if (interactable == null || ContainsCandidate(interactable))
+            if (interactable == null || ContainsCandidate(other))
             {
                 return;
             }
@@ -127,7 +145,7 @@ namespace CindarsHope.Interaction
                 return;
             }
 
-            RemoveCandidate(interactable, other);
+            RemoveCandidate(other);
             PublishPromptIfChanged();
         }
         private void PublishPromptIfChanged()
@@ -221,11 +239,11 @@ namespace CindarsHope.Interaction
             return origin;
         }
 
-        private bool ContainsCandidate(IInteractable interactable)
+        private bool ContainsCandidate(Collider2D source)
         {
             for (var i = 0; i < _candidates.Count; i++)
             {
-                if (_candidates[i].Interactable == interactable)
+                if (_candidates[i].Collider == source)
                 {
                     return true;
                 }
@@ -234,12 +252,12 @@ namespace CindarsHope.Interaction
             return false;
         }
 
-        private void RemoveCandidate(IInteractable interactable, Collider2D source)
+        private void RemoveCandidate(Collider2D source)
         {
             for (var i = _candidates.Count - 1; i >= 0; i--)
             {
                 var candidate = _candidates[i];
-                if (candidate.Interactable == interactable || candidate.Collider == source)
+                if (candidate.Collider == source)
                 {
                     _candidates.RemoveAt(i);
                 }
@@ -251,7 +269,8 @@ namespace CindarsHope.Interaction
             for (var i = _candidates.Count - 1; i >= 0; i--)
             {
                 var candidate = _candidates[i];
-                if (candidate.Interactable == null || candidate.Collider == null)
+                if (candidate.Interactable == null || candidate.Collider == null ||
+                    !candidate.Collider.isActiveAndEnabled)
                 {
                     _candidates.RemoveAt(i);
                 }

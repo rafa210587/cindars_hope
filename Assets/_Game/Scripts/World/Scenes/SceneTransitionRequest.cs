@@ -1,11 +1,16 @@
+using CindarsHope.Foundation;
+
 namespace CindarsHope.World.Scenes
 {
+    public enum SceneTransitionKind { Single = 0, TownInteriorVisit = 1 }
     /// <summary>
     /// Request DTO for a scene transition.
     /// All fields are simple strings — no Unity references allowed.
     /// </summary>
     public sealed class SceneTransitionRequest
     {
+        public readonly SceneTransitionKind Kind;
+        public readonly TownInteriorVisitRequest InteriorVisit;
         /// <summary>Scene ID of the origin scene (from SceneId constants).</summary>
         public readonly string SourceSceneId;
 
@@ -35,8 +40,21 @@ namespace CindarsHope.World.Scenes
 
         public bool IsValid()
         {
-            return !string.IsNullOrWhiteSpace(DestinationSceneId)
+            if (Kind == SceneTransitionKind.TownInteriorVisit)
+                return InteriorVisit.IsValid && !string.IsNullOrWhiteSpace(SourceSceneId);
+            return Kind == SceneTransitionKind.Single && !string.IsNullOrWhiteSpace(DestinationSceneId)
                    && !string.IsNullOrWhiteSpace(TargetSpawnAnchorId);
+        }
+
+        public SceneTransitionRequest(string sourceSceneId, TownInteriorVisitRequest visit,
+            string initiatingGateId = "")
+        {
+            Kind = SceneTransitionKind.TownInteriorVisit;
+            InteriorVisit = visit;
+            SourceSceneId = sourceSceneId ?? string.Empty;
+            DestinationSceneId = SourceSceneId;
+            TargetSpawnAnchorId = string.Empty;
+            InitiatingGateId = initiatingGateId ?? string.Empty;
         }
 
         public override string ToString()

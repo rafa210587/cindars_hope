@@ -147,7 +147,9 @@ namespace CindarsHope.Tests.EditMode.NPC
                 var points = new List<Vector3>();
                 Assert.IsTrue(graph.TryBuildRoute(Vector3.zero, Vector3.right * 3f, points));
                 Assert.AreEqual(Vector3.right, points[2]);
-                Assert.AreEqual(Vector3.right * 2f, points[3]);
+                // Collinear intermediate samples may be compacted. The retained sample must
+                // belong to the cheaper branch; the expensive branch retains Vector3.up instead.
+                Assert.AreEqual(Vector3.right * 3f, points[points.Count - 1]);
                 CollectionAssert.DoesNotContain(points, Vector3.up);
             }
             finally { Object.DestroyImmediate(go); }
@@ -215,6 +217,35 @@ namespace CindarsHope.Tests.EditMode.NPC
                 Assert.IsTrue(graph.TryBuildRoute(Vector3.zero, Vector3.right * 2f, points));
                 Assert.AreEqual(Vector3.zero, points[1]);
                 Assert.AreEqual(Vector3.right, points[2]);
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        [Test]
+        public void BuildRoute_EntersNonSafeHomeViaItsLocalApproach_WhileSnapStillRejectsHome()
+        {
+            var go = new GameObject("route-test-home-arrival");
+            try
+            {
+                var graph = go.AddComponent<NpcTownRouteGraph>();
+                var home = new Vector3(7000f, 7000f);
+                var approach = home + Vector3.down * 2f;
+                var work = approach + Vector3.left * 3f;
+                graph.Configure(new List<NpcTownRouteNode>
+                {
+                    new NpcTownRouteNode { Id = "home", Position = home, Safe = false },
+                    new NpcTownRouteNode { Id = "approach", Position = approach, Safe = true },
+                    new NpcTownRouteNode { Id = "work", Position = work, Safe = true }
+                }, new List<NpcTownRouteEdge>
+                {
+                    new NpcTownRouteEdge { From = "work", To = "approach", Cost = 3f },
+                    new NpcTownRouteEdge { From = "approach", To = "home", Cost = 2f }
+                });
+                var points = new List<Vector3>();
+                Assert.IsTrue(graph.TryBuildRoute(work, home, points));
+                CollectionAssert.AreEqual(new[] { work, work, approach, home, home }, points);
+                Assert.IsTrue(graph.TryFindNearestSafeUnoccupied(home, .2f, null, out var safe));
+                Assert.AreEqual(approach, safe);
             }
             finally { Object.DestroyImmediate(go); }
         }

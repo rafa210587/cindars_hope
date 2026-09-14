@@ -425,6 +425,21 @@ namespace CindarsHope.NPC.Schedule
                 GameEventBus.Publish(new NpcScheduleBlockChangedEvent(npcId, block.ToString(), available));
             }
 
+            // Pilot-only interior ownership. Never build a Town route to the additive prefab's
+            // distant presentation coordinates; the one NPC root is presented by its adapter.
+            var interior = npcGo.GetComponent<NpcInteriorPresentationAdapter>();
+            if (interior != null && !interior.IsBound && block != NpcRuntimeBlock.Social)
+            {
+                wanderer?.ClearDestination();
+                _moveOrders.Remove(npcId);
+                return;
+            }
+            if (interior != null && interior.ApplyScheduleBlock(block))
+            {
+                _moveOrders.Remove(npcId);
+                return;
+            }
+
             // Order physical movement toward the target. A route graph is preferred; direct motion is
             // retained as a compatibility fallback for scenes generated before N1 nodes existed.
             _moveOrders[npcId] = new MoveOrder
@@ -591,6 +606,11 @@ namespace CindarsHope.NPC.Schedule
 
             isAvailable = state.IsAvailable;
             return true;
+        }
+
+        public void RefreshSchedulesAfterInteriorBinding()
+        {
+            if (!_diagnosticMoveIsolation) ResolveAllNpcs(CurrentHour());
         }
 
         /// <summary>Load/offscreen-only recovery; circulation callers must pass false and remain physical.</summary>
