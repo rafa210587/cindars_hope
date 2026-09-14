@@ -25,6 +25,10 @@ Art must work with the camera and existing gameplay contracts in Cindar's Hope.
 2. Check [measurements and fit](references/scene-fit.md) for the target.
 3. Wire through the Editor API and canonical commands; do not edit YAML manually.
 4. Compare before/after framing with the same camera and observe affected behavior.
+   For scene/interior composition changes, apply [scene-composition-review](../scene-composition-review/SKILL.md)
+   before visual acceptance or replication. For changed collision, access or doors, apply
+   [scene-physics-review](../scene-physics-review/SKILL.md). Keep their verdicts separate;
+   passing measurements or physical tests cannot override a visibly failed composition.
 5. Record validation performed and pending items without automatically granting human approval.
 
 ## On-demand references

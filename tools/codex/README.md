@@ -6,6 +6,19 @@ que o host carregou ou executou os hooks nesta sessão.
 
 ## Como rodar
 
+Para descobrir alterações sem despejar o working tree inteiro no contexto, use PowerShell 7:
+
+```powershell
+pwsh -NoProfile -File tools/codex/Get-ChangeSummary.ps1 -MaxResults 20
+```
+
+O JSON informa contagens de staging/worktree/conflitos e quantos paths foram omitidos.
+`-ProjectRoot` seleciona o repositório; `-CompleteInventoryPath` exporta o inventário para
+um arquivo novo fora de Assets. O resumo auxilia navegação; autoria, autorização e evidência
+exigem os diffs pertinentes. Contratos: `pwsh -File tools/codex/Test-ChangeSummary.ps1`.
+
+Para gerar o harness:
+
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/codex/Generate-CodexHarness.ps1
 ```

@@ -2,7 +2,7 @@
 
 ## Integração no projeto (editor generation)
 
-- Construa os Tilemaps via editor API dentro dos scene creators (`CreateMvp*Scene.cs`); **sem `[MenuItem]` avulso** — registre no fluxo dos 3 comandos (`Inicializar/Validar/Reparar`), ver [editor-generation-orchestration](../../../rules/editor-generation-orchestration.md).
+- Construa os Tilemaps via editor API dentro dos scene creators (`CreateMvp*Scene.cs`); **sem `[MenuItem]` avulso** — registre no fluxo dos 3 comandos (`Inicializar/Validar/Reparar`), ver [editor-generation-orchestration](../../../../.claude/rules/editor-generation-orchestration.md).
 - Tiles/Rule Tiles são assets (`AssetDatabase.CreateAsset`) para persistir na cena; carregue sprites via `WorldSpriteLibrary` (Art/Generated/World).
 - Arte de mundo staged por `art/world_gpt/_stage_world_to_assets.py`; tiles de chão passam por reseam (crop de moldura + blend de bordas) para tilar sem grade.
 

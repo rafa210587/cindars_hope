@@ -24,10 +24,29 @@ if ($data -and $data.tool_input) { $command = $data.tool_input.command }
 if (-not $command) { exit 0 }
 
 # --- 1. No parallel Unity batchmode ---------------------------------------
-if ($command -match "Unity(\.exe)?['""]?\s+.*-batchmode" -or $command -match "Unity\.exe.*-batchmode") {
-    $unityProcesses = Get-Process -Name "Unity" -ErrorAction SilentlyContinue
-    if ($unityProcesses) {
-        [Console]::Error.WriteLine("BLOCKED: Unity batchmode while another Unity process is running ($($unityProcesses.Count) found).")
+# O invariante e "nao rodar batchmode enquanto outro Unity segura ESTE projeto".
+# Contar todo processo 'unity' bloqueava por Unity de outro projeto (ex.: servidores
+# MCP de outro repo), o que e falso positivo; o filtro por project path mantem o
+# bloqueio real e remove o ruido. Sem CommandLine legivel, bloqueia por precaucao.
+if ($command -match "-batchmode") {
+    $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    $projectLeaf = Split-Path -Leaf $projectRoot
+    $conflicting = @()
+    try {
+        foreach ($process in Get-CimInstance Win32_Process -ErrorAction Stop |
+                 Where-Object { $_.Name -match '^[Uu]nity(\.exe)?$' }) {
+            $line = $process.CommandLine
+            if ([string]::IsNullOrWhiteSpace($line) -or
+                $line -like "*$projectRoot*" -or $line -like "*$projectLeaf*") {
+                $conflicting += $process
+            }
+        }
+    }
+    catch {
+        $conflicting = @(Get-Process -Name "Unity" -ErrorAction SilentlyContinue)
+    }
+    if ($conflicting.Count -gt 0) {
+        [Console]::Error.WriteLine("BLOCKED: Unity batchmode while another Unity process holds this project ($($conflicting.Count) found).")
         [Console]::Error.WriteLine("Rule: no-parallel-unity-batchmode. Close the Unity Editor or record the validation as BLOCKED with reason 'Unity lock'.")
         exit 2
     }

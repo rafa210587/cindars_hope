@@ -28,3 +28,4 @@ Commits remain in Portuguese. Push, PR/MR and prohibited Git operations remain s
 
 Use English for new or migrated AI instructions and supporting resources; preserve identifiers and validator-consumed literals. Keep conversation, user-facing game text and human documentation in the requested language; this session uses Portuguese.
 Select skills by the task, then load only relevant references, templates or examples. Discoverability is not a guarantee of correct selection or of every configured agent being available in the current session.
+For working-tree discovery, start with `pwsh -File tools/codex/Get-ChangeSummary.ps1`; inspect exact affected paths before editing. Bound search/log output, report omitted counts, and retrieve details when needed. Never truncate skill instructions, decisive errors or evidence required for a conclusion.

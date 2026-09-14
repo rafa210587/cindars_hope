@@ -28,3 +28,16 @@ sandbox_mode = "workspace-write"
 
 # Hooks live in .codex/hooks.json (sibling file), not inline here, to keep this file short and
 # to mirror .claude/settings.json's separate hooks block as closely as possible.
+
+# Local optional integration; the generator preserves this file when it exists.
+# Disabled by user request: cost non-regression is unproven; installation retained.
+[mcp_servers.serena_unity_readonly]
+command = "D:/Projetos/Cindars_Hope/.serena-runtime/venv/Scripts/python.exe"
+args = ["D:/Projetos/Cindars_Hope/cindars_hope/tools/serena/serena_unity_proxy.py", "--repo", "D:/Projetos/Cindars_Hope/cindars_hope", "--runtime-root", "D:/Projetos/Cindars_Hope/.serena-runtime"]
+cwd = "D:/Projetos/Cindars_Hope/cindars_hope"
+env_vars = ["TEMP", "TMP", "LOCALAPPDATA", "APPDATA", "USERPROFILE", "SystemRoot", "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432", "HOMEDRIVE", "HOMEPATH", "DOTNET_ROOT", "NUGET_PACKAGES"]
+enabled = false
+required = false
+enabled_tools = ["read_file", "get_symbols_overview", "find_symbol", "find_referencing_symbols"]
+startup_timeout_sec = 180
+tool_timeout_sec = 120

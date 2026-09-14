@@ -37,6 +37,9 @@ for instance identity, ownership and reload recovery. MCP does not replace the e
 2. Build deterministic preconditions before every behavior run (seed, clock, scene state, required assets preloaded).
 3. For testable logic, run `tools/unity/RunUnityEditModeTests.ps1` with exact `-TestFilter` and scoped assemblies.
 4. If behavior depends on scene/lifecycle/input/physics/animation/audio/UI state, run PlayMode equivalents.
+   For 2D collisions, doors or circulation, use [scene-physics-review](../scene-physics-review/SKILL.md)
+   to define effective-solid coverage and motion evidence. For scene visual acceptance, use
+   [scene-composition-review](../scene-composition-review/SKILL.md); a green runner is not its verdict.
 5. For compile-only paths, run `RunUnityCompileValidation.ps1` and parse integrated scan once; do not rescan the same log.
 6. For visual or UX-sensitive regressions, obtain real runtime captures/playback with available tools and inspect them. Record scenario, viewport, timing and reviewer; distinguish agent visual review from human acceptance. Missing native UI control does not prevent headless PlayMode or camera captures, but camera-only renders do not prove screen-overlay UI or keyboard interaction. Request human work only for acceptance that actually requires it and cannot be obtained through authorized tools.
 7. Preserve command, editor version (`ProjectSettings/ProjectVersion.txt`), exit code, log paths, XML path, counts, seed/clock, and changed input list.

@@ -27,6 +27,8 @@ The project's visual evidence requires examining the delivered file and the targ
 4. Record localized defects, impact and suggested correction; do not approve details you could not inspect.
 
 ## On-demand references
+- For an assembled room or scene, use [scene-composition-review](../scene-composition-review/SKILL.md)
+  to review boundaries, perspective and pixel language; isolated asset checks do not approve the composition.
 - For repeated scene/reference revisions: apply [bounded visual iteration](../../../.claude/rules/visual-iteration-budget.md)
   to select a small correction round and stop low-return retries.
 - For style criteria not yet defined: [pixel-art-direction](../pixel-art-direction/SKILL.md).

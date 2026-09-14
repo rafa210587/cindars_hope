@@ -110,6 +110,8 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `visual-asset-review` | Review static sprites and actual transparency against an approved reference |
 | `sprite-animation-review` | Review contacts, gait, timing and frame continuity |
 | `sprite-scene-integration` | Integrate approved sprites; check import, scale, sorting and collision |
+| `scene-composition-review` | Review integrated scenes: room boundaries, perspective, actor-relative scale, pixel density and occlusion; reject incoherent visuals despite green tests |
+| `scene-physics-review` | Audit effective 2D solids, door clearance and live Player/NPC circulation; distinguish casts, traversal and unresolved stalls |
 
 ## Agents
 
