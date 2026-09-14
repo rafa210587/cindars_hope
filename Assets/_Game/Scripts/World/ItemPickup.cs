@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CindarsHope.World
 {
@@ -13,6 +17,10 @@ namespace CindarsHope.World
         [SerializeField] private string _itemId;
         [SerializeField] private string _itemInstanceId;
         [SerializeField] private int _amount = 1;
+        [SerializeField] private bool _isDynamic;
+        [SerializeField] private string _runtimeGeneratedPickupId;
+        [SerializeField] private string _originSceneName;
+        [SerializeField] private List<ItemOriginLot> _originLots = new List<ItemOriginLot>();
         [SerializeField] private InventoryManager _inventoryManager;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private Collider2D _collider;
@@ -23,23 +31,39 @@ namespace CindarsHope.World
         public string ItemInstanceId => _itemInstanceId;
         public int Amount => _amount;
         public bool IsCollected { get; private set; }
+        public bool IsDynamic => _isDynamic;
+        public string RuntimeGeneratedPickupId => _runtimeGeneratedPickupId;
+        public string OriginSceneName => _isDynamic ? _originSceneName : gameObject.scene.name;
+        public IReadOnlyList<ItemOriginLot> OriginLots => _originLots;
 
         public void Configure(int pickupIndex, string itemId, int amount, InventoryManager inventoryManager)
             => Configure(pickupIndex, itemId, string.Empty, amount, inventoryManager);
 
         public void Configure(int pickupIndex, string itemId, string itemInstanceId, int amount, InventoryManager inventoryManager)
+            => ConfigureWithLots(pickupIndex, itemId, itemInstanceId, amount,
+                new[] { new ItemOriginLot(ItemOriginKind.Earned, amount) }, inventoryManager, false);
+
+        public bool ConfigureWithLots(int pickupIndex, string itemId, string itemInstanceId, int amount,
+            IReadOnlyList<ItemOriginLot> originLots, InventoryManager inventoryManager, bool isDynamic)
         {
+            if (amount <= 0 || !ItemOriginLot.IsValid(originLots, amount)) return false;
             _pickupIndex = pickupIndex;
             _itemId = itemId;
             _itemInstanceId = itemInstanceId ?? string.Empty;
-            _amount = Mathf.Max(1, amount);
+            _amount = amount;
+            _originLots = ItemOriginLot.CopyLots(originLots);
+            _isDynamic = isDynamic;
+            _runtimeGeneratedPickupId = isDynamic ? Guid.NewGuid().ToString("N") : string.Empty;
+            _originSceneName = isDynamic ? SceneManager.GetActiveScene().name : string.Empty;
             _inventoryManager = inventoryManager;
             EnsureComponents();
             SetCollected(IsCollected);
+            return true;
         }
 
         public ItemPickupSaveData CaptureSaveData()
         {
+            EnsureSceneAuthoredOrigin();
             return new ItemPickupSaveData
             {
                 PickupIndex = _pickupIndex,
@@ -47,7 +71,12 @@ namespace CindarsHope.World
                 ItemInstanceId = _itemInstanceId,
                 Amount = _amount,
                 Position = transform.position,
-                IsCollected = IsCollected
+                IsCollected = IsCollected,
+                IsDynamic = _isDynamic,
+                RuntimeGeneratedPickupId = _runtimeGeneratedPickupId,
+                SceneName = OriginSceneName,
+                OriginSchemaVersion = 1,
+                OriginLots = CaptureOriginLots()
             };
         }
 
@@ -63,8 +92,23 @@ namespace CindarsHope.World
             _itemId = string.IsNullOrWhiteSpace(saveData.ItemId) ? string.Empty : saveData.ItemId;
             _itemInstanceId = saveData.ItemInstanceId ?? string.Empty;
             _amount = Mathf.Max(1, saveData.Amount);
+            _isDynamic = saveData.IsDynamic;
+            _runtimeGeneratedPickupId = saveData.RuntimeGeneratedPickupId ?? string.Empty;
+            _originSceneName = saveData.IsDynamic ? saveData.SceneName ?? string.Empty : string.Empty;
+            _originLots = saveData.OriginSchemaVersion == 1
+                ? ItemOriginLot.FromSaveData(saveData.OriginLots, _amount)
+                : ItemOriginLot.Invalid(_amount);
             transform.position = saveData.Position;
             SetCollected(saveData.IsCollected);
+        }
+
+        public List<ItemOriginLot> CopyOriginLots() => ItemOriginLot.CopyLots(_originLots);
+
+        private List<ItemOriginLotSaveData> CaptureOriginLots()
+        {
+            var result = new List<ItemOriginLotSaveData>();
+            foreach (var lot in _originLots) result.Add(lot.ToSaveData());
+            return result;
         }
 
         public void SetCollected(bool collected)
@@ -85,6 +129,7 @@ namespace CindarsHope.World
 
         public bool CanInteract(GameObject interactor)
         {
+            EnsureSceneAuthoredOrigin();
             if (IsCollected)
             {
                 return false;
@@ -92,7 +137,8 @@ namespace CindarsHope.World
 
             return _inventoryManager != null
                 && !string.IsNullOrWhiteSpace(_itemId)
-                && _amount > 0;
+                && _amount > 0
+                && ItemOriginLot.IsValid(_originLots, _amount);
         }
 
         public void Interact(GameObject interactor)
@@ -108,18 +154,25 @@ namespace CindarsHope.World
                 return;
             }
 
-            var added = string.IsNullOrWhiteSpace(_itemInstanceId)
-                ? _inventoryManager.AddItem(_itemId, _amount)
-                : _amount == 1 && _inventoryManager.TryAddItemInstance(_itemId, _itemInstanceId).Success;
-            if (!added)
+            var originInventory = _inventoryManager as IOriginInventoryRuntime;
+            if (originInventory == null || (!string.IsNullOrWhiteSpace(_itemInstanceId) && _amount != 1)
+                || !originInventory.TryStageOriginAddition(_itemId, _itemInstanceId,
+                    _amount, CaptureOriginLots(), out var token))
             {
                 Debug.LogWarning($"{nameof(ItemPickup)} could not add '{_itemId}' x{_amount} to inventory.", this);
                 return;
             }
 
+            // A save listener sees both sides committed: item in inventory and pickup consumed.
+            SetCollected(true);
+            if (!originInventory.TryCommitOriginAddition(token))
+            {
+                if (originInventory.TryRollbackOriginAddition(token)) SetCollected(false);
+                else Debug.LogError($"{nameof(ItemPickup)} could not roll back staged pickup '{_itemId}'.", this);
+                return;
+            }
             GameEventBus.Publish(new ItemPickedUpEvent(_itemId, _amount));
             Debug.Log($"Picked up '{_itemId}' x{_amount}.", this);
-            SetCollected(true);
         }
 
         private void Reset()
@@ -136,7 +189,16 @@ namespace CindarsHope.World
         private void Awake()
         {
             EnsureComponents();
+            EnsureSceneAuthoredOrigin();
             SetCollected(IsCollected);
+        }
+
+        private void EnsureSceneAuthoredOrigin()
+        {
+            // Existing authored FarmScene pickups predate the serialized origin field. Only a
+            // never-restored static scene pickup may acquire Earned origin from that absence.
+            if (!_isDynamic && _amount > 0 && (_originLots == null || _originLots.Count == 0))
+                _originLots = new List<ItemOriginLot> { new ItemOriginLot(ItemOriginKind.Earned, _amount) };
         }
 
         private void EnsureComponents()

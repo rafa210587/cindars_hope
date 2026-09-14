@@ -17,17 +17,20 @@ namespace CindarsHope.UI.Shop
         [SerializeField] private InputField _amountInput;
 
         private ItemDataSO _itemData;
-        private int _playerAmount;
-        private ShopManager _shopManager;
-        private string _shopId;
-        private Action<ItemDataSO, int, int> _onFocused;
+        private int _eligibleAmount;
+        private int _retainedAmount;
+        private Func<int, ShopManager.ShopSellQuote> _quoteForAmount;
+        private Action<ItemDataSO, ShopManager.ShopSellQuote, int, int> _onFocused;
 
-        public void Initialize(ItemDataSO itemData, int playerAmount, ShopManager shopManager, string shopId, Action<string, int> onSellClicked, Action<ItemDataSO, int, int> onFocused)
+        public void Initialize(ItemDataSO itemData, int eligibleAmount, int retainedAmount,
+            Func<int, ShopManager.ShopSellQuote> quoteForAmount,
+            Action<string, int> onSellClicked,
+            Action<ItemDataSO, ShopManager.ShopSellQuote, int, int> onFocused)
         {
             _itemData = itemData;
-            _playerAmount = playerAmount;
-            _shopManager = shopManager;
-            _shopId = shopId;
+            _eligibleAmount = eligibleAmount;
+            _retainedAmount = retainedAmount;
+            _quoteForAmount = quoteForAmount;
             _onFocused = onFocused;
 
             if (_itemNameText != null)
@@ -37,18 +40,16 @@ namespace CindarsHope.UI.Shop
 
             UpdatePriceDisplay();
             UpdateAmountDisplay();
+            if (_amountInput != null)
+                _amountInput.onValueChanged.AddListener(_ => { UpdatePriceDisplay(); Focus(); });
 
             if (_sellButton != null && onSellClicked != null)
             {
+                _sellButton.interactable = _eligibleAmount > 0;
                 _sellButton.onClick.AddListener(() =>
                 {
-                    var amount = 1;
-                    if (_amountInput != null && int.TryParse(_amountInput.text, out var parsed))
-                    {
-                        amount = Mathf.Min(Mathf.Max(1, parsed), _playerAmount);
-                    }
-
-                    onSellClicked.Invoke(itemData.Id, amount);
+                    if (_eligibleAmount > 0)
+                        onSellClicked.Invoke(itemData.Id, SelectedAmount());
                 });
             }
         }
@@ -65,14 +66,20 @@ namespace CindarsHope.UI.Shop
 
         public void Focus()
         {
-            _onFocused?.Invoke(_itemData, CalculateUnitPrice(), _playerAmount);
+            _onFocused?.Invoke(_itemData, _quoteForAmount != null
+                ? _quoteForAmount(SelectedAmount()) : default,
+                _eligibleAmount, _retainedAmount);
         }
 
         private void UpdatePriceDisplay()
         {
             if (_priceText != null)
             {
-                _priceText.text = $"{CalculateUnitPrice()}g";
+                var quote = _quoteForAmount != null
+                    ? _quoteForAmount(SelectedAmount()) : default;
+                _priceText.text = quote.Success
+                    ? $"{quote.FinalGold}g / {quote.SellAmount}"
+                    : "Sem venda";
             }
         }
 
@@ -80,14 +87,16 @@ namespace CindarsHope.UI.Shop
         {
             if (_amountText != null)
             {
-                _amountText.text = $"Tem: {_playerAmount}";
+                _amountText.text = $"Vendavel: {_eligibleAmount} | Retido: {_retainedAmount}";
             }
         }
 
-        private int CalculateUnitPrice()
+        private int SelectedAmount()
         {
-            _shopManager.TryGetSession(_shopId, out var session);
-            return ShopManager.CalculateSellPrice(_itemData, session?.ShopData);
+            if (_eligibleAmount <= 0) return 0;
+            if (_amountInput != null && int.TryParse(_amountInput.text, out var parsed))
+                return Mathf.Min(Mathf.Max(1, parsed), _eligibleAmount);
+            return 1;
         }
     }
 }

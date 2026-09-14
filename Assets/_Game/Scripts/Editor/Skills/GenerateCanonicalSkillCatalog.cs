@@ -25,6 +25,81 @@ namespace CindarsHope.Editor.Skills
         private const string TreeRegistryPath = "Assets/_Game/Data/Skills/SkillTreeRegistry.asset";
         private const string RuntimeRegistryDir = "Assets/_Game/Resources/Skills";
         private const string RuntimeRegistryPath = RuntimeRegistryDir + "/SkillRuntimeCatalogRegistry.asset";
+        private const string ChargedShotActionId = "skill_ranged_charged_shot";
+
+        // Narrow regeneration for balance changes: avoid rewriting unrelated nodes and actions.
+        public static void GenerateChargedShotActionOnly()
+        {
+            var actions = DefaultSkillActionCatalog.BuildAll();
+            try
+            {
+                foreach (var action in actions)
+                {
+                    if (action.SkillActionId != ChargedShotActionId)
+                        continue;
+
+                    var path = $"{ActionsDir}/SkillAction_{action.SkillActionId}.asset";
+                    var existing = AssetDatabase.LoadAssetAtPath<SkillActionSO>(path);
+                    if (existing == null)
+                        throw new System.InvalidOperationException($"Charged Shot action asset missing: {path}");
+                    CopyAction(action, existing);
+                    EditorUtility.SetDirty(existing);
+                    AssetDatabase.SaveAssets();
+                    Debug.Log($"GenerateChargedShotActionOnly — updated {path}; DamagePerRank={existing.DamagePerRank}");
+                    return;
+                }
+                throw new System.InvalidOperationException("Charged Shot action missing from canonical catalog.");
+            }
+            finally
+            {
+                foreach (var action in actions)
+                    if (action != null) Object.DestroyImmediate(action);
+            }
+        }
+
+        // Rewrites only the three nodes whose executable graph changed; never regenerates trees or actions.
+        public static void GenerateRepairedSkillNodesOnly()
+        {
+            var targetIds = new[]
+            {
+                "survival.isca_improvisada",
+                "crafting.irrigador_portatil",
+                "crafting_shop_sense",
+            };
+            var nodes = DefaultSkillCatalog.BuildAllNodes();
+            try
+            {
+                var canonical = new Dictionary<string, SkillNodeDataSO>();
+                foreach (var node in nodes)
+                    canonical[node.SkillNodeId] = node;
+
+                // Validate every source and destination before changing any asset.
+                var existing = new SkillNodeDataSO[targetIds.Length];
+                var paths = new string[targetIds.Length];
+                for (int i = 0; i < targetIds.Length; i++)
+                {
+                    if (!canonical.ContainsKey(targetIds[i]))
+                        throw new System.InvalidOperationException($"Repaired skill node missing from canonical catalog: {targetIds[i]}");
+                    paths[i] = $"{NodesDir}/SkillNode_{targetIds[i].Replace('.', '_')}.asset";
+                    existing[i] = AssetDatabase.LoadAssetAtPath<SkillNodeDataSO>(paths[i]);
+                    if (existing[i] == null)
+                        throw new System.InvalidOperationException($"Repaired skill node asset missing: {paths[i]}");
+                }
+
+                for (int i = 0; i < targetIds.Length; i++)
+                {
+                    CopyNode(canonical[targetIds[i]], existing[i]);
+                    EditorUtility.SetDirty(existing[i]);
+                }
+                AssetDatabase.SaveAssets();
+                Debug.Log($"GenerateRepairedSkillNodesOnly — updated only {string.Join(", ", paths)}");
+            }
+            finally
+            {
+                foreach (var node in nodes)
+                    if (node != null) Object.DestroyImmediate(node);
+            }
+        }
 
         // Canonical per-tree counts (fable_70 saneamento). Sum = 66.
         private static readonly Dictionary<string, int> ExpectedPerTree = new Dictionary<string, int>

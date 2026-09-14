@@ -63,9 +63,23 @@ namespace CindarsHope.Combat.Telemetry
                 }
 
                 var fileName = BuildFileName(report.RunId, report.CaveLevel, BuildTimestampToken(DateTime.UtcNow));
-                var fullPath = Path.Combine(telemetryDirectory, fileName);
                 var json = Serialize(report);
-                File.WriteAllText(fullPath, json);
+                var stem = Path.GetFileNameWithoutExtension(fileName);
+                var fullPath = string.Empty;
+                for (var sequence = 0; sequence < 10000; sequence++)
+                {
+                    var candidate = Path.Combine(telemetryDirectory,
+                        sequence == 0 ? fileName : $"{stem}_{sequence}.json");
+                    if (File.Exists(candidate))
+                        continue;
+                    using (var stream = new FileStream(candidate, FileMode.CreateNew, FileAccess.Write))
+                    using (var writer = new StreamWriter(stream))
+                        writer.Write(json);
+                    fullPath = candidate;
+                    break;
+                }
+                if (string.IsNullOrEmpty(fullPath))
+                    throw new IOException("Telemetry report sequence exhausted.");
                 Debug.Log($"[CombatTelemetryWriter] Relatorio gravado: {fullPath}");
                 return fullPath;
             }

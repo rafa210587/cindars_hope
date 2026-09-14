@@ -10,7 +10,7 @@ namespace CindarsHope.Economy
     /// fable_22 — adapter da porta de inventário sobre o <see cref="InventoryManager"/> real.
     /// Encapsula HasItem/RemoveItem/AddItem (sem expor o manager ao serviço puro).
     /// </summary>
-    public sealed class InventoryManagerTemperingAdapter : ITemperingInventory
+    public sealed class InventoryManagerTemperingAdapter : IOriginTemperingInventory
     {
         private readonly InventoryManager _inventory;
 
@@ -22,12 +22,33 @@ namespace CindarsHope.Economy
         public bool HasItem(string itemId, int amount) => _inventory.HasItem(itemId, amount);
         public bool RemoveItem(string itemId, int amount) => _inventory.RemoveItem(itemId, amount);
         public bool AddItem(string itemId, int amount) => _inventory.AddItem(itemId, amount);
+        public bool TryTakeLots(string itemId, int amount, out InventoryLotSelection selection)
+        {
+            selection = null;
+            return _inventory.TryPrepareRemoval(itemId, amount, out selection)
+                && _inventory.TryCommitRemoval(selection, false);
+        }
+        public bool TryReturnLots(InventoryLotSelection selection)
+            => selection != null && TryAddLots(selection.ItemId, selection.CopyLots());
+        public bool TryAddLots(string itemId, System.Collections.Generic.IReadOnlyList<ItemOriginLot> lots)
+        {
+            var amount = 0;
+            if (lots == null) return false;
+            foreach (var lot in lots)
+            {
+                if (lot == null || lot.Quantity <= 0 || amount > int.MaxValue - lot.Quantity) return false;
+                amount += lot.Quantity;
+            }
+            return _inventory.TryAddItemWithLots(itemId, amount, lots, false).Success;
+        }
+        public void PublishCommittedChange(string itemId, int delta)
+            => _inventory.PublishCommittedInventoryChange(itemId, delta);
     }
 
     /// <summary>
     /// fable_22 — adapter da porta de carteira sobre o <see cref="PlayerManager"/> real.
     /// </summary>
-    public sealed class PlayerManagerTemperingWallet : ITemperingWallet
+    public sealed class PlayerManagerTemperingWallet : IOriginTemperingWallet
     {
         private readonly PlayerManager _player;
 
@@ -38,6 +59,17 @@ namespace CindarsHope.Economy
 
         public int CurrentGold => _player.CurrentGold;
         public bool TrySpendGold(int amount) => _player.TrySpendGold(amount);
+        public bool TryStageSpend(int amount, out object token)
+        {
+            token = null;
+            if (amount < 0 || !_player.TryStageGoldMutation(-amount, out var staged)) return false;
+            token = staged;
+            return true;
+        }
+        public bool TryRollbackSpend(object token)
+            => token is PlayerManager.GoldMutationToken staged && _player.TryRollbackGoldMutation(staged);
+        public bool TryCommitSpend(object token)
+            => token is PlayerManager.GoldMutationToken staged && _player.TryCommitGoldMutation(staged);
     }
 
     /// <summary>

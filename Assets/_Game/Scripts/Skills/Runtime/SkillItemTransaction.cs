@@ -18,6 +18,13 @@ namespace CindarsHope.Skills.Runtime
         bool AddItem(string itemId, int amount);
     }
 
+    public interface IOriginReversibleSkillItemInventory : IReversibleSkillItemInventory
+    {
+        bool TryTakeLots(string itemId, int amount, out InventoryLotSelection selection);
+        bool TryRestoreLots(InventoryLotSelection selection);
+        void PublishCommittedChange(string itemId, int delta);
+    }
+
     public enum SkillItemCommitFailure
     {
         None = 0,
@@ -93,7 +100,7 @@ namespace CindarsHope.Skills.Runtime
     }
 
     /// <summary>Composition adapter over the existing inventory aggregate.</summary>
-    public sealed class SkillItemInventoryAdapter : IReversibleSkillItemInventory
+    public sealed class SkillItemInventoryAdapter : IOriginReversibleSkillItemInventory
     {
         private readonly InventoryManager _inventory;
 
@@ -116,5 +123,18 @@ namespace CindarsHope.Skills.Runtime
         {
             return _inventory != null && _inventory.AddItem(itemId, amount);
         }
+
+        public bool TryTakeLots(string itemId, int amount, out InventoryLotSelection selection)
+        {
+            selection = null;
+            return _inventory != null && _inventory.TryPrepareRemoval(itemId, amount, out selection)
+                && _inventory.TryCommitRemoval(selection, false);
+        }
+
+        public bool TryRestoreLots(InventoryLotSelection selection)
+            => _inventory != null && _inventory.TryRestoreRemoval(selection, false);
+
+        public void PublishCommittedChange(string itemId, int delta)
+            => _inventory?.PublishCommittedInventoryChange(itemId, delta);
     }
 }

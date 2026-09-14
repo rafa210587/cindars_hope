@@ -1,6 +1,7 @@
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
+using CindarsHope.Economy.Transactions;
 using UnityEngine;
 
 namespace CindarsHope.Economy
@@ -29,22 +30,11 @@ namespace CindarsHope.Economy
                 return;
             }
 
-            if (_playerManager.CurrentGold < _totalCost)
+            var result = AtomicPurchaseTransaction.ExecutePurchased(
+                _inventoryManager, _playerManager, _seedId, _amount, _totalCost);
+            if (!result.Success)
             {
-                Debug.Log($"SeedShopPoint requires {_totalCost} gold to buy '{_seedId}' x{_amount}.", this);
-                return;
-            }
-
-            if (!_playerManager.TrySpendGold(_totalCost))
-            {
-                Debug.LogWarning($"SeedShopPoint could not spend {_totalCost} gold.", this);
-                return;
-            }
-
-            if (!_inventoryManager.AddItem(_seedId, _amount))
-            {
-                _playerManager.AddGold(_totalCost);
-                Debug.LogWarning($"SeedShopPoint could not add '{_seedId}' x{_amount}. Gold was refunded.", this);
+                Debug.LogWarning($"SeedShopPoint could not buy '{_seedId}' x{_amount}: {result.Failure}.", this);
                 return;
             }
 

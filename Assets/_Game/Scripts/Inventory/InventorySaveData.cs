@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Inventory
 {
@@ -12,6 +13,7 @@ namespace CindarsHope.Inventory
     {
         public int Capacity;
         public long NextItemInstanceSequence = 1;
+        public int OriginSchemaVersion;
         public List<InventorySlotSaveData> Slots = new List<InventorySlotSaveData>();
         public List<InventoryItemSaveData> Items = new List<InventoryItemSaveData>();
     }
@@ -25,6 +27,7 @@ namespace CindarsHope.Inventory
         public int Amount;
         public bool IsEquipped;
         public string EquipmentBindingId;
+        public List<ItemOriginLotSaveData> OriginLots;
     }
 
     [Serializable]

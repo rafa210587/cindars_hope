@@ -69,6 +69,24 @@ namespace CindarsHope.Tests.EditMode.Economy
         }
 
         [Test]
+        public void BulkBuyPriceOverflow_FailsInsteadOfWrappingToFreeItems()
+        {
+            var profile = PricingProfile.Default();
+            profile.ChannelSellMultipliers[PriceChannel.ShopSellToPlayer] = 1f;
+            var service = new EconomyPricingService(profile);
+            var result = service.CalculatePrice(new PriceRequest
+            {
+                ItemId = "item_carrot",
+                BaseValue = 1_073_741_824,
+                Quantity = 4,
+                Category = ItemCategory.Crop,
+                Channel = PriceChannel.ShopSellToPlayer
+            });
+
+            Assert.That(result.Success, Is.False);
+        }
+
+        [Test]
         public void QualityMultiplier_Q2_Applies()
         {
             var req = BaseRequest(100, PriceChannel.SellPoint);

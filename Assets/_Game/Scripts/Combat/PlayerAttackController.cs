@@ -11,6 +11,7 @@ using CindarsHope.Interaction;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Player;
+using CindarsHope.Player.InputRouting;
 using CindarsHope.Skills.Runtime;
 using UnityEngine;
 
@@ -58,6 +59,14 @@ namespace CindarsHope.Combat
         // F02: carga por mÃ£o (tap=light, hold=heavy, hold longo=charged) + stats derivados.
         private readonly AttackChargeTracker _leftCharge = new AttackChargeTracker();
         private readonly AttackChargeTracker _rightCharge = new AttackChargeTracker();
+        private IPlayerKeyReader _keyReader;
+
+        /// <summary>Per-instance keyboard source for controlled PlayMode input; null restores the default.</summary>
+        public IPlayerKeyReader KeyReader
+        {
+            get => _keyReader ?? UnityLegacyPlayerKeyReader.Instance;
+            set => _keyReader = value;
+        }
         private PlayerCombatStatsProvider _statsProvider;
         private RangedKitingRuntime _rangedKitingRuntime;
         private System.Func<int> _passiveDefenseSource;
@@ -395,19 +404,20 @@ namespace CindarsHope.Combat
 
         private void Update()
         {
+            var keyReader = KeyReader;
             bool modalOpen = GameBootstrap.Instance?.ModalManager?.HasActiveModal == true;
 
             // SPEC 14A-FIX13: J removido como ataque. Q = mao esquerda (tool), E = mao direita
             // (weapon, ou interagir se ha InteractionCandidate).
-            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
+            if (keyReader.GetKeyDown(KeyCode.Q) || keyReader.GetKeyDown(KeyCode.E))
             {
-                string key = Input.GetKeyDown(KeyCode.Q) ? "Q" : "E";
+                string key = keyReader.GetKeyDown(KeyCode.Q) ? "Q" : "E";
                 CombatLog.Log($"CombatLog: PlayerAttackInputReceived. Key={key}, ModalOpen={modalOpen}", this);
             }
 
             if (modalOpen)
             {
-                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
+                if (keyReader.GetKeyDown(KeyCode.Q) || keyReader.GetKeyDown(KeyCode.E))
                     CombatLog.Log("CombatLog: PlayerAttackBlocked. Reason=ModalActive", this);
                 _leftCharge.Cancel();
                 _rightCharge.Cancel();
@@ -419,7 +429,7 @@ namespace CindarsHope.Combat
             // F01: Stun no player bloqueia ataques.
             if (PlayerStatusReceiver.Instance != null && PlayerStatusReceiver.Instance.IsActionBlocked)
             {
-                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
+                if (keyReader.GetKeyDown(KeyCode.Q) || keyReader.GetKeyDown(KeyCode.E))
                     CombatLog.Log("CombatLog: PlayerAttackBlocked. Reason=PlayerStunned", this);
                 _leftCharge.Cancel();
                 _rightCharge.Cancel();
@@ -429,20 +439,20 @@ namespace CindarsHope.Combat
             }
 
             // F02: tap=light, hold=heavy, hold longo=charged (release no KeyUp).
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (keyReader.GetKeyDown(KeyCode.Q))
             {
                 _leftCharge.Begin(Time.time);
                 // fable_82: sinaliza windup ao EnemyBrain para evasao reativa.
                 GameEventBus.Publish(new CindarsHope.Core.Events.PlayerAttackWindupEvent((UnityEngine.Vector2)transform.position));
             }
 
-            if (Input.GetKeyUp(KeyCode.Q) && _leftCharge.IsCharging)
+            if (keyReader.GetKeyUp(KeyCode.Q) && _leftCharge.IsCharging)
             {
                 var weight = _leftCharge.Release(Time.time);
                 TryAttackLeftHand(weight);
             }
 
-            if (Input.GetKeyDown(KeyCode.E))
+            if (keyReader.GetKeyDown(KeyCode.E))
             {
                 if (_interactionSystem != null && _interactionSystem.HasCandidate)
                 {
@@ -457,7 +467,7 @@ namespace CindarsHope.Combat
                 }
             }
 
-            if (Input.GetKeyUp(KeyCode.E) && _rightCharge.IsCharging)
+            if (keyReader.GetKeyUp(KeyCode.E) && _rightCharge.IsCharging)
             {
                 var weight = _rightCharge.Release(Time.time);
                 TryAttackRightHand(weight);
@@ -465,7 +475,7 @@ namespace CindarsHope.Combat
 
             UpdateChargeTelegraph();
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (keyReader.GetKeyDown(KeyCode.Space))
             {
                 if (_playerController != null && _playerController.MoveInput.sqrMagnitude > 0.1f)
                 {

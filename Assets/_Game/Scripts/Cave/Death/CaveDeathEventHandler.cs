@@ -61,7 +61,8 @@ namespace CindarsHope.Cave.Death
                 bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager,
                 CindarsHope.Equipment.EquipmentManager.Instance,
                 bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager,
-                bootstrap.TimeManager
+                bootstrap.TimeManager,
+                _recoveryManager
             );
 
             if (bootstrap.AnyaFountain != null)

@@ -13,6 +13,8 @@ namespace CindarsHope.Foundation
         public string ItemInstanceId;
         public string InfusionElement; // estável: fire/ice/toxic/lightning/arcane/void
         public int InfusionTier;        // 0 = sem; 1 ou 2
+        public int ConsumedEssenceOriginSchemaVersion;
+        public List<ItemOriginLotSaveData> ConsumedEssenceLots;
     }
 
     [Serializable]

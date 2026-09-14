@@ -4,6 +4,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Enemy;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
 using CindarsHope.Items;
@@ -81,16 +82,26 @@ namespace CindarsHope.NPC.Services
             _currentDay = evt.DayNumber;
 
             // Encomendas vencidas (Yael) → adiciona ao inventário.
-            var due = _executor.OnDayStarted(evt.DayNumber);
+            var due = _pending.GetDueBookOrders(evt.DayNumber);
             var inventory = ResolveInventory();
             if (inventory != null)
             {
-                foreach (var bookId in due)
+                var originInventory = (IOriginInventoryRuntime)inventory;
+                foreach (var order in due)
                 {
-                    if (!string.IsNullOrEmpty(bookId) && inventory.AddItem(bookId, 1))
+                    if (order == null || string.IsNullOrEmpty(order.DeliveredBookItemId)
+                        || order.OriginLots == null
+                        || !originInventory.TryStageOriginAddition(order.DeliveredBookItemId,
+                            null, 1, order.OriginLots, out var token)) continue;
+                    if (!_pending.TryCompleteBookOrder(order.OrderId))
                     {
-                        GameEventBus.Publish(new PlayerActionFeedbackEvent("Sua encomenda de livro chegou."));
+                        originInventory.TryRollbackOriginAddition(token);
+                        continue;
                     }
+                    // Complete pending state before publishing inventory events: a save listener
+                    // must observe both the granted item and the consumed order.
+                    if (originInventory.TryCommitOriginAddition(token))
+                        GameEventBus.Publish(new PlayerActionFeedbackEvent("Sua encomenda de livro chegou."));
                 }
             }
 
@@ -165,16 +176,30 @@ namespace CindarsHope.NPC.Services
 
             if (!TryResolveAnalysisGrant(bestiary, out var enemyId, out var category)) return false;
 
-            if (!inventory.RemoveItem(monsterPartId, 1)) return false;
+            return TryRunCreatureAnalysis(inventory, monsterPartId,
+                () => bestiary.Knowledge.GrantKnowledge(enemyId, category, "thalindra_analysis"));
+        }
 
-            bool granted = bestiary.Knowledge.GrantKnowledge(enemyId, category, "thalindra_analysis");
+        // Purely selected/committed inventory mutation; the callback is the existing F21 grant.
+        // Public seam allows an EditMode failure fixture without a scene/bestiary singleton.
+        public static bool TryRunCreatureAnalysis(InventoryManager inventory, string monsterPartId,
+            System.Func<bool> grantKnowledge)
+        {
+            if (inventory == null || string.IsNullOrEmpty(monsterPartId) || grantKnowledge == null
+                || !inventory.TryPrepareRemoval(monsterPartId, 1, out var selected)
+                || !inventory.TryCommitRemoval(selected, false)) return false;
+
+            bool granted;
+            try { granted = grantKnowledge(); }
+            catch { granted = false; }
             if (!granted)
             {
-                // Idempotente: nada novo concedido ⇒ devolve a parte (não cobra). Mantém honestidade.
-                inventory.AddItem(monsterPartId, 1);
+                if (!inventory.TryRestoreRemoval(selected, false))
+                    Debug.LogError("Creature analysis could not restore the selected monster part.");
                 return false;
             }
 
+            inventory.PublishCommittedInventoryChange(monsterPartId, -1);
             return true;
         }
 
@@ -275,9 +300,10 @@ namespace CindarsHope.NPC.Services
 
         public NpcServicesSaveData CaptureSaveData() => _pending.Capture();
 
-        public void RestoreFromSaveData(NpcServicesSaveData data)
+        public void RestoreFromSaveData(NpcServicesSaveData data, int schemaVersion = 5)
         {
-            _pending.Restore(data);
+            // Save provider must pass GameSaveData.SchemaVersion for v6; default is legacy only.
+            _pending.Restore(data, schemaVersion);
             Debug.Log($"[NpcServiceRuntime] Restored NPC services pending state " +
                       $"(orders={_pending.PendingBookOrderCount}, dish_day={_pending.DailyDishLastUsedDay}).", this);
         }

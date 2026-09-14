@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using CindarsHope.Inventory;
+
 namespace CindarsHope.Farm.Shipping
 {
     public enum ShippingEntryState { Pending = 0, Processed = 1, Cancelled = 2, Invalid = 3 }
@@ -16,6 +19,7 @@ namespace CindarsHope.Farm.Shipping
         public int ProcessOnDay { get; set; }
         public ShippingEntryState State { get; set; } = ShippingEntryState.Pending;
         public string ProcessedPaymentId { get; set; }
+        public List<ItemOriginLot> OriginLots { get; set; } = new List<ItemOriginLot>();
         public bool IsPending => State == ShippingEntryState.Pending;
         public bool IsProcessed => State == ShippingEntryState.Processed;
     }

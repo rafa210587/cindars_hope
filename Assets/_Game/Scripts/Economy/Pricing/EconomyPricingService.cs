@@ -47,8 +47,15 @@ namespace CindarsHope.Economy.Pricing
                 : MarketSkillModifierProvider.Resolve(marketDirection);
             float rawPrice = req.BaseValue * channelMult * qualityMult * rarityMod * demandMod * reputMod * seasonMod * stockMod * storyMod * marketSkillMult;
 
+            if (float.IsNaN(rawPrice) || float.IsInfinity(rawPrice)
+                || rawPrice >= int.MaxValue || rawPrice <= int.MinValue)
+                return PriceResult.Fail("Unit price is outside the supported integer range");
+
             int unitPrice = ApplyRounding(rawPrice, _profile.RoundingRule);
             unitPrice = Math.Max(unitPrice, _profile.MinPrice);
+            long totalPrice = (long)unitPrice * req.Quantity;
+            if (totalPrice < 0 || totalPrice > int.MaxValue)
+                return PriceResult.Fail("Total price is outside the supported integer range");
 
             var applied = new List<string>
             {
@@ -68,7 +75,7 @@ namespace CindarsHope.Economy.Pricing
             {
                 Success = true,
                 UnitPrice = unitPrice,
-                TotalPrice = unitPrice * req.Quantity,
+                TotalPrice = (int)totalPrice,
                 AppliedMultipliers = applied,
                 RoundingApplied = _profile.RoundingRule != RoundingRule.Floor || rawPrice != (int)rawPrice,
                 DebugExplanation = $"raw={rawPrice:F2} -> unit={unitPrice}"

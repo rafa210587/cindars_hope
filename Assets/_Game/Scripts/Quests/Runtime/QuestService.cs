@@ -294,9 +294,11 @@ namespace CindarsHope.Quests.Runtime
         {
             if (string.IsNullOrEmpty(actId)) return false;
             if (_saveSection.RewardedMainActIds.Contains(actId)) return false;
+            // Do not consume the one-time reward when bootstrap has no progression adapter.
+            if (_progressionAccess == null) return false;
 
             _saveSection.RewardedMainActIds.Add(actId);
-            _progressionAccess?.GrantSkillPoints(1);
+            _progressionAccess.GrantSkillPoints(1);
             Debug.Log($"[QuestService] Main act '{actId}' completed: +1 skill point granted (idempotent).");
             return true;
         }

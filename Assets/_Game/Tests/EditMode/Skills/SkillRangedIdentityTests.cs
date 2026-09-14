@@ -127,6 +127,11 @@ namespace CindarsHope.Tests.EditMode.Skills
                 Assert.That(charged.ChargeMaximumDamage, Is.EqualTo(20));
                 Assert.That(charged.ChargeMaximumRange, Is.EqualTo(9f));
                 Assert.That(charged.ChargeMaximumStaminaCost, Is.EqualTo(26f));
+                Assert.That(charged.DamagePerRank, Is.EqualTo(2),
+                    "Each purchased rank must improve both charge endpoints without changing hold or cost.");
+                for (int rank = 1; rank <= 3; rank++)
+                    Assert.That(charged.ResolveRank(rank).Damage, Is.EqualTo(8 + 2 * (rank - 1)),
+                        $"Rank {rank} must preserve the authored minimum baseline and bonus.");
                 Assert.That(marked.NotYetExecutable, Is.False);
                 Assert.That(marked.StaminaCost, Is.EqualTo(10f));
                 Assert.That(marked.Range, Is.EqualTo(8f));

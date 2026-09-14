@@ -202,15 +202,19 @@ namespace CindarsHope.Skills.Runtime.Effects
         private SkillEffectResult ExecuteCamp(SkillEffectContext context, SkillActionSO action)
         {
             var cave = DomainManagerRegistry.Get<ICaveRunContext>();
-            var commit = CommitItem(SurvivalSkillItemIds.CampSupply);
-            if (!commit.Success) return ItemFailure(commit);
+            var inventory = Inventory();
+            if (inventory == null || !inventory.TryPrepareRemoval(SurvivalSkillItemIds.CampSupply,
+                    1, out var supply) || !inventory.TryCommitRemoval(supply, false))
+                return Failed("MissingItem", "Você não possui Provisão de Acampamento.");
             if (!SurvivalSkillRuntimeCoordinator.Instance.TryActivateCamp(
                 cave.CaveRunId, cave.CurrentCaveLevel,
                 action.ResolveSecondaryDuration(context.Rank), context.Caster.transform.position))
             {
-                Inventory()?.AddItem(SurvivalSkillItemIds.CampSupply, 1);
+                if (!inventory.TryRestoreRemoval(supply, false))
+                    return Failed("CampRollbackFailed", "Falha ao devolver a provisão consumida.");
                 return Failed("CampAlreadyUsed", "Campo Seguro já foi usado nesta expedição.");
             }
+            inventory.PublishCommittedInventoryChange(SurvivalSkillItemIds.CampSupply, -1);
             return Success($"{_displayName}: zona preparada.", true);
         }
 

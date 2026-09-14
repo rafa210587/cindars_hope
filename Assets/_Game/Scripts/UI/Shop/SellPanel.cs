@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using CindarsHope.Core.Data;
+using CindarsHope.Core;
+using CindarsHope.Core.Events;
 using CindarsHope.Economy;
 using CindarsHope.Inventory;
 using CindarsHope.Inventory.Data;
@@ -31,11 +33,17 @@ namespace CindarsHope.UI.Shop
         private CindarsHope.Foundation.IModalRuntime _modalManager;
         private string _shopId;
         private readonly List<SellPanelItem> _displayedItems = new List<SellPanelItem>();
+        private bool _isSelling;
 
         public event Action OnBackPressed;
 
         private void OnEnable()
         {
+            GameEventBus.Subscribe<InventoryChangedEvent>(OnInventoryChanged);
+            GameEventBus.Subscribe<GoldChangedEvent>(OnGoldChanged);
+            GameEventBus.Subscribe<SkillTreeRespecCompletedEvent>(OnSkillsChanged);
+            GameEventBus.Subscribe<SkillDerivedStatsChangedEvent>(OnSkillStatsChanged);
+            GameEventBus.Subscribe<SkillNodePurchasedEvent>(OnSkillNodePurchased);
             if (_backButton != null)
             {
                 _backButton.onClick.AddListener(OnBackClicked);
@@ -44,6 +52,11 @@ namespace CindarsHope.UI.Shop
 
         private void OnDisable()
         {
+            GameEventBus.Unsubscribe<InventoryChangedEvent>(OnInventoryChanged);
+            GameEventBus.Unsubscribe<GoldChangedEvent>(OnGoldChanged);
+            GameEventBus.Unsubscribe<SkillTreeRespecCompletedEvent>(OnSkillsChanged);
+            GameEventBus.Unsubscribe<SkillDerivedStatsChangedEvent>(OnSkillStatsChanged);
+            GameEventBus.Unsubscribe<SkillNodePurchasedEvent>(OnSkillNodePurchased);
             if (_backButton != null)
             {
                 _backButton.onClick.RemoveAllListeners();
@@ -141,6 +154,8 @@ namespace CindarsHope.UI.Shop
             {
                 var itemId = kvp.Key;
                 var amount = kvp.Value;
+                var eligible = _inventoryManager.GetEligibleAmount(itemId);
+                var retained = Math.Max(0, amount - eligible);
                 if (amount <= 0 || !SellableItemPolicy.IsSellable(itemId))
                 {
                     continue;
@@ -154,7 +169,10 @@ namespace CindarsHope.UI.Shop
 
                 var item = Instantiate(_itemPrefab, _itemsContainer);
                 item.gameObject.SetActive(true);
-                item.Initialize(itemData, amount, _shopManager, _shopId, OnItemSellClicked, ShowItemDetails);
+                item.Initialize(itemData, eligible, retained,
+                    requested => _shopManager.TryQuoteSellItem(_shopId, itemId, requested,
+                        _inventoryManager, out var quote) ? quote : default,
+                    OnItemSellClicked, ShowItemDetails);
                 _displayedItems.Add(item);
             }
 
@@ -166,7 +184,14 @@ namespace CindarsHope.UI.Shop
 
         private void OnItemSellClicked(string itemId, int amount)
         {
-            var result = _shopManager.TrySellItem(_shopId, itemId, amount, _playerManager, _inventoryManager);
+            _isSelling = true;
+            ShopTransactionResult result;
+            try
+            {
+                result = _shopManager.TrySellItem(_shopId, itemId, amount,
+                    _playerManager, _inventoryManager);
+            }
+            finally { _isSelling = false; }
             SetFeedback(result.Message);
             if (!result.Success)
             {
@@ -185,9 +210,15 @@ namespace CindarsHope.UI.Shop
             }
         }
 
-        private void ShowItemDetails(ItemDataSO itemData, int unitPrice, int ownedAmount)
+        private void ShowItemDetails(ItemDataSO itemData,
+            ShopManager.ShopSellQuote quote, int eligibleAmount, int retainedAmount)
         {
-            SetDetails($"{ItemDisplayNameFormatter.GetTooltip(itemData)}\nVenda: {unitPrice}g | Quantidade: {ownedAmount}");
+            var value = quote.Success ? $"{quote.FinalGold}g por {quote.SellAmount}"
+                : "Sem unidade vendavel";
+            SetDetails($"{ItemDisplayNameFormatter.GetTooltip(itemData)}\nVenda: {value}"
+                + $" | Vendavel: {eligibleAmount} | Retido: {retainedAmount}"
+                + (quote.Success && quote.LimitedUnits > 0
+                    ? $" | {quote.LimitedUnits} unidade(s) limitadas pela compra" : string.Empty));
         }
 
         private void SetDetails(string message)
@@ -215,6 +246,29 @@ namespace CindarsHope.UI.Shop
             {
                 _displayedItems[0].Focus();
             }
+        }
+
+        private void OnInventoryChanged(InventoryChangedEvent evt)
+        {
+            if (!_isSelling && isActiveAndEnabled && !string.IsNullOrWhiteSpace(_shopId))
+                RefreshPanel();
+        }
+
+        private void OnGoldChanged(GoldChangedEvent evt)
+        {
+            if (_isSelling || !isActiveAndEnabled) return;
+            UpdateGoldDisplay();
+            RefreshPanel();
+        }
+
+        private void OnSkillsChanged(SkillTreeRespecCompletedEvent evt) => RefreshForPriceChange();
+        private void OnSkillStatsChanged(SkillDerivedStatsChangedEvent evt) => RefreshForPriceChange();
+        private void OnSkillNodePurchased(SkillNodePurchasedEvent evt) => RefreshForPriceChange();
+
+        private void RefreshForPriceChange()
+        {
+            if (!_isSelling && isActiveAndEnabled && !string.IsNullOrWhiteSpace(_shopId))
+                RefreshPanel();
         }
 
         private void ClearItems()

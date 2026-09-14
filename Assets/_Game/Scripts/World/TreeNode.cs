@@ -71,7 +71,7 @@ namespace CindarsHope.World
 
             var isFinalHit = CurrentHp <= 1;
             var dropAmount = RollWoodAmount(isFinalHit);
-            if (!_inventoryManager.AddItem(_treeData.WoodItemId, dropAmount))
+            if (!_inventoryManager.CanAddItem(_treeData.WoodItemId, dropAmount))
             {
                 Debug.LogWarning($"TreeNode {_treeIndex} could not add wood '{_treeData.WoodItemId}' x{dropAmount}.", this);
                 return;
@@ -79,9 +79,17 @@ namespace CindarsHope.World
 
             if (_staminaManager != null && !_staminaManager.TrySpendStamina(chopStaminaCost))
             {
-                _inventoryManager.RemoveItem(_treeData.WoodItemId, dropAmount);
                 const string message = "Not enough stamina to chop.";
                 GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
+                return;
+            }
+
+            // Stamina is spent before granting fresh wood. On a late capacity failure, refund
+            // stamina; never remove by item ID from a mixed stack containing purchased wood.
+            if (!_inventoryManager.AddItem(_treeData.WoodItemId, dropAmount))
+            {
+                _staminaManager?.AddStamina(chopStaminaCost);
+                Debug.LogWarning($"TreeNode {_treeIndex} could not add wood '{_treeData.WoodItemId}' x{dropAmount}.", this);
                 return;
             }
 

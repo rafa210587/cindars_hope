@@ -77,6 +77,9 @@ namespace CindarsHope.Save.Providers
         }
 
         public void Restore(object sectionData)
+            => Restore(sectionData, 6);
+
+        public void Restore(object sectionData, int schemaVersion)
         {
             var data = sectionData as FarmSaveData;
 
@@ -88,7 +91,8 @@ namespace CindarsHope.Save.Providers
             // fable_55: restaura jobs de processamento; ausente em save legado = nenhuma estação em produção.
             if (Farm.Processing.FarmProcessingStationService.Instance != null)
             {
-                Farm.Processing.FarmProcessingStationService.Instance.RestoreFromSaveData(data?.Processing);
+                Farm.Processing.FarmProcessingStationService.Instance.RestoreFromSaveData(
+                    data?.Processing, schemaVersion >= 6);
             }
 
             // fable_54: restaura batch de envio pendente.

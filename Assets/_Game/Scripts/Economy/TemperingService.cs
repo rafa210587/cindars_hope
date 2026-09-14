@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using CindarsHope.Inventory;
 
 namespace CindarsHope.Economy
 {
@@ -10,11 +12,26 @@ namespace CindarsHope.Economy
         bool AddItem(string itemId, int amount);
     }
 
+    public interface IOriginTemperingInventory : ITemperingInventory
+    {
+        bool TryTakeLots(string itemId, int amount, out InventoryLotSelection selection);
+        bool TryReturnLots(InventoryLotSelection selection);
+        bool TryAddLots(string itemId, IReadOnlyList<ItemOriginLot> lots);
+        void PublishCommittedChange(string itemId, int delta);
+    }
+
     /// <summary>fable_22 — porta de carteira (gastar ouro). Adaptada ao PlayerManager real.</summary>
     public interface ITemperingWallet
     {
         int CurrentGold { get; }
         bool TrySpendGold(int amount);
+    }
+
+    public interface IOriginTemperingWallet : ITemperingWallet
+    {
+        bool TryStageSpend(int amount, out object token);
+        bool TryRollbackSpend(object token);
+        bool TryCommitSpend(object token);
     }
 
     /// <summary>
@@ -153,6 +170,12 @@ namespace CindarsHope.Economy
                 refundedAmount = TemperingCanon.ElementEssenceCostForTier(previous.Tier) / 2;
             }
 
+            if (_inventory is IOriginTemperingInventory originInventory
+                && _wallet is IOriginTemperingWallet originWallet)
+                return ApplyWithOrigin(itemInstanceId, element, tier, essenceId, essenceCost,
+                    voidCost, goldCost, previous, refundedElement, refundedAmount,
+                    originInventory, originWallet);
+
             // Cobrança (a pré-checagem garante sucesso; checa retorno por robustez).
             if (!_inventory.RemoveItem(essenceId, totalElementNeeded))
                 return TemperingResult.Fail("ESSENCE_REMOVE_FAILED");
@@ -188,6 +211,73 @@ namespace CindarsHope.Economy
             _onTempered?.Invoke(applied, itemInstanceId);
 
             return TemperingResult.Ok(applied, refundedElement, refundedAmount);
+        }
+
+        private TemperingResult ApplyWithOrigin(string itemInstanceId, TemperingElement element,
+            int tier, string essenceId, int essenceCost, int voidCost, int goldCost,
+            WeaponInfusion previous, TemperingElement refundedElement, int refundedAmount,
+            IOriginTemperingInventory inventory, IOriginTemperingWallet wallet)
+        {
+            if (!wallet.TryStageSpend(goldCost, out var goldToken))
+                return TemperingResult.Fail("GOLD_SPEND_FAILED");
+
+            InventoryLotSelection essence = null;
+            InventoryLotSelection catalyst = null;
+            var catalystId = TemperingCanon.VoidCatalystItemId;
+            if (!inventory.TryTakeLots(essenceId, essenceCost, out essence))
+            {
+                wallet.TryRollbackSpend(goldToken);
+                return TemperingResult.Fail("ESSENCE_REMOVE_FAILED");
+            }
+            if (voidCost > 0 && !inventory.TryTakeLots(catalystId, voidCost, out catalyst))
+            {
+                var restored = inventory.TryReturnLots(essence);
+                wallet.TryRollbackSpend(goldToken);
+                if (!restored) throw new InvalidOperationException("Tempering essence rollback failed.");
+                return TemperingResult.Fail("VOID_REMOVE_FAILED");
+            }
+
+            var refundLots = previous.IsActive
+                ? TakeFirstLots(_registry.GetConsumedEssenceLots(itemInstanceId), refundedAmount)
+                : null;
+            if (refundedAmount > 0 && (refundLots == null ||
+                !inventory.TryAddLots(TemperingCanon.EssenceItemId(refundedElement), refundLots)))
+            {
+                var catalystRestored = catalyst == null || inventory.TryReturnLots(catalyst);
+                var essenceRestored = inventory.TryReturnLots(essence);
+                wallet.TryRollbackSpend(goldToken);
+                if (!catalystRestored || !essenceRestored)
+                    throw new InvalidOperationException("Tempering material rollback failed.");
+                return TemperingResult.Fail("REFUND_ADD_FAILED");
+            }
+
+            // The essence slice is captured before the catalyst, including Void T2's shared ID.
+            var applied = new WeaponInfusion(element, tier);
+            _registry.SetWithEssenceLots(itemInstanceId, applied, essence.CopyLots());
+            if (!wallet.TryCommitSpend(goldToken))
+                throw new InvalidOperationException("Staged tempering gold changed before commit.");
+            inventory.PublishCommittedChange(essenceId, -essenceCost);
+            if (catalyst != null) inventory.PublishCommittedChange(catalystId, -voidCost);
+            if (refundLots != null) inventory.PublishCommittedChange(
+                TemperingCanon.EssenceItemId(refundedElement), refundedAmount);
+            _onTempered?.Invoke(applied, itemInstanceId);
+            return TemperingResult.Ok(applied, refundedElement, refundedAmount);
+        }
+
+        private static List<ItemOriginLot> TakeFirstLots(IReadOnlyList<ItemOriginLot> source, int amount)
+        {
+            if (amount <= 0) return new List<ItemOriginLot>();
+            if (source == null) return null;
+            var result = new List<ItemOriginLot>();
+            var remaining = amount;
+            foreach (var lot in source)
+            {
+                if (remaining == 0) break;
+                var take = Math.Min(remaining, lot.Quantity);
+                if (take > 0) result.Add(lot.Copy(take));
+                remaining -= take;
+            }
+            return remaining == 0 && ItemOriginLot.IsValid(result, amount) ? result : null;
         }
     }
 }

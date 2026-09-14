@@ -277,15 +277,21 @@ namespace CindarsHope.Skills.Runtime.Effects
 
         private void TryExecuteSlot(int slotIndex, bool beginHeldCharge)
         {
-            if (slotIndex < 0 || slotIndex >= SlotInputKeys.Length) return;
+            if (slotIndex < 0 || slotIndex >= SlotInputKeys.Length)
+            {
+                PublishUnresolvedRefusal("InvalidSlot");
+                return;
+            }
             if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true)
             {
+                PublishUnresolvedRefusal("ModalBlocked");
                 CancelActiveCast();
                 return;
             }
             if (_activeCast != null || _chargedCast != null)
             {
                 PublishFeedback("A habilidade atual ainda está em execução.");
+                PublishUnresolvedRefusal("CastInProgress");
                 return;
             }
             WireInteractionSystem();
@@ -293,6 +299,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (_avatar == null)
             {
                 PublishFeedback("Jogador não disponível para usar habilidade.");
+                PublishUnresolvedRefusal("AvatarUnavailable");
                 return;
             }
             // Resolve equipped skill action ID from SkillTreeManager state
@@ -300,6 +307,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (skillTreeManager == null)
             {
                 PublishFeedback("SkillTreeManager nao disponivel.");
+                PublishUnresolvedRefusal("SkillTreeUnavailable");
                 return;
             }
 
@@ -309,6 +317,7 @@ namespace CindarsHope.Skills.Runtime.Effects
                 PublishFeedback(string.IsNullOrWhiteSpace(resolveMessage)
                     ? $"Slot {slotIndex + 1} vazio. Equipe uma skill na skill tree (U)."
                     : resolveMessage);
+                PublishUnresolvedRefusal(string.IsNullOrWhiteSpace(resolveMessage) ? "EmptySlot" : "UnresolvedSkill");
                 Debug.Log($"[ActiveSkillExecutionController] Slot blocked. Slot={slotIndex}, RawSlotValue={rawSlotValue ?? "<empty>"}, Reason={resolveMessage}", this);
                 return;
             }
@@ -320,6 +329,8 @@ namespace CindarsHope.Skills.Runtime.Effects
                 PublishFeedback(readinessFailure == "DormantAction"
                     ? "Esta habilidade ainda está dormente."
                     : $"Dados da habilidade '{skillActionId}' indisponíveis.");
+                PublishResolvedRefusal(skillActionId, rank,
+                    skillTreeManager.State.GetChosenVariant(nodeId), readinessFailure);
                 return;
             }
 
@@ -327,6 +338,8 @@ namespace CindarsHope.Skills.Runtime.Effects
             {
                 float remaining = GetSlotCooldownRemaining(slotIndex);
                 PublishFeedback($"Slot {slotIndex + 1} em cooldown ({remaining:F1}s).");
+                PublishResolvedRefusal(skillActionId, rank,
+                    skillTreeManager.State.GetChosenVariant(nodeId), "Cooldown");
                 return;
             }
 
@@ -335,6 +348,8 @@ namespace CindarsHope.Skills.Runtime.Effects
             {
                 // TODO_INTEGRATION_NOT_FINAL: No effect defined for this skill action.
                 PublishFeedback($"Skill '{skillActionId}' sem efeito implementado. (Deferred)");
+                PublishResolvedRefusal(skillActionId, rank,
+                    skillTreeManager.State.GetChosenVariant(nodeId), "MissingEffect");
                 Debug.Log($"[ActiveSkillExecutionController] No effectId. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}. Deferred.", this);
                 return;
             }
@@ -345,6 +360,8 @@ namespace CindarsHope.Skills.Runtime.Effects
             {
                 // TODO_INTEGRATION_NOT_FINAL: Executor not registered for this effectId.
                 PublishFeedback($"Efeito '{effectId}' sem executor. (Deferred)");
+                PublishResolvedRefusal(skillActionId, rank,
+                    skillTreeManager.State.GetChosenVariant(nodeId), "MissingExecutor");
                 Debug.Log($"[ActiveSkillExecutionController] No executor. Slot={slotIndex}, RawSlotValue={rawSlotValue}, ResolvedSkillActionId={skillActionId}, NodeId={nodeId}, EffectId={effectId}. Deferred.", this);
                 return;
             }
@@ -377,6 +394,8 @@ namespace CindarsHope.Skills.Runtime.Effects
                 if (!validation.Success)
                 {
                     PublishFeedback(validation.FeedbackMessage, validation.FailureReason);
+                    PublishResolvedRefusal(context.SkillActionId, context.Rank,
+                        context.VariantId, validation.FailureReason);
                     return;
                 }
             }
@@ -421,6 +440,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             {
                 PublishFeedback($"Sustente o disparo por pelo menos {_chargedCast.Context.ActionData.ChargeMinimumHoldSeconds:0.00} s.",
                     "ChargeTooShort");
+                PublishResolution(_chargedCast, SkillActionResolvedEvent.Refused, "ChargeTooShort");
                 ReleasePendingCast(ref _chargedCast);
                 _chargedSlotIndex = -1;
                 return;
@@ -429,7 +449,8 @@ namespace CindarsHope.Skills.Runtime.Effects
             var original = _chargedCast.Context.ActionData;
             var chargedAction = Instantiate(original);
             chargedAction.BaseDamage = resolution.Damage;
-            chargedAction.DamagePerRank = 0;
+            // Charge determines the baseline; rank adds its authored bonus once in ResolveRank.
+            chargedAction.DamagePerRank = original.DamagePerRank;
             chargedAction.Range = resolution.Range;
             chargedAction.StaminaCost = resolution.StaminaCost;
             chargedAction.PostureDamageMultiplier = resolution.PostureMultiplier;
@@ -468,6 +489,7 @@ namespace CindarsHope.Skills.Runtime.Effects
                 if (!validation.Success)
                 {
                     PublishFeedback(validation.FeedbackMessage, validation.FailureReason);
+                    PublishResolution(_activeCast, SkillActionResolvedEvent.Refused, validation.FailureReason);
                     CancelActiveCast();
                     return;
                 }
@@ -509,6 +531,7 @@ namespace CindarsHope.Skills.Runtime.Effects
                 if (!validation.Success)
                 {
                     PublishFeedback(validation.FeedbackMessage, validation.FailureReason);
+                    PublishResolution(cast, SkillActionResolvedEvent.Refused, validation.FailureReason);
                     return false;
                 }
             }
@@ -526,6 +549,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             if (!result.Success)
             {
                 PublishFeedback(result.FeedbackMessage, result.FailureReason);
+                PublishResolution(cast, SkillActionResolvedEvent.Refused, result.FailureReason);
                 Debug.Log($"[ActiveSkillExecutionController] Skill failed at commit. RawSlotValue={cast.RawSlotValue}, ResolvedSkillActionId={cast.SkillActionId}, NodeId={cast.NodeId}, EffectId={cast.EffectId}, Executor={cast.Executor.GetType().Name}, Reason={result.FailureReason}, Feedback={result.FeedbackMessage}", this);
                 return false;
             }
@@ -534,6 +558,7 @@ namespace CindarsHope.Skills.Runtime.Effects
                 ? cast.Context.ActionData.ResolveRank(cast.Context.Rank).CooldownSeconds
                 : Mathf.Max(0f, result.CooldownSeconds);
             _cooldowns.Start(cast.SkillActionId, Time.time, cooldownSeconds);
+            PublishResolution(cast, SkillActionResolvedEvent.Committed);
             PublishFeedback(result.FeedbackMessage);
             Debug.Log($"[ActiveSkillExecutionController] Skill committed. RawSlotValue={cast.RawSlotValue}, ResolvedSkillActionId={cast.SkillActionId}, NodeId={cast.NodeId}, EffectId={cast.EffectId}, Executor={cast.Executor.GetType().Name}", this);
             return true;
@@ -558,6 +583,11 @@ namespace CindarsHope.Skills.Runtime.Effects
         {
             if (_activeCast == null && _chargedCast == null)
                 return;
+
+            if (_activeCast != null && !_timeline.HasCommitted)
+                PublishResolution(_activeCast, SkillActionResolvedEvent.Refused, "Interrupted");
+            if (_chargedCast != null)
+                PublishResolution(_chargedCast, SkillActionResolvedEvent.Refused, "Interrupted");
 
             if (_activeCast != null)
             {
@@ -689,6 +719,29 @@ namespace CindarsHope.Skills.Runtime.Effects
             }
         }
 
+        private static void PublishUnresolvedRefusal(string failureKey)
+        {
+            GameEventBus.Publish(new SkillActionResolvedEvent(string.Empty, 0,
+                string.Empty, SkillActionResolvedEvent.Refused, failureKey));
+        }
+
+        private static void PublishResolvedRefusal(string actionId, int rank, string variantId,
+            string failureKey)
+        {
+            GameEventBus.Publish(new SkillActionResolvedEvent(actionId, rank,
+                variantId, SkillActionResolvedEvent.Refused, failureKey));
+        }
+
+        private static void PublishResolution(PendingSkillCast cast, string outcome, string failureKey = "")
+        {
+            if (cast == null || cast.ResolutionPublished)
+                return;
+
+            cast.ResolutionPublished = true;
+            GameEventBus.Publish(new SkillActionResolvedEvent(cast.Context.SkillActionId,
+                cast.Context.Rank, cast.Context.VariantId, outcome, failureKey));
+        }
+
         private sealed class PendingSkillCast
         {
             public string RawSlotValue { get; }
@@ -698,6 +751,7 @@ namespace CindarsHope.Skills.Runtime.Effects
             public ISkillEffectExecutor Executor { get; }
             public SkillEffectContext Context { get; }
             public SkillActionSO OwnedActionData { get; set; }
+            public bool ResolutionPublished { get; set; }
 
             public PendingSkillCast(string rawSlotValue, string skillActionId, string nodeId,
                 string effectId, ISkillEffectExecutor executor, SkillEffectContext context)

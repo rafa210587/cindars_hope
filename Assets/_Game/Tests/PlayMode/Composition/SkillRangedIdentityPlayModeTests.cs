@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using CindarsHope.Combat;
 using CindarsHope.Combat.StatusEffect;
 using CindarsHope.Combat.Weapon;
@@ -8,6 +9,7 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Foundation;
 using CindarsHope.Player;
+using CindarsHope.Player.Progression;
 using CindarsHope.Skills;
 using CindarsHope.Skills.Runtime.Effects;
 using NUnit.Framework;
@@ -42,12 +44,22 @@ namespace CindarsHope.Tests.PlayMode.Composition
         public IEnumerator ChargedShot_EarlyReleaseAndDamageCancelCostNothing_MaxReleasePaysBeforeSpawn()
         {
             var skills = SkillTreeManager.Instance;
+            var progression = PlayerProgressionManager.Instance;
+            var stamina = (StaminaManager)GameBootstrap.Instance.StaminaManager;
+            Assert.That(skills, Is.Not.Null);
+            Assert.That(progression, Is.Not.Null);
+            Assert.That(stamina, Is.Not.Null);
+            var originalSkills = skills.CaptureSaveData();
+            var originalProgression = progression.CaptureSaveData();
+            int originalStaminaMax = stamina.MaxStamina;
+            int originalStamina = stamina.CurrentStamina;
+            try
+            {
             var save = new SkillTreeSaveData();
             save.NodeRanks.Add(new SkillNodeRankEntry("ranged_charged_shot", 1));
             skills.RestoreFromSaveData(save, 100);
             Assert.That(skills.TryAssignActiveSlot(0, "skill_ranged_charged_shot"), Is.True);
             var controller = ActiveSkillExecutionController.Instance;
-            var stamina = (StaminaManager)GameBootstrap.Instance.StaminaManager;
             stamina.Initialize(100, 100);
             int before = SceneProjectiles().Count;
 
@@ -102,6 +114,137 @@ namespace CindarsHope.Tests.PlayMode.Composition
             var after = SceneProjectiles();
             Assert.That(after.Count, Is.EqualTo(before + 1));
             foreach (var projectile in after) _owned.Add(projectile.gameObject);
+            }
+            finally
+            {
+                progression.RestoreFromSaveData(originalProgression);
+                skills.RestoreFromSaveData(originalSkills, originalProgression.Level);
+                stamina.Initialize(originalStaminaMax, originalStamina);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator ChargedShot_RanksApplyOnceAtMinimumAndMaximum_WithoutMutatingAuthoredAction()
+        {
+            var skills = SkillTreeManager.Instance;
+            var progression = PlayerProgressionManager.Instance;
+            var controller = ActiveSkillExecutionController.Instance;
+            var stamina = (StaminaManager)GameBootstrap.Instance.StaminaManager;
+            Assert.That(skills, Is.Not.Null);
+            Assert.That(progression, Is.Not.Null);
+            Assert.That(controller, Is.Not.Null);
+            Assert.That(stamina, Is.Not.Null);
+            var originalSkills = skills.CaptureSaveData();
+            var originalProgression = progression.CaptureSaveData();
+            int originalStaminaMax = stamina.MaxStamina;
+            int originalStamina = stamina.CurrentStamina;
+
+            var damageField = typeof(ProjectileBehaviour).GetField("_baseDamage",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(damageField, Is.Not.Null, "The launched projectile must expose its stored raw damage to this observation fixture.");
+
+            var resolutions = new List<SkillActionResolvedEvent>();
+            System.Action<SkillActionResolvedEvent> onResolved = evt =>
+            {
+                if (evt.ActionId == "skill_ranged_charged_shot") resolutions.Add(evt);
+            };
+            GameEventBus.Subscribe(onResolved);
+            try
+            {
+                const int level = 20;
+                var stage = progression.CaptureSaveData();
+                stage.TotalXp = ProgressionCurve.TotalXpForLevel(level);
+                stage.UnspentSkillPoints = PlayerProgressionRules.CalculateTotalSkillPointsAtLevel(level);
+                progression.RestoreFromSaveData(stage);
+                skills.RestoreFromSaveData(new SkillTreeSaveData(), level);
+                Assert.That(progression.Level, Is.EqualTo(level));
+                Assert.That(skills.TryPurchaseNode("ranged_steady_hand", level, out var purchaseFeedback),
+                    Is.True, purchaseFeedback);
+                Assert.That(skills.TryPurchaseNode("ranged_long_sight", level, out purchaseFeedback),
+                    Is.True, purchaseFeedback);
+                Assert.That(skills.TryPurchaseNode("ranged_charged_shot", level, out purchaseFeedback),
+                    Is.True, purchaseFeedback);
+                Assert.That(skills.TryRankUpNode("ranged_steady_hand", out purchaseFeedback),
+                    Is.True, purchaseFeedback);
+                Assert.That(skills.TryRankUpNode("ranged_long_sight", out purchaseFeedback),
+                    Is.True, purchaseFeedback);
+                Assert.That(skills.GetPointsSpentInTree("ranged"), Is.EqualTo(5));
+                Assert.That(skills.GetEffectiveRankCap("ranged_charged_shot"), Is.GreaterThanOrEqualTo(3));
+                Assert.That(skills.TryAssignActiveSlot(0, "skill_ranged_charged_shot"), Is.True);
+
+                for (int rank = 1; rank <= 3; rank++)
+                {
+                    if (rank > 1)
+                        Assert.That(skills.TryRankUpNode("ranged_charged_shot", out purchaseFeedback),
+                            Is.True, purchaseFeedback);
+                    Assert.That(skills.GetRank("ranged_charged_shot"), Is.EqualTo(rank));
+                    Assert.That(skills.TryResolveActionData("ranged_charged_shot", out var authored,
+                        out int resolvedRank, out string failure), Is.True, failure);
+                    Assert.That(resolvedRank, Is.EqualTo(rank), "The real slot must use the purchased rank.");
+                    Assert.That(authored.BaseDamage, Is.EqualTo(8));
+                    Assert.That(authored.DamagePerRank, Is.EqualTo(2));
+                    Assert.That(authored.ChargeMaximumDamage, Is.EqualTo(20));
+
+                    for (int charge = 0; charge < 2; charge++)
+                    {
+                        bool maximum = charge == 1;
+                        float cooldownDeadline = Time.time + 8f;
+                        while (controller.GetSlotCooldownRemaining(0) > 0f && Time.time < cooldownDeadline)
+                            yield return null;
+                        Assert.That(controller.GetSlotCooldownRemaining(0), Is.Zero,
+                            "A prior cast must finish its action-level cooldown before this measurement.");
+
+                        stamina.Initialize(100, 100);
+                        var before = SceneProjectiles();
+                        int resolutionCount = resolutions.Count;
+                        if (maximum)
+                        {
+                            controller.BeginChargedSlot(0);
+                            Assert.That(controller.IsChargingSkill, Is.True);
+                            yield return new WaitForSeconds(1.15f);
+                            controller.ReleaseChargedSlot();
+                        }
+                        else
+                        {
+                            // The slot's tap route resolves precisely at the authored minimum hold.
+                            controller.TryUseSlot(0);
+                        }
+
+                        Assert.That(stamina.CurrentStamina, Is.EqualTo(maximum ? 74 : 88),
+                            $"Rank {rank}, {(maximum ? "maximum" : "minimum")} charge must pay only its authored hold cost.");
+                        Assert.That(controller.GetSlotCooldownRemaining(0), Is.GreaterThan(0f));
+                        Assert.That(resolutions.Count, Is.EqualTo(resolutionCount + 1));
+                        Assert.That(resolutions[resolutions.Count - 1].Rank, Is.EqualTo(rank));
+                        Assert.That(resolutions[resolutions.Count - 1].Outcome,
+                            Is.EqualTo(SkillActionResolvedEvent.Committed));
+
+                        var after = SceneProjectiles();
+                        Assert.That(after.Count, Is.EqualTo(before.Count + 1),
+                            $"Rank {rank}, {(maximum ? "maximum" : "minimum")} charge must launch exactly one projectile.");
+                        ProjectileBehaviour launched = null;
+                        foreach (var projectile in after)
+                            if (!before.Contains(projectile)) launched = projectile;
+                        Assert.That(launched, Is.Not.Null);
+                        int expectedRawDamage = (maximum ? 20 : 8) + 2 * (rank - 1);
+                        Assert.That((int)damageField.GetValue(launched), Is.EqualTo(expectedRawDamage),
+                            "Charge baseline and rank bonus must each apply exactly once.");
+                        _owned.Add(launched.gameObject);
+                        Object.Destroy(launched.gameObject);
+
+                        Assert.That(authored.BaseDamage, Is.EqualTo(8));
+                        Assert.That(authored.DamagePerRank, Is.EqualTo(2));
+                        Assert.That(authored.ChargeMaximumDamage, Is.EqualTo(20));
+                        yield return null;
+                    }
+                }
+            }
+            finally
+            {
+                GameEventBus.Unsubscribe(onResolved);
+                progression.RestoreFromSaveData(originalProgression);
+                skills.RestoreFromSaveData(originalSkills, originalProgression.Level);
+                stamina.Initialize(originalStaminaMax, originalStamina);
+            }
         }
 
         [UnityTest]

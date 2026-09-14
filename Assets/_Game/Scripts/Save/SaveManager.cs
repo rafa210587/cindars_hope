@@ -52,7 +52,7 @@ namespace CindarsHope.Save
         private static readonly ProfilerMarker RestoreMarker =
             new ProfilerMarker("CindarsHope.Save.Restore");
 
-        private const int CurrentSchemaVersion = 5;
+        private const int CurrentSchemaVersion = 6;
         private const int Slot = 1;
         private const string SaveDirectoryName = "saves";
         private const string SaveFileName = "slot_1.json";
@@ -106,7 +106,8 @@ namespace CindarsHope.Save
             new InventorySlotsV1ToV2Migration(),
             new SaveV2ToV3Migration(),
             new SaveV3ToV4Migration(),
-            new SaveV4ToV5Migration()
+            new SaveV4ToV5Migration(),
+            new InventoryOriginV5ToV6Migration()
         });
 
         // â”€â”€ Providers registrados (inicializados em Initialize) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -148,12 +149,53 @@ namespace CindarsHope.Save
         private ISaveSectionProvider _onboardingHintsProvider;
         // spec_farm_till_anywhere_tilemap: tiles araveis por coordenada (campo aditivo FarmTiles).
         private ISaveSectionProvider _farmTilesProvider;
+        private TownInteriorLocationSectionProvider _townInteriorLocationProvider;
+        private ITownInteriorLocationRuntime _townInteriorRuntime;
+        private SceneHandle? _townInteriorSceneHandle;
+        private SceneHandle? _lastTownInteriorSceneHandle;
+        private TownInteriorLocationSnapshot? _frozenTownInteriorSnapshot;
+        private bool _autosaveDeferred;
+        private bool _interiorLoadInProgress;
+        private bool _isApplyingSaveData;
+        private bool _townInteriorFinishedSubscribed;
+        private string _pendingInteriorRestoreToken;
+        private bool _pendingInteriorRestoreFinished;
+        private bool _pendingInteriorRestoreSucceeded;
+        private bool _pendingInteriorStatePreparationCompleted;
+        private bool _pendingInteriorStatePreparationSucceeded;
+        private GameSaveData _pendingInteriorSaveData;
+        private string _pendingInteriorRestoreFailureReason;
+        [SerializeField] private float _townInteriorRestoreTimeoutSeconds = 10f;
         // Grid de tiles araveis — criado aqui e compartilhado com FarmTilledSoilService.
         private readonly Farm.FarmTileGrid _farmTileGrid = new Farm.FarmTileGrid(new Farm.FarmNonArableZones());
         private readonly SaveProviderRegistry _providerRegistry = new SaveProviderRegistry();
 
         /// <summary>Caminho completo do arquivo de save em disco.</summary>
-        public string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveDirectoryName, SaveFileName);
+        public string SaveFilePath =>
+#if UNITY_EDITOR
+            _validationSaveDirectory != null ? Path.Combine(_validationSaveDirectory, SaveFileName) :
+#endif
+            Path.Combine(Application.persistentDataPath, SaveDirectoryName, SaveFileName);
+
+#if UNITY_EDITOR
+        [NonSerialized] private string _validationSaveDirectory;
+
+        /// <summary>Editor-only isolated slot for real PlayMode validation; never serialized into a scene or Player build.</summary>
+        public void ConfigureTemporarySaveDirectoryForValidation(string directory)
+        {
+            if (string.IsNullOrWhiteSpace(directory))
+                throw new ArgumentException("Validation save directory is required.", nameof(directory));
+            var root = Path.GetFullPath(Path.Combine(Application.temporaryCachePath,
+                "town-interior-save-tests")).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var target = Path.GetFullPath(directory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var parent = Path.GetDirectoryName(target);
+            var leaf = Path.GetFileName(target);
+            if (!string.Equals(parent, root, StringComparison.OrdinalIgnoreCase) ||
+                !Guid.TryParseExact(leaf, "N", out _))
+                throw new ArgumentException("Validation saves require a unique GUID child of the temporary test root.", nameof(directory));
+            _validationSaveDirectory = target;
+        }
+#endif
 
         /// <summary>Estado do hotbar compartilhado com a HUD; persistido via HotbarSectionProvider.</summary>
         public HotbarState HotbarState => _hotbarState;
@@ -311,7 +353,10 @@ namespace CindarsHope.Save
 
             // spec_farm_till_anywhere_tilemap: tiles araveis por coordenada (secao aditiva FarmTiles).
             _farmTilesProvider = new Providers.FarmTilesSectionProvider(_farmTileGrid);
+            _townInteriorLocationProvider = new TownInteriorLocationSectionProvider(
+                () => _frozenTownInteriorSnapshot, null);
             RegisterProviderDescriptors();
+            SubscribeTownInteriorFinished();
         }
 
         /// <summary>Desliga o SaveManager. Chamado pelo GameBootstrap no shutdown.</summary>
@@ -323,7 +368,17 @@ namespace CindarsHope.Save
             }
 
             IsInitialized = false;
+            UnsubscribeTownInteriorFinished();
         }
+
+        private void OnEnable()
+        {
+            if (IsInitialized) SubscribeTownInteriorFinished();
+        }
+
+        private void OnDisable() => UnsubscribeTownInteriorFinished();
+
+        private void OnDestroy() => UnsubscribeTownInteriorFinished();
 
         // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Save / Load
@@ -337,6 +392,14 @@ namespace CindarsHope.Save
         {
             using var profilerScope = SaveMarker.Auto();
 
+            if (_isApplyingSaveData || _interiorLoadInProgress ||
+                (_townInteriorRuntime != null && _townInteriorRuntime.IsTransitioning))
+            {
+                const string reason = "Não é possível salvar durante uma transição de interior.";
+                PublishSaveResult(false, reason);
+                return false;
+            }
+
             // fable_44: polÃ­tica de save em boss fight (CA-3).
             if (TryGetActiveCaveBossFightGuard(out var blockedReason))
             {
@@ -347,11 +410,25 @@ namespace CindarsHope.Save
 
             try
             {
-                var existingSaveData = TryReadExistingValidSave();
+                GameSaveData existingSaveData = null;
+                if (File.Exists(SaveFilePath)
+                    && !TryReadSaveWithMigration(SaveFilePath, true,
+                        out existingSaveData, out var existingSaveResult))
+                {
+                    var reason = "Save existente inválido; escrita bloqueada para preservar o arquivo original: "
+                        + existingSaveResult.ErrorMessage;
+                    PublishSaveResult(false, reason);
+                    return false;
+                }
                 var activeScene = SceneManager.GetActiveScene();
 
                 // Captura de cada seÃ§Ã£o via provider
                 var playerData = _playerProvider?.Capture(existingSaveData) as PlayerSaveData;
+
+                _frozenTownInteriorSnapshot = CaptureTownInteriorSnapshot();
+                TownInteriorLocationSaveData interiorLocation;
+                try { interiorLocation = _townInteriorLocationProvider?.Capture(existingSaveData) as TownInteriorLocationSaveData; }
+                finally { _frozenTownInteriorSnapshot = null; }
 
                 var saveData = new GameSaveData
                 {
@@ -393,8 +470,11 @@ namespace CindarsHope.Save
                     NpcServices = _npcServicesProvider?.Capture(existingSaveData) as NPC.Services.NpcServicesSaveData,
                     MainProgression = _mainProgressionProvider?.Capture(existingSaveData) as MainProgressionSaveData,
                     OnboardingHints = _onboardingHintsProvider?.Capture(existingSaveData) as OnboardingHintsSaveData,
-                    FarmTiles = _farmTilesProvider?.Capture(existingSaveData) as FarmTilesSaveData
+                    FarmTiles = _farmTilesProvider?.Capture(existingSaveData) as FarmTilesSaveData,
+                    TownInteriorLocation = interiorLocation
                 };
+                if (interiorLocation != null && playerData != null)
+                    playerData.PlayerPosition = new Vector2(interiorLocation.SafeTownX, interiorLocation.SafeTownY);
 
                 var savePath = SaveFilePath;
                 var directory = Path.GetDirectoryName(savePath);
@@ -424,6 +504,13 @@ namespace CindarsHope.Save
         /// </summary>
         public bool LoadGame()
         {
+            if (_isApplyingSaveData || _interiorLoadInProgress ||
+                (_townInteriorRuntime != null && _townInteriorRuntime.IsTransitioning))
+            {
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false,
+                    "Não é possível carregar durante uma transição de interior."));
+                return false;
+            }
             var savePath = SaveFilePath;
             TryRecoverFromBackupIfNeeded(savePath);
 
@@ -443,9 +530,37 @@ namespace CindarsHope.Save
 
                 var activeScene = SceneManager.GetActiveScene();
                 ValidateSkillSection(saveData);
+                bool hasInteriorLocation = false;
+                string reason;
+                TownInteriorLocationSnapshot decodedLocation = default;
+                if (saveData.TownInteriorLocation != null &&
+                    !TownInteriorLocationSaveData.TryDecode(saveData.TownInteriorLocation, out decodedLocation, out reason))
+                {
+                    GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, reason));
+                    return false;
+                }
+                if (saveData.TownInteriorLocation != null)
+                    hasInteriorLocation = decodedLocation.IsInside;
+                // JsonUtility may materialize an omitted/null reference section as an empty
+                // exterior DTO. Its presence alone must never route a legacy Town save
+                // through interior restore or replace PlayerPosition with a fallback spawn.
+                if (!hasInteriorLocation &&
+                    IsLegacyLoadBlockedByCurrentInterior(out reason))
+                {
+                    GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, reason));
+                    return false;
+                }
                 if (!string.IsNullOrEmpty(saveData.CurrentSceneName) && saveData.CurrentSceneName != activeScene.name)
                 {
-                    StartCoroutine(LoadSceneAndApplySaveData(saveData));
+                    _interiorLoadInProgress = hasInteriorLocation;
+                    StartCoroutine(LoadSceneAndApplySaveData(saveData, hasInteriorLocation));
+                    return true;
+                }
+
+                if (hasInteriorLocation)
+                {
+                    _interiorLoadInProgress = true;
+                    StartCoroutine(ApplyTownInteriorLoad(saveData));
                     return true;
                 }
 
@@ -463,6 +578,228 @@ namespace CindarsHope.Save
         }
 
         // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        public void BindTownInteriorRuntime(ITownInteriorLocationRuntime runtime, SceneHandle sceneHandle)
+        {
+            if (runtime == null) return;
+            _townInteriorRuntime = runtime;
+            _townInteriorSceneHandle = sceneHandle;
+            _lastTownInteriorSceneHandle = sceneHandle;
+        }
+
+        public void UnbindTownInteriorRuntime(ITownInteriorLocationRuntime runtime)
+        {
+            if (!ReferenceEquals(_townInteriorRuntime, runtime)) return;
+            _townInteriorRuntime = null;
+            _townInteriorSceneHandle = null;
+        }
+
+        public void RequestAutosave()
+        {
+            if (_interiorLoadInProgress ||
+                (_townInteriorRuntime != null && _townInteriorRuntime.IsTransitioning))
+            {
+                _autosaveDeferred = true;
+                return;
+            }
+            SaveGame();
+        }
+
+        private TownInteriorLocationSnapshot? CaptureTownInteriorSnapshot()
+        {
+            if (!IsTownInteriorRuntimeReady() && _lastTownInteriorSceneHandle == SceneManager.GetActiveScene().handle)
+                throw new InvalidOperationException("Town interior runtime is expected but not ready.");
+            if (!IsTownInteriorRuntimeReady()) return null;
+            return _townInteriorRuntime.CaptureCommitted();
+        }
+
+        private bool IsTownInteriorRuntimeReady() => IsInitialized && _townInteriorRuntime != null &&
+            _townInteriorSceneHandle == SceneManager.GetActiveScene().handle;
+
+        private bool IsLegacyLoadBlockedByCurrentInterior(out string reason)
+        {
+            reason = string.Empty;
+            if (!IsTownInteriorRuntimeReady())
+            {
+                if (_lastTownInteriorSceneHandle != SceneManager.GetActiveScene().handle) return false;
+                reason = "Aguarde a cidade estar pronta antes de carregar o save.";
+                return true;
+            }
+
+            try
+            {
+                if (!_townInteriorRuntime.CaptureCommitted().IsInside) return false;
+            }
+            catch (Exception)
+            {
+                reason = "Não é seguro carregar um save sem localização de interior enquanto a casa atual não pode ser verificada.";
+                return true;
+            }
+
+            reason = "Saia da casa atual antes de carregar um save sem localização de interior.";
+            return true;
+        }
+
+        private IEnumerator ApplyTownInteriorLoad(GameSaveData saveData)
+        {
+            bool loadSucceeded = false;
+            try
+            {
+                if (!TownInteriorLocationSaveData.TryDecode(saveData.TownInteriorLocation, out var snapshot, out var reason))
+                {
+                    PublishInteriorLoadFailure(reason);
+                    yield break;
+                }
+
+                if (float.IsNaN(_townInteriorRestoreTimeoutSeconds) ||
+                    float.IsInfinity(_townInteriorRestoreTimeoutSeconds) || _townInteriorRestoreTimeoutSeconds <= 0f)
+                {
+                    PublishInteriorLoadFailure("Town interior restore timeout is invalid.");
+                    yield break;
+                }
+
+                var started = Time.unscaledTime;
+                while (!IsTownInteriorRuntimeReady() && Time.unscaledTime - started < _townInteriorRestoreTimeoutSeconds)
+                    yield return null;
+                if (!IsTownInteriorRuntimeReady())
+                {
+                    PublishInteriorLoadFailure("Town interior runtime did not bind before restore timeout.");
+                    yield break;
+                }
+
+                _pendingInteriorRestoreToken = Guid.NewGuid().ToString("N");
+                _pendingInteriorRestoreFinished = false;
+                _pendingInteriorRestoreSucceeded = false;
+                _pendingInteriorStatePreparationCompleted = false;
+                _pendingInteriorStatePreparationSucceeded = false;
+                _pendingInteriorRestoreFailureReason = string.Empty;
+                _pendingInteriorSaveData = saveData;
+
+                if (!TryRequestTownInteriorRestore(snapshot, _pendingInteriorRestoreToken, out reason))
+                {
+                    PublishInteriorLoadFailure(reason);
+                    yield break;
+                }
+
+                started = Time.unscaledTime;
+                while (!_pendingInteriorRestoreFinished && Time.unscaledTime - started < _townInteriorRestoreTimeoutSeconds)
+                    yield return null;
+                if (!_pendingInteriorRestoreFinished || !_pendingInteriorRestoreSucceeded ||
+                    !_pendingInteriorStatePreparationCompleted || !_pendingInteriorStatePreparationSucceeded)
+                {
+                    PublishInteriorLoadFailure(string.IsNullOrWhiteSpace(_pendingInteriorRestoreFailureReason)
+                        ? "Town interior restore did not finish successfully."
+                        : _pendingInteriorRestoreFailureReason);
+                    yield break;
+                }
+
+                _pendingInteriorRestoreToken = string.Empty;
+                loadSucceeded = true;
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, true, "Jogo carregado."));
+            }
+            finally
+            {
+                _pendingInteriorRestoreToken = string.Empty;
+                _pendingInteriorSaveData = null;
+                _pendingInteriorRestoreFailureReason = string.Empty;
+                _interiorLoadInProgress = false;
+                // A failed restore may have applied only part of the services. Never overwrite
+                // the recoverable slot with that state through an earlier queued autosave.
+                if (loadSucceeded) TryFlushDeferredAutosave();
+                else _autosaveDeferred = false;
+            }
+        }
+
+        private bool TryRequestTownInteriorRestore(TownInteriorLocationSnapshot snapshot, string operationId,
+            out string reason)
+        {
+            try
+            {
+                return _townInteriorRuntime.TryRequestRestore(snapshot, operationId, out reason);
+            }
+            catch (Exception exception)
+            {
+                reason = exception.Message;
+                return false;
+            }
+        }
+
+        private void OnTownInteriorVisitFinished(TownInteriorVisitFinishedEvent evt)
+        {
+            if (evt.OperationId == _pendingInteriorRestoreToken)
+            {
+                _pendingInteriorRestoreFinished = true;
+                _pendingInteriorRestoreSucceeded = evt.Success;
+            }
+            TryFlushDeferredAutosave();
+        }
+
+        private void TryFlushDeferredAutosave()
+        {
+            if (!_autosaveDeferred || _interiorLoadInProgress || !IsTownInteriorRuntimeReady() ||
+                _townInteriorRuntime.IsTransitioning) return;
+            _autosaveDeferred = false;
+            SaveGame();
+        }
+
+        private void OnTownInteriorRestoreStateRequested(TownInteriorRestoreStateRequestedEvent evt)
+        {
+            if (evt.OperationId != _pendingInteriorRestoreToken) return;
+
+            if (_pendingInteriorStatePreparationCompleted)
+            {
+                GameEventBus.Publish(new TownInteriorRestoreStateReadyEvent(evt.OperationId,
+                    _pendingInteriorStatePreparationSucceeded));
+                return;
+            }
+
+            bool success = false;
+            string reason = string.Empty;
+            try
+            {
+                if (_pendingInteriorSaveData == null)
+                {
+                    reason = "Town interior restore state was requested without pending save data.";
+                }
+                else
+                {
+                    ApplySaveData(_pendingInteriorSaveData, false);
+                    success = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                reason = exception.Message;
+            }
+
+            _pendingInteriorStatePreparationCompleted = true;
+            _pendingInteriorStatePreparationSucceeded = success;
+            if (!success) _pendingInteriorRestoreFailureReason = reason;
+            GameEventBus.Publish(new TownInteriorRestoreStateReadyEvent(evt.OperationId, success));
+        }
+
+        private void PublishInteriorLoadFailure(string reason)
+        {
+            _pendingInteriorRestoreToken = string.Empty;
+            GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false,
+                string.IsNullOrWhiteSpace(reason) ? "Falha ao restaurar interior." : reason));
+        }
+
+        private void SubscribeTownInteriorFinished()
+        {
+            if (_townInteriorFinishedSubscribed) return;
+            GameEventBus.Subscribe<TownInteriorVisitFinishedEvent>(OnTownInteriorVisitFinished);
+            GameEventBus.Subscribe<TownInteriorRestoreStateRequestedEvent>(OnTownInteriorRestoreStateRequested);
+            _townInteriorFinishedSubscribed = true;
+        }
+
+        private void UnsubscribeTownInteriorFinished()
+        {
+            if (!_townInteriorFinishedSubscribed) return;
+            GameEventBus.Unsubscribe<TownInteriorVisitFinishedEvent>(OnTownInteriorVisitFinished);
+            GameEventBus.Unsubscribe<TownInteriorRestoreStateRequestedEvent>(OnTownInteriorRestoreStateRequested);
+            _townInteriorFinishedSubscribed = false;
+        }
+
         // Rebind pÃºblico (chamado por RuntimeBootstraps de cena)
         // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -760,7 +1097,8 @@ namespace CindarsHope.Save
             _providerRegistry.Register<DeathSaveData>(_deathProvider, order++);
             _providerRegistry.Register<QuestStateSectionSaveData>(_questProvider, order++);
             _providerRegistry.Register<OnboardingHintsSaveData>(_onboardingHintsProvider, order++);
-            _providerRegistry.Register<FarmTilesSaveData>(_farmTilesProvider, order);
+            _providerRegistry.Register<FarmTilesSaveData>(_farmTilesProvider, order++);
+            _providerRegistry.Register<TownInteriorLocationSaveData>(_townInteriorLocationProvider, order);
         }
 
         // fable_44: le o flag de boss fight do CaveLevelRuntimeController via CaveRunManager.Instance.
@@ -778,24 +1116,63 @@ namespace CindarsHope.Save
             return levelController != null && levelController.IsBossFightActive;
         }
 
-        private IEnumerator LoadSceneAndApplySaveData(GameSaveData saveData)
+        private IEnumerator LoadSceneAndApplySaveData(GameSaveData saveData, bool hasInteriorLocation)
         {
+            string failure = null;
+            try
+            {
 #if UNITY_EDITOR
-            if (!string.IsNullOrEmpty(saveData.CurrentScenePath))
-            {
-                EditorSceneManager.LoadSceneInPlayMode(saveData.CurrentScenePath, new LoadSceneParameters(LoadSceneMode.Single));
-            }
-            else
-            {
-                SceneManager.LoadScene(saveData.CurrentSceneName);
-            }
+                if (!string.IsNullOrEmpty(saveData.CurrentScenePath))
+                {
+                    EditorSceneManager.LoadSceneInPlayMode(saveData.CurrentScenePath, new LoadSceneParameters(LoadSceneMode.Single));
+                }
+                else
+                {
+                    SceneManager.LoadScene(saveData.CurrentSceneName);
+                }
 #else
-            SceneManager.LoadScene(saveData.CurrentSceneName);
+                SceneManager.LoadScene(saveData.CurrentSceneName);
 #endif
-            yield return null;
+            }
+            catch (Exception exception)
+            {
+                failure = exception.Message;
+            }
+
+            if (failure != null)
+            {
+                _interiorLoadInProgress = false;
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, failure));
+                yield break;
+            }
             yield return null;
 
-            ApplySaveData(saveData);
+            if (hasInteriorLocation)
+            {
+                yield return ApplyTownInteriorLoad(saveData);
+                yield break;
+            }
+
+            yield return null;
+            bool legacyApplyFailed = false;
+            try
+            {
+                ApplySaveData(saveData);
+            }
+            catch (Exception exception)
+            {
+                legacyApplyFailed = true;
+                failure = exception.Message;
+            }
+
+            if (legacyApplyFailed)
+            {
+                _interiorLoadInProgress = false;
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, failure));
+                yield break;
+            }
+
+            _interiorLoadInProgress = false;
             GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, true, "Jogo carregado."));
         }
 
@@ -810,8 +1187,13 @@ namespace CindarsHope.Save
                 saveData.Progression?.UnspentSkillPoints ?? _progressionManager?.UnspentSkillPoints ?? 0);
         }
 
-        private void ApplySaveData(GameSaveData saveData)
+        private void ApplySaveData(GameSaveData saveData, bool restorePlayerPosition = true)
         {
+            if (_isApplyingSaveData)
+                throw new InvalidOperationException("Save restore is already in progress.");
+            _isApplyingSaveData = true;
+            try
+            {
             ValidateSkillSection(saveData);
             using var profilerScope = RestoreMarker.Auto();
 
@@ -866,7 +1248,7 @@ namespace CindarsHope.Save
 
             // PosiÃ§Ã£o do player: mantida no SaveManager porque _playerTransform Ã© uma ref serializada
             // de cena que os providers nÃ£o devem conhecer diretamente.
-            if (saveData.Player != null && _playerTransform != null)
+            if (restorePlayerPosition && saveData.Player != null && _playerTransform != null)
             {
                 _playerTransform.position = saveData.Player.PlayerPosition;
             }
@@ -885,7 +1267,9 @@ namespace CindarsHope.Save
             _spellbookProvider?.Restore(saveData.Spellbook);
 
             // â”€â”€ Equipamento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            _equipmentProvider?.Restore(saveData.Equipment);
+            if (_equipmentProvider is EquipmentSectionProvider equipmentSectionProvider)
+                equipmentSectionProvider.Restore(saveData.Equipment, saveData.SchemaVersion);
+            else _equipmentProvider?.Restore(saveData.Equipment);
             _equipmentDurabilityProvider?.Restore(saveData.EquipmentDurability);
 
             // â”€â”€ ProgressÃ£o (antes de skill tree que depende do nÃ­vel) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -909,7 +1293,9 @@ namespace CindarsHope.Save
 
             // â”€â”€ Mundo / Farm â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _worldProvider?.Restore(saveData.World);
-            _farmProvider?.Restore(saveData.Farm);
+            if (_farmProvider is FarmSectionProvider farmSectionProvider)
+                farmSectionProvider.Restore(saveData.Farm, saveData.SchemaVersion);
+            else _farmProvider?.Restore(saveData.Farm);
 
             // â”€â”€ Economia / NPCs / Crafting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if (saveData.Economy != null)
@@ -918,7 +1304,9 @@ namespace CindarsHope.Save
             }
 
             _npcsProvider?.Restore(saveData.Npcs);
-            _craftingProvider?.Restore(saveData.Crafting);
+            if (_craftingProvider is CraftingSectionProvider craftingSectionProvider)
+                craftingSectionProvider.Restore(saveData.Crafting, saveData.SchemaVersion);
+            else _craftingProvider?.Restore(saveData.Crafting);
 
             // â”€â”€ BestiÃ¡rio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _bestiaryProvider?.Restore(saveData.Bestiary);
@@ -939,7 +1327,9 @@ namespace CindarsHope.Save
             _farmLotsProvider?.Restore(saveData.FarmLots);
             _farmAnimalsProvider?.Restore(saveData.FarmAnimals);
             _friendshipProvider?.Restore(saveData.Friendship);
-            _npcServicesProvider?.Restore(saveData.NpcServices);
+            if (_npcServicesProvider is NpcServicesSectionProvider npcServicesSectionProvider)
+                npcServicesSectionProvider.Restore(saveData.NpcServices, saveData.SchemaVersion);
+            else _npcServicesProvider?.Restore(saveData.NpcServices);
 
             // â”€â”€ Morte / cadÃ¡ver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _deathProvider?.Restore(saveData.Death);
@@ -952,6 +1342,11 @@ namespace CindarsHope.Save
 
             // â”€â”€ Tiles araveis (farm tile system — spec_farm_till_anywhere_tilemap) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _farmTilesProvider?.Restore(saveData.FarmTiles);
+            }
+            finally
+            {
+                _isApplyingSaveData = false;
+            }
         }
 
         // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

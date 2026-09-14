@@ -10,7 +10,8 @@ using UnityEngine;
 namespace CindarsHope.Equipment
 {
     [DisallowMultipleComponent]
-    public class EquipmentManager : MonoBehaviour, IEquipmentRuntime, IGoldGainModifierRuntime
+    public class EquipmentManager : MonoBehaviour, IEquipmentRuntime, IEquipmentSilentMutationRuntime,
+        IGoldGainModifierRuntime
     {
         // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — self-registro estatico
         // (molde Craft/Economy/Skills) para o GameBootstrap parar de segurar esta referencia serializada.
@@ -198,6 +199,32 @@ namespace CindarsHope.Equipment
             GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, itemInstanceId));
         }
 
+        public bool TryEquipSilently(EquipmentSlot slot, string itemInstanceId)
+        {
+            if (slot == EquipmentSlot.None || string.IsNullOrWhiteSpace(itemInstanceId)
+                || !string.IsNullOrEmpty(GetEquippedItem(slot))
+                || CindarsHope.Skills.SkillTierEquipGate.IsEquipBlocked(itemInstanceId))
+                return false;
+            InitializeWeaponDurabilityIfNeeded(itemInstanceId);
+            _slots[slot] = itemInstanceId;
+            RebuildAccessoryEffects();
+            return true;
+        }
+
+        public bool TryUnequipSilently(EquipmentSlot slot, string expectedItemInstanceId)
+        {
+            if (GetEquippedItem(slot) != expectedItemInstanceId) return false;
+            _slots.Remove(slot);
+            RebuildAccessoryEffects();
+            return true;
+        }
+
+        public void PublishCommittedEquip(EquipmentSlot slot, string itemInstanceId)
+        {
+            if (GetEquippedItem(slot) == itemInstanceId)
+                GameEventBus.Publish(new EquipmentSlotChangedEvent(slot, itemInstanceId));
+        }
+
         private void InitializeWeaponDurabilityIfNeeded(string itemInstanceId)
         {
             if (string.IsNullOrWhiteSpace(itemInstanceId)
@@ -307,12 +334,18 @@ namespace CindarsHope.Equipment
         }
 
         public void UnequipAll()
+            => UnequipAll(true);
+
+        public void UnequipAll(bool publishEvents)
         {
             var slotsToUnequip = new List<EquipmentSlot>(_slots.Keys);
-            foreach (var slot in slotsToUnequip)
+            if (publishEvents)
             {
-                UnequipSlot(slot);
+                foreach (var slot in slotsToUnequip) UnequipSlot(slot);
+                return;
             }
+            _slots.Clear();
+            RebuildAccessoryEffects();
         }
 
         public void RegisterEquipmentUsage()
@@ -510,6 +543,9 @@ namespace CindarsHope.Equipment
         }
 
         public void RestoreFromSaveData(EquipmentSaveData saveData)
+            => RestoreFromSaveData(saveData, false);
+
+        public void RestoreFromSaveData(EquipmentSaveData saveData, bool requireOriginSchema)
         {
             if (saveData == null)
             {
@@ -546,7 +582,7 @@ namespace CindarsHope.Equipment
                 _infusionRegistry = new CindarsHope.Economy.WeaponInfusionRegistry();
                 CindarsHope.Economy.WeaponInfusionRegistry.Active = _infusionRegistry;
             }
-            _infusionRegistry.RestoreFromSaveData(saveData.Infusions);
+            _infusionRegistry.RestoreFromSaveData(saveData.Infusions, requireOriginSchema);
 
             // fable_49: restaura upgrades e receitas aprendidas (listas null em save legado => registros
             // vazios, sem migration; derivados recalculados pelo fluxo existente lendo estes registros).

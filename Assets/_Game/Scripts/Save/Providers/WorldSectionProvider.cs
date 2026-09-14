@@ -30,16 +30,19 @@ namespace CindarsHope.Save.Providers
         {
             var worldSaveData = new WorldSaveData();
             var activeScene = SceneManager.GetActiveScene();
+            var previousPickups = existingSaveData?.World?.Pickups;
+            var pickups = new List<ItemPickupSaveData>();
 
             if (activeScene.name == FarmSceneName)
             {
                 if (_itemPickupRegistry != null)
                 {
-                    worldSaveData.Pickups = _itemPickupRegistry.CaptureSaveData();
+                    pickups.AddRange(_itemPickupRegistry.CaptureSaveData());
                 }
-                else if (existingSaveData?.World?.Pickups != null)
+                else if (previousPickups != null)
                 {
-                    worldSaveData.Pickups = existingSaveData.World.Pickups;
+                    foreach (var pickup in previousPickups)
+                        if (pickup != null && !pickup.IsDynamic) pickups.Add(pickup);
                 }
 
                 if (_treeRegistry != null)
@@ -55,10 +58,23 @@ namespace CindarsHope.Save.Providers
             {
                 if (existingSaveData?.World != null)
                 {
-                    worldSaveData.Pickups = existingSaveData.World.Pickups;
                     worldSaveData.Trees = existingSaveData.World.Trees;
+                    if (previousPickups != null)
+                        foreach (var pickup in previousPickups)
+                            if (pickup != null && !pickup.IsDynamic) pickups.Add(pickup);
                 }
             }
+
+            // The persistent drop spawner retains all scene-owned dynamic pickups in memory.
+            // Its snapshot replaces the previous dynamic list so re-saving cannot duplicate IDs.
+            var spawner = ItemDropSpawner.Instance;
+            if (spawner != null)
+                pickups.AddRange(spawner.CaptureDynamicPickupSaveData());
+            else if (previousPickups != null)
+                foreach (var pickup in previousPickups)
+                    if (pickup != null && pickup.IsDynamic)
+                        pickups.Add(pickup);
+            worldSaveData.Pickups = pickups;
 
             return worldSaveData;
         }
@@ -69,7 +85,21 @@ namespace CindarsHope.Save.Providers
 
             if (_itemPickupRegistry != null && data != null)
             {
-                _itemPickupRegistry.RestoreFromSaveData(data.Pickups);
+                var staticPickups = new List<ItemPickupSaveData>();
+                if (data.Pickups != null)
+                    foreach (var pickup in data.Pickups)
+                        if (pickup != null && !pickup.IsDynamic) staticPickups.Add(pickup);
+                _itemPickupRegistry.RestoreFromSaveData(staticPickups);
+            }
+
+            if (data != null && ItemDropSpawner.Instance != null)
+            {
+                var dynamicPickups = new List<ItemPickupSaveData>();
+                if (data.Pickups != null)
+                    foreach (var pickup in data.Pickups)
+                        if (pickup != null && pickup.IsDynamic)
+                            dynamicPickups.Add(pickup);
+                ItemDropSpawner.Instance.RestoreDynamicPickups(dynamicPickups);
             }
 
             if (_treeRegistry != null && data != null)

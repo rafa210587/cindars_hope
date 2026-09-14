@@ -139,6 +139,19 @@ namespace CindarsHope.Tests.EditMode.Skills
         }
 
         [Test]
+        public void Catalog_SupportActionsWithExecutors_AreNotDormant()
+        {
+            var nodes = DefaultSkillCatalog.BuildAllNodes();
+            var retreat = nodes.Find(x => x.SkillNodeId == "survival.sinal_retirada");
+            var efficiency = nodes.Find(x => x.SkillNodeId == "crafting.marca_eficiencia");
+
+            Assert.That(retreat, Is.Not.Null);
+            Assert.That(efficiency, Is.Not.Null);
+            Assert.That(retreat.NotYetExecutable, Is.False, "Sinal de Retirada has a registered executor.");
+            Assert.That(efficiency.NotYetExecutable, Is.False, "Marca de Eficiência has a registered executor.");
+        }
+
+        [Test]
         public void Catalog_EveryNodeHasValidTier_AndCapstonesAreTier5()
         {
             foreach (var n in DefaultSkillCatalog.BuildAllNodes())

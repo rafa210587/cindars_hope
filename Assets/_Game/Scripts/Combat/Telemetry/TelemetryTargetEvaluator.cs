@@ -107,18 +107,22 @@ namespace CindarsHope.Combat.Telemetry
         /// <summary>Compara um valor contra uma faixa inclusiva [min,max].</summary>
         public static TelemetryEvaluation EvaluateRange(float value, float min, float max)
         {
+            if (float.IsNaN(value) || float.IsInfinity(value) ||
+                float.IsNaN(min) || float.IsInfinity(min) ||
+                float.IsNaN(max) || float.IsInfinity(max) || min > max)
+                return TelemetryEvaluation.NoTarget;
             if (value < min) return TelemetryEvaluation.Below;
             if (value > max) return TelemetryEvaluation.Above;
             return TelemetryEvaluation.WithinTarget;
         }
 
         /// <summary>
-        /// Avalia o TTK médio (segundos) de uma criatura contra §6 pela sua classe.
-        /// n &lt;= 0 (sem amostra) → NoTarget.
+        /// Avalia o TTK observado (segundos) de uma criatura contra §6 pela sua classe.
+        /// Sem amostra, TTK não positivo ou não finito → NoTarget.
         /// </summary>
         public static TelemetryEvaluation EvaluateTtk(TelemetryCreatureClass creatureClass, float ttkSeconds, int sampleCount)
         {
-            if (sampleCount <= 0) return TelemetryEvaluation.NoTarget;
+            if (sampleCount <= 0 || ttkSeconds <= 0f) return TelemetryEvaluation.NoTarget;
             if (!TryGetTtkTarget(creatureClass, out var min, out var max)) return TelemetryEvaluation.NoTarget;
             return EvaluateRange(ttkSeconds, min, max);
         }
@@ -129,7 +133,7 @@ namespace CindarsHope.Combat.Telemetry
         /// </summary>
         public static TelemetryEvaluation EvaluateDamageTakenPct(TelemetryCreatureClass creatureClass, float pctOfMaxHp, int hitCount)
         {
-            if (hitCount <= 0) return TelemetryEvaluation.NoTarget;
+            if (hitCount <= 0 || pctOfMaxHp < 0f) return TelemetryEvaluation.NoTarget;
             if (!TryGetDamageTakenPctTarget(creatureClass, out var min, out var max)) return TelemetryEvaluation.NoTarget;
             return EvaluateRange(pctOfMaxHp, min, max);
         }

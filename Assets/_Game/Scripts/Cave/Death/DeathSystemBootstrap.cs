@@ -116,7 +116,8 @@ namespace CindarsHope.Cave.Death
                 bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager,
                 CindarsHope.Equipment.EquipmentManager.Instance,
                 bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager,
-                bootstrap.TimeManager
+                bootstrap.TimeManager,
+                _recoveryManager
             );
 
             _initialized = true;
@@ -143,7 +144,6 @@ namespace CindarsHope.Cave.Death
 
                 if (_recoveryManager != null && _resolver.LastCreatedCorpse != null)
                 {
-                    _recoveryManager.SetActiveCorpse(_resolver.LastCreatedCorpse);
                     Debug.Log($"[DeathSystemBootstrap] Corpse {_resolver.LastCreatedCorpse.CorpseId} set as active");
                 }
             }

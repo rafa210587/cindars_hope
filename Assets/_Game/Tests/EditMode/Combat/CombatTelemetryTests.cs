@@ -1,8 +1,12 @@
 using System.Collections.Generic;
+using System;
+using System.IO;
 using CindarsHope.Combat;
 using CindarsHope.Combat.Bestiary;
 using CindarsHope.Combat.Telemetry;
+using CindarsHope.Foundation;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace CindarsHope.Tests.EditMode.Combat
 {
@@ -244,7 +248,7 @@ namespace CindarsHope.Tests.EditMode.Combat
         public void Report_Serializes_WithStableShapeVersion()
         {
             var session = new CombatTelemetrySession(new FakeClassLookup().Add("enemy_a", TelemetryCreatureClass.Common));
-            session.BeginLevel(7, 4, "run-seed-xyz", 0f);
+            session.BeginLevel(7, 4, "run-seed-xyz", 0f, "kanthor", "melee_kanthor", 20);
             session.RecordMaxHp(100);
             session.RecordEnemyDamaged("enemy_a", 20, "fire", 10f);
             session.RecordPlayerDamaged(6, "enemy_a", 11f); // 6%
@@ -253,16 +257,103 @@ namespace CindarsHope.Tests.EditMode.Combat
             var report = session.BuildReport("2026-06-19T00:00:00Z", null);
             var json = CombatTelemetryWriter.Serialize(report);
 
-            Assert.AreEqual(1, report.ShapeVersion, "Shape version fixado.");
-            StringAssert.Contains("\"ShapeVersion\": 1", json, "Versão do shape no payload.");
+            Assert.AreEqual(2, report.ShapeVersion, "Shape version fixado para versão aditiva.");
+            StringAssert.Contains("\"ShapeVersion\": 2", json, "Versão do shape no payload.");
             StringAssert.Contains("\"CaveLevel\": 7", json);
             StringAssert.Contains("enemy_a", json);
             StringAssert.Contains("WITHIN_TARGET", json, "Avaliação legível no JSON.");
+            StringAssert.Contains("\"BuildId\": \"melee_kanthor\"", json, "BuildId aditivo preserva origem.");
+            StringAssert.Contains("\"PlayerLevel\": 20", json, "Nível do jogador aditivo.");
+            StringAssert.Contains("\"RunVariant\": \"kanthor\"", json, "Variante de build aditiva.");
 
             var entry = report.Kills.Find(k => k.EnemyId == "enemy_a");
             Assert.IsNotNull(entry);
             Assert.AreEqual("Common", entry.CreatureClass);
             Assert.AreEqual("WITHIN_TARGET", entry.TtkEvaluation);
+
+            Assert.IsNotNull(json);
+            Assert.That(report.ActionEvents, Is.Not.Null);
+            Assert.That(report.TargetHits, Is.Not.Null);
+            Assert.That(report.RawTtkSamples, Is.Not.Null);
+            Assert.That(report.ControlWindows, Is.Not.Null);
+        }
+
+        [Test]
+        public void Report_Captures_ActionResolutionOutcome_Metadata()
+        {
+            var session = new CombatTelemetrySession(new FakeClassLookup());
+            session.BeginLevel(2, 1, "run", 0f, "cave", "1.2.3", 12);
+
+            session.RecordActionResolution("slash_1", 2, "fists", SkillActionResolvedEvent.Committed, "");
+            session.RecordActionResolution(string.Empty, 0, "fists", SkillActionResolvedEvent.Refused, "out_of_mana");
+
+            var report = session.BuildReport("now", null);
+
+            Assert.AreEqual(2, report.ActionEvents.Count);
+            Assert.AreEqual("slash_1", report.ActionEvents[0].ActionId);
+            Assert.AreEqual(2, report.ActionEvents[0].Rank);
+            Assert.AreEqual("fists", report.ActionEvents[0].VariantId);
+            Assert.AreEqual(SkillActionResolvedEvent.Committed, report.ActionEvents[0].Outcome);
+
+            Assert.AreEqual(string.Empty, report.ActionEvents[1].ActionId);
+            Assert.AreEqual(0, report.ActionEvents[1].Rank);
+            Assert.AreEqual(SkillActionResolvedEvent.Refused, report.ActionEvents[1].Outcome);
+            Assert.AreEqual("out_of_mana", report.ActionEvents[1].FailureKey);
+            Assert.IsTrue(report.Gaps.Exists(g => g.Contains("out_of_mana")));
+        }
+
+        [Test]
+        public void Report_Captures_TargetHits_And_RawTtkSamples()
+        {
+            var lookup = new FakeClassLookup().Add("enemy_a", TelemetryCreatureClass.Elite)
+                .Add("enemy_b", TelemetryCreatureClass.Boss);
+            var session = new CombatTelemetrySession(lookup);
+            session.BeginLevel(3, 1, "run", 0f, "cave", "1.2.3", 18);
+
+            session.RecordEnemyDamaged("enemy_a", 5, "physical", 1f);
+            session.RecordEnemyDamaged("enemy_a", 3, "physical", 2f);
+            session.RecordEnemyKilled("enemy_a", 9f); // ttk 8
+
+            session.RecordEnemyDamaged("enemy_b", 7, "magic", 3f);
+            session.RecordEnemyKilled("enemy_b", 6f); // kill com firstDamage conhecido -> sample de ttk 3
+
+            session.RecordEnemyKilled("enemy_b", 15f); // segunda morte sem hit registrado
+
+            var report = session.BuildReport("now", null);
+
+            Assert.AreEqual(2, report.TargetHits.Count);
+            Assert.AreEqual(2, report.TargetHits.Find(h => h.EnemyId == "enemy_a").HitCount);
+            Assert.AreEqual(1, report.TargetHits.Find(h => h.EnemyId == "enemy_b").HitCount);
+            Assert.AreEqual(2, report.RawTtkSamples.Count);
+            Assert.AreEqual("enemy_a", report.RawTtkSamples[0].EnemyId);
+            Assert.AreEqual(TelemetryTargetEvaluator.ClassToToken(TelemetryCreatureClass.Elite), report.RawTtkSamples[0].CreatureClass);
+            Assert.AreEqual(8f, report.RawTtkSamples[0].TtkSeconds);
+            Assert.AreEqual("enemy_b", report.RawTtkSamples[1].EnemyId);
+            Assert.AreEqual(TelemetryTargetEvaluator.ClassToToken(TelemetryCreatureClass.Boss), report.RawTtkSamples[1].CreatureClass);
+            Assert.AreEqual(3f, report.RawTtkSamples[1].TtkSeconds);
+            Assert.IsTrue(report.Gaps.Exists(g => g.Contains("enemy_b: 1 kill(s) without recorded first-damage")));
+        }
+
+        [Test]
+        public void Report_TracksControlWindows_UptimeAndGaps()
+        {
+            var session = new CombatTelemetrySession(new FakeClassLookup());
+            session.BeginLevel(4, 1, "run", 0f, "cave", "1.2.3", 16);
+
+            session.RecordControlWindowStarted("enemy_a", 2f);
+            session.RecordControlWindowEnded("enemy_a", 6f); // +4
+            session.RecordControlWindowStarted("enemy_b", 7f); // remains open
+            session.RecordControlWindowStarted("enemy_b", 8f); // nested start -> gap
+
+            var report = session.BuildReport("now", null);
+
+            Assert.AreEqual(1, report.ControlWindows.Count, "Apenas janela com fim emitida deve entrar na lista.");
+            Assert.AreEqual("enemy_a", report.ControlWindows[0].EnemyId);
+            Assert.AreEqual(4f, report.ControlWindows[0].DurationSeconds);
+            Assert.AreEqual(4f, report.ControlWindowUptimeSeconds);
+            Assert.AreEqual(4f / report.DurationSeconds, report.ControlWindowUptimePercent);
+            Assert.IsTrue(report.Gaps.Exists(g => g.Contains("enemy_b started at")));
+            Assert.IsTrue(report.Gaps.Exists(g => g.Contains("already open")));
         }
 
         [Test]
@@ -273,6 +364,56 @@ namespace CindarsHope.Tests.EditMode.Combat
 
             var sessionName = CombatTelemetryWriter.BuildFileName("run", -1, "ts");
             StringAssert.Contains("levelsession", sessionName, "Nível -1 => 'session'.");
+        }
+
+        [Test]
+        public void Writer_ReportsFromSameRunAndSecond_AreNeverOverwritten()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "phase21-telemetry-" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                var report = new CombatTelemetryReport { RunId = "same-run", CaveLevel = 3 };
+                var first = CombatTelemetryWriter.Write(report, directory);
+                var second = CombatTelemetryWriter.Write(report, directory);
+                Assert.That(first, Is.Not.Empty);
+                Assert.That(second, Is.Not.Empty);
+                Assert.That(second, Is.Not.EqualTo(first));
+                Assert.That(File.Exists(first), Is.True);
+                Assert.That(File.Exists(second), Is.True);
+            }
+            finally
+            {
+                if (Directory.Exists(directory)) Directory.Delete(directory, true);
+            }
+        }
+
+        [Test]
+        public void ActionOnlySession_UsesEventAndFlushTimeForDuration()
+        {
+            var session = new CombatTelemetrySession(new FakeClassLookup());
+            session.BeginLevel(1, 1, "run", 1f);
+            session.RecordActionResolution("skill_magic_fire_spark", 1, string.Empty,
+                SkillActionResolvedEvent.Refused, "Cooldown", 3f);
+            session.EndObservation(8f);
+
+            var report = session.BuildReport("now", null);
+            Assert.That(report.DurationSeconds, Is.EqualTo(7f));
+            Assert.That(report.ControlWindowUptimePercent, Is.EqualTo(-1f));
+            Assert.That(report.ControlWindowSampleCount, Is.Zero);
+        }
+
+        [Test]
+        public void ShapeOneReport_RemainsReadableAfterAdditiveFields()
+        {
+            const string oldJson = "{\"ShapeVersion\":1,\"RunId\":\"legacy-run\",\"CaveLevel\":2,\"DamageDealtTotal\":13}";
+            var oldReport = JsonUtility.FromJson<CombatTelemetryReport>(oldJson);
+
+            Assert.That(oldReport, Is.Not.Null);
+            Assert.That(oldReport.ShapeVersion, Is.EqualTo(1));
+            Assert.That(oldReport.RunId, Is.EqualTo("legacy-run"));
+            Assert.That(oldReport.CaveLevel, Is.EqualTo(2));
+            Assert.That(oldReport.DamageDealtTotal, Is.EqualTo(13));
+            Assert.That(CombatTelemetryWriter.Serialize(oldReport), Does.Contain("legacy-run"));
         }
 
         // ──────────────────────────────────────────────── lookup do bestiário (F33, sem tabela paralela)

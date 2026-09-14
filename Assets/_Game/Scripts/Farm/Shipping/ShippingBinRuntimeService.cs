@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Inventory;
 using UnityEngine;
 
 namespace CindarsHope.Farm.Shipping
@@ -86,6 +87,25 @@ namespace CindarsHope.Farm.Shipping
             return _service.Deposit(DefaultSellPointId, itemId, quantity, qualityTier, baseValue, _currentDay);
         }
 
+        public DepositResult DepositFromInventory(InventoryManager inventory, string itemId,
+            int quantity, int qualityTier, float baseValue)
+        {
+            if (inventory == null || quantity <= 0 || !inventory.TryPrepareRemoval(itemId,
+                    quantity, out var selection)) return DepositResult.Fail("InventoryUnavailable");
+            if (_service == null) BuildService();
+            var result = _service.Deposit(DefaultSellPointId, itemId, quantity, qualityTier,
+                baseValue, _currentDay, selection.CopyLots());
+            if (!result.Success) return result;
+            if (!inventory.TryCommitRemoval(selection, false))
+            {
+                if (!_service.CancelDeposit(result.CreatedEntry))
+                    throw new System.InvalidOperationException("Shipping deposit rollback failed.");
+                return DepositResult.Fail("InventoryChanged");
+            }
+            inventory.PublishCommittedInventoryChange(itemId, -quantity);
+            return result;
+        }
+
         private void OnDayStarted(DayStartedEvent evt)
         {
             SetDay(evt.DayNumber);
@@ -99,26 +119,51 @@ namespace CindarsHope.Farm.Shipping
         /// </summary>
         public void ProcessOvernight(int dayNumber)
         {
+            var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
+            ProcessOvernight(dayNumber, playerManager);
+        }
+
+        // Explicit wallet seam keeps the payment transaction independently testable.
+        public void ProcessOvernight(int dayNumber, CindarsHope.Player.PlayerManager playerManager)
+        {
             if (_service == null) BuildService();
 
             var batch = _service.ProcessDayBatch(dayNumber);
-            if (batch == null || batch.Entries.Count == 0)
+            if (batch == null || batch.State != ShippingBatchState.Pending
+                || batch.Entries.Count == 0)
             {
                 return;
             }
 
-            var totalGold = Mathf.RoundToInt(batch.TotalGold);
-            var itemCount = 0;
-            foreach (var entry in batch.Entries)
+            var totalGold = batch.TotalGoldChecked;
+            var itemCount = batch.ItemCount;
+
+            if (playerManager == null || !playerManager.CanCreditGoldChecked(totalGold)
+                || !playerManager.TryStageGoldMutation(totalGold, out var walletToken))
             {
-                itemCount += entry.Quantity;
+                return;
             }
 
-            var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
-            if (playerManager != null && totalGold > 0)
+            var committed = false;
+            var entriesMarked = false;
+            try
             {
-                playerManager.AddGold(totalGold);
+                if (!_service.TryCommitBatch(batch)) return;
+                entriesMarked = true;
+                // GoldChanged subscribers now observe both the wallet and shipping as committed.
+                if (!playerManager.TryCommitGoldMutation(walletToken)) return;
+                committed = true;
+            }
+            finally
+            {
+                if (!committed)
+                {
+                    var entriesRestored = !entriesMarked || _service.TryRollbackBatch(batch);
+                    var walletRestored = playerManager.TryRollbackGoldMutation(walletToken);
+                    if (!entriesRestored || !walletRestored)
+                        throw new System.InvalidOperationException("Shipping payment rollback failed.");
+                }
             }
 
             // Feedback existente: ShippingSummaryService escuta EconomyTransactionCompletedEvent.
@@ -150,7 +195,11 @@ namespace CindarsHope.Farm.Shipping
                     BaseValueSnapshot = entry.BaseValueSnapshot,
                     DepositedDay = entry.DepositedDay,
                     ProcessOnDay = entry.ProcessOnDay,
-                    State = (int)entry.State
+                    State = (int)entry.State,
+                    ItemInstanceId = entry.ItemInstanceId,
+                    ProcessedPaymentId = entry.ProcessedPaymentId,
+                    OriginSchemaVersion = 1,
+                    OriginLots = entry.OriginLots.ConvertAll(lot => lot.ToSaveData())
                 });
             }
             return data;
@@ -162,32 +211,82 @@ namespace CindarsHope.Farm.Shipping
         /// </summary>
         public void RestoreFromSaveData(PendingShippingSaveData saveData)
         {
-            _pendingEntries.Clear();
-            BuildService();
-
             if (saveData == null || saveData.Entries == null)
             {
+                _pendingEntries.Clear();
+                BuildService();
                 return;
             }
 
+            var restored = new List<PendingShippingEntry>();
+            var seenIds = new HashSet<string>(System.StringComparer.Ordinal);
             foreach (var saved in saveData.Entries)
             {
-                if (saved == null || string.IsNullOrWhiteSpace(saved.ItemId)) continue;
-                _pendingEntries.Add(new PendingShippingEntry
+                if (saved == null || string.IsNullOrWhiteSpace(saved.ItemId)
+                    || saved.Quantity <= 0 || string.IsNullOrWhiteSpace(saved.EntryId)
+                    || !seenIds.Add(saved.EntryId))
+                    throw new System.InvalidOperationException("Invalid shipping entry in save.");
+                var bootstrap = Core.Bootstrap.GameBootstrap.Instance;
+                var inventory = bootstrap != null ? bootstrap.InventoryManager as InventoryManager : null;
+                if (inventory != null && !inventory.TryGetItemData(saved.ItemId, out _))
+                    throw new System.InvalidOperationException("Unknown shipping item ID in save.");
+                var lots = saved.OriginSchemaVersion == 1
+                    ? ItemOriginLot.FromSaveData(saved.OriginLots, saved.Quantity)
+                    : ItemOriginLot.Invalid(saved.Quantity);
+                var validLots = new List<ItemOriginLot>();
+                var invalidQuantity = 0;
+                foreach (var lot in lots)
                 {
-                    ShippingEntryId = string.IsNullOrEmpty(saved.EntryId)
-                        ? System.Guid.NewGuid().ToString("N").Substring(0, 16)
-                        : saved.EntryId,
+                    if (lot.Kind == ItemOriginKind.Invalid) invalidQuantity += lot.Quantity;
+                    else validLots.Add(lot.Copy(lot.Quantity));
+                }
+                var pendingWithValidUnits = saved.State == (int)ShippingEntryState.Pending
+                    && validLots.Count > 0;
+                var entry = new PendingShippingEntry
+                {
+                    ShippingEntryId = saved.EntryId,
                     SellPointId = string.IsNullOrEmpty(saved.SellPointId) ? DefaultSellPointId : saved.SellPointId,
                     ItemId = saved.ItemId,
-                    Quantity = saved.Quantity,
+                    Quantity = pendingWithValidUnits ? saved.Quantity - invalidQuantity : saved.Quantity,
                     QualityTier = saved.QualityTier,
                     BaseValueSnapshot = saved.BaseValueSnapshot,
                     DepositedDay = saved.DepositedDay,
                     ProcessOnDay = saved.ProcessOnDay,
-                    State = (ShippingEntryState)saved.State
-                });
+                    State = invalidQuantity > 0 && !pendingWithValidUnits
+                        && saved.State == (int)ShippingEntryState.Pending
+                        ? ShippingEntryState.Invalid
+                        : System.Enum.IsDefined(typeof(ShippingEntryState), saved.State)
+                        ? (ShippingEntryState)saved.State : ShippingEntryState.Invalid,
+                    ItemInstanceId = saved.ItemInstanceId,
+                    ProcessedPaymentId = saved.ProcessedPaymentId,
+                    OriginLots = pendingWithValidUnits ? validLots : lots
+                };
+                restored.Add(entry);
+                if (pendingWithValidUnits && invalidQuantity > 0)
+                {
+                    var retainedId = saved.EntryId + "_invalid";
+                    if (!seenIds.Add(retainedId))
+                        throw new System.InvalidOperationException("Duplicate shipping entry ID in save.");
+                    restored.Add(new PendingShippingEntry
+                    {
+                        ShippingEntryId = retainedId,
+                        SellPointId = entry.SellPointId,
+                        ItemId = entry.ItemId,
+                        ItemInstanceId = entry.ItemInstanceId,
+                        Quantity = invalidQuantity,
+                        QualityTier = entry.QualityTier,
+                        BaseValueSnapshot = entry.BaseValueSnapshot,
+                        DepositedDay = entry.DepositedDay,
+                        ProcessOnDay = entry.ProcessOnDay,
+                        State = ShippingEntryState.Invalid,
+                        OriginLots = ItemOriginLot.Invalid(invalidQuantity)
+                    });
+                }
             }
+
+            _pendingEntries.Clear();
+            _pendingEntries.AddRange(restored);
+            BuildService();
 
             Debug.Log($"[ShippingBinRuntimeService] Restaurado batch pendente: {_pendingEntries.Count} entradas.", this);
         }

@@ -218,10 +218,6 @@ namespace CindarsHope.Skills
             // fable_70: magic_slowing_sigils agora executavel (SlowFieldSkillEffectExecutor) — removido daqui.
             // fable_70: survival_emergency_roll e crafting.mecanismo_campo CORTADOS (nao mais no catalogo).
             // survival_last_breath agora tem executor real (SelfRestore) — removido da lista dormente.
-            "survival.sinal_retirada",
-            "survival.isca_improvisada",
-            "crafting.irrigador_portatil",
-            "crafting.marca_eficiencia",
         };
 
         private static void ApplyDormantActives(List<SkillNodeDataSO> nodes)
@@ -662,7 +658,7 @@ namespace CindarsHope.Skills
             // Adicionar sem remover. Nao altera IDs existentes.
 
             Node("survival.sinal_retirada", "survival", "Sinal de Retirada",
-                "Buff curto de evasão: reduz custo de Stamina de movimento/Dodge e cansaço gerado. Tier 2.",
+                "Ao se afastar da ameaça, reduz em 30% o custo de corrida/Dodge e aumenta a velocidade em 12%. Tier 2.",
                 SkillNodeType.UnlockSkillAction, SkillCategory.EquippableSkill,
                 prereq: "survival_safe_step",
                 unlockAction: "skill_survival_sinal_retirada"),
@@ -748,7 +744,7 @@ namespace CindarsHope.Skills
             Node("crafting_shop_sense", "crafting", "Senso de Mercado",
                 "Escolha um foco de compra ou venda, com bonus de 5% por rank (maximo 15%).",
                 SkillNodeType.PassiveModifier, SkillCategory.PassiveSkill,
-                prereq: "crafting_pack_order"),
+                prereq: "crafting_material_eye"),
 
             Node("crafting_capstone_master_artisan", "crafting", "Mestre Artesão",
                 "Forja Viva: uma vez por dia, escolha antes de fabricar. R1 melhora a qualidade funcional; R2 melhora a qualidade ou poupa um material comum; R3 concede +8% de durabilidade a equipamento ou +8% de potência a até cinco consumíveis. Variantes não recebem bônus de venda.",

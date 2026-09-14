@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Foundation;
+using CindarsHope.NPC.Schedule;
 using UnityEngine;
 
 namespace CindarsHope.NPC
@@ -48,7 +49,7 @@ namespace CindarsHope.NPC
             {
                 if (npc != null && npc.NpcData != null)
                 {
-                    data.Npcs.Add(CaptureNpc(npc.NpcData, npc.transform.position, npc.HasMet));
+                    data.Npcs.Add(CaptureNpc(npc.NpcData, npc.transform, npc.HasMet));
                 }
             }
 
@@ -56,7 +57,7 @@ namespace CindarsHope.NPC
             {
                 if (npc != null && npc.NpcData != null)
                 {
-                    data.Npcs.Add(CaptureNpc(npc.NpcData, npc.transform.position, npc.HasMet));
+                    data.Npcs.Add(CaptureNpc(npc.NpcData, npc.transform, npc.HasMet));
                 }
             }
 
@@ -77,6 +78,7 @@ namespace CindarsHope.NPC
                     if (npc != null && npc.NpcData != null && npc.NpcData.NpcId == savedNpc.NpcId)
                     {
                         RestoreLoadedPosition(npc.transform, savedNpc.Position);
+                        RestoreInterior(npc.transform, savedNpc);
                         npc.RestoreState(savedNpc.HasMet);
                         break;
                     }
@@ -87,6 +89,7 @@ namespace CindarsHope.NPC
                     if (npc != null && npc.NpcData != null && npc.NpcData.NpcId == savedNpc.NpcId)
                     {
                         RestoreLoadedPosition(npc.transform, savedNpc.Position);
+                        RestoreInterior(npc.transform, savedNpc);
                         npc.RestoreState(savedNpc.HasMet);
                         break;
                     }
@@ -103,15 +106,35 @@ namespace CindarsHope.NPC
             if (npc != null) npc.position = savedPosition;
         }
 
-        private static NpcSaveData CaptureNpc(NpcDataSO data, Vector3 position, bool hasMet)
+        private static void RestoreInterior(Transform npc, NpcSaveData saved)
         {
-            return new NpcSaveData
+            var adapter = npc.GetComponent<NpcInteriorPresentationAdapter>();
+            if (adapter == null) return;
+            if (string.IsNullOrEmpty(saved.InteriorHouseId))
+                adapter.RestoreExterior(npc.position);
+            else
+                adapter.RestoreInterior(saved.InteriorHouseId, saved.InteriorAnchorId,
+                    new Vector2(saved.InteriorLocalX, saved.InteriorLocalY), npc.position);
+        }
+
+        private static NpcSaveData CaptureNpc(NpcDataSO data, Transform npc, bool hasMet)
+        {
+            var adapter = npc.GetComponent<NpcInteriorPresentationAdapter>();
+            var save = new NpcSaveData
             {
                 NpcId = data.NpcId,
                 SceneId = data.DefaultSceneId,
-                Position = position,
+                Position = adapter != null && adapter.IsInterior ? adapter.ExteriorSavePosition : npc.position,
                 HasMet = hasMet
             };
+            if (adapter != null && adapter.IsInterior)
+            {
+                save.InteriorHouseId = adapter.InteriorHouseId;
+                save.InteriorAnchorId = adapter.AnchorId;
+                save.InteriorLocalX = adapter.InteriorLocalPosition.x;
+                save.InteriorLocalY = adapter.InteriorLocalPosition.y;
+            }
+            return save;
         }
     }
 }

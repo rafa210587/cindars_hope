@@ -6,6 +6,7 @@ using CindarsHope.Craft.Data;
 using CindarsHope.Craft.Events;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
+using CindarsHope.Economy;
 using CindarsHope.Player;
 using CindarsHope.Skills;
 using CindarsHope.Skills.Runtime;
@@ -164,8 +165,20 @@ namespace CindarsHope.Craft
                 PublishFailure(recipe, failureReason);
                 return false;
             }
+            if (!TryPrepareOriginCraft(requirements, inventory, recipe.OutputAmount,
+                    out var consumedBatch, out var outputOriginLots))
+            {
+                if (staminaManager != null && staminaCost > 0)
+                    staminaManager.AddStamina(staminaCost);
+                ReleaseLivingForgeReservation(craftingSkillState, dayIndex,
+                    livingForgeReservationToken);
+                failureReason = "Ingredient origin could not be preserved.";
+                PublishFailure(recipe, failureReason);
+                return false;
+            }
             var inventoryBeforeCraft = inventory.CaptureSaveData();
-            if (!ConsumeIngredients(requirements, inventory))
+            inventoryBeforeCraft.OriginSchemaVersion = 1;
+            if (!inventory.TryCommitBatchRemoval(consumedBatch, out _))
             {
                 inventory.RestoreFromSaveData(inventoryBeforeCraft);
                 if (staminaManager != null && staminaCost > 0)
@@ -220,8 +233,10 @@ namespace CindarsHope.Craft
             if (recipe.IsInstantaneous)
             {
                 bool added = !string.IsNullOrWhiteSpace(outputInstanceId)
-                    ? inventory.TryAddItemInstance(outputItemId, outputInstanceId).Success
-                    : inventory.AddItem(outputItemId, recipe.OutputAmount);
+                    ? inventory.TryAddItemInstanceWithLots(outputItemId, outputInstanceId,
+                        outputOriginLots, false).Success
+                    : inventory.TryAddItemWithLots(outputItemId, recipe.OutputAmount,
+                        outputOriginLots, false).Success;
                 if (!added)
                 {
                     inventory.RestoreFromSaveData(inventoryBeforeCraft);
@@ -250,6 +265,9 @@ namespace CindarsHope.Craft
                 if (outputDurabilityMax > 0)
                     initializeDurability?.Invoke(outputInstanceId, outputDurabilityMax);
 
+                PublishOriginCraftInventoryEvents(inventory, consumedBatch, outputItemId,
+                    recipe.OutputAmount);
+
                 GameEventBus.Publish(new ItemCraftedEvent(recipe.Id, outputItemId, recipe.OutputAmount));
                 GameEventBus.Publish(new CraftingOutputCollectedEvent(StationInstanceId, recipe.Id, outputItemId, recipe.OutputAmount));
                 if (staminaManager != null && staminaCost > 0)
@@ -263,15 +281,19 @@ namespace CindarsHope.Craft
                 outputInstanceId, outputDurabilityMax, outputItemId,
                 livingForgeReservationToken, livingForgeSelection.IsSelected ? dayIndex : 0,
                 (int)livingForgePreparation.Choice);
+            _job.OutputOriginLots = ItemOriginLot.CopyLots(outputOriginLots);
             _job.IngredientsConsumed.Clear();
-            foreach (var requirement in requirements)
+            foreach (var selection in consumedBatch.Selections)
             {
                 _job.IngredientsConsumed.Add(new CraftingIngredientSaveData
                 {
-                    ItemId = requirement.ItemId,
-                    Amount = requirement.Amount
+                    ItemId = selection.ItemId,
+                    Amount = selection.Quantity,
+                    OriginLots = SaveOriginLots(selection.CopyLots())
                 });
             }
+            foreach (var selection in consumedBatch.Selections)
+                inventory.PublishCommittedInventoryChange(selection.ItemId, -selection.Quantity);
             if (staminaManager != null && staminaCost > 0)
                 onStaminaSpent?.Invoke(staminaCost);
             GameEventBus.Publish(new CraftingJobStartedEvent(StationInstanceId, recipe.Id, _job.JobId));
@@ -292,9 +314,15 @@ namespace CindarsHope.Craft
             var inventoryBeforeCollection = !string.IsNullOrWhiteSpace(_job.LivingForgeReservationToken)
                 ? inventory.CaptureSaveData()
                 : null;
+            if (inventoryBeforeCollection != null) inventoryBeforeCollection.OriginSchemaVersion = 1;
+            var outputLots = _job.OutputOriginLots;
+            if (!ItemOriginLot.IsValid(outputLots, _job.OutputAmount))
+                outputLots = ItemOriginLot.Invalid(_job.OutputAmount);
             bool added = !string.IsNullOrWhiteSpace(_job.OutputInstanceId)
-                ? inventory.TryAddItemInstance(_job.OutputItemId, _job.OutputInstanceId).Success
-                : inventory.AddItem(_job.OutputItemId, _job.OutputAmount);
+                ? inventory.TryAddItemInstanceWithLots(_job.OutputItemId, _job.OutputInstanceId,
+                    outputLots, false).Success
+                : inventory.TryAddItemWithLots(_job.OutputItemId, _job.OutputAmount,
+                    outputLots, false).Success;
             if (!added)
             {
                 failureReason = "Inventory is full. Output remains at the station.";
@@ -317,6 +345,8 @@ namespace CindarsHope.Craft
             if (_job.OutputDurabilityMax > 0)
                 initializeDurability?.Invoke(_job.OutputInstanceId, _job.OutputDurabilityMax);
 
+            inventory.PublishCommittedInventoryChange(_job.OutputItemId, _job.OutputAmount);
+
             GameEventBus.Publish(new ItemCraftedEvent(_job.RecipeId, _job.OutputItemId, _job.OutputAmount));
             GameEventBus.Publish(new CraftingOutputCollectedEvent(StationInstanceId, _job.RecipeId, _job.OutputItemId, _job.OutputAmount));
             _job = null;
@@ -334,9 +364,12 @@ namespace CindarsHope.Craft
             }
 
             var inventoryBeforeCancel = inventory.CaptureSaveData();
+            inventoryBeforeCancel.OriginSchemaVersion = 1;
             foreach (var ingredient in _job.IngredientsConsumed)
             {
-                if (!inventory.AddItem(ingredient.ItemId, ingredient.Amount))
+                var lots = ItemOriginLot.FromSaveData(ingredient.OriginLots, ingredient.Amount);
+                if (!inventory.TryAddItemWithLots(ingredient.ItemId, ingredient.Amount,
+                        lots, false).Success)
                 {
                     inventory.RestoreFromSaveData(inventoryBeforeCancel);
                     failureReason = "Inventory has no room to return all ingredients.";
@@ -344,6 +377,9 @@ namespace CindarsHope.Craft
                     return false;
                 }
             }
+
+            foreach (var ingredient in _job.IngredientsConsumed)
+                inventory.PublishCommittedInventoryChange(ingredient.ItemId, ingredient.Amount);
 
             var cancelledJobId = _job.JobId;
             var recipeId = _job.RecipeId;
@@ -372,6 +408,10 @@ namespace CindarsHope.Craft
         }
 
         public void LoadFromSaveData(CraftingStationSaveData saveData, RecipeDatabaseSO recipeDatabase)
+            => LoadFromSaveData(saveData, recipeDatabase, false);
+
+        public void LoadFromSaveData(CraftingStationSaveData saveData,
+            RecipeDatabaseSO recipeDatabase, bool requireOriginSchema)
         {
             if (saveData == null)
             {
@@ -385,7 +425,7 @@ namespace CindarsHope.Craft
             }
 
             recipeDatabase.TryGetById(saveData.Job.RecipeId, out var recipe);
-            _job = new CraftingJob(saveData.Job, recipe);
+            _job = new CraftingJob(saveData.Job, recipe, requireOriginSchema);
             if (recipe == null)
             {
                 UnityEngine.Debug.LogError($"Crafting station '{StationInstanceId}' loaded missing recipe '{saveData.Job.RecipeId}'. Saved output and ingredients are retained.");
@@ -433,19 +473,47 @@ namespace CindarsHope.Craft
             return true;
         }
 
-        private static bool ConsumeIngredients(
+        private static bool TryPrepareOriginCraft(
             IReadOnlyList<CraftingIngredientRequirement> requirements,
-            InventoryManager inventory)
+            InventoryManager inventory, int outputQuantity,
+            out InventoryLotBatchSelection batch, out List<ItemOriginLot> outputLots)
         {
+            batch = null;
+            outputLots = null;
+            var quantities = new Dictionary<string, int>(StringComparer.Ordinal);
             foreach (var ingredient in requirements)
             {
-                if (!inventory.RemoveItem(ingredient.ItemId, ingredient.Amount))
-                {
-                    return false;
-                }
+                if (quantities.TryGetValue(ingredient.ItemId, out var existing))
+                { if (existing > int.MaxValue - ingredient.Amount) return false;
+                    quantities[ingredient.ItemId] = existing + ingredient.Amount; }
+                else quantities.Add(ingredient.ItemId, ingredient.Amount);
             }
+            if (!inventory.TryPrepareBatchRemoval(quantities, out batch)) return false;
+            var inputs = new List<ItemOriginDerivation.Input>();
+            foreach (var selected in batch.Selections)
+            {
+                if (!inventory.TryGetItemData(selected.ItemId, out var item)) return false;
+                // Inject a shared balance config here if Shipping ever gains a materialized asset.
+                var liquidation = ItemPriceResolver.ResolveSellingPrice(
+                    item.BaseValue, SellContext.Shipping);
+                inputs.Add(new ItemOriginDerivation.Input(selected.CopyLots(), liquidation));
+            }
+            return ItemOriginDerivation.TryDerive(inputs, outputQuantity, out outputLots);
+        }
 
-            return true;
+        private static List<ItemOriginLotSaveData> SaveOriginLots(IReadOnlyList<ItemOriginLot> lots)
+        {
+            var saved = new List<ItemOriginLotSaveData>();
+            foreach (var lot in lots) saved.Add(lot.ToSaveData());
+            return saved;
+        }
+
+        private static void PublishOriginCraftInventoryEvents(InventoryManager inventory,
+            InventoryLotBatchSelection batch, string outputItemId, int outputAmount)
+        {
+            foreach (var selected in batch.Selections)
+                inventory.PublishCommittedInventoryChange(selected.ItemId, -selected.Quantity);
+            inventory.PublishCommittedInventoryChange(outputItemId, outputAmount);
         }
 
         private static bool TrySaveSelectedCommonMaterial(

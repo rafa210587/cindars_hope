@@ -27,13 +27,17 @@ namespace CindarsHope.Save.Providers
         }
 
         public void Restore(object sectionData)
+            => Restore(sectionData, 5);
+
+        public void Restore(object sectionData, int schemaVersion)
         {
             if (_equipmentManager == null)
             {
                 return;
             }
 
-            _equipmentManager.RestoreFromSaveData(sectionData as EquipmentSaveData ?? new EquipmentSaveData());
+            _equipmentManager.RestoreFromSaveData(sectionData as EquipmentSaveData ?? new EquipmentSaveData(),
+                schemaVersion >= 6);
         }
     }
 }

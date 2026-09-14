@@ -1,7 +1,12 @@
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
+using CindarsHope.Core.Data;
+using CindarsHope.Core.Events;
 using CindarsHope.Farm.Runtime;
+using CindarsHope.Inventory.Data;
 using CindarsHope.UI.HUD.Views;
+using UnityEngine;
 
 namespace CindarsHope.Tests.EditMode.Farm
 {
@@ -17,6 +22,18 @@ namespace CindarsHope.Tests.EditMode.Farm
     [TestFixture]
     public class FarmDailyGoalServiceTests
     {
+        private readonly List<UnityEngine.Object> _created = new List<UnityEngine.Object>();
+
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (var asset in _created)
+            {
+                UnityEngine.Object.DestroyImmediate(asset);
+            }
+            _created.Clear();
+        }
+
         /// <summary>Sink fake que acumula ouro+XP concedidos e conta as chamadas de Grant.</summary>
         private sealed class FakeRewardSink : IDailyGoalRewardSink
         {
@@ -43,6 +60,54 @@ namespace CindarsHope.Tests.EditMode.Farm
                 Completed = true,
                 Claimed = false
             };
+        }
+
+        [Test]
+        public void ShopSell_WeaponDoesNotCompleteFirstCropSale()
+        {
+            Assert.IsFalse(FarmDailyGoalService.CountsAsFirstCropSale(
+                new EconomyTransactionCompletedEvent(true, "ShopSell", "item_weapon_sword_iron", 1, 100, string.Empty),
+                ItemDatabase(ItemCategory.Weapon)));
+        }
+
+        [Test]
+        public void ShopSell_CropCompletesFirstCropSale()
+        {
+            Assert.IsTrue(FarmDailyGoalService.CountsAsFirstCropSale(
+                new EconomyTransactionCompletedEvent(true, "ShopSell", "item_crop_wheat", 1, 10, string.Empty),
+                ItemDatabase(ItemCategory.Crop, "item_crop_wheat")));
+        }
+
+        [Test]
+        public void ShopSell_UnknownItemOrMissingDatabaseDoesNotCompleteFirstCropSale()
+        {
+            var sale = new EconomyTransactionCompletedEvent(true, "ShopSell", "item_weapon_sword_iron", 1, 10, string.Empty);
+            Assert.IsFalse(FarmDailyGoalService.CountsAsFirstCropSale(sale, null));
+            Assert.IsFalse(FarmDailyGoalService.CountsAsFirstCropSale(sale, ItemDatabase(ItemCategory.Crop, "other_crop")));
+        }
+
+        [TestCase("SellPoint")]
+        [TestCase("SellAll")]
+        [TestCase("shipping")]
+        public void AggregatedSale_PreservesExistingPositiveGoldBehavior(string transactionType)
+        {
+            Assert.IsTrue(FarmDailyGoalService.CountsAsFirstCropSale(
+                new EconomyTransactionCompletedEvent(true, transactionType, string.Empty, 1, 10, string.Empty), null));
+        }
+
+        private ItemDatabaseSO ItemDatabase(ItemCategory category, string itemId = "item_weapon_sword_iron")
+        {
+            var item = ScriptableObject.CreateInstance<ItemDataSO>();
+            _created.Add(item);
+            item.Id = itemId;
+            item.Category = category;
+            var database = ScriptableObject.CreateInstance<ItemDatabaseSO>();
+            _created.Add(database);
+            typeof(DataRegistrySO<ItemDataSO>).GetField("_items", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(database, new[] { item });
+            typeof(DataRegistrySO<ItemDataSO>).GetMethod("RebuildIndex", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(database, null);
+            return database;
         }
 
         // ───────────────────────── CA-1: recompensa idempotente ─────────────────────────

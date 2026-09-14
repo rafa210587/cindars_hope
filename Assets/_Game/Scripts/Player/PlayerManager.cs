@@ -57,6 +57,22 @@ namespace CindarsHope.Player
         public int CurrentHP { get; private set; }
         public int MaxHP { get; private set; }
         public int Strength { get; set; } = 0;
+        private long _goldMutationSequence;
+        private long _pendingGoldMutationSequence;
+
+        public readonly struct GoldMutationToken
+        {
+            internal GoldMutationToken(long sequence, int previousGold, int currentGold)
+            {
+                Sequence = sequence;
+                PreviousGold = previousGold;
+                CurrentGold = currentGold;
+            }
+
+            internal long Sequence { get; }
+            public int PreviousGold { get; }
+            public int CurrentGold { get; }
+        }
         int IWalletTransactionPort.Balance => CurrentGold;
 
         bool IWalletTransactionPort.TryDebit(int amount) => TrySpendGold(amount);
@@ -90,6 +106,12 @@ namespace CindarsHope.Player
 
         public void Initialize(PlayerDataSO playerData)
         {
+            if (_pendingGoldMutationSequence != 0)
+            {
+                Debug.LogWarning("Cannot initialize player state while an atomic gold mutation is pending.", this);
+                return;
+            }
+
             Initialize();
 
             if (playerData == null)
@@ -124,6 +146,12 @@ namespace CindarsHope.Player
 
         public void SetGold(int newGold)
         {
+            if (_pendingGoldMutationSequence != 0)
+            {
+                Debug.LogError("Cannot change gold while an atomic gold mutation is pending.", this);
+                return;
+            }
+
             newGold = Mathf.Max(0, newGold);
             if (CurrentGold == newGold)
             {
@@ -137,7 +165,7 @@ namespace CindarsHope.Player
 
         public bool TrySpendGold(int amount)
         {
-            if (amount <= 0 || CurrentGold < amount)
+            if (_pendingGoldMutationSequence != 0 || amount <= 0 || CurrentGold < amount)
             {
                 return false;
             }
@@ -154,6 +182,64 @@ namespace CindarsHope.Player
             }
 
             SetGold(CurrentGold + amount);
+        }
+
+        /// <summary>Checked preflight for an eventful shipping credit.</summary>
+        public bool CanCreditGoldChecked(int amount)
+        {
+            return _pendingGoldMutationSequence == 0 && amount >= 0
+                && (long)CurrentGold + amount <= int.MaxValue;
+        }
+
+        /// <summary>Credits once; on overflow neither wallet nor event changes.</summary>
+        public bool TryCreditGoldChecked(int amount)
+        {
+            if (_pendingGoldMutationSequence != 0 || !CanCreditGoldChecked(amount)) return false;
+            if (amount == 0) return true;
+            SetGold(CurrentGold + amount);
+            return true;
+        }
+
+        /// <summary>
+        /// Stages a checked wallet change without an event. The caller must commit or roll back
+        /// synchronously before yielding or invoking user code. Only one stage may be open.
+        /// </summary>
+        public bool TryStageGoldMutation(int signedDelta, out GoldMutationToken token)
+        {
+            token = default;
+            if (_pendingGoldMutationSequence != 0) return false;
+            var nextGold = (long)CurrentGold + signedDelta;
+            if (nextGold < 0 || nextGold > int.MaxValue) return false;
+
+            var previousGold = CurrentGold;
+            CurrentGold = (int)nextGold;
+            _pendingGoldMutationSequence = ++_goldMutationSequence;
+            token = new GoldMutationToken(_pendingGoldMutationSequence, previousGold, CurrentGold);
+            return true;
+        }
+
+        public bool TryRollbackGoldMutation(GoldMutationToken token)
+        {
+            if (!MatchesPendingGoldMutation(token)) return false;
+            CurrentGold = token.PreviousGold;
+            _pendingGoldMutationSequence = 0;
+            return true;
+        }
+
+        public bool TryCommitGoldMutation(GoldMutationToken token)
+        {
+            if (!MatchesPendingGoldMutation(token)) return false;
+            _pendingGoldMutationSequence = 0;
+            var delta = token.CurrentGold - token.PreviousGold;
+            if (delta != 0)
+                GameEventBus.Publish(new GoldChangedEvent(delta, CurrentGold));
+            return true;
+        }
+
+        private bool MatchesPendingGoldMutation(GoldMutationToken token)
+        {
+            return token.Sequence != 0 && token.Sequence == _pendingGoldMutationSequence
+                && CurrentGold == token.CurrentGold;
         }
 
         // F18: máximo derivado (equipment/passivas) preservando a proporção corrente (floor 1).
@@ -211,6 +297,12 @@ namespace CindarsHope.Player
         // docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md — corte do par Player|Save).
         public void RestoreState(int maxHP, int currentHP, int gold)
         {
+            if (_pendingGoldMutationSequence != 0)
+            {
+                Debug.LogWarning("Cannot restore player state while an atomic gold mutation is pending.", this);
+                return;
+            }
+
             var previousGold = CurrentGold;
             var previousHp = CurrentHP;
 

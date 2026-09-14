@@ -1,3 +1,5 @@
+using CindarsHope.Inventory;
+
 namespace CindarsHope.Crafting
 {
     /// <summary>Porta de inventário do upgrade (mesma disciplina de ITemperingInventory): consome materiais.</summary>
@@ -5,6 +7,33 @@ namespace CindarsHope.Crafting
     {
         bool HasItem(string itemId, int amount);
         bool RemoveItem(string itemId, int amount);
+        bool AddItem(string itemId, int amount);
+    }
+
+    public interface IOriginUpgradeInventory : IUpgradeInventory
+    {
+        bool TryTakeLots(string itemId, int amount, out InventoryLotSelection selection);
+        bool TryRestoreLots(InventoryLotSelection selection);
+        void PublishCommittedChange(string itemId, int delta);
+    }
+
+    public sealed class InventoryManagerUpgradeAdapter : IOriginUpgradeInventory
+    {
+        private readonly InventoryManager _inventory;
+        public InventoryManagerUpgradeAdapter(InventoryManager inventory) => _inventory = inventory;
+        public bool HasItem(string itemId, int amount) => _inventory != null && _inventory.HasItem(itemId, amount);
+        public bool RemoveItem(string itemId, int amount) => _inventory != null && _inventory.RemoveItem(itemId, amount);
+        public bool AddItem(string itemId, int amount) => _inventory != null && _inventory.AddItem(itemId, amount);
+        public bool TryTakeLots(string itemId, int amount, out InventoryLotSelection selection)
+        {
+            selection = null;
+            return _inventory != null && _inventory.TryPrepareRemoval(itemId, amount, out selection)
+                && _inventory.TryCommitRemoval(selection, false);
+        }
+        public bool TryRestoreLots(InventoryLotSelection selection)
+            => _inventory != null && _inventory.TryRestoreRemoval(selection, false);
+        public void PublishCommittedChange(string itemId, int delta)
+            => _inventory?.PublishCommittedInventoryChange(itemId, delta);
     }
 
     /// <summary>Porta de carteira do upgrade (gasta ouro; nunca devolve em upgrade).</summary>
@@ -74,6 +103,8 @@ namespace CindarsHope.Crafting
         public const string FailFocusMismatch = "FOCUS_MISMATCH";
         public const string FailNoMaterial = "NO_MATERIAL";
         public const string FailNoGold = "NO_GOLD";
+        public const string FailGoldSpend = "GOLD_SPEND_FAILED";
+        public const string FailRollback = "MATERIAL_ROLLBACK_FAILED";
 
         private readonly EquipmentUpgradeRegistry _registry;
         private readonly IUpgradeInventory _inventory;
@@ -134,11 +165,24 @@ namespace CindarsHope.Crafting
             if (_wallet == null || _wallet.CurrentGold < goldCost)
                 return UpgradeResult.Fail(FailNoGold);
 
+            if (_inventory is IOriginUpgradeInventory origin)
+            {
+                if (!origin.TryTakeLots(materialId, materialCost, out var selected))
+                    return UpgradeResult.Fail(FailNoMaterial);
+                if (!_wallet.TrySpendGold(goldCost))
+                    return UpgradeResult.Fail(origin.TryRestoreLots(selected)
+                        ? FailGoldSpend : FailRollback);
+                _registry?.Set(target.ItemInstanceId, new EquipmentUpgrade(nextLevel, focus));
+                origin.PublishCommittedChange(materialId, -materialCost);
+                return UpgradeResult.Ok(nextLevel, focus, goldCost, materialCost);
+            }
+
             // Consome material primeiro; se o ouro falhar logo após, devolve o material (atomicidade).
             if (!_inventory.RemoveItem(materialId, materialCost))
                 return UpgradeResult.Fail(FailNoMaterial);
             if (!_wallet.TrySpendGold(goldCost))
-                return UpgradeResult.Fail(FailNoGold);
+                return UpgradeResult.Fail(_inventory.AddItem(materialId, materialCost)
+                    ? FailGoldSpend : FailRollback);
 
             _registry?.Set(target.ItemInstanceId, new EquipmentUpgrade(nextLevel, focus));
             return UpgradeResult.Ok(nextLevel, focus, goldCost, materialCost);

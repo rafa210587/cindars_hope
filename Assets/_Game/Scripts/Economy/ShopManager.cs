@@ -207,12 +207,18 @@ namespace CindarsHope.Economy
             }
 
             var totalCost = CalculateBuyPrice(itemData, entry, session.ShopData, amount);
-            PurchaseTransactionResult transaction = AtomicPurchaseTransaction.Execute(
+            if (totalCost <= 0)
+            {
+                return PublishFailure("ShopBuy", itemId, amount,
+                    $"Compra falhou: preco invalido para '{itemId}' x{amount}.");
+            }
+            PurchaseTransactionResult transaction = AtomicPurchaseTransaction.ExecutePurchased(
                 inventoryManager,
                 playerManager,
                 itemId,
                 amount,
-                totalCost);
+                totalCost,
+                entry.IsFiniteStock ? new ShopPurchaseStockAdapter(session, shopId, itemId, amount) : null);
             if (!transaction.Success)
             {
                 string failure = transaction.Failure switch
@@ -224,21 +230,65 @@ namespace CindarsHope.Economy
                     PurchaseTransactionFailure.DebitFailed =>
                         $"Compra falhou ao gastar {totalCost}g.",
                     PurchaseTransactionFailure.InventoryWriteFailed =>
-                        $"Compra falhou ao adicionar '{itemId}' x{amount}; ouro reembolsado.",
+                        $"Compra falhou ao adicionar '{itemId}' x{amount}.",
+                    PurchaseTransactionFailure.StockUnavailable =>
+                        $"Compra falhou: estoque insuficiente de '{itemId}'.",
                     _ => $"Compra falhou: transacao invalida para '{itemId}' x{amount}."
                 };
                 return PublishFailure("ShopBuy", itemId, amount, failure);
             }
 
-            if (entry.IsFiniteStock)
-            {
-                session.DecrementStock(itemId, amount);
-                GameEventBus.Publish(new ShopStockChangedEvent(shopId, itemId, session.GetItemStock(itemId)));
-            }
-
             var message = $"Comprou '{itemId}' x{amount} por {totalCost}g.";
             GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "ShopBuy", itemId, amount, -totalCost, message));
             return ShopTransactionResult.Succeeded(-totalCost, message);
+        }
+
+        public readonly struct ShopSellQuote
+        {
+            public readonly bool Success;
+            public readonly int SellAmount;
+            public readonly int RetainedAmount;
+            public readonly int NormalGold;
+            public readonly int FinalGold;
+            public readonly int LimitedUnits;
+            public readonly InventoryLotSelection Selection;
+
+            public ShopSellQuote(int sellAmount, int retainedAmount, int normalGold,
+                int finalGold, int limitedUnits, InventoryLotSelection selection)
+            {
+                Success = true;
+                SellAmount = sellAmount;
+                RetainedAmount = retainedAmount;
+                NormalGold = normalGold;
+                FinalGold = finalGold;
+                LimitedUnits = limitedUnits;
+                Selection = selection;
+            }
+        }
+
+        /// <summary>Read-only sale projection; the commit reuses this exact selection and price.</summary>
+        public bool TryQuoteSellItem(string shopId, string itemId, int amount,
+            InventoryManager inventoryManager, out ShopSellQuote quote)
+        {
+            quote = default;
+            if (!TryGetSession(shopId, out var session) || inventoryManager == null
+                || amount <= 0 || !SellableItemPolicy.IsSellable(itemId)
+                || _itemDatabase == null || !_itemDatabase.TryGetById(itemId, out var itemData)
+                || itemData == null || itemData.BaseValue <= 0)
+                return false;
+
+            var sellAmount = System.Math.Min(amount, inventoryManager.GetEligibleAmount(itemId));
+            var retainedAmount = System.Math.Max(0,
+                System.Math.Min(amount, inventoryManager.GetAmount(itemId)) - sellAmount);
+            if (sellAmount <= 0 || !inventoryManager.TryPrepareRemoval(itemId, sellAmount,
+                    out var selection)) return false;
+            var normalGold = CalculateSellPrice(itemData, session.ShopData, sellAmount);
+            var unitGold = AtomicOriginSaleTransaction.SplitAggregatePrice(normalGold, sellAmount);
+            var originQuote = OriginAwareSaleQuote.Calculate(selection, unitGold);
+            if (normalGold <= 0 || !originQuote.Success) return false;
+            quote = new ShopSellQuote(sellAmount, retainedAmount, normalGold,
+                originQuote.FinalGold, originQuote.LimitedUnits, selection);
+            return true;
         }
 
         public ShopTransactionResult TrySellItem(
@@ -258,29 +308,29 @@ namespace CindarsHope.Economy
                 return PublishFailure("ShopSell", itemId, amount, "Venda falhou: transacao invalida.");
             }
 
-            if (!SellableItemPolicy.IsSellable(itemId)
-                || _itemDatabase == null
-                || !_itemDatabase.TryGetById(itemId, out var itemData)
-                || itemData == null
-                || itemData.BaseValue <= 0)
+            if (!TryQuoteSellItem(shopId, itemId, amount, inventoryManager, out var quote))
             {
-                return PublishFailure("ShopSell", itemId, amount, $"Venda falhou: item '{itemId}' nao vendavel.");
+                var retainedAmount = System.Math.Max(0,
+                    System.Math.Min(amount, inventoryManager.GetAmount(itemId))
+                    - inventoryManager.GetEligibleAmount(itemId));
+                return PublishFailure("ShopSell", itemId, amount,
+                    $"Venda falhou: quantidade ou cotacao invalida de '{itemId}'."
+                    + (retainedAmount > 0 ? $" {retainedAmount} unidade(s) retida(s)." : string.Empty));
             }
 
-            if (!inventoryManager.HasItem(itemId, amount))
+            var sellAmount = quote.SellAmount;
+            var retainedAmountConfirmed = quote.RetainedAmount;
+            var totalGold = quote.FinalGold;
+            if (!AtomicOriginSaleTransaction.TryCommitSingle(inventoryManager, playerManager,
+                quote.Selection, totalGold))
             {
-                return PublishFailure("ShopSell", itemId, amount, $"Venda falhou: quantidade insuficiente de '{itemId}'.");
+                return PublishFailure("ShopSell", itemId, amount,
+                    $"Venda falhou ao confirmar '{itemId}' x{sellAmount}.");
             }
-
-            var totalGold = CalculateSellPrice(itemData, session.ShopData, amount);
-            if (totalGold <= 0 || !inventoryManager.RemoveItem(itemId, amount))
-            {
-                return PublishFailure("ShopSell", itemId, amount, $"Venda falhou ao remover '{itemId}' x{amount}.");
-            }
-
-            playerManager.AddGold(totalGold);
-            var message = $"Vendeu '{itemId}' x{amount} por {totalGold}g.";
-            GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "ShopSell", itemId, amount, totalGold, message));
+            var message = $"Vendeu '{itemId}' x{sellAmount} por {totalGold}g."
+                + (retainedAmountConfirmed > 0 ? $" {retainedAmountConfirmed} unidade(s) retida(s)." : string.Empty);
+            GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "ShopSell", itemId,
+                sellAmount, totalGold, message));
             return ShopTransactionResult.Succeeded(totalGold, message);
         }
 
@@ -375,6 +425,50 @@ namespace CindarsHope.Economy
         {
             return $"Scene '{gameObject.scene.path}' GameObject '{gameObject.name}' component '{nameof(ShopManager)}'";
         }
+
+        private sealed class ShopPurchaseStockAdapter : IShopPurchaseStockPort
+        {
+            private readonly ShopSession _session;
+            private readonly string _shopId;
+            private readonly string _itemId;
+            private readonly int _amount;
+            private int _stockBefore;
+            private bool _reserved;
+
+            public ShopPurchaseStockAdapter(ShopSession session, string shopId, string itemId, int amount)
+            {
+                _session = session;
+                _shopId = shopId;
+                _itemId = itemId;
+                _amount = amount;
+            }
+
+            public bool CanReserve() => _session.GetItemStock(_itemId) >= _amount;
+
+            public bool TryReserve()
+            {
+                if (_reserved || !CanReserve()) return false;
+                _stockBefore = _session.GetItemStock(_itemId);
+                _session.DecrementStock(_itemId, _amount);
+                _reserved = true;
+                return true;
+            }
+
+            public bool Rollback()
+            {
+                if (!_reserved) return false;
+                var restored = _session.TryRestoreReservedStock(_itemId,
+                    _stockBefore - _amount, _stockBefore);
+                if (restored) _reserved = false;
+                return restored;
+            }
+
+            public void PublishCommittedChange()
+            {
+                GameEventBus.Publish(new ShopStockChangedEvent(
+                    _shopId, _itemId, _session.GetItemStock(_itemId)));
+            }
+        }
     }
 
     public sealed class ShopSession
@@ -409,6 +503,14 @@ namespace CindarsHope.Economy
             {
                 _itemStock[itemId] = Mathf.Max(0, stock - amount);
             }
+        }
+
+        internal bool TryRestoreReservedStock(string itemId, int expectedStock, int previousStock)
+        {
+            if (!_itemStock.TryGetValue(itemId, out var currentStock)
+                || currentStock != expectedStock || previousStock < currentStock) return false;
+            _itemStock[itemId] = previousStock;
+            return true;
         }
 
         public bool TryGetItemData(string itemId, out ItemDataSO itemData, out ShopItemEntry entry)

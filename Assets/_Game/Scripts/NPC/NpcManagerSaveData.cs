@@ -20,5 +20,12 @@ namespace CindarsHope.NPC
         public string SceneId;
         public Vector2 Position;
         public bool HasMet;
+        public string InteriorHouseId;
+        public string InteriorAnchorId;
+        public float InteriorLocalX;
+        public float InteriorLocalY;
+        public string RouteTargetAnchorId;
+        public string RouteLeg;
+        public float RouteRemainingSeconds;
     }
 }

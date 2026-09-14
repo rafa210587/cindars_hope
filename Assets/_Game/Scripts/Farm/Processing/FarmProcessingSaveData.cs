@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Farm.Processing
 {
@@ -19,6 +20,9 @@ namespace CindarsHope.Farm.Processing
         public int FinishDay;
         public int State;
         public bool OutputCollected;
+        public int OriginSchemaVersion;
+        public List<ItemOriginLotSaveData> InputOriginLots;
+        public List<ItemOriginLotSaveData> OutputOriginLots;
     }
 
     /// <summary>

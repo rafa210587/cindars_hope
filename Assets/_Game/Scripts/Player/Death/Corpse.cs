@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 using UnityEngine;
 
 namespace CindarsHope.Player.Death
@@ -69,6 +70,8 @@ namespace CindarsHope.Player.Death
         public bool IsBroken { get; set; }
         public int SourceSlotType { get; set; } = -1;
         public int SourceSlotIndex { get; set; } = -1;
+        public int OriginSchemaVersion { get; set; }
+        public List<ItemOriginLotSaveData> OriginLots { get; set; } = new();
 
         public CorpseItem()
         {

@@ -187,20 +187,33 @@ namespace CindarsHope.Quests.Runtime
                 // concreto (bootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
                 var inventoryManager = bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager;
                 var playerManager = bootstrap.PlayerManager as CindarsHope.Player.PlayerManager;
+                var progressionManager = bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager
+                    ?? CindarsHope.Player.Progression.PlayerProgressionManager.Instance;
 
-                if (inventoryManager == null)
+                if (inventoryManager == null || progressionManager == null)
                 {
                     yield return null;
                     continue;
                 }
 
-                Initialize(inventoryManager, playerManager, bootstrap.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager);
+                Initialize(inventoryManager, playerManager, progressionManager);
                 yield break;
             }
 
-            // GameBootstrap not found — initialize with null adapters (graceful degradation)
-            Debug.LogWarning("[QuestRuntimeBootstrap] GameBootstrap not found after max attempts. Initializing QuestService without inventory/gold adapters.");
-            Initialize(null, null, null);
+            // Inventory/player adapters may remain absent in a fixture. Progression is required:
+            // constructing QuestService without it could consume an act reward with no point.
+            Debug.LogWarning("[QuestRuntimeBootstrap] Timed out waiting for all bootstrap adapters; waiting for progression before initializing quests.");
+            CindarsHope.Player.Progression.PlayerProgressionManager lateProgression = null;
+            while (lateProgression == null)
+            {
+                lateProgression = GameBootstrap.Instance?.PlayerProgressionManager as CindarsHope.Player.Progression.PlayerProgressionManager
+                    ?? CindarsHope.Player.Progression.PlayerProgressionManager.Instance;
+                if (lateProgression == null) yield return null;
+            }
+            var lateBootstrap = GameBootstrap.Instance;
+            var lateInventory = lateBootstrap?.InventoryManager as CindarsHope.Inventory.InventoryManager;
+            var latePlayer = lateBootstrap?.PlayerManager as CindarsHope.Player.PlayerManager;
+            Initialize(lateInventory, latePlayer, lateProgression);
         }
 
         private void Initialize(

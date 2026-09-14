@@ -85,6 +85,21 @@ namespace CindarsHope.Skills.Runtime
         {
             var prepared = Prepare(kitId, repairFraction, capFraction, out var target, out int amount, out int cap);
             if (!prepared.Success) return prepared;
+            if (_inventory is IOriginReversibleSkillItemInventory origin)
+            {
+                if (!origin.TryTakeLots(kitId, 1, out var selected))
+                    return Failed(FieldRepairFailure.InventoryCommitFailed, target.ItemInstanceId);
+                if (_equipment.TryApplyExactRepair(target, amount, cap, out int exactRestored)
+                    && exactRestored > 0)
+                {
+                    origin.PublishCommittedChange(kitId, -1);
+                    return new FieldRepairResult(true, FieldRepairFailure.None,
+                        target.ItemInstanceId, exactRestored);
+                }
+                return origin.TryRestoreLots(selected)
+                    ? Failed(FieldRepairFailure.EquipmentChanged, target.ItemInstanceId)
+                    : Failed(FieldRepairFailure.RollbackFailed, target.ItemInstanceId);
+            }
             if (!_inventory.RemoveItem(kitId, 1))
                 return Failed(FieldRepairFailure.InventoryCommitFailed, target.ItemInstanceId);
             if (_equipment.TryApplyExactRepair(target, amount, cap, out int restored) && restored > 0)

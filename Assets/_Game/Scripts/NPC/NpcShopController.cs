@@ -206,6 +206,8 @@ namespace CindarsHope.NPC
 
         public bool CanInteract(GameObject interactor)
         {
+            var interior = GetComponent<NpcInteriorPresentationAdapter>();
+            if (interior != null && !interior.CanInteractInCurrentSpace) return false;
             if ((!_isReady || RequiresPersistentBootstrapRebind()) && !TryEnsureShopInitialized("CanInteract"))
             {
                 return false;

@@ -22,7 +22,7 @@ namespace CindarsHope.Skills
                 Melee("skill_melee_grito_desafio", "Grito de Desafio", 6, 1, 18, 8, 2.2f, 360, knockback: 6),
                 Melee("skill_melee_investida_quebra_guarda", "Investida Quebra-Guarda", 16, 4, 26, 9, 1.3f, 90, lunge: 2, posture: 3),
 
-                Charged(Projectile(SkillActionEffectCatalog.RangedChargedShotActionId, "Disparo Carregado", 8, 0, 12, 0, 6, 5, 12, DamageType.Physical)),
+                Charged(Projectile(SkillActionEffectCatalog.RangedChargedShotActionId, "Disparo Carregado", 8, 2, 12, 0, 6, 5, 12, DamageType.Physical)),
                 Projectile(SkillActionEffectCatalog.RangedLinePiercerActionId, "Linha Perfurante", 12, 3, 18, 0, 7, 10, 14, DamageType.Physical, pierce: 5),
                 Projectile(SkillActionEffectCatalog.RangedMultishotFanActionId, "Tiro Triplo", 8, 2, 24, 0, 8, 7, 11, DamageType.Physical, count: 3, spread: 28),
                 Projectile(SkillActionEffectCatalog.RangedBleedingArrowActionId, "Flecha Sangrante", 14, 3, 16, 0, 6, 8, 12, DamageType.Physical, status: "status_bleed"),

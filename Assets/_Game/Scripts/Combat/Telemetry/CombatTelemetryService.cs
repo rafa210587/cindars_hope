@@ -4,6 +4,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using UnityEngine;
 using CindarsHope.Foundation;
+using CindarsHope.Player.Progression;
 
 namespace CindarsHope.Combat.Telemetry
 {
@@ -144,6 +145,7 @@ namespace CindarsHope.Combat.Telemetry
             GameEventBus.Subscribe<EnemyPostureBrokenEvent>(OnPostureBroken);
             GameEventBus.Subscribe<PlayerChargedAttackEvent>(OnChargedAttack);
             GameEventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
+            GameEventBus.Subscribe<SkillActionResolvedEvent>(OnSkillActionResolved);
 
             _subscribed = true;
             Debug.Log("[CombatTelemetryService] Telemetria de combate LIGADA (coleta passiva via eventos).");
@@ -171,6 +173,7 @@ namespace CindarsHope.Combat.Telemetry
             GameEventBus.Unsubscribe<EnemyPostureBrokenEvent>(OnPostureBroken);
             GameEventBus.Unsubscribe<PlayerChargedAttackEvent>(OnChargedAttack);
             GameEventBus.Unsubscribe<PlayerDiedEvent>(OnPlayerDied);
+            GameEventBus.Unsubscribe<SkillActionResolvedEvent>(OnSkillActionResolved);
 
             _subscribed = false;
             Debug.Log("[CombatTelemetryService] Telemetria de combate DESLIGADA (assinaturas removidas).");
@@ -184,7 +187,9 @@ namespace CindarsHope.Combat.Telemetry
             FlushIfMeaningful();
             var band = ResolveBandForLevel(evt.CaveLevel);
             _session = new CombatTelemetrySession(_classLookup);
-            _session.BeginLevel(evt.CaveLevel, band, evt.CaveRunSeed, Now);
+            var playerLevel = PlayerProgressionManager.Instance != null ? PlayerProgressionManager.Instance.Level : -1;
+            _session.BeginLevel(evt.CaveLevel, band, evt.CaveRunSeed, Now,
+                string.Empty, string.Empty, playerLevel);
         }
 
         private void OnCaveExited(CaveExitedEvent evt)
@@ -246,6 +251,10 @@ namespace CindarsHope.Combat.Telemetry
         private void OnPlayerDied(PlayerDiedEvent evt) =>
             _session?.RecordDeath(Now);
 
+        private void OnSkillActionResolved(SkillActionResolvedEvent evt) =>
+            _session?.RecordActionResolution(evt.ActionId, evt.Rank, evt.VariantId, evt.Outcome,
+                evt.FailureKey, Now);
+
         // â”€â”€ Flush â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         private void FlushIfMeaningful()
@@ -258,12 +267,17 @@ namespace CindarsHope.Combat.Telemetry
             // SÃ³ grava se houve alguma atividade de combate no trecho (evita lixo vazio por transiÃ§Ã£o).
             var hasActivity = _session.KillEntryCount > 0
                               || _session.DamageDealtTotal > 0
-                              || _session.DamageTakenTotal > 0;
+                              || _session.DamageTakenTotal > 0
+                              || _session.ActionResolutionCount > 0
+                              || _session.TargetHitEntryCount > 0
+                              || _session.ControlWindowSampleCount > 0
+                              || _session.OpenControlWindowCount > 0;
             if (!hasActivity)
             {
                 return;
             }
 
+            _session.EndObservation(Now);
             var report = _session.BuildReport(DateTime.UtcNow.ToString("o"), BuildNominalGaps());
             LastReportPath = CombatTelemetryWriter.Write(report, _telemetryDirectory);
         }
@@ -277,6 +291,10 @@ namespace CindarsHope.Combat.Telemetry
             return new[]
             {
                 "no block-held-time event: time spent blocking unavailable",
+                "no event to correlate attack outcome into hit/whiff (needs correlationId on impact event)",
+                "skill build and capstone variant were not identified for this telemetry session",
+                "strong-control uptime has no validated runtime event source",
+                "enemyId identifies a creature type, not an instance; concurrent target TTK and hits per target are unavailable",
                 "no event for dash distance / average movement speed (COMBAT_CORE Â§53)",
                 "no event for consumables used in combat (COMBAT_CORE Â§53)",
             };

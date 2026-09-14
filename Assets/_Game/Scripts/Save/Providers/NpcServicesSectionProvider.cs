@@ -20,6 +20,9 @@ namespace CindarsHope.Save.Providers
         }
 
         public void Restore(object sectionData)
+            => Restore(sectionData, 6);
+
+        public void Restore(object sectionData, int schemaVersion)
         {
             var runtime = NpcServiceRuntime.Instance;
             if (runtime == null)
@@ -28,7 +31,7 @@ namespace CindarsHope.Save.Providers
             }
 
             // sectionData null (save legado) = sem encomendas/contrato/prato/pasto.
-            runtime.RestoreFromSaveData(sectionData as NpcServicesSaveData);
+            runtime.RestoreFromSaveData(sectionData as NpcServicesSaveData, schemaVersion);
         }
     }
 }

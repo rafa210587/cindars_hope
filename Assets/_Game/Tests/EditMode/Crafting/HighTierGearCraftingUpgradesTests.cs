@@ -29,6 +29,13 @@ namespace CindarsHope.Tests.EditMode.Crafting
                 Items[itemId] -= amount;
                 return true;
             }
+
+            public bool AddItem(string itemId, int amount)
+            {
+                Items.TryGetValue(itemId, out var have);
+                Items[itemId] = have + amount;
+                return true;
+            }
         }
 
         private sealed class FakeWallet : IUpgradeWallet

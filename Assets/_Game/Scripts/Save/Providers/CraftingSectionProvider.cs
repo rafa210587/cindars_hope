@@ -26,6 +26,9 @@ namespace CindarsHope.Save.Providers
         }
 
         public void Restore(object sectionData)
+            => Restore(sectionData, 6);
+
+        public void Restore(object sectionData, int schemaVersion)
         {
             if (_craftingRuntime == null)
             {
@@ -35,7 +38,7 @@ namespace CindarsHope.Save.Providers
             var data = sectionData as CraftingRuntimeSaveData;
             if (data != null)
             {
-                _craftingRuntime.LoadFromSaveData(data);
+                _craftingRuntime.LoadFromSaveData(data, schemaVersion >= 6);
             }
         }
     }

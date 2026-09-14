@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CindarsHope.Farm.Crops;
+using CindarsHope.Inventory;
 
 namespace CindarsHope.Farm.Processing
 {
@@ -26,6 +27,8 @@ namespace CindarsHope.Farm.Processing
         public int FinishDay { get; set; }
         public ProcessingJobState State { get; set; } = ProcessingJobState.Queued;
         public bool OutputCollected { get; set; }
+        public List<ItemOriginLot> InputOriginLots { get; set; }
+        public List<ItemOriginLot> OutputOriginLots { get; set; }
 
         public bool IsReadyOnDay(int currentDay)
         {

@@ -263,6 +263,9 @@ namespace CindarsHope.Craft
         }
 
         public void LoadFromSaveData(CraftingRuntimeSaveData saveData)
+            => LoadFromSaveData(saveData, false);
+
+        public void LoadFromSaveData(CraftingRuntimeSaveData saveData, bool requireOriginSchema)
         {
             if (!IsInitialized || saveData == null)
             {
@@ -278,7 +281,7 @@ namespace CindarsHope.Craft
             foreach (var stationData in saveData.Stations)
             {
                 var station = GetOrCreateStation(stationData.StationInstanceId, (WorkshopType)stationData.StationType);
-                station?.LoadFromSaveData(stationData, _recipeDatabase);
+                station?.LoadFromSaveData(stationData, _recipeDatabase, requireOriginSchema);
                 AdvanceSequencePast(station?.Job?.OutputInstanceId);
             }
         }

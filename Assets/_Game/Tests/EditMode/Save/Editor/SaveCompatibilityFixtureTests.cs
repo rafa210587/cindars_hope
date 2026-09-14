@@ -10,12 +10,13 @@ namespace CindarsHope.Tests.EditMode.Save
 {
     public class SaveCompatibilityFixtureTests
     {
-        private const int CurrentSchemaVersion = 5;
+        private const int CurrentSchemaVersion = 6;
 
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(4)]
+        [TestCase(5)]
         public void LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(int sourceVersion)
         {
             string sourceJson = ReadFixture(sourceVersion);
@@ -65,9 +66,14 @@ namespace CindarsHope.Tests.EditMode.Save
         }
 
         [Test]
-        public void CurrentFixture_RoundTripsWithoutMigration()
+        public void MigratedV5Fixture_RoundTripsWithoutSecondMigration()
         {
-            GameSaveData current = JsonUtility.FromJson<GameSaveData>(ReadFixture(CurrentSchemaVersion));
+            var registry = CreateRegistry();
+            var context = new SaveMigrationContext("fixture-v5.json", "fixture-v5.backup.json",
+                5, CurrentSchemaVersion, ReadFixture(5));
+            Assert.That(registry.TryMigrate(context, out SaveMigrationResult result), Is.True,
+                result?.ErrorMessage);
+            GameSaveData current = JsonUtility.FromJson<GameSaveData>(result.MigratedJson);
             AssertCurrentSaveRoundTrips(current);
         }
 
@@ -78,7 +84,8 @@ namespace CindarsHope.Tests.EditMode.Save
                 new InventorySlotsV1ToV2Migration(),
                 new SaveV2ToV3Migration(),
                 new SaveV3ToV4Migration(),
-                new SaveV4ToV5Migration()
+                new SaveV4ToV5Migration(),
+                new InventoryOriginV5ToV6Migration()
             });
         }
 

@@ -89,6 +89,8 @@ namespace CindarsHope.Save
         // Ausente em save legado = sem tiles arados = fazenda sem plots livres (CA-3). Sem migracao.
         // Owner: FarmTilesSectionProvider (via FarmTileGrid + FarmPlotLogic).
         public FarmTilesSaveData FarmTiles;
+        // S02: seção aditiva. Ausente em saves legados mantém o fluxo de posição exterior.
+        public TownInteriorLocationSaveData TownInteriorLocation;
     }
 
     // fable_43: DTO aditivo do endgame (Ato 5). Tipos simples apenas — sem refs Unity. Os fragmentos

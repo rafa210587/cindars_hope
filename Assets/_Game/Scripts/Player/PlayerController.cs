@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
 using CindarsHope.Gameplay.Input;
 using CindarsHope.Player.Data;
+using CindarsHope.Player.InputRouting;
 using CindarsHope.Player.Movement;
 using UnityEngine;
 // PR-010 keeps the legacy keyboard fallback so movement works without changing
@@ -15,7 +18,7 @@ using UnityEngine.InputSystem;
 namespace CindarsHope.Player
 {
     [DisallowMultipleComponent]
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IPlayerFacingSource
     {
         private const float DefaultMoveSpeed = 5f;
         private const float StepEventDistance = 1f;
@@ -31,6 +34,8 @@ namespace CindarsHope.Player
         private bool _loggedMissingPlayerData;
         private bool _loggedMissingRigidbody;
         private Vector2 _lastFacingDirection = Vector2.right;
+        private IPlayerKeyReader _keyReader;
+        private readonly HashSet<string> _townInteriorLockTokens = new HashSet<string>();
 
         // fable_47: a velocidade é o produto de fatores nomeados (composer), não um mutável
         // disputado. Os 5 escritores (displacement/dash/block/exhausted/status) usam SetFactor/
@@ -43,6 +48,13 @@ namespace CindarsHope.Player
         private static PlayerController _activeInstance;
 
         public Vector2 MoveInput { get; private set; }
+
+        /// <summary>Per-instance keyboard source for controlled PlayMode input; null restores the default.</summary>
+        public IPlayerKeyReader KeyReader
+        {
+            get => _keyReader ?? UnityLegacyPlayerKeyReader.Instance;
+            set => _keyReader = value;
+        }
 
         /// <summary>fable_47: O caminho de velocidade. Os sistemas devem usar este composer.</summary>
         public PlayerSpeedComposer SpeedComposer => _speedComposer;
@@ -93,6 +105,8 @@ namespace CindarsHope.Player
         public bool MovementLocked { get; set; }
 
         public Vector2 LastFacingDirection => _lastFacingDirection;
+        float IPlayerFacingSource.FacingX => _lastFacingDirection.x;
+        float IPlayerFacingSource.FacingY => _lastFacingDirection.y;
 
         private void Awake()
         {
@@ -119,6 +133,8 @@ namespace CindarsHope.Player
             _moveAction?.Enable();
 #endif
             _activeInstance = this;
+            GameEventBus.Subscribe<TownInteriorPlayerLockEvent>(OnTownInteriorPlayerLock);
+            GameEventBus.Subscribe<TownInteriorPlayerPlacementRequestedEvent>(OnTownInteriorPlayerPlacementRequested);
             // fable_47: aplica imediatamente o fator derivado já calculado (caso o applier
             // tenha rodado antes deste controller existir, ex.: troca de cena).
             PlayerVitalsApplier.Instance?.ReapplyDerivedMoveSpeed();
@@ -130,6 +146,9 @@ namespace CindarsHope.Player
             _moveAction?.Disable();
 #endif
             MoveInput = Vector2.zero;
+            GameEventBus.Unsubscribe<TownInteriorPlayerLockEvent>(OnTownInteriorPlayerLock);
+            GameEventBus.Unsubscribe<TownInteriorPlayerPlacementRequestedEvent>(OnTownInteriorPlayerPlacementRequested);
+            _townInteriorLockTokens.Clear();
             if (_activeInstance == this)
             {
                 _activeInstance = null;
@@ -168,7 +187,7 @@ namespace CindarsHope.Player
                 return;
             }
 
-            if (IsBeingDisplaced) return;
+            if (IsBeingDisplaced || _townInteriorLockTokens.Count > 0) return;
 
             var previousPosition = _rigidbody.position;
             var speed = GetMoveSpeed();
@@ -181,7 +200,7 @@ namespace CindarsHope.Player
 
         private Vector2 ReadMoveInput()
         {
-            if (MovementLocked)
+            if (MovementLocked || _townInteriorLockTokens.Count > 0)
             {
                 return Vector2.zero;
             }
@@ -198,34 +217,80 @@ namespace CindarsHope.Player
             }
 
 #if ENABLE_INPUT_SYSTEM
+            if (_keyReader != null)
+            {
+                return ReadKeyboardMoveInput(_keyReader);
+            }
             return _moveAction != null ? _moveAction.ReadValue<Vector2>() : Vector2.zero;
 #else
+            return ReadKeyboardMoveInput(KeyReader);
+#endif
+        }
+
+        private static Vector2 ReadKeyboardMoveInput(IPlayerKeyReader keyReader)
+        {
             var x = 0f;
             var y = 0f;
 
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            if (keyReader.GetKey(KeyCode.A) || keyReader.GetKey(KeyCode.LeftArrow))
             {
                 x -= 1f;
             }
 
-            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            if (keyReader.GetKey(KeyCode.D) || keyReader.GetKey(KeyCode.RightArrow))
             {
                 x += 1f;
             }
 
-            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+            if (keyReader.GetKey(KeyCode.S) || keyReader.GetKey(KeyCode.DownArrow))
             {
                 y -= 1f;
             }
 
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            if (keyReader.GetKey(KeyCode.W) || keyReader.GetKey(KeyCode.UpArrow))
             {
                 y += 1f;
             }
 
             return new Vector2(x, y);
-#endif
         }
+
+        private void OnTownInteriorPlayerLock(TownInteriorPlayerLockEvent evt)
+        {
+            if (string.IsNullOrWhiteSpace(evt.OperationId)) return;
+            if (evt.Locked) _townInteriorLockTokens.Add(evt.OperationId);
+            else _townInteriorLockTokens.Remove(evt.OperationId);
+            if (_townInteriorLockTokens.Count > 0) MoveInput = Vector2.zero;
+        }
+
+        private void OnTownInteriorPlayerPlacementRequested(TownInteriorPlayerPlacementRequestedEvent evt)
+        {
+            var facing = new Vector2(evt.FacingX, evt.FacingY);
+            var canPlace = !string.IsNullOrWhiteSpace(evt.OperationId) &&
+                _townInteriorLockTokens.Contains(evt.OperationId) &&
+                IsFinite(evt.WorldX) && IsFinite(evt.WorldY) && IsFinite(evt.FacingX) && IsFinite(evt.FacingY);
+            AssignRigidbodyIfNeeded();
+            if (!canPlace || _rigidbody == null)
+            {
+                GameEventBus.Publish(new TownInteriorPlayerPlacementCompletedEvent(evt.OperationId, false));
+                return;
+            }
+
+            var destination = new Vector2(evt.WorldX, evt.WorldY);
+            _rigidbody.position = destination;
+            // The camera and scene transaction consume Transform in this same frame.
+            // With Rigidbody interpolation, position alone can leave the visual pose at
+            // the previous location until the next physics/render update. Synchronize the
+            // teleport before acknowledging it, without changing normal movement settings.
+            transform.position = new Vector3(destination.x, destination.y, transform.position.z);
+            if (facing.sqrMagnitude > 0.0001f) _lastFacingDirection = facing.normalized;
+            MoveInput = Vector2.zero;
+            _distanceSinceLastStep = 0f;
+            Physics2D.SyncTransforms();
+            GameEventBus.Publish(new TownInteriorPlayerPlacementCompletedEvent(evt.OperationId, true));
+        }
+
+        private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
 
         private float GetMoveSpeed()
         {

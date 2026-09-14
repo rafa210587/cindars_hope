@@ -1,6 +1,7 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Foundation;
+using System.Collections.Generic;
 using CindarsHope.Player;
 using System;
 using UnityEngine;
@@ -18,7 +19,9 @@ namespace CindarsHope.Player.Death
         private readonly IEquipmentRuntime _equipmentRuntime;
 
         public Corpse ActiveCorpse => _activeCorpse;
-        public bool HasActiveCorpse => _activeCorpse != null && _activeCorpse.Status == CorpseStatus.Active;
+        public bool HasActiveCorpse => _activeCorpse != null
+            && (_activeCorpse.Status == CorpseStatus.Active
+                || _activeCorpse.Status == CorpseStatus.PartiallyRecovered);
 
         public CorpseRecoveryManager(
             PlayerManager playerManager,
@@ -32,21 +35,38 @@ namespace CindarsHope.Player.Death
 
         public void SetActiveCorpse(Corpse corpse)
         {
+            var oldCorpseId = SetActiveCorpseDeferred(corpse);
+            if (oldCorpseId != null)
+                PublishReplacement(oldCorpseId, corpse.CorpseId);
+        }
+
+        // Death resolver installs the complete body before mutating resources, then publishes
+        // replacement only when all resource owners expose their final state.
+        public string SetActiveCorpseDeferred(Corpse corpse)
+        {
+            if (corpse == null) { _activeCorpse = null; return null; }
+            string oldCorpseId = null;
             if (_activeCorpse != null && _activeCorpse.CorpseId != corpse.CorpseId)
             {
                 // Replace old corpse
-                var oldCorpseId = _activeCorpse.CorpseId;
+                oldCorpseId = _activeCorpse.CorpseId;
                 _activeCorpse.Status = CorpseStatus.Replaced;
                 _activeCorpse.ReplacedByCorpseId = corpse.CorpseId;
-
-                GameEventBus.Publish(new CorpseReplacedEvent
-                {
-                    OldCorpseId = oldCorpseId,
-                    NewCorpseId = corpse.CorpseId
-                });
             }
 
             _activeCorpse = corpse;
+            return oldCorpseId;
+        }
+
+        public void PublishReplacement(string oldCorpseId, string newCorpseId)
+        {
+            if (string.IsNullOrWhiteSpace(oldCorpseId) || _activeCorpse?.CorpseId != newCorpseId)
+                return;
+            GameEventBus.Publish(new CorpseReplacedEvent
+            {
+                OldCorpseId = oldCorpseId,
+                NewCorpseId = newCorpseId
+            });
         }
 
         public void RecoverCorpse()
@@ -57,7 +77,9 @@ namespace CindarsHope.Player.Death
                 return;
             }
 
-            bool fullyRecovered = RecoverGold() && RecoverItems();
+            var goldRecovered = RecoverGold();
+            var itemsRecovered = RecoverItems();
+            bool fullyRecovered = goldRecovered && itemsRecovered;
 
             if (fullyRecovered)
             {
@@ -79,59 +101,73 @@ namespace CindarsHope.Player.Death
                 return true;
             }
 
-            _playerManager.AddGold(_activeCorpse.GoldAmount);
+            var amount = _activeCorpse.GoldAmount;
+            if (!_playerManager.TryStageGoldMutation(amount, out var token)) return false;
             _activeCorpse.GoldAmount = 0;
-            return true;
+            if (_playerManager.TryCommitGoldMutation(token)) return true;
+            _activeCorpse.GoldAmount = amount;
+            _playerManager.TryRollbackGoldMutation(token);
+            return false;
         }
 
         private bool RecoverItems()
         {
-            bool allRecovered = true;
-
-            // Recover inventory items
-            var inventoryItemsToRemove = new System.Collections.Generic.List<CorpseItem>();
-            foreach (var corpseItem in _activeCorpse.InventoryItems)
-            {
-                if (_inventoryManager.AddItem(corpseItem.ItemId, corpseItem.Amount))
-                {
-                    inventoryItemsToRemove.Add(corpseItem);
-                }
-                else
-                {
+            if (!(_inventoryManager is IOriginInventoryRuntime originInventory)) return false;
+            var allRecovered = true;
+            foreach (var item in new List<CorpseItem>(_activeCorpse.InventoryItems))
+                if (!RecoverItem(originInventory, _activeCorpse.InventoryItems, item, false))
                     allRecovered = false;
-                }
-            }
-
-            foreach (var item in inventoryItemsToRemove)
-            {
-                _activeCorpse.InventoryItems.Remove(item);
-            }
-
-            // Recover equipment items
-            var equipmentItemsToRemove = new System.Collections.Generic.List<CorpseItem>();
-            foreach (var corpseItem in _activeCorpse.EquipmentItems)
-            {
-                if (corpseItem.SourceSlotType >= 0)
-                {
-                    _equipmentRuntime.EquipItem((EquipmentSlot)corpseItem.SourceSlotType, corpseItem.ItemInstanceId);
-                    equipmentItemsToRemove.Add(corpseItem);
-                }
-                else if (_inventoryManager.AddItem(corpseItem.ItemId, 1))
-                {
-                    equipmentItemsToRemove.Add(corpseItem);
-                }
-                else
-                {
+            foreach (var item in new List<CorpseItem>(_activeCorpse.EquipmentItems))
+                if (!RecoverItem(originInventory, _activeCorpse.EquipmentItems, item, true))
                     allRecovered = false;
-                }
-            }
-
-            foreach (var item in equipmentItemsToRemove)
-            {
-                _activeCorpse.EquipmentItems.Remove(item);
-            }
-
             return allRecovered;
+        }
+
+        private bool RecoverItem(IOriginInventoryRuntime originInventory, List<CorpseItem> source,
+            CorpseItem item, bool wasEquipment)
+        {
+            if (item == null || item.Amount <= 0 || string.IsNullOrWhiteSpace(item.ItemId)) return false;
+            var sourceSlot = (EquipmentSlot)item.SourceSlotType;
+            var reEquip = wasEquipment && item.SourceSlotType > (int)EquipmentSlot.None
+                && Enum.IsDefined(typeof(EquipmentSlot), item.SourceSlotType)
+                && !string.IsNullOrWhiteSpace(item.ItemInstanceId);
+            var silentEquipment = _equipmentRuntime as IEquipmentSilentMutationRuntime;
+            if (reEquip && silentEquipment == null) return false;
+            if (reEquip && !string.IsNullOrEmpty(_equipmentRuntime.GetEquippedItem(sourceSlot)))
+                return false;
+
+            IReadOnlyList<ItemOriginLotSaveData> lots = item.OriginSchemaVersion == 1
+                ? item.OriginLots
+                : new[] { new ItemOriginLotSaveData { Kind = 0, Quantity = item.Amount } };
+            if (!originInventory.TryStageOriginAddition(item.ItemId, item.ItemInstanceId,
+                item.Amount, lots, out var token)) return false;
+
+            if (reEquip)
+            {
+                if (!silentEquipment.TryEquipSilently(sourceSlot, item.ItemInstanceId))
+                {
+                    if (!originInventory.TryRollbackOriginAddition(token))
+                        Debug.LogError("[CorpseRecoveryManager] Origin addition rollback failed after equip refusal; item remains in inventory.");
+                    return false;
+                }
+            }
+
+            // Inventory and equipment are staged silently before the corpse item leaves the body.
+            source.Remove(item);
+
+            var inventoryCommitted = reEquip
+                ? originInventory.TryCommitEquippedOriginAddition(token, item.ItemInstanceId, sourceSlot)
+                : originInventory.TryCommitOriginAddition(token);
+            if (inventoryCommitted)
+            {
+                if (reEquip) silentEquipment.PublishCommittedEquip(sourceSlot, item.ItemInstanceId);
+                return true;
+            }
+            if (reEquip && !silentEquipment.TryUnequipSilently(sourceSlot, item.ItemInstanceId))
+                Debug.LogError("[CorpseRecoveryManager] Silent equipment rollback failed after inventory commit refusal.");
+            if (originInventory.TryRollbackOriginAddition(token)) source.Add(item);
+            else Debug.LogError("[CorpseRecoveryManager] Origin addition rollback failed after commit refusal; item remains in inventory and was removed from corpse.");
+            return false;
         }
     }
 }

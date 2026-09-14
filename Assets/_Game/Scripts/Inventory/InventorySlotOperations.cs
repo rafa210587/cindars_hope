@@ -30,13 +30,20 @@ namespace CindarsHope.Inventory
 
         public static InventoryAddResult TryAddItem(IReadOnlyList<InventorySlot> slots, string itemId,
             int amount, int maxStack)
+            => TryAddItemWithLots(slots, itemId, amount, maxStack,
+                new[] { new ItemOriginLot(ItemOriginKind.Earned, amount) });
+
+        public static InventoryAddResult TryAddItemWithLots(IReadOnlyList<InventorySlot> slots, string itemId,
+            int amount, int maxStack, IReadOnlyList<ItemOriginLot> originLots)
         {
             if (slots == null || string.IsNullOrWhiteSpace(itemId) || amount <= 0
+                || !ItemOriginLot.IsValid(originLots, amount)
                 || GetAvailableCapacityFor(slots, itemId, maxStack) < amount)
                 return new InventoryAddResult(false, itemId, amount, 0);
 
             maxStack = Math.Max(1, maxStack);
             var remaining = amount;
+            var incoming = ItemOriginLot.CopyLots(originLots);
             // Fill existing stacks before occupying an earlier empty position.
             for (var index = 0; index < slots.Count && remaining > 0; index++)
             {
@@ -44,6 +51,8 @@ namespace CindarsHope.Inventory
                 if (slot == null || slot.IsEmpty || slot.ItemId != itemId
                     || !string.IsNullOrWhiteSpace(slot.ItemInstanceId) || slot.Amount >= maxStack) continue;
                 var added = Math.Min(remaining, maxStack - slot.Amount);
+                EnsureLots(slot);
+                TransferLots(incoming, slot.OriginLots, added);
                 slot.Amount += added;
                 remaining -= added;
             }
@@ -54,6 +63,8 @@ namespace CindarsHope.Inventory
                 var added = Math.Min(remaining, maxStack);
                 slot.ItemId = itemId;
                 slot.ItemInstanceId = string.Empty;
+                slot.OriginLots.Clear();
+                TransferLots(incoming, slot.OriginLots, added);
                 slot.Amount = added;
                 remaining -= added;
             }
@@ -77,6 +88,8 @@ namespace CindarsHope.Inventory
                 var slot = slots[index];
                 if (slot == null || slot.IsEmpty || slot.ItemId != itemId) continue;
                 var removed = Math.Min(remaining, slot.Amount);
+                EnsureLots(slot);
+                RemoveLotsFromEnd(slot.OriginLots, removed);
                 slot.Amount -= removed;
                 remaining -= removed;
                 if (slot.Amount <= 0) slot.Clear();
@@ -94,10 +107,14 @@ namespace CindarsHope.Inventory
             }
 
             var splitAmount = source.Amount / 2;
+            EnsureLots(source);
+            var splitLots = new List<ItemOriginLot>();
+            TransferLots(source.OriginLots, splitLots, splitAmount);
             source.Amount -= splitAmount;
             destination.ItemId = source.ItemId;
             destination.ItemInstanceId = string.Empty;
             destination.Amount = splitAmount;
+            destination.OriginLots = splitLots;
             return true;
         }
 
@@ -146,6 +163,9 @@ namespace CindarsHope.Inventory
                 }
 
                 var transferred = Math.Min(source.Amount, available);
+                EnsureLots(source);
+                EnsureLots(destination);
+                TransferLots(source.OriginLots, destination.OriginLots, transferred);
                 source.Amount -= transferred;
                 destination.Amount += transferred;
                 if (source.Amount <= 0)
@@ -160,12 +180,14 @@ namespace CindarsHope.Inventory
                 var amount = source.Amount;
                 var isEquipped = source.IsEquipped;
                 var bindingId = source.EquipmentBindingId;
+                var originLots = ItemOriginLot.CopyLots(source.OriginLots);
                 CopyContents(destination, source);
                 destination.ItemId = itemId;
                 destination.ItemInstanceId = itemInstanceId;
                 destination.Amount = amount;
                 destination.IsEquipped = isEquipped;
                 destination.EquipmentBindingId = bindingId;
+                destination.OriginLots = originLots;
             }
 
             return true;
@@ -178,6 +200,42 @@ namespace CindarsHope.Inventory
             destination.Amount = source.Amount;
             destination.IsEquipped = source.IsEquipped;
             destination.EquipmentBindingId = source.EquipmentBindingId;
+            destination.OriginLots = ItemOriginLot.CopyLots(source.OriginLots);
+        }
+
+        internal static void EnsureLots(InventorySlot slot)
+        {
+            if (slot.OriginLots == null || !ItemOriginLot.IsValid(slot.OriginLots, slot.Amount))
+                slot.OriginLots = slot.Amount > 0
+                    ? new List<ItemOriginLot> { new ItemOriginLot(ItemOriginKind.Invalid, slot.Amount) }
+                    : new List<ItemOriginLot>();
+        }
+
+        internal static void TransferLots(List<ItemOriginLot> source, List<ItemOriginLot> destination, int amount)
+        {
+            var remaining = amount;
+            while (remaining > 0)
+            {
+                var lot = source[0];
+                var moved = Math.Min(remaining, lot.Quantity);
+                ItemOriginLot.Append(destination, lot.Copy(moved));
+                lot.Quantity -= moved;
+                if (lot.Quantity == 0) source.RemoveAt(0);
+                remaining -= moved;
+            }
+        }
+
+        internal static void RemoveLotsFromEnd(List<ItemOriginLot> lots, int amount)
+        {
+            var remaining = amount;
+            while (remaining > 0)
+            {
+                var index = lots.Count - 1;
+                var removed = Math.Min(remaining, lots[index].Quantity);
+                lots[index].Quantity -= removed;
+                if (lots[index].Quantity == 0) lots.RemoveAt(index);
+                remaining -= removed;
+            }
         }
     }
 }

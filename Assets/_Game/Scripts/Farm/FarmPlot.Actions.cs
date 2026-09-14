@@ -143,18 +143,24 @@ namespace CindarsHope.Farm
                 return false;
             }
 
-            if (!temporarySeedBypass && !_inventoryManager.RemoveItem(inventorySeedId, 1))
+            InventoryLotSelection consumedSeed = null;
+            if (!temporarySeedBypass &&
+                (!_inventoryManager.TryPrepareRemoval(inventorySeedId, 1, out consumedSeed)
+                 || !_inventoryManager.TryCommitRemoval(consumedSeed, false)))
             {
                 PublishFeedback("Could not consume seed.");
                 return false;
             }
 
-            if (!TrySpendStamina(plantStaminaCost))
+            var actualStaminaCost = _staminaManager != null
+                ? WorkStaminaCostModifierProvider.PreviewCost(
+                    WorkStaminaChannel.Agricultural, plantStaminaCost,
+                    transform.position.x, transform.position.y)
+                : 0;
+            if (_staminaManager != null && !_staminaManager.TrySpendStamina(actualStaminaCost))
             {
-                if (!temporarySeedBypass)
-                {
-                    _inventoryManager.AddItem(inventorySeedId, 1);
-                }
+                if (consumedSeed != null && !_inventoryManager.TryRestoreRemoval(consumedSeed, false))
+                    throw new System.InvalidOperationException("Planting rollback could not restore the exact seed lot.");
 
                 PublishFeedback("Not enough stamina to plant.");
                 return false;
@@ -169,10 +175,20 @@ namespace CindarsHope.Farm
 
             if (!success)
             {
+                if (consumedSeed != null && !_inventoryManager.TryRestoreRemoval(consumedSeed, false))
+                    throw new System.InvalidOperationException("Planting rollback could not restore the exact seed lot.");
+                if (_staminaManager != null && actualStaminaCost > 0)
+                    _staminaManager.AddStamina(actualStaminaCost);
                 PublishFeedback("Plot is not plantable.");
                 return false;
             }
 
+            if (_staminaManager != null)
+                WorkStaminaCostModifierProvider.CommitSpend(
+                    WorkStaminaChannel.Agricultural, plantStaminaCost, actualStaminaCost,
+                    transform.position.x, transform.position.y);
+            if (consumedSeed != null)
+                _inventoryManager.PublishCommittedInventoryChange(inventorySeedId, -1);
             UpdateVisual();
             GameEventBus.Publish(new SeedPlantedEvent(seedId, GetTilePosition(), _logic.CurrentDay));
             Debug.Log($"FarmPlot {_plotIndex} planted seed '{seedId}'.", this);

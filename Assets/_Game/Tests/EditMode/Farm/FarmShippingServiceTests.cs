@@ -70,9 +70,10 @@ namespace CindarsHope.Tests.EditMode.Farm
         {
             _service.Deposit("sp_01", "item_carrot", 2, 0, 10f, 1);
             var batch = _service.ProcessDayBatch(2);
-            Assert.AreEqual(ShippingBatchState.Processed, batch.State);
+            Assert.AreEqual(ShippingBatchState.Pending, batch.State);
             Assert.AreEqual(1, batch.Entries.Count);
             Assert.Greater(batch.TotalGold, 0f);
+            Assert.AreEqual(ShippingEntryState.Pending, batch.Entries[0].State);
         }
 
         [Test]
@@ -80,17 +81,19 @@ namespace CindarsHope.Tests.EditMode.Farm
         {
             _service.Deposit("sp_01", "item_carrot", 2, 0, 10f, 1);
             var batch1 = _service.ProcessDayBatch(2);
+            Assert.IsTrue(_service.TryCommitBatch(batch1));
             var batch2 = _service.ProcessDayBatch(2); // second call same day
             Assert.AreEqual(0, batch2.Entries.Count); // already processed
             Assert.AreEqual(0f, batch2.TotalGold);
         }
 
         [Test]
-        public void ProcessBatch_WrongDay_DoesNotProcess()
+        public void ProcessBatch_OverdueDay_RetriesPendingEntry()
         {
             _service.Deposit("sp_01", "item_carrot", 1, 0, 10f, 1);
             var batch = _service.ProcessDayBatch(5); // different day
-            Assert.AreEqual(0, batch.Entries.Count);
+            Assert.AreEqual(1, batch.Entries.Count);
+            Assert.AreEqual(ShippingEntryState.Pending, batch.Entries[0].State);
         }
 
         [Test]

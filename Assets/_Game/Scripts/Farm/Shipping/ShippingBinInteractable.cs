@@ -49,25 +49,13 @@ namespace CindarsHope.Farm.Shipping
             foreach (var entry in snapshot)
             {
                 var itemId = entry.Key;
-                var amount = entry.Value;
+                var amount = inventory.GetEligibleAmount(itemId);
                 if (amount <= 0 || !SellableItemPolicy.IsSellable(itemId)) continue;
                 if (!inventory.TryGetItemData(itemId, out var itemData) || itemData == null) continue;
                 if (itemData.BaseValue <= 0) continue;
 
-                var result = bin.Deposit(itemId, amount, 0, itemData.BaseValue);
+                var result = bin.DepositFromInventory(inventory, itemId, amount, 0, itemData.BaseValue);
                 if (!result.Success) continue;
-
-                // Remove do inventario SO apos Deposit.Success.
-                if (!inventory.RemoveItem(itemId, amount))
-                {
-                    // Falha rara: nao foi possivel remover; deixa a entrada pendente cancelada para
-                    // nao pagar por item nao entregue.
-                    if (result.CreatedEntry != null)
-                    {
-                        result.CreatedEntry.State = ShippingEntryState.Cancelled;
-                    }
-                    continue;
-                }
 
                 depositedItems += amount;
                 depositedStacks++;

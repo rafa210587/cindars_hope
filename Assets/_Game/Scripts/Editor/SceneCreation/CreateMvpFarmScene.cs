@@ -1051,7 +1051,7 @@ namespace CindarsHope.Editor.SceneCreation
             var pickups = new ItemPickup[1];
             // v7: perto do spawn homestead (spec_farm_scene_relayout_v4 §15.5 v7).
             // Coord 64x44: (22, 1) — homestead leste, acessivel ao sair da casa.
-            pickups[0] = CreateItemPickup(parent.transform, 0, "seed_carrot", 1, new Vector3(13f, 2f, 0f), inventoryManager);
+            pickups[0] = CreateItemPickup(parent.transform, 0, "item_seed_carrot", 1, new Vector3(13f, 2f, 0f), inventoryManager);
             registry.Configure(pickups);
             EditorUtility.SetDirty(registry);
             return registry;

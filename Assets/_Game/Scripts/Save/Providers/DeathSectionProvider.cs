@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using CindarsHope.Foundation;
+using CindarsHope.Inventory;
 using CindarsHope.Player.Death;
 using UnityEngine;
 
@@ -27,13 +30,76 @@ namespace CindarsHope.Save.Providers
             if (existingSaveData?.Death != null)
             {
                 deathData.DeathStats = existingSaveData.Death.DeathStats ?? new DeathStatsSaveData();
-                deathData.ActiveCorpse = existingSaveData.Death.ActiveCorpse;
             }
             else
             {
                 deathData.DeathStats = new DeathStatsSaveData();
             }
+            var liveCorpse = _corpseRecoveryManager?.ActiveCorpse;
+            if (liveCorpse != null)
+                deathData.ActiveCorpse = CaptureCorpse(liveCorpse);
+            else if (_corpseRecoveryManager == null)
+                deathData.ActiveCorpse = existingSaveData?.Death?.ActiveCorpse;
             return deathData;
+        }
+
+        private static PlayerCorpseRecoverySaveData CaptureCorpse(Corpse corpse)
+        {
+            var data = new PlayerCorpseRecoverySaveData
+            {
+                CorpseId = corpse.CorpseId,
+                CorpseStatusValue = (int)corpse.Status,
+                RunId = corpse.RunId,
+                CaveSeed = corpse.CaveSeed,
+                CaveLevel = corpse.CaveLevel,
+                SceneName = corpse.SceneName,
+                Position = corpse.Position,
+                GoldAmount = corpse.GoldAmount,
+                CreatedAtGameDay = corpse.CreatedAtGameDay,
+                CreatedAtGameTime = corpse.CreatedAtGameTime,
+                RecoveredAtGameDay = corpse.RecoveredAtGameDay,
+                ReplacedByCorpseId = corpse.ReplacedByCorpseId,
+                SnapshotLayoutHash = corpse.SnapshotLayoutHash,
+                SafeAnchorId = corpse.SafeAnchorId,
+                OriginSchemaVersion = 1
+            };
+            foreach (var item in corpse.InventoryItems)
+            {
+                var saved = CaptureItem(item);
+                if (item.SourceSlotType > (int)EquipmentSlot.None
+                    && Enum.IsDefined(typeof(EquipmentSlot), item.SourceSlotType))
+                    saved.EquipmentBindingId = item.SourceSlotType.ToString();
+                data.LostInventoryItems.Add(saved);
+            }
+            foreach (var item in corpse.EquipmentItems)
+            {
+                var saved = CaptureItem(item);
+                saved.EquipmentBindingId = item.SourceSlotType.ToString();
+                data.LostEquipmentItems.Add(saved);
+            }
+            return data;
+        }
+
+        private static InventorySlotSaveData CaptureItem(CorpseItem item)
+        {
+            var data = new InventorySlotSaveData
+            {
+                SlotIndex = item.SourceSlotIndex,
+                ItemId = item.ItemId,
+                ItemInstanceId = item.ItemInstanceId,
+                Amount = item.Amount,
+                OriginLots = new List<ItemOriginLotSaveData>()
+            };
+            if (item.OriginLots != null)
+                foreach (var lot in item.OriginLots)
+                    if (lot != null) data.OriginLots.Add(new ItemOriginLotSaveData
+                    {
+                        Kind = lot.Kind,
+                        Quantity = lot.Quantity,
+                        UnitPaidBasisGold = lot.UnitPaidBasisGold,
+                        UnitResaleCapGold = lot.UnitResaleCapGold
+                    });
+            return data;
         }
 
         public void Restore(object sectionData)
@@ -59,7 +125,9 @@ namespace CindarsHope.Save.Providers
                     CreatedAtGameDay = corpseData.CreatedAtGameDay,
                     CreatedAtGameTime = corpseData.CreatedAtGameTime,
                     RecoveredAtGameDay = corpseData.RecoveredAtGameDay,
-                    ReplacedByCorpseId = corpseData.ReplacedByCorpseId
+                    ReplacedByCorpseId = corpseData.ReplacedByCorpseId,
+                    SnapshotLayoutHash = corpseData.SnapshotLayoutHash,
+                    SafeAnchorId = corpseData.SafeAnchorId
                 };
 
                 if (corpseData.LostInventoryItems != null)
@@ -69,10 +137,11 @@ namespace CindarsHope.Save.Providers
                         if (slotData == null || string.IsNullOrWhiteSpace(slotData.ItemId))
                             continue;
 
-                        var corpseItem = new CorpseItem(slotData.ItemId, slotData.Amount)
-                        {
-                            SourceSlotIndex = slotData.SlotIndex
-                        };
+                        var corpseItem = RestoreItem(slotData, corpseData.OriginSchemaVersion);
+                        if (int.TryParse(slotData.EquipmentBindingId, out var stackBinding)
+                            && stackBinding > (int)EquipmentSlot.None
+                            && Enum.IsDefined(typeof(EquipmentSlot), stackBinding))
+                            corpseItem.SourceSlotType = stackBinding;
                         corpse.InventoryItems.Add(corpseItem);
                     }
                 }
@@ -84,11 +153,20 @@ namespace CindarsHope.Save.Providers
                         if (slotData == null || string.IsNullOrWhiteSpace(slotData.ItemId))
                             continue;
 
-                        var corpseItem = new CorpseItem(slotData.ItemId, slotData.Amount)
+                        var corpseItem = RestoreItem(slotData, corpseData.OriginSchemaVersion);
+                        if (int.TryParse(slotData.EquipmentBindingId, out var sourceSlotType)
+                            && sourceSlotType != (int)EquipmentSlot.None
+                            && Enum.IsDefined(typeof(EquipmentSlot), sourceSlotType))
                         {
-                            SourceSlotIndex = slotData.SlotIndex
-                        };
-                        corpse.EquipmentItems.Add(corpseItem);
+                            corpseItem.SourceSlotType = sourceSlotType;
+                            corpse.EquipmentItems.Add(corpseItem);
+                        }
+                        else
+                        {
+                            // A v5 slot index is an inventory position, never an equipment binding.
+                            corpseItem.SourceSlotType = -1;
+                            corpse.InventoryItems.Add(corpseItem);
+                        }
                     }
                 }
 
@@ -99,6 +177,24 @@ namespace CindarsHope.Save.Providers
             {
                 Debug.LogWarning("[DeathSectionProvider] CorpseRecoveryManager não injetado; cadáver ativo do save não será restaurado.");
             }
+            else if (_corpseRecoveryManager != null && deathData.ActiveCorpse == null)
+                _corpseRecoveryManager.SetActiveCorpse(null);
+        }
+
+        private static CorpseItem RestoreItem(InventorySlotSaveData data, int schemaVersion)
+        {
+            var lots = schemaVersion == 1
+                ? ItemOriginLot.FromSaveData(data.OriginLots, data.Amount)
+                : ItemOriginLot.Invalid(data.Amount);
+            var item = new CorpseItem(data.ItemId, data.Amount)
+            {
+                ItemInstanceId = data.ItemInstanceId ?? string.Empty,
+                SourceSlotIndex = data.SlotIndex,
+                OriginSchemaVersion = 1,
+                OriginLots = new List<ItemOriginLotSaveData>()
+            };
+            foreach (var lot in lots) item.OriginLots.Add(lot.ToSaveData());
+            return item;
         }
     }
 }

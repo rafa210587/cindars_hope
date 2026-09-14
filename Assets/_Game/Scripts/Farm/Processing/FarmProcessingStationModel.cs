@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using CindarsHope.Inventory;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Farm.Processing
 {
@@ -86,7 +88,21 @@ namespace CindarsHope.Farm.Processing
             if (!inventory.HasItem(recipe.InputItemId, recipe.InputQuantity))
                 return StartResult.MissingInput;
 
-            if (!inventory.RemoveItem(recipe.InputItemId, recipe.InputQuantity))
+            List<ItemOriginLot> inputLots = null;
+            List<ItemOriginLot> outputLots = null;
+            if (inventory is IOriginProcessingInventory originInventory)
+            {
+                if (!originInventory.TryPrepareOriginRemoval(recipe.InputItemId,
+                        recipe.InputQuantity, out var preparedLots, out var token))
+                    return StartResult.MissingInput;
+                inputLots = ItemOriginLot.CopyLots(preparedLots);
+                var inputs = new[] { new ItemOriginDerivation.Input(inputLots,
+                    originInventory.NormalUnitLiquidationGold(recipe.InputItemId)) };
+                if (!ItemOriginDerivation.TryDerive(inputs, recipe.OutputQuantity,
+                        out outputLots)) return StartResult.MissingInput;
+                if (!originInventory.TryCommitOriginRemoval(token)) return StartResult.MissingInput;
+            }
+            else if (!inventory.RemoveItem(recipe.InputItemId, recipe.InputQuantity))
                 return StartResult.MissingInput;
 
             var startDay = currentDay < 1 ? 1 : currentDay;
@@ -101,7 +117,9 @@ namespace CindarsHope.Farm.Processing
                 StartDay = startDay,
                 FinishDay = startDay + recipe.ProcessingDays,
                 State = ProcessingJobState.Processing,
-                OutputCollected = false
+                OutputCollected = false,
+                InputOriginLots = inputLots,
+                OutputOriginLots = outputLots
             };
 
             _jobsByStation[stationId] = job;
@@ -145,7 +163,12 @@ namespace CindarsHope.Farm.Processing
             if (job == null || job.State != ProcessingJobState.ReadyToCollect || job.OutputCollected)
                 return new CollectResult(false, job?.OutputItemId ?? string.Empty, 0, false);
 
-            if (!inventory.AddItem(job.OutputItemId, job.OutputQuantity))
+            var added = inventory is IOriginProcessingInventory originInventory
+                ? originInventory.TryAddOriginLots(job.OutputItemId, job.OutputQuantity,
+                    ItemOriginLot.IsValid(job.OutputOriginLots, job.OutputQuantity)
+                        ? job.OutputOriginLots : ItemOriginLot.Invalid(job.OutputQuantity))
+                : inventory.AddItem(job.OutputItemId, job.OutputQuantity);
+            if (!added)
             {
                 // Inventário cheio: output permanece na estação para nova tentativa.
                 return new CollectResult(false, job.OutputItemId, job.OutputQuantity, true);
@@ -177,7 +200,10 @@ namespace CindarsHope.Farm.Processing
                     StartDay = job.StartDay,
                     FinishDay = job.FinishDay,
                     State = (int)job.State,
-                    OutputCollected = job.OutputCollected
+                    OutputCollected = job.OutputCollected,
+                    OriginSchemaVersion = 1,
+                    InputOriginLots = SaveLots(job.InputOriginLots),
+                    OutputOriginLots = SaveLots(job.OutputOriginLots)
                 });
             }
 
@@ -189,6 +215,9 @@ namespace CindarsHope.Farm.Processing
         /// Reaplica idempotente: limpa o estado anterior antes de reidratar.
         /// </summary>
         public void Restore(FarmProcessingSaveData saveData)
+            => Restore(saveData, false);
+
+        public void Restore(FarmProcessingSaveData saveData, bool requireOriginSchema)
         {
             _jobsByStation.Clear();
             if (saveData?.Jobs == null)
@@ -214,7 +243,12 @@ namespace CindarsHope.Farm.Processing
                     StartDay = jobData.StartDay,
                     FinishDay = jobData.FinishDay,
                     State = NormalizeRestoredState(jobData.State),
-                    OutputCollected = false
+                    OutputCollected = false,
+                    InputOriginLots = RestoreLots(jobData.InputOriginLots,
+                        recipe.InputQuantity, jobData.OriginSchemaVersion, requireOriginSchema),
+                    OutputOriginLots = RestoreLots(jobData.OutputOriginLots,
+                        jobData.OutputQuantity > 0 ? jobData.OutputQuantity : recipe.OutputQuantity,
+                        jobData.OriginSchemaVersion, requireOriginSchema)
                 };
 
                 _jobsByStation[job.StationId] = job;
@@ -241,6 +275,24 @@ namespace CindarsHope.Farm.Processing
             return ProcessingRecipeCatalog.TryGetByStation(job.StationId, out var recipe) && recipe != null
                 ? recipe.RecipeId
                 : string.Empty;
+        }
+
+        private static List<ItemOriginLotSaveData> SaveLots(IReadOnlyList<ItemOriginLot> lots)
+        {
+            var result = new List<ItemOriginLotSaveData>();
+            if (lots != null) foreach (var lot in lots) result.Add(lot.ToSaveData());
+            return result;
+        }
+
+        private static List<ItemOriginLot> RestoreLots(
+            IReadOnlyList<ItemOriginLotSaveData> saved, int quantity, int schemaVersion,
+            bool requireOriginSchema)
+        {
+            if (schemaVersion == 0)
+                return requireOriginSchema ? ItemOriginLot.Invalid(quantity)
+                    : new List<ItemOriginLot> { new ItemOriginLot(ItemOriginKind.LegacyUntracked,
+                        quantity) };
+            return ItemOriginLot.FromSaveData(saved, quantity);
         }
     }
 }

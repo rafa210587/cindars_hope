@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using CindarsHope.Farm.Forage;
 using CindarsHope.Farm.Shipping;
+using CindarsHope.Inventory;
 
 namespace CindarsHope.Tests.EditMode.Farm
 {
@@ -200,7 +201,7 @@ namespace CindarsHope.Tests.EditMode.Farm
             // BaseValue 100, canal 0.95 => 95 por unidade; qty 1.
             service.Deposit("bin", "item_crop_carrot", 1, 0, 100f, 1);
             var batch = service.ProcessDayBatch(2);
-            Assert.AreEqual(ShippingBatchState.Processed, batch.State);
+            Assert.AreEqual(ShippingBatchState.Pending, batch.State);
             Assert.AreEqual(1, batch.Entries.Count);
             Assert.AreEqual(95f, batch.TotalGold, 0.01f);
         }
@@ -212,6 +213,7 @@ namespace CindarsHope.Tests.EditMode.Farm
             service.Deposit("bin", "item_crop_carrot", 2, 0, 10f, 1);
             var batch1 = service.ProcessDayBatch(2);
             Assert.Greater(batch1.TotalGold, 0f);
+            Assert.IsTrue(service.TryCommitBatch(batch1));
             var batch2 = service.ProcessDayBatch(2); // reprocessa o mesmo dia
             Assert.AreEqual(0, batch2.Entries.Count);
             Assert.AreEqual(0f, batch2.TotalGold);
@@ -275,6 +277,7 @@ namespace CindarsHope.Tests.EditMode.Farm
             var correctMorning = loadedSvc.ProcessDayBatch(8);
             Assert.AreEqual(1, correctMorning.Entries.Count);
             Assert.AreEqual(95f, correctMorning.TotalGold, 0.01f);
+            Assert.IsTrue(loadedSvc.TryCommitBatch(correctMorning));
 
             var replay = loadedSvc.ProcessDayBatch(8);
             Assert.AreEqual(0f, replay.TotalGold, "reprocessar após load não paga de novo");
@@ -344,7 +347,9 @@ namespace CindarsHope.Tests.EditMode.Farm
                 {
                     EntryId = e.ShippingEntryId, SellPointId = e.SellPointId, ItemId = e.ItemId,
                     Quantity = e.Quantity, QualityTier = e.QualityTier, BaseValueSnapshot = e.BaseValueSnapshot,
-                    DepositedDay = e.DepositedDay, ProcessOnDay = e.ProcessOnDay, State = (int)e.State
+                    DepositedDay = e.DepositedDay, ProcessOnDay = e.ProcessOnDay, State = (int)e.State,
+                    OriginSchemaVersion = 1,
+                    OriginLots = e.OriginLots.ConvertAll(lot => lot.ToSaveData())
                 });
             }
             return dto;
@@ -361,7 +366,9 @@ namespace CindarsHope.Tests.EditMode.Farm
                 {
                     ShippingEntryId = s.EntryId, SellPointId = s.SellPointId, ItemId = s.ItemId,
                     Quantity = s.Quantity, QualityTier = s.QualityTier, BaseValueSnapshot = s.BaseValueSnapshot,
-                    DepositedDay = s.DepositedDay, ProcessOnDay = s.ProcessOnDay, State = (ShippingEntryState)s.State
+                    DepositedDay = s.DepositedDay, ProcessOnDay = s.ProcessOnDay,
+                    State = (ShippingEntryState)s.State,
+                    OriginLots = ItemOriginLot.FromSaveData(s.OriginLots, s.Quantity)
                 });
             }
             return list;

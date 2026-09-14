@@ -10,6 +10,8 @@ namespace CindarsHope.Farm.Shipping
         public int ProcessDay { get; set; }
         public List<PendingShippingEntry> Entries { get; set; } = new List<PendingShippingEntry>();
         public float TotalGold { get; set; } = 0f;
+        public int TotalGoldChecked { get; set; }
+        public int ItemCount { get; set; }
         public ShippingBatchState State { get; set; } = ShippingBatchState.Pending;
     }
 }

@@ -206,7 +206,8 @@ namespace CindarsHope.NPC.Services
                         return EffectUnavailable(def);
                     var result = Charge(def, $"Livro encomendado. Chega no dia {day + NpcServiceCatalog.BookOrderDeliveryDays}.");
                     if (result.Success)
-                        _pending.AddBookOrder(bookId, day + NpcServiceCatalog.BookOrderDeliveryDays);
+                        _pending.AddBookOrder(bookId, day + NpcServiceCatalog.BookOrderDeliveryDays,
+                            def.GoldCost);
                     return result;
                 }
 

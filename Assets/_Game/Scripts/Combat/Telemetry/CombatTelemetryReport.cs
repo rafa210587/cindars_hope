@@ -16,10 +16,19 @@ namespace CindarsHope.Combat.Telemetry
         /// <summary>VersÃ£o do shape do relatÃ³rio (CA-4: versÃ£o no payload). Incrementar ao mudar campos.</summary>
         public int ShapeVersion = CurrentShapeVersion;
 
-        public const int CurrentShapeVersion = 1;
+        public const int CurrentShapeVersion = 2;
 
         /// <summary>Seed da run da caverna (contexto, nÃ£o estado).</summary>
         public string RunId = string.Empty;
+
+        /// <summary>Identificador da build de skills em execucao; vazio quando nao identificado.</summary>
+        public string BuildId = string.Empty;
+
+        /// <summary>NÃ­vel do jogador no inÃ­cio da coleta.</summary>
+        public int PlayerLevel = -1;
+
+        /// <summary>Variante da build de skills; vazio quando nao identificada.</summary>
+        public string RunVariant = string.Empty;
 
         /// <summary>NÃ­vel da caverna a que este relatÃ³rio se refere (-1 = sessÃ£o sem nÃ­vel conhecido).</summary>
         public int CaveLevel = -1;
@@ -56,6 +65,22 @@ namespace CindarsHope.Combat.Telemetry
         public int PostureBreaks;
         public int ChargedAttacks;
         public int Deaths;
+        public float ControlWindowUptimeSeconds;
+        /// <summary>-1 quando nenhuma janela de controle forte foi observada.</summary>
+        public float ControlWindowUptimePercent;
+        public int ControlWindowSampleCount;
+
+        /// <summary>Eventos de aÃ§Ã£o do player capturados com outcome conhecido.</summary>
+        public List<CombatTelemetryActionEventEntry> ActionEvents = new List<CombatTelemetryActionEventEntry>();
+
+        /// <summary>Hits agregados por tipo enemyId; nao identifica instancias de alvo.</summary>
+        public List<CombatTelemetryTargetHitEntry> TargetHits = new List<CombatTelemetryTargetHitEntry>();
+
+        /// <summary>Amostras brutas de TTK por kill (sem agregação).</summary>
+        public List<CombatTelemetryRawTtkSampleEntry> RawTtkSamples = new List<CombatTelemetryRawTtkSampleEntry>();
+
+        /// <summary>Janelas de controle explicitamente registradas; sem fonte runtime validada.</summary>
+        public List<CombatTelemetryControlWindowEntry> ControlWindows = new List<CombatTelemetryControlWindowEntry>();
 
         /// <summary>MÃ©tricas Â§53 sem evento disponÃ­vel neste momento (follow-up enriquece eventos).</summary>
         public List<string> Gaps = new List<string>();
@@ -93,5 +118,43 @@ namespace CindarsHope.Combat.Telemetry
         public string DamageType = string.Empty;
         public int DamageTotal;
         public int HitCount;
+    }
+
+    /// <summary>fable_59 â€” resoluÃ§Ã£o de aÃ§Ã£o por evento de gameplay.</summary>
+    [Serializable]
+    public sealed class CombatTelemetryActionEventEntry
+    {
+        public string ActionId = string.Empty;
+        public int Rank;
+        public string VariantId = string.Empty;
+        public string Outcome = string.Empty;
+        public string FailureKey = string.Empty;
+    }
+
+    /// <summary>fable_59 â€” contagem de hits por enemyId.</summary>
+    [Serializable]
+    public sealed class CombatTelemetryTargetHitEntry
+    {
+        public string EnemyId = string.Empty;
+        public int HitCount;
+    }
+
+    /// <summary>fable_59 â€” amostra bruta de TTK (um kill).</summary>
+    [Serializable]
+    public sealed class CombatTelemetryRawTtkSampleEntry
+    {
+        public string EnemyId = string.Empty;
+        public string CreatureClass = string.Empty;
+        public float TtkSeconds;
+    }
+
+    /// <summary>fable_59 â€” janela de controle observada (inÃ­cio/fim em segundos do trecho).</summary>
+    [Serializable]
+    public sealed class CombatTelemetryControlWindowEntry
+    {
+        public string EnemyId = string.Empty;
+        public float StartSeconds;
+        public float EndSeconds;
+        public float DurationSeconds;
     }
 }

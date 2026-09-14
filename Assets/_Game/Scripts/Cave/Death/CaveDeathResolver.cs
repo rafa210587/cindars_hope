@@ -3,11 +3,13 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Equipment;
+using CindarsHope.Foundation;
 using CindarsHope.Inventory;
 using CindarsHope.Player;
 using CindarsHope.Player.Death;
 using CindarsHope.Player.Progression;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,6 +26,7 @@ namespace CindarsHope.Cave.Death
         private readonly InventoryManager _inventoryManager;
         private readonly EquipmentManager _equipmentManager;
         private readonly PlayerProgressionManager _progressionManager;
+        private readonly CorpseRecoveryManager _recoveryManager;
         // fable_66: owner real do dia do jogo (TimeManager, mesmo que publica DayStartedEvent).
         // Opcional p/ compat — ausente degrada para o dia inicial 1 via CaveCorpseStamp (sem corromper).
         private readonly TimeManager _timeManager;
@@ -37,7 +40,8 @@ namespace CindarsHope.Cave.Death
             InventoryManager inventoryManager,
             EquipmentManager equipmentManager,
             PlayerProgressionManager progressionManager,
-            TimeManager timeManager = null)
+            TimeManager timeManager = null,
+            CorpseRecoveryManager recoveryManager = null)
         {
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
             // caveRunManager pode ser null no boot (fora da caverna). E resolvido ao vivo na morte.
@@ -47,6 +51,7 @@ namespace CindarsHope.Cave.Death
             _equipmentManager = equipmentManager ?? throw new ArgumentNullException(nameof(equipmentManager));
             _progressionManager = progressionManager;
             _timeManager = timeManager;
+            _recoveryManager = recoveryManager;
         }
 
         /// <summary>
@@ -65,6 +70,7 @@ namespace CindarsHope.Cave.Death
 
         public void ResolveCaveDeath(string deathSceneName)
         {
+            LastCreatedCorpse = null;
             if (!_policy.CreateCorpse)
             {
                 return;
@@ -88,11 +94,46 @@ namespace CindarsHope.Cave.Death
                 return;
             }
 
-            LastCreatedCorpse = corpse;
-
-            MoveInventoryToCorpse(corpse);
-            MoveEquipmentToCorpse(corpse);
+            var inventorySnapshot = _inventoryManager.CaptureSaveData();
+            MoveEquipmentToCorpse(corpse, inventorySnapshot);
+            MoveInventoryToCorpse(corpse, inventorySnapshot);
             MoveGoldToCorpse(corpse);
+
+            PlayerManager.GoldMutationToken goldToken = default;
+            if (_policy.RemoveAllGold && !_playerManager.TryStageGoldMutation(-corpse.GoldAmount, out goldToken))
+            {
+                Debug.LogError("[CaveDeathResolver] Gold mutation is busy; corpse transfer aborted.");
+                return;
+            }
+            LastCreatedCorpse = corpse;
+            var replacedCorpseId = _recoveryManager?.SetActiveCorpseDeferred(corpse);
+
+            // The active corpse is complete before any equipment, inventory, gold or XP event.
+            if (_policy.RemoveAllEquipment) _equipmentManager?.UnequipAll(false);
+            if (_policy.RemoveAllInventoryItems) _inventoryManager.Clear(false);
+            if (_policy.RemoveAllGold && !_playerManager.TryCommitGoldMutation(goldToken))
+                throw new InvalidOperationException("Corpse gold transfer could not commit.");
+
+            if (_policy.RemoveAllInventoryItems)
+            {
+                var totals = new Dictionary<string, int>(StringComparer.Ordinal);
+                foreach (var item in inventorySnapshot.Slots)
+                {
+                    if (item == null || item.Amount <= 0 || string.IsNullOrWhiteSpace(item.ItemId)) continue;
+                    totals.TryGetValue(item.ItemId, out var previous);
+                    totals[item.ItemId] = previous + item.Amount;
+                }
+                foreach (var item in totals)
+                    GameEventBus.Publish(new InventoryChangedEvent(item.Key, -item.Value, 0));
+            }
+            if (_policy.RemoveAllEquipment)
+                foreach (var item in corpse.EquipmentItems)
+                    if (item.SourceSlotType > (int)EquipmentSlot.None
+                        && Enum.IsDefined(typeof(EquipmentSlot), item.SourceSlotType))
+                        GameEventBus.Publish(new EquipmentSlotChangedEvent(
+                            (EquipmentSlot)item.SourceSlotType, null));
+            if (replacedCorpseId != null)
+                _recoveryManager.PublishReplacement(replacedCorpseId, corpse.CorpseId);
             ResetXp();
 
             PublishEvents(corpse);
@@ -118,35 +159,46 @@ namespace CindarsHope.Cave.Death
             return corpse;
         }
 
-        private void MoveInventoryToCorpse(Corpse corpse)
+        private void MoveInventoryToCorpse(Corpse corpse, InventorySaveData inventorySnapshot)
         {
             if (_inventoryManager == null)
             {
                 return;
             }
 
-            var items = _inventoryManager.GetAllItems();
-            foreach (var item in items)
+            foreach (var item in inventorySnapshot.Slots)
             {
+                if (item == null || item.Amount <= 0) continue;
+                var carriedByEquipment = false;
+                foreach (var equipped in corpse.EquipmentItems)
+                    if (!string.IsNullOrEmpty(item.ItemInstanceId)
+                        && equipped.ItemInstanceId == item.ItemInstanceId)
+                    { carriedByEquipment = true; break; }
+                if (carriedByEquipment) continue;
                 var corpseItem = new CorpseItem
                 {
                     ItemId = item.ItemId,
                     Amount = item.Amount,
                     ItemInstanceId = item.ItemInstanceId,
-                    DurabilityCurrent = item.DurabilityCurrent,
-                    DurabilityMax = item.DurabilityMax,
-                    IsBroken = item.IsBroken
+                    SourceSlotIndex = item.SlotIndex,
+                    OriginSchemaVersion = 1,
+                    OriginLots = CopyOriginLots(item.OriginLots)
                 };
+                if (string.IsNullOrWhiteSpace(item.ItemInstanceId) && _equipmentManager != null)
+                {
+                    foreach (var equipped in _equipmentManager.GetAllEquippedItems())
+                        if (equipped.ItemInstanceId == item.ItemId)
+                        {
+                            corpseItem.SourceSlotType = (int)equipped.SlotType;
+                            break;
+                        }
+                }
                 corpse.InventoryItems.Add(corpseItem);
             }
 
-            if (_policy.RemoveAllInventoryItems)
-            {
-                _inventoryManager.Clear();
-            }
         }
 
-        private void MoveEquipmentToCorpse(Corpse corpse)
+        private void MoveEquipmentToCorpse(Corpse corpse, InventorySaveData inventorySnapshot)
         {
             if (_equipmentManager == null)
             {
@@ -156,34 +208,54 @@ namespace CindarsHope.Cave.Death
             var equippedItems = _equipmentManager.GetAllEquippedItems();
             foreach (var equippedItem in equippedItems)
             {
+                // Bootstrap and legacy ammo can equip a bare catalog ID while the physical
+                // unit lives in an inventory slot (or the ammo stack is already depleted).
+                // Only a concrete instance binding can be moved as equipment.
+                if (equippedItem.ItemInstanceId == ItemInstanceIdUtility.GetItemId(equippedItem.ItemInstanceId))
+                    continue;
+                InventorySlotSaveData source = null;
+                foreach (var slot in inventorySnapshot.Slots)
+                    if (slot != null && !string.IsNullOrEmpty(equippedItem.ItemInstanceId)
+                        && slot.ItemInstanceId == equippedItem.ItemInstanceId)
+                    { source = slot; break; }
                 var corpseItem = new CorpseItem
                 {
-                    ItemId = equippedItem.ItemId,
+                    ItemId = source?.ItemId ?? ItemInstanceIdUtility.GetItemId(equippedItem.ItemInstanceId),
                     Amount = 1,
                     ItemInstanceId = equippedItem.ItemInstanceId,
                     DurabilityCurrent = equippedItem.DurabilityCurrent,
                     DurabilityMax = equippedItem.DurabilityMax,
                     IsBroken = equippedItem.IsBroken,
                     SourceSlotType = (int)equippedItem.SlotType,
-                    SourceSlotIndex = equippedItem.SlotIndex
+                    SourceSlotIndex = source?.SlotIndex ?? equippedItem.SlotIndex,
+                    OriginSchemaVersion = 1,
+                    OriginLots = source != null ? CopyOriginLots(source.OriginLots)
+                        : new List<ItemOriginLotSaveData> { new ItemOriginLotSaveData { Kind = (int)ItemOriginKind.Invalid, Quantity = 1 } }
                 };
                 corpse.EquipmentItems.Add(corpseItem);
             }
 
-            if (_policy.RemoveAllEquipment)
-            {
-                _equipmentManager.UnequipAll();
-            }
+        }
+
+        private static List<ItemOriginLotSaveData> CopyOriginLots(IReadOnlyList<ItemOriginLotSaveData> source)
+        {
+            var result = new List<ItemOriginLotSaveData>();
+            if (source == null) return result;
+            foreach (var lot in source)
+                if (lot != null) result.Add(new ItemOriginLotSaveData
+                {
+                    Kind = lot.Kind,
+                    Quantity = lot.Quantity,
+                    UnitPaidBasisGold = lot.UnitPaidBasisGold,
+                    UnitResaleCapGold = lot.UnitResaleCapGold
+                });
+            return result;
         }
 
         private void MoveGoldToCorpse(Corpse corpse)
         {
             corpse.GoldAmount = _playerManager.CurrentGold;
 
-            if (_policy.RemoveAllGold)
-            {
-                _playerManager.SetGold(0);
-            }
         }
 
         private void ResetXp()

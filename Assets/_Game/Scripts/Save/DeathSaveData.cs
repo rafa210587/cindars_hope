@@ -36,6 +36,9 @@ namespace CindarsHope.Save
         public float CreatedAtGameTime;
         public int RecoveredAtGameDay = -1;
         public string ReplacedByCorpseId = string.Empty;
+        public string SnapshotLayoutHash = string.Empty;
+        public string SafeAnchorId = string.Empty;
+        public int OriginSchemaVersion;
         public List<InventorySlotSaveData> LostInventoryItems = new List<InventorySlotSaveData>();
         public List<InventorySlotSaveData> LostEquipmentItems = new List<InventorySlotSaveData>();
     }

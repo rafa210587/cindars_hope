@@ -244,6 +244,17 @@ namespace CindarsHope.Tests.EditMode.Quests
         }
 
         [Test]
+        public void MainAct_MissingProgressionAdapter_DoesNotConsumeOneTimeReward()
+        {
+            var section = new QuestStateSection();
+            var service = new QuestService(new QuestRegistry(), section, null, null,
+                new QuestFlagService(new QuestFlagRegistry()), null);
+
+            Assert.IsFalse(service.TryAwardActSkillPoint("act_1_water"));
+            Assert.IsFalse(section.RewardedMainActIds.Contains("act_1_water"));
+        }
+
+        [Test]
         public void MainAct_NotDuplicatedAfterSaveLoad()
         {
             var service = MakeService(out _, out _, out _, out var prog);

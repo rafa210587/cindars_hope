@@ -1,4 +1,5 @@
 using CindarsHope.Combat.Telemetry;
+using CindarsHope.Foundation;
 using CindarsHope.Core.Events;
 using NUnit.Framework;
 
@@ -28,6 +29,19 @@ namespace CindarsHope.Tests.EditMode.Combat
             Assert.That(evt.SourceId, Is.EqualTo("enemy_guard"));
             Assert.That(evt.IncomingDamage, Is.EqualTo(11));
             Assert.That(evt.MitigatedDamage, Is.EqualTo(6));
+        }
+
+        [Test]
+        public void ActionResolution_RefusalWithoutActionIdIsTrackedAsGap()
+        {
+            var session = new CombatTelemetrySession(null);
+            session.BeginLevel(1, 1, "run", 0f);
+            session.RecordActionResolution(string.Empty, 0, "fists", SkillActionResolvedEvent.Refused, "cooldown");
+
+            var report = session.BuildReport("now", null);
+
+            Assert.That(report.ActionEvents, Has.Count.EqualTo(1));
+            Assert.That(report.Gaps, Has.Exactly(1).Matches<string>(g => g.Contains("cooldown")));
         }
     }
 }

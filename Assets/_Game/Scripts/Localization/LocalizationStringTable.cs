@@ -83,6 +83,10 @@ namespace CindarsHope.Localization
         /// </summary>
         private static IEnumerable<LocalizationEntry> SeedEntries()
         {
+            yield return new LocalizationEntry("ui.town_interior.loading", "Entrando…");
+            yield return new LocalizationEntry("ui.town_interior.visit_failed", "Não foi possível concluir a passagem. Afaste-se da porta e tente novamente.");
+            yield return new LocalizationEntry("ui.town_interior.recovery_blocked", "Não há uma posição livre para concluir a passagem. Aguarde e tente novamente.");
+            yield return new LocalizationEntry("ui.town_interior.retry", "Tentar novamente");
             // Convention demonstration keys (NOT production quest content — that comes from F35/F36/F70).
             yield return new LocalizationEntry("quest.sample.title", "Missao de Exemplo");
             yield return new LocalizationEntry("quest.sample.desc", "Descricao de exemplo da missao.");

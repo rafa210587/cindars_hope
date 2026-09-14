@@ -100,7 +100,7 @@ namespace CindarsHope.Economy
                 return;
             }
 
-            PurchaseTransactionResult transaction = AtomicPurchaseTransaction.Execute(
+            PurchaseTransactionResult transaction = AtomicPurchaseTransaction.ExecutePurchased(
                 _inventoryManager,
                 _playerManager,
                 evt.ItemId,
@@ -117,7 +117,7 @@ namespace CindarsHope.Economy
                     PurchaseTransactionFailure.DebitFailed =>
                         $"Compra falhou ao gastar {evt.TotalCost}g.",
                     PurchaseTransactionFailure.InventoryWriteFailed =>
-                        $"Compra falhou: nao foi possivel adicionar '{evt.ItemId}' x{evt.Amount}. Ouro reembolsado.",
+                        $"Compra falhou: nao foi possivel adicionar '{evt.ItemId}' x{evt.Amount}.",
                     _ => $"Compra falhou: transacao invalida para '{evt.ItemId}' x{evt.Amount}."
                 };
                 PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, failure);
@@ -147,13 +147,17 @@ namespace CindarsHope.Economy
             }
 
             var snapshot = new List<KeyValuePair<string, int>>(_inventoryManager.Items);
-            var totalGold = 0;
-            var totalAmount = 0;
+            var amounts = new Dictionary<string, int>();
+            var unitPrices = new Dictionary<string, int>();
+            long normalGold = 0;
+            long totalAmount = 0;
+            long retainedAmount = 0;
 
             foreach (var entry in snapshot)
             {
                 var itemId = entry.Key;
-                var amount = entry.Value;
+                var amount = _inventoryManager.GetEligibleAmount(itemId);
+                retainedAmount += entry.Value - amount;
                 if (amount <= 0 || !SellableItemPolicy.IsSellable(itemId))
                 {
                     continue;
@@ -165,28 +169,36 @@ namespace CindarsHope.Economy
                     continue;
                 }
 
-                var itemValue = itemData.BaseValue * amount;
-                if (itemValue <= 0)
+                var itemValue = (long)itemData.BaseValue * amount;
+                if (itemValue <= 0 || itemValue > int.MaxValue
+                    || normalGold + itemValue > int.MaxValue
+                    || totalAmount + amount > int.MaxValue)
                 {
-                    Debug.Log($"{nameof(EconomyManager)} skipped '{itemId}' x{amount} because it has no sale value.", this);
-                    continue;
+                    PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                        $"Venda falhou: valor invalido ou overflow para '{itemId}'.");
+                    return;
                 }
-
-                if (!_inventoryManager.RemoveItem(itemId, amount))
-                {
-                    Debug.LogWarning($"{nameof(EconomyManager)} could not remove '{itemId}' x{amount} from inventory.", this);
-                    continue;
-                }
-
-                totalGold += itemValue;
+                amounts[itemId] = amount;
+                unitPrices[itemId] = itemData.BaseValue;
+                normalGold += itemValue;
                 totalAmount += amount;
             }
 
-            if (totalGold <= 0)
+            if (amounts.Count == 0)
             {
-                PublishTransaction(false, "SellAll", string.Empty, 0, 0, "Venda concluida: nenhum item vendavel encontrado.");
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    $"Venda concluida: nenhum item vendavel encontrado. {retainedAmount} unidade(s) retida(s).");
                 return;
             }
+
+            if (!_inventoryManager.TryPrepareBatchRemoval(amounts, out var batch))
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    "Venda falhou: inventario mudou durante a cotacao.");
+                return;
+            }
+
+            var totalGold = (int)normalGold;
 
             // fable_23 (CA-2): ponto ÚNICO nomeado do bônus de ouro em vendas de acessório (Anel de
             // Finan +5%). Consulta síncrona ao AccessoryEffectRouter; sem acessório => neutro (sem if
@@ -202,8 +214,19 @@ namespace CindarsHope.Economy
             // sem evento ativo => multiplicador neutro 1.0. O EconomyManager não conhece o WorldEventService.
             totalGold = CindarsHope.World.Events.WorldEventHooks.ApplySellGold(totalGold);
 
-            _playerManager.AddGold(totalGold);
-            PublishTransaction(true, "SellAll", string.Empty, totalAmount, totalGold, $"Venda concluida: {totalAmount} itens por {totalGold}g.");
+            if (!AtomicOriginSaleTransaction.TryQuoteBatch(batch, unitPrices, totalGold,
+                out var paidGold, out var limitedUnits)
+                || !AtomicOriginSaleTransaction.TryCommitBatch(_inventoryManager, _playerManager,
+                    batch, paidGold))
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    "Venda falhou: cotacao ou credito indisponivel.");
+                return;
+            }
+            var message = $"Venda concluida: {totalAmount} itens por {paidGold}g."
+                + (limitedUnits > 0 ? $" {limitedUnits} unidade(s) com limite de compra." : string.Empty)
+                + (retainedAmount > 0 ? $" {retainedAmount} unidade(s) retida(s)." : string.Empty);
+            PublishTransaction(true, "SellAll", string.Empty, (int)totalAmount, paidGold, message);
         }
 
         private bool HasRequiredManagers(string operationName, out string failureMessage)

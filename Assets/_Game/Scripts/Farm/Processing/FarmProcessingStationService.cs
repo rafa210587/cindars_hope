@@ -1,6 +1,8 @@
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Inventory;
+using CindarsHope.Economy;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CindarsHope.Farm.Processing
@@ -130,8 +132,11 @@ namespace CindarsHope.Farm.Processing
 
         /// <summary>Restaura jobs do save. Null (legado) = nenhuma estação em producao (CA-5).</summary>
         public void RestoreFromSaveData(FarmProcessingSaveData saveData)
+            => RestoreFromSaveData(saveData, false);
+
+        public void RestoreFromSaveData(FarmProcessingSaveData saveData, bool requireOriginSchema)
         {
-            _model.Restore(saveData);
+            _model.Restore(saveData, requireOriginSchema);
 
             // Após o restore, jobs cujo FinishDay já passou (avanço de dias offline impossível, mas
             // robustez) viram ReadyToCollect imediatamente no dia atual.
@@ -165,7 +170,7 @@ namespace CindarsHope.Farm.Processing
         }
 
         /// <summary>Adapta o InventoryManager de cena à porta pura <see cref="IProcessingInventory"/>.</summary>
-        private sealed class InventoryAdapter : IProcessingInventory
+        private sealed class InventoryAdapter : IOriginProcessingInventory
         {
             private readonly InventoryManager _inventory;
 
@@ -181,6 +186,32 @@ namespace CindarsHope.Farm.Processing
             public bool RemoveItem(string itemId, int amount) => _inventory != null && _inventory.RemoveItem(itemId, amount);
 
             public bool AddItem(string itemId, int amount) => _inventory != null && _inventory.AddItem(itemId, amount);
+
+            public bool TryPrepareOriginRemoval(string itemId, int amount,
+                out IReadOnlyList<ItemOriginLot> lots, out object token)
+            {
+                lots = null;
+                token = null;
+                if (_inventory == null || !_inventory.TryPrepareRemoval(itemId, amount, out var selection))
+                    return false;
+                lots = selection.CopyLots();
+                token = selection;
+                return true;
+            }
+
+            public bool TryCommitOriginRemoval(object token)
+                => token is InventoryLotSelection selection
+                    && _inventory.TryCommitRemoval(selection);
+
+            public int NormalUnitLiquidationGold(string itemId)
+            {
+                if (_inventory == null || !_inventory.TryGetItemData(itemId, out var item)) return -1;
+                // Inject a shared balance config here if Shipping ever gains a materialized asset.
+                return ItemPriceResolver.ResolveSellingPrice(item.BaseValue, SellContext.Shipping);
+            }
+
+            public bool TryAddOriginLots(string itemId, int amount, IReadOnlyList<ItemOriginLot> lots)
+                => _inventory != null && _inventory.TryAddItemWithLots(itemId, amount, lots).Success;
         }
     }
 }

@@ -25,10 +25,21 @@ namespace CindarsHope.Combat.Telemetry
         private readonly Dictionary<string, KillAggregate> _killsByEnemy = new Dictionary<string, KillAggregate>();
         private readonly Dictionary<string, DamageSourceAggregate> _damageBySource = new Dictionary<string, DamageSourceAggregate>();
         private readonly Dictionary<string, DamageTypeAggregate> _damageDealtByType = new Dictionary<string, DamageTypeAggregate>();
+        private readonly Dictionary<string, int> _hitsByEnemy = new Dictionary<string, int>();
+        private readonly Dictionary<string, float> _activeControlWindowStartByEnemy = new Dictionary<string, float>();
+
+        private readonly List<CombatTelemetryActionEventEntry> _actionResolutions =
+            new List<CombatTelemetryActionEventEntry>();
+        private readonly List<CombatTelemetryRawTtkSampleEntry> _rawTtkSamples =
+            new List<CombatTelemetryRawTtkSampleEntry>();
+        private readonly List<CombatTelemetryControlWindowEntry> _controlWindows =
+            new List<CombatTelemetryControlWindowEntry>();
+        private readonly List<string> _sessionGaps = new List<string>();
 
         private float _startTimeSeconds;
         private float _lastTimeSeconds;
         private bool _hasStart;
+        private float _controlWindowUptimeSeconds;
 
         // Ãºltimo HP mÃ¡ximo conhecido (para % de dano recebido); 0 = desconhecido â†’ % nÃ£o computÃ¡vel.
         private int _lastKnownMaxHp;
@@ -54,6 +65,9 @@ namespace CindarsHope.Combat.Telemetry
         public int CaveLevel { get; private set; } = -1;
         public int Band { get; private set; }
         public string RunId { get; private set; } = string.Empty;
+        public string BuildId { get; private set; } = string.Empty;
+        public int PlayerLevel { get; private set; } = -1;
+        public string RunVariant { get; private set; } = string.Empty;
 
         public CombatTelemetrySession(ICreatureClassLookup classLookup)
         {
@@ -63,15 +77,50 @@ namespace CindarsHope.Combat.Telemetry
         /// <summary>Marca o inÃ­cio do trecho (entrada no nÃ­vel). Limpa deltas de stamina/mana.</summary>
         public void BeginLevel(int caveLevel, int band, string runId, float nowSeconds)
         {
+            BeginLevel(caveLevel, band, runId, nowSeconds, string.Empty, string.Empty, -1);
+        }
+
+        public void BeginLevel(int caveLevel, int band, string runId, float nowSeconds,
+            string runVariant, string buildId, int playerLevel)
+        {
             CaveLevel = caveLevel;
             Band = band;
             RunId = runId ?? string.Empty;
+            RunVariant = runVariant ?? string.Empty;
+            BuildId = buildId ?? string.Empty;
+            PlayerLevel = playerLevel;
             _startTimeSeconds = nowSeconds;
             _lastTimeSeconds = nowSeconds;
+            _controlWindowUptimeSeconds = 0f;
             _hasStart = true;
+
+            _firstDamageTimeByEnemy.Clear();
+            _killsByEnemy.Clear();
+            _damageBySource.Clear();
+            _damageDealtByType.Clear();
+            _hitsByEnemy.Clear();
+            _activeControlWindowStartByEnemy.Clear();
+            _actionResolutions.Clear();
+            _rawTtkSamples.Clear();
+            _controlWindows.Clear();
+            _sessionGaps.Clear();
+
             // baseline de stamina/mana sÃ³ conta a partir do prÃ³ximo evento (evita delta gigante inicial).
             _lastStamina = -1;
             _lastMana = -1;
+            _lastKnownMaxHp = 0;
+            _damageDealtTotal = 0;
+            _damageTakenTotal = 0;
+            _damageTakenPctSum = 0d;
+            _damageTakenHitCount = 0;
+            _staminaSpent = 0;
+            _mpSpent = 0;
+            _dodges = 0;
+            _blocks = 0;
+            _perfectBlocks = 0;
+            _postureBreaks = 0;
+            _chargedAttacks = 0;
+            _deaths = 0;
         }
 
         public float DurationSeconds => _hasStart ? Math.Max(0f, _lastTimeSeconds - _startTimeSeconds) : 0f;
@@ -86,6 +135,14 @@ namespace CindarsHope.Combat.Telemetry
         public int ChargedAttacks => _chargedAttacks;
         public int Deaths => _deaths;
         public int KillEntryCount => _killsByEnemy.Count;
+        public int ActionResolutionCount => _actionResolutions.Count;
+        public int TargetHitEntryCount => _hitsByEnemy.Count;
+        public float ControlWindowUptimeSeconds => _controlWindowUptimeSeconds;
+        public int ControlWindowSampleCount => _controlWindows.Count;
+        public int OpenControlWindowCount => _activeControlWindowStartByEnemy.Count;
+
+        /// <summary>Fecha a janela observada no instante do flush, inclusive apos a ultima acao.</summary>
+        public void EndObservation(float nowSeconds) => Touch(nowSeconds);
 
         /// <summary>MÃ©dia do % de HP perdido por hit no trecho (0 se nenhum hit com MaxHP conhecido).</summary>
         public float DamageTakenPctAvg =>
@@ -124,6 +181,15 @@ namespace CindarsHope.Combat.Telemetry
             // EnemyDamagedEvent Ã© dano DADO ao inimigo â†’ conta como dano dado e por tipo.
             if (amount > 0)
             {
+                if (_hitsByEnemy.TryGetValue(enemyId, out var hits))
+                {
+                    _hitsByEnemy[enemyId] = hits + 1;
+                }
+                else
+                {
+                    _hitsByEnemy[enemyId] = 1;
+                }
+
                 _damageDealtTotal += amount;
                 var type = string.IsNullOrEmpty(damageType) ? "unknown" : damageType;
                 if (!_damageDealtByType.TryGetValue(type, out var agg))
@@ -183,11 +249,79 @@ namespace CindarsHope.Combat.Telemetry
                 var ttk = Math.Max(0f, nowSeconds - firstDamage);
                 agg.AddTtk(ttk);
                 _firstDamageTimeByEnemy.Remove(enemyId); // prÃ³xima instÃ¢ncia reabre o cronÃ´metro
+
+                var creatureClass = _classLookup != null
+                    ? _classLookup.GetClass(enemyId)
+                    : TelemetryCreatureClass.Unknown;
+                _rawTtkSamples.Add(new CombatTelemetryRawTtkSampleEntry
+                {
+                    EnemyId = enemyId,
+                    CreatureClass = TelemetryTargetEvaluator.ClassToToken(creatureClass),
+                    TtkSeconds = ttk,
+                });
             }
             else
             {
                 agg.KillsWithoutDamage += 1; // gap: morte sem dano registrado, descartada do TTK
             }
+        }
+
+        public void RecordActionResolution(string actionId, int rank, string variantId, string outcome,
+            string failureKey, float nowSeconds = float.NaN)
+        {
+            if (!float.IsNaN(nowSeconds) && !float.IsInfinity(nowSeconds))
+                Touch(nowSeconds);
+            _actionResolutions.Add(new CombatTelemetryActionEventEntry
+            {
+                ActionId = actionId ?? string.Empty,
+                Rank = rank,
+                VariantId = variantId ?? string.Empty,
+                Outcome = outcome ?? string.Empty,
+                FailureKey = failureKey ?? string.Empty,
+            });
+        }
+
+        public void RecordControlWindowStarted(string enemyId, float nowSeconds)
+        {
+            Touch(nowSeconds);
+            if (string.IsNullOrEmpty(enemyId))
+            {
+                return;
+            }
+
+            if (_activeControlWindowStartByEnemy.ContainsKey(enemyId))
+            {
+                _sessionGaps.Add($"control window for {enemyId} started while another control window is already open.");
+                return;
+            }
+
+            _activeControlWindowStartByEnemy[enemyId] = nowSeconds;
+        }
+
+        public void RecordControlWindowEnded(string enemyId, float nowSeconds)
+        {
+            Touch(nowSeconds);
+            if (string.IsNullOrEmpty(enemyId))
+            {
+                return;
+            }
+
+            if (!_activeControlWindowStartByEnemy.TryGetValue(enemyId, out var startSeconds))
+            {
+                _sessionGaps.Add($"control window ended for {enemyId} without a matching start.");
+                return;
+            }
+
+            var durationSeconds = Math.Max(0f, nowSeconds - startSeconds);
+            _controlWindowUptimeSeconds += durationSeconds;
+            _controlWindows.Add(new CombatTelemetryControlWindowEntry
+            {
+                EnemyId = enemyId,
+                StartSeconds = startSeconds,
+                EndSeconds = nowSeconds,
+                DurationSeconds = durationSeconds,
+            });
+            _activeControlWindowStartByEnemy.Remove(enemyId);
         }
 
         /// <summary>Dano recebido pelo player: total, por fonte e % do HP mÃ¡x no momento do hit.</summary>
@@ -288,10 +422,18 @@ namespace CindarsHope.Combat.Telemetry
             {
                 ShapeVersion = CombatTelemetryReport.CurrentShapeVersion,
                 RunId = RunId,
+                BuildId = BuildId,
+                PlayerLevel = PlayerLevel,
+                RunVariant = RunVariant,
                 CaveLevel = CaveLevel,
                 Band = Band,
                 GeneratedAtUtc = generatedAtUtc ?? string.Empty,
                 DurationSeconds = DurationSeconds,
+                ControlWindowUptimeSeconds = _controlWindowUptimeSeconds,
+                ControlWindowUptimePercent = _controlWindows.Count > 0 && DurationSeconds > 0f
+                    ? _controlWindowUptimeSeconds / DurationSeconds
+                    : -1f,
+                ControlWindowSampleCount = _controlWindows.Count,
                 DamageDealtTotal = _damageDealtTotal,
                 DamageTakenTotal = _damageTakenTotal,
                 DamageTakenPctAvg = DamageTakenPctAvg,
@@ -329,6 +471,43 @@ namespace CindarsHope.Combat.Telemetry
                 {
                     report.Gaps.Add($"enemy {agg.EnemyId}: {agg.KillsWithoutDamage} kill(s) without recorded first-damage (TTK discarded)");
                 }
+            }
+
+            foreach (var pair in _hitsByEnemy)
+            {
+                report.TargetHits.Add(new CombatTelemetryTargetHitEntry
+                {
+                    EnemyId = pair.Key,
+                    HitCount = pair.Value,
+                });
+            }
+
+            foreach (var sample in _rawTtkSamples)
+            {
+                report.RawTtkSamples.Add(sample);
+            }
+
+            foreach (var action in _actionResolutions)
+            {
+                report.ActionEvents.Add(action);
+                if (string.IsNullOrEmpty(action.ActionId) && string.Equals(action.Outcome, SkillActionResolvedEvent.Refused,
+                        StringComparison.Ordinal))
+                {
+                    var reason = string.IsNullOrEmpty(action.FailureKey)
+                        ? "unknown reason"
+                        : action.FailureKey;
+                    report.Gaps.Add($"action resolution blocked before known action id; failure={reason}");
+                }
+            }
+
+            foreach (var window in _controlWindows)
+            {
+                report.ControlWindows.Add(window);
+            }
+
+            foreach (var pair in _activeControlWindowStartByEnemy)
+            {
+                report.Gaps.Add($"control window for {pair.Key} started at {pair.Value:F3} with no matching end.");
             }
 
             foreach (var pair in _damageBySource)
@@ -374,6 +553,14 @@ namespace CindarsHope.Combat.Telemetry
                     {
                         report.Gaps.Add(gap);
                     }
+                }
+            }
+
+            foreach (var gap in _sessionGaps)
+            {
+                if (!report.Gaps.Contains(gap))
+                {
+                    report.Gaps.Add(gap);
                 }
             }
 

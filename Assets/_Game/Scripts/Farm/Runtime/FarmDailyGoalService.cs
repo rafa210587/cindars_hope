@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using CindarsHope.Core;
 using CindarsHope.Core.Events;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Inventory.Data;
 using UnityEngine;
 
 namespace CindarsHope.Farm.Runtime
@@ -227,17 +229,33 @@ namespace CindarsHope.Farm.Runtime
 
         private void OnEconomyTransaction(EconomyTransactionCompletedEvent evt)
         {
-            if (!evt.WasSuccessful)
-            {
-                return;
-            }
-
-            // Apenas transações de venda avançam as metas de venda
-            if (evt.TransactionType == "sell" || evt.TransactionType == "Sell" ||
-                evt.TransactionType == "shipping" || evt.GoldDelta > 0)
+            var itemDatabase = evt.TransactionType == "ShopSell" && GameBootstrap.Instance != null
+                ? GameBootstrap.Instance.ItemDatabase as ItemDatabaseSO
+                : null;
+            if (CountsAsFirstCropSale(evt, itemDatabase))
             {
                 AddProgress(GoalSellFirstCrop, 1);
             }
+        }
+
+        public static bool CountsAsFirstCropSale(EconomyTransactionCompletedEvent evt, ItemDatabaseSO itemDatabase)
+        {
+            if (!evt.WasSuccessful)
+            {
+                return false;
+            }
+
+            // ShopSell traz ItemId; uma venda de arma não é venda de colheita.
+            if (evt.TransactionType == "ShopSell")
+            {
+                return evt.GoldDelta > 0 && itemDatabase != null
+                    && itemDatabase.TryGetById(evt.ItemId, out var item)
+                    && item != null && item.Category == ItemCategory.Crop;
+            }
+
+            // SellPoint, SellAll e shipping agregam itens sem IDs por entrada.
+            return evt.TransactionType == "sell" || evt.TransactionType == "Sell" ||
+                evt.TransactionType == "shipping" || evt.GoldDelta > 0;
         }
 
         private void AddProgress(string goalId, int amount)

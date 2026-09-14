@@ -5,6 +5,7 @@ using CindarsHope.Craft.Data;
 using CindarsHope.Crafting;
 using CindarsHope.Foundation;
 using CindarsHope.Inventory;
+using CindarsHope.Economy;
 using UnityEngine;
 
 namespace CindarsHope.Craft
@@ -100,18 +101,32 @@ namespace CindarsHope.Craft
                 return false;
             }
 
-            if (!RemoveIngredients(recipe))
+            if (!TryPrepareIngredients(recipe, out var batch, out var inputs)
+                || !ItemOriginDerivation.TryDerive(inputs, recipe.OutputAmount, out var outputLots))
+            {
+                Debug.LogWarning($"Crafting failed for '{recipeId}': origin could not be derived.", this);
+                return false;
+            }
+
+            var inventoryBeforeCraft = _inventoryManager.CaptureSaveData();
+            inventoryBeforeCraft.OriginSchemaVersion = 1;
+            if (!_inventoryManager.TryCommitBatchRemoval(batch, out _))
             {
                 Debug.LogWarning($"Crafting failed for '{recipeId}': ingredients could not be removed after validation.", this);
                 return false;
             }
 
-            if (!_inventoryManager.AddItem(recipe.OutputItemId, recipe.OutputAmount))
+            if (!_inventoryManager.TryAddItemWithLots(recipe.OutputItemId, recipe.OutputAmount,
+                    outputLots, false).Success)
             {
-                RestoreIngredients(recipe);
+                _inventoryManager.RestoreFromSaveData(inventoryBeforeCraft);
                 Debug.LogWarning($"Crafting failed for '{recipeId}': output could not be added. Ingredients were restored.", this);
                 return false;
             }
+
+            foreach (var selected in batch.Selections)
+                _inventoryManager.PublishCommittedInventoryChange(selected.ItemId, -selected.Quantity);
+            _inventoryManager.PublishCommittedInventoryChange(recipe.OutputItemId, recipe.OutputAmount);
 
             GameEventBus.Publish(new ItemCraftedEvent(recipe.Id, recipe.OutputItemId, recipe.OutputAmount));
             Debug.Log($"Crafted '{recipe.OutputItemId}' x{recipe.OutputAmount} using recipe '{recipe.Id}'.", this);
@@ -242,25 +257,29 @@ namespace CindarsHope.Craft
             return projectedOutputAmount <= outputItem.MaxStack;
         }
 
-        private bool RemoveIngredients(RecipeDataSO recipe)
+        private bool TryPrepareIngredients(RecipeDataSO recipe,
+            out InventoryLotBatchSelection batch, out List<ItemOriginDerivation.Input> inputs)
         {
+            batch = null;
+            inputs = new List<ItemOriginDerivation.Input>();
+            var quantities = new Dictionary<string, int>(System.StringComparer.Ordinal);
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (!_inventoryManager.RemoveItem(ingredient.ItemId, ingredient.Amount))
-                {
-                    return false;
-                }
+                if (quantities.TryGetValue(ingredient.ItemId, out var existing))
+                { if (existing > int.MaxValue - ingredient.Amount) return false;
+                    quantities[ingredient.ItemId] = existing + ingredient.Amount; }
+                else quantities.Add(ingredient.ItemId, ingredient.Amount);
             }
-
+            if (!_inventoryManager.TryPrepareBatchRemoval(quantities, out batch)) return false;
+            foreach (var selected in batch.Selections)
+            {
+                if (!_inventoryManager.TryGetItemData(selected.ItemId, out var item)) return false;
+                // Inject a shared balance config here if Shipping ever gains a materialized asset.
+                var liquidation = ItemPriceResolver.ResolveSellingPrice(
+                    item.BaseValue, SellContext.Shipping);
+                inputs.Add(new ItemOriginDerivation.Input(selected.CopyLots(), liquidation));
+            }
             return true;
-        }
-
-        private void RestoreIngredients(RecipeDataSO recipe)
-        {
-            foreach (var ingredient in recipe.Ingredients)
-            {
-                _inventoryManager.AddItem(ingredient.ItemId, ingredient.Amount);
-            }
         }
     }
 }

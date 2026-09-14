@@ -36,12 +36,12 @@ namespace CindarsHope.Save.Providers
 
         public void Restore(object sectionData)
         {
+            var data = sectionData as EconomySaveData;
             if (_shopStockRuntime == null)
             {
                 return;
             }
 
-            var data = sectionData as EconomySaveData;
             if (data?.Shops == null)
             {
                 return;

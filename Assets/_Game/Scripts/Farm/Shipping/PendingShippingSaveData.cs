@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CindarsHope.Foundation;
 
 namespace CindarsHope.Farm.Shipping
 {
@@ -19,6 +20,10 @@ namespace CindarsHope.Farm.Shipping
         public int DepositedDay;
         public int ProcessOnDay;
         public int State; // ShippingEntryState (int)
+        public string ItemInstanceId;
+        public string ProcessedPaymentId;
+        public int OriginSchemaVersion;
+        public List<ItemOriginLotSaveData> OriginLots;
     }
 
     /// <summary>

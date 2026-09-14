@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using CindarsHope.Craft.Data;
+using CindarsHope.Foundation;
+using CindarsHope.Inventory;
 
 namespace CindarsHope.Craft
 {
@@ -25,6 +27,7 @@ namespace CindarsHope.Craft
         public int LivingForgeDayIndex { get; private set; }
         public int LivingForgeChoice { get; private set; }
         public List<CraftingIngredientSaveData> IngredientsConsumed { get; private set; }
+        public List<ItemOriginLot> OutputOriginLots { get; set; }
         public CraftingJobStatus Status { get; set; }
         public float RemainingSeconds { get; set; }
 
@@ -68,11 +71,18 @@ namespace CindarsHope.Craft
             LivingForgeDayIndex = Math.Max(0, livingForgeDayIndex);
             LivingForgeChoice = Math.Max(0, livingForgeChoice);
             IngredientsConsumed = CaptureIngredients(recipe.Ingredients);
+            OutputOriginLots = new List<ItemOriginLot>();
             Status = CraftingJobStatus.InProgress;
             RemainingSeconds = UnityEngine.Mathf.Max(0f, recipe.CraftTimeSeconds * craftTimeMultiplier);
         }
 
         public CraftingJob(CraftingJobSaveData saveData, RecipeDataSO recipe)
+            : this(saveData, recipe, false)
+        {
+        }
+
+        public CraftingJob(CraftingJobSaveData saveData, RecipeDataSO recipe,
+            bool requireOriginSchema)
         {
             JobId = saveData.JobId;
             StationInstanceId = saveData.StationInstanceId;
@@ -85,7 +95,9 @@ namespace CindarsHope.Craft
             LivingForgeReservationToken = saveData.LivingForgeReservationToken ?? string.Empty;
             LivingForgeDayIndex = Math.Max(0, saveData.LivingForgeDayIndex);
             LivingForgeChoice = Math.Max(0, saveData.LivingForgeChoice);
-            IngredientsConsumed = saveData.IngredientsConsumed ?? new List<CraftingIngredientSaveData>();
+            IngredientsConsumed = CopyIngredients(saveData.IngredientsConsumed,
+                saveData.OriginSchemaVersion == 1, requireOriginSchema);
+            OutputOriginLots = RestoreOutputLots(saveData, requireOriginSchema);
             Status = (CraftingJobStatus)saveData.Status;
             RemainingSeconds = saveData.RemainingSeconds;
         }
@@ -131,8 +143,51 @@ namespace CindarsHope.Craft
                 LivingForgeReservationToken = LivingForgeReservationToken,
                 LivingForgeDayIndex = LivingForgeDayIndex,
                 LivingForgeChoice = LivingForgeChoice,
-                IngredientsConsumed = new List<CraftingIngredientSaveData>(IngredientsConsumed)
+                OriginSchemaVersion = 1,
+                OutputOriginLots = SaveLots(OutputOriginLots),
+                IngredientsConsumed = CopyIngredients(IngredientsConsumed, true)
             };
+        }
+
+        private static List<ItemOriginLot> RestoreOutputLots(CraftingJobSaveData saveData,
+            bool requireOriginSchema)
+        {
+            if (saveData.OutputAmount <= 0) return new List<ItemOriginLot>();
+            if (saveData.OriginSchemaVersion == 0)
+                return requireOriginSchema ? ItemOriginLot.Invalid(saveData.OutputAmount)
+                    : new List<ItemOriginLot> { new ItemOriginLot(ItemOriginKind.LegacyUntracked,
+                        saveData.OutputAmount) };
+            return ItemOriginLot.FromSaveData(saveData.OutputOriginLots, saveData.OutputAmount);
+        }
+
+        private static List<CraftingIngredientSaveData> CopyIngredients(
+            IReadOnlyList<CraftingIngredientSaveData> source, bool hasOrigin,
+            bool requireOriginSchema = false)
+        {
+            var result = new List<CraftingIngredientSaveData>();
+            if (source == null) return result;
+            foreach (var ingredient in source)
+            {
+                if (ingredient == null) continue;
+                var lots = hasOrigin
+                    ? ItemOriginLot.FromSaveData(ingredient.OriginLots, ingredient.Amount)
+                    : requireOriginSchema ? ItemOriginLot.Invalid(ingredient.Amount)
+                        : new List<ItemOriginLot> { new ItemOriginLot(ItemOriginKind.LegacyUntracked,
+                            ingredient.Amount) };
+                result.Add(new CraftingIngredientSaveData
+                {
+                    ItemId = ingredient.ItemId, Amount = ingredient.Amount,
+                    OriginLots = SaveLots(lots)
+                });
+            }
+            return result;
+        }
+
+        private static List<ItemOriginLotSaveData> SaveLots(IReadOnlyList<ItemOriginLot> lots)
+        {
+            var result = new List<ItemOriginLotSaveData>();
+            if (lots != null) foreach (var lot in lots) result.Add(lot.ToSaveData());
+            return result;
         }
 
         private static List<CraftingIngredientSaveData> CaptureIngredients(RecipeIngredient[] ingredients)
@@ -160,6 +215,7 @@ namespace CindarsHope.Craft
     {
         public string ItemId;
         public int Amount;
+        public List<ItemOriginLotSaveData> OriginLots;
     }
 
     [Serializable]
@@ -177,6 +233,8 @@ namespace CindarsHope.Craft
         public string LivingForgeReservationToken;
         public int LivingForgeDayIndex;
         public int LivingForgeChoice;
+        public int OriginSchemaVersion;
+        public List<ItemOriginLotSaveData> OutputOriginLots;
         public List<CraftingIngredientSaveData> IngredientsConsumed = new List<CraftingIngredientSaveData>();
     }
 }

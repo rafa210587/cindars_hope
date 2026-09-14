@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace CindarsHope.Inventory
 {
@@ -15,6 +16,7 @@ namespace CindarsHope.Inventory
         public int Amount;
         public bool IsEquipped;
         public string EquipmentBindingId = string.Empty;
+        public List<ItemOriginLot> OriginLots = new List<ItemOriginLot>();
 
         public bool IsEmpty => string.IsNullOrWhiteSpace(ItemId) || Amount <= 0;
         public string EffectiveItemInstanceId => string.IsNullOrWhiteSpace(ItemInstanceId)
@@ -28,6 +30,8 @@ namespace CindarsHope.Inventory
             Amount = 0;
             IsEquipped = false;
             EquipmentBindingId = string.Empty;
+            if (OriginLots == null) OriginLots = new List<ItemOriginLot>();
+            else OriginLots.Clear();
         }
     }
 }

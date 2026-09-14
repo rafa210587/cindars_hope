@@ -3,6 +3,7 @@ using CindarsHope.Core;
 using CindarsHope.Core.Events;
 using CindarsHope.Interaction;
 using CindarsHope.Inventory;
+using CindarsHope.Economy.Transactions;
 using CindarsHope.Player;
 using UnityEngine;
 
@@ -31,12 +32,16 @@ namespace CindarsHope.Economy
 
             var balanceConfig = Resources.Load<EconomyBalanceConfigSO>("EconomyBalanceConfig");
             var snapshot = new List<KeyValuePair<string, int>>(_inventoryManager.Items);
-            var totalGold = 0;
+            var amounts = new Dictionary<string, int>();
+            var unitPrices = new Dictionary<string, int>();
+            long normalGold = 0;
+            long retainedAmount = 0;
 
             foreach (var entry in snapshot)
             {
                 var itemId = entry.Key;
-                var amount = entry.Value;
+                var amount = _inventoryManager.GetEligibleAmount(itemId);
+                retainedAmount += entry.Value - amount;
                 if (amount <= 0 || !SellableItemPolicy.IsSellable(itemId))
                 {
                     continue;
@@ -48,35 +53,61 @@ namespace CindarsHope.Economy
                     continue;
                 }
 
+                var multiplier = balanceConfig != null
+                    ? balanceConfig.ShippingBuybackMultiplier : 1f;
+                var rawUnitPrice = (double)itemData.BaseValue * multiplier;
+                if (double.IsNaN(rawUnitPrice) || double.IsInfinity(rawUnitPrice)
+                    || rawUnitPrice < 0 || rawUnitPrice > int.MaxValue)
+                {
+                    Debug.LogWarning($"SellPoint quote overflow for '{itemId}' x{amount}.", this);
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Venda falhou: valor invalido.", 2f));
+                    return;
+                }
                 var unitPrice = ItemPriceResolver.ResolveSellingPrice(
                     itemData.BaseValue, SellContext.Shipping, balanceConfig);
-                var itemValue = unitPrice * amount;
+                var itemValue = (long)unitPrice * amount;
                 if (itemValue <= 0)
                 {
                     Debug.Log($"SellPoint skipped '{itemId}' x{amount} because it has no sale value.", this);
                     continue;
                 }
 
-                if (!_inventoryManager.RemoveItem(itemId, amount))
+                if (itemValue > int.MaxValue || normalGold + itemValue > int.MaxValue)
                 {
-                    Debug.LogWarning($"SellPoint could not remove '{itemId}' x{amount} from inventory.", this);
-                    continue;
+                    Debug.LogWarning($"SellPoint quote overflow for '{itemId}' x{amount}.", this);
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Venda falhou: valor invalido.", 2f));
+                    return;
                 }
 
-                totalGold += itemValue;
-                Debug.Log($"Sold '{itemId}' x{amount} @ {unitPrice}/unit for {itemValue} gold.", this);
+                amounts[itemId] = amount;
+                unitPrices[itemId] = unitPrice;
+                normalGold += itemValue;
             }
 
-            if (totalGold <= 0)
+            if (amounts.Count == 0)
             {
                 Debug.Log("SellPoint found no sellable items.", this);
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Nada para vender.", 2f));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent(
+                    retainedAmount > 0 ? $"Nada para vender. {retainedAmount} unidade(s) retida(s)."
+                        : "Nada para vender.", 2f));
                 return;
             }
 
-            _playerManager.AddGold(totalGold);
+            if (!_inventoryManager.TryPrepareBatchRemoval(amounts, out var batch)
+                || !AtomicOriginSaleTransaction.TryQuoteBatch(batch, unitPrices,
+                    (int)normalGold, out var totalGold, out var limitedUnits)
+                || !AtomicOriginSaleTransaction.TryCommitBatch(_inventoryManager,
+                    _playerManager, batch, totalGold))
+            {
+                Debug.LogWarning("SellPoint sale failed before commit.", this);
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Venda falhou.", 2f));
+                return;
+            }
+
             Debug.Log($"SellPoint sale complete. Earned {totalGold} gold.", this);
-            var feedbackMsg = $"Vendido! +{totalGold} ouro.";
+            var feedbackMsg = $"Vendido! +{totalGold} ouro."
+                + (limitedUnits > 0 ? $" {limitedUnits} unidade(s) com limite de compra." : string.Empty)
+                + (retainedAmount > 0 ? $" {retainedAmount} unidade(s) retida(s)." : string.Empty);
             GameEventBus.Publish(new PlayerActionFeedbackEvent(feedbackMsg, 3f));
             GameEventBus.Publish(new EconomyTransactionCompletedEvent(true, "SellPoint", "all", 0, totalGold, feedbackMsg));
         }

@@ -44,6 +44,33 @@ namespace CindarsHope.Editor.Enemies
                       $"(expected {CanonicalBestiaryCatalogCounts.TotalDistinct}).");
         }
 
+        /// <summary>
+        /// Narrow, idempotent repair for legacy assets whose Elite flag drifted from the
+        /// canonical Bestiary Role. This does not rewrite unrelated authored enemy fields.
+        /// </summary>
+        public static void RepairEliteFlagsBatch()
+        {
+            int changed = 0;
+            foreach (var def in CanonicalBestiaryCatalog.All)
+            {
+                var assetPath = $"{CanonicalFolder}/{def.EnemyId}.asset";
+                var so = AssetDatabase.LoadAssetAtPath<EnemyDataSO>(assetPath);
+                if (so == null)
+                    throw new System.InvalidOperationException($"Missing canonical enemy asset: {assetPath}");
+
+                bool expected = def.Role == EnemyRole.Elite;
+                if (so.IsElite == expected)
+                    continue;
+
+                so.IsElite = expected;
+                EditorUtility.SetDirty(so);
+                changed++;
+            }
+
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[Phase21] Canonical Elite flags repaired: {changed} assets.");
+        }
+
         public static (int created, int updated) Generate()
         {
             EnsureFolder(CanonicalFolder);
@@ -103,6 +130,7 @@ namespace CindarsHope.Editor.Enemies
 
             so.SpoilerTier = Mathf.Clamp(def.SpoilerTier, 0, 4);
             so.BestiarySize = def.Size;
+            so.IsElite = def.Role == EnemyRole.Elite;
             so.IsMiniBoss = def.IsMiniBoss;
             so.IsBoss = def.IsBoss;
             so.baseDifficulty = ResolveDifficulty(def);

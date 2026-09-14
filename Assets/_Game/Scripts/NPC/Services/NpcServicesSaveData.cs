@@ -29,11 +29,21 @@ namespace CindarsHope.NPC.Services
     [Serializable]
     public sealed class NpcBookOrderSaveData
     {
+        // Stable within the pending queue, so an inventory grant completes exactly one order.
+        public int OrderId;
+
         /// <summary>ID do item de livro a entregar (banda à escolha do jogador, resolvida na compra).</summary>
         public string DeliveredBookItemId;
 
         /// <summary>Dia absoluto do calendário em que a encomenda chega (dia da compra + 3).</summary>
         public int DeliveryDay;
+
+        /// <summary>Gold actually paid, kept independently of the item catalog's current price.</summary>
+        public int PaidGold;
+
+        // 1 means OriginLots was written. A missing marker in v6 fails closed.
+        public int OriginSchemaVersion;
+        public List<CindarsHope.Foundation.ItemOriginLotSaveData> OriginLots;
     }
 
     /// <summary>fable_25 — estado do contrato de caça semanal.</summary>
