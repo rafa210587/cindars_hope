@@ -1,7 +1,11 @@
 # Rule: Spec Quality Gate
 
-> Seleção e status: [matriz canônica](../../.specs/SPEC_VALIDATION_MATRIX_MASTER.md).
-> Procedimento: [spec-execution](../skills/spec-execution/SKILL.md).
+> Selection, evidence and status: [canonical matrix](../../.specs/SPEC_VALIDATION_MATRIX_MASTER.md).
+> Procedure: [spec-execution](../skills/spec-execution/SKILL.md).
 
-**Invariante:** critérios centrais, integração e evidência precisam existir; compile
-isolado não prova comportamento. Promoção exige o nível previsto na spec/matriz.
+Each spec declares exactly one blocking acceptance gate: the existing test, command or
+executed scenario that proves its acceptance criteria. Include every applicable save,
+migration, stable-ID, secrets and data-integrity check in that gate; none may be waived
+as informational. Other checks are informational and cannot independently block acceptance.
+A failed or unexecuted acceptance gate prevents acceptance; compile alone does not prove
+behavior. Evidence format follows the matrix; a separate report is not always required.

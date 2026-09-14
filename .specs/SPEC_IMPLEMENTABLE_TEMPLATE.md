@@ -33,7 +33,7 @@ declarar estado real do repo;
 declarar se pode rodar em paralelo;
 declarar arquivos permitidos/proibidos;
 declarar critérios de aceite verificáveis;
-declarar validação automatizada e Unity;
+declare one blocking acceptance gate and informational checks using SPEC_VALIDATION_MATRIX_MASTER.md;
 não depender de validação humana intermediária;
 preparar evidência para validação humana final quando necessário.
 ```
@@ -360,8 +360,7 @@ Assets/_Game/Scripts/<Domain>/
 Assets/_Game/Data/<Domain>/
   <DataAsset>.asset
 
-docs/validation/
-  <spec_id>_execution_report.md
+docs/validation/<spec_id>/report.md (only when the validation matrix requires a report)
 ```
 
 ---
@@ -453,7 +452,7 @@ Formato:
 ### Fase 1 — Contratos/dados
 ### Fase 2 — Runtime
 ### Fase 3 — Testes/validação
-### Fase 4 — Relatório
+### Fase 4 — Evidence according to the validation matrix
 ```
 
 A Fase 0 deve impedir recriação de sistema existente.
@@ -472,7 +471,7 @@ Exemplo:
 3. Adicionar validação.
 4. Integrar sem alterar comportamento fora do escopo.
 5. Rodar testes/compile/docs validation.
-6. Registrar relatório.
+6. Record evidence in the commit message or conditional report according to the validation matrix.
 ```
 
 ---
@@ -583,7 +582,7 @@ Formato:
 - [ ] T002 — Criar/ajustar <contrato>.
 - [ ] T003 — Adicionar validação <x>.
 - [ ] T004 — Criar/atualizar testes <x>.
-- [ ] T005 — Gerar execution report.
+- [ ] T005 — Record the acceptance result in the evidence location required by the validation matrix.
 ```
 
 Não criar task genérica como:
@@ -596,42 +595,19 @@ Implementar sistema todo.
 
 ## 29. Validações obrigatórias
 
-Toda spec deve listar comandos.
+Declare exactly one blocking acceptance gate in this section: the existing test, command
+or executed scenario, its scope and expected result. Select checks and evidence through
+`SPEC_VALIDATION_MATRIX_MASTER.md`; other checks are informational. The single gate must
+include every applicable save/migration, stable-ID, secrets and data-integrity check.
+Do not waive those checks or acceptance criteria as informational.
 
-Docs:
-
-```powershell
-.\tools\docs\validate_docs.ps1
-```
-
-Runtime C# quando aplicável:
-
-```powershell
-dotnet build .\Assembly-CSharp.csproj --no-restore
-```
-
-Editor C# quando aplicável:
-
-```powershell
-dotnet build .\Assembly-CSharp-Editor.csproj --no-restore
-```
-
-Unity compile quando aplicável:
-
-```powershell
-.\tools\unity\RunUnityCompileValidation.ps1 -ProjectPath "." -LogFile ".\Logs\unity-compile-validation.log"
-.\tools\unity\ScanUnityLogs.ps1 -LogFile ".\Logs\unity-compile-validation.log"
-```
-
-EditMode/PlayMode automated quando harness existir:
-
-```text
-Unity Test Runner — EditMode
-Unity Test Runner — PlayMode
-```
-
-Se algum comando não puder rodar, o report deve registrar `NOT RUN` com motivo e risco residual.
-
+Record the actual command and exit code. Missing execution is `NOT RUN` with reason and
+residual risk; a failed or unexecuted acceptance gate prevents acceptance. Reuse verified
+evidence on equivalent inputs instead of repeating compile, log scans or global validation.
+Docs/harness use diff and commit evidence; pure logic/bugfix use EditMode and exit code in
+the commit. Wiring uses a relevant test and one-paragraph report. Only scene work with
+approved keyart requires one capture. When required, keep the report at most 60 lines in
+one `docs/validation/<spec_id>/` folder; no default snapshots, backups or HTML indexes.
 ---
 
 ## 30. Testing Quality Gate
@@ -648,7 +624,9 @@ Template:
 - Requires PlayMode automated or final human scenario: YES/NO
 - Requires regression test: YES/NO
 - Human validation timing: DEFERRED_TO_FINAL_VALIDATION / NOT REQUIRED
-- Minimum validation evidence for ACCEPTED: <text>
+- Blocking acceptance gate: <one existing test/command/executed scenario, scope and expected result; include applicable protected risk checks>
+- Informational checks: <remaining checks or none>
+- Evidence location: <commit message or report according to SPEC_VALIDATION_MATRIX_MASTER.md>
 ```
 
 Regras:
@@ -656,10 +634,10 @@ Regras:
 ```text
 Compile/build não é suficiente para ACCEPTED em spec runtime/gameplay.
 Mudança de lógica determinística exige EditMode tests quando praticável.
-Mudança de UI/cena/input/prefab exige PlayMode automatizado ou cenário final humano documentado.
+UI/scene/input/prefab changes select the relevant executed test or scenario through the single acceptance gate; a written scenario alone does not prove behavior.
 Bugfix exige regression test ou risco residual documentado.
 Sem teste obrigatório nem justificativa, status máximo é PARTIAL.
-Runtime/gameplay sem PlayMode automatizado nem cenário final humano documentado fica no máximo BUILD_VALIDATED.
+Do not infer acceptance from a deferred human scenario when that execution belongs to the acceptance gate.
 A validação humana real fica deferida para o final, salvo autorização explícita do usuário.
 ```
 
@@ -673,7 +651,9 @@ Para docs-only/governance specs:
 - Requires PlayMode automated or final human scenario: NO
 - Requires regression test: NO
 - Human validation timing: NOT REQUIRED
-- Minimum validation evidence for ACCEPTED: docs validation PASS; links/paths consistent; no runtime/code changed.
+- Blocking acceptance gate: reviewed diff with relevant link/parser/tool checks passing, recorded in the commit message.
+- Informational checks: remaining checks, if any.
+- Evidence location: commit message; no docs/validation artifact.
 ```
 
 ---
@@ -687,11 +667,10 @@ Exemplo:
 ```text
 Spec implementada dentro dos arquivos permitidos.
 Nenhum arquivo proibido alterado.
-Docs validation executada ou NOT RUN com motivo.
-Unity compile executado quando aplicável ou NOT RUN com motivo.
-EditMode tests adicionados quando exigidos.
-Cenário de validação final criado quando Play Mode humano for necessário.
-Execution report criado.
+The single acceptance gate has actual evidence; failed or unexecuted checks are not PASS.
+Applicable protected risk checks are included in that gate.
+Reference a shared final human scenario when needed; no mandatory per-spec scenario file.
+Record evidence in the commit or conditional report selected by the validation matrix.
 Sem claim de ACCEPTED sem evidência.
 ```
 
@@ -743,7 +722,7 @@ Antes de criar uma spec em `.specs/a_implementar/`, conferir:
 [ ] Tem arquivos permitidos e proibidos.
 [ ] Tem contratos/dados/eventos/save/UI quando aplicável.
 [ ] Tem critérios de aceite verificáveis.
-[ ] Tem validações obrigatórias.
+[ ] Declares exactly one blocking acceptance gate, including applicable protected risk checks.
 [ ] Tem Testing Quality Gate.
 [ ] Marca validação humana como DEFERRED_TO_FINAL_VALIDATION quando aplicável.
 [ ] Tem riscos e rollback.

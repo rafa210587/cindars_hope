@@ -51,8 +51,8 @@ Não atualizar SPEC_EXECUTION_ORDER.md sem autorização explícita.
 ```text
 Implementar apenas o escopo da spec.
 Respeitar arquivos permitidos/proibidos.
-Rodar validações obrigatórias ou registrar NOT RUN com motivo.
-Criar execution report.
+Execute the declared single acceptance gate or record NOT RUN with reason; remaining checks are informational.
+Record evidence in the commit message or conditional report selected by SPEC_VALIDATION_MATRIX_MASTER.md.
 Não pedir validação humana intermediária.
 Não promover spec automaticamente sem evidência.
 ```
@@ -90,7 +90,7 @@ DEFERRED_TO_FINAL_HUMAN_VALIDATION
   Há cenário humano documentado, mas validação real foi adiada para o fim do lote/wave.
 
 ACCEPTED
-  Todas as validações obrigatórias foram satisfeitas ou exceção humana explícita foi registrada.
+  Acceptance criteria and the single blocking gate passed, including applicable save/migration, stable-ID, secrets and data-integrity checks.
 
 PARTIAL
   Parte do escopo foi concluída, mas há validação, código ou risco residual pendente.
@@ -298,28 +298,15 @@ ou no fim completo, conforme decisão do usuário.
 
 ## 11. Reports mínimos
 
-Toda execução deve reportar:
-
-```text
-Spec executada;
-Branch/commit;
-Arquivos alterados;
-Arquivos proibidos não alterados;
-Validações rodadas;
-Validações NOT RUN com motivo;
-Testing Quality Gate;
-Status final;
-Risco residual;
-Pendências;
-Specs que podem rodar em paralelo depois.
-```
-
-Para runtime/code, criar:
-
-```text
-docs/validation/<spec_id>_execution_report.md
-```
-
+Use `SPEC_VALIDATION_MATRIX_MASTER.md` for evidence format. Docs/harness use the reviewed
+diff and commit message; pure logic/bugfix use relevant EditMode results and command/exit
+code in the commit message. Neither creates a `docs/validation` artifact.
+Wiring uses a relevant executed test and a one-paragraph report. Only scene work with
+approved keyart requires one capture. When a report is applicable, keep at most 60 lines
+in one `docs/validation/<spec_id>/` folder; no default snapshots, backups or HTML indexes.
+Record the acceptance gate, actual result, relevant command/exit and artifact reference,
+status and genuine pending risk in that evidence location. No mandatory report sections
+or per-spec human scenario file; reference the existing shared scenario when appropriate.
 ---
 
 ## 12. Stop conditions
@@ -331,7 +318,7 @@ Spec conflita com CURRENT_STATE.md.
 Spec exige arquivo fora do escopo permitido.
 Dependência anterior está bloqueada.
 Arquivos proibidos seriam alterados.
-Validação obrigatória falha sem caminho claro.
+The declared acceptance gate fails without a resolution path; unrelated informational failures remain visible without independently blocking acceptance.
 Runtime/code não tem Testing Quality Gate.
 Agente precisaria pedir validação humana intermediária.
 Spec tenta promover para implementados sem evidência.
@@ -360,7 +347,7 @@ Respeite arquivos permitidos/proibidos.
 Não altere SPEC_EXECUTION_ORDER.md sem autorização explícita.
 Não peça validação humana intermediária.
 Se Play Mode humano for necessário, marque DEFERRED_TO_FINAL_VALIDATION.
-Registre execution report e risco residual.
+Record evidence and residual risk in the location required by SPEC_VALIDATION_MATRIX_MASTER.md; do not create a report by default.
 ```
 
 ---
@@ -375,6 +362,6 @@ Registre execution report e risco residual.
 [ ] Dependências estão prontas.
 [ ] CURRENT_STATE.md não bloqueia.
 [ ] Validation matrix aplicável.
-[ ] Testing Quality Gate aplicável.
+[ ] One blocking acceptance gate declared, including applicable protected risk checks; remaining checks informational.
 [ ] SPEC_EXECUTION_ORDER.md não será editado sem autorização.
 ```
