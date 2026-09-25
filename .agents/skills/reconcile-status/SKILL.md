@@ -1,6 +1,7 @@
 ---
 name: reconcile-status
 description: "Audita inconsistências entre arquivos de documentação. Pode ler PROJECT_LOG.md, validation reports e IMPLEMENTATION_STATUS.md — apenas em modo audit."
+disable-model-invocation: true
 ---
 
 # /reconcile-status

@@ -1,6 +1,7 @@
 ---
 name: execute-spec-strict
 description: "Executa uma spec autorizada, com critérios e evidência rigorosos."
+disable-model-invocation: true
 ---
 
 # /execute-spec-strict

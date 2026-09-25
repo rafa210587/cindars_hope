@@ -1,6 +1,7 @@
 ---
 name: loop-spec-batch-strict
 description: "Executa um batch autorizado preservando critérios individuais e evidência integrada."
+disable-model-invocation: true
 ---
 
 # /loop-spec-batch-strict

@@ -1,6 +1,7 @@
 ---
 name: audit-harness
 description: "Audita descoberta, referências e decisões do harness .claude, com findings proporcionais ao impacto."
+disable-model-invocation: true
 ---
 
 # /audit-harness

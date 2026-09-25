@@ -1,6 +1,7 @@
 ---
 name: implement-spec
 description: "Deprecated alias; route the request to `/execute-spec-strict` with the same argument."
+disable-model-invocation: true
 ---
 
 # /implement-spec (DEPRECATED — use /execute-spec-strict)

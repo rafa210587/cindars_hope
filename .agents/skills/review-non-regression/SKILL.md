@@ -1,6 +1,7 @@
 ---
 name: review-non-regression
 description: "Audita o diff atual contra as regras de não-regressão do projeto e o change scope detectado."
+disable-model-invocation: true
 ---
 
 # /review-non-regression

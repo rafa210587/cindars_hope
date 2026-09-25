@@ -283,7 +283,9 @@ foreach ($cmd in $commandFiles) {
     # spending the visible prefix on Claude/Codex compatibility information.
     $description = if ($firstLineSafe) { $firstLineSafe } else { "Workflow command: $cmdName." }
 
-    $frontmatter = "---`nname: $cmdName`ndescription: `"$description`"`n---`n`n"
+    # A command is started by the person (/name). disable-model-invocation keeps it out of the list the
+    # model chooses skills from, in hosts that read that field (Claude Code semantics); it stays usable as /name.
+    $frontmatter = "---`nname: $cmdName`ndescription: `"$description`"`ndisable-model-invocation: true`n---`n`n"
     $synthesized = $frontmatter + $bodyText
 
     if (-not $WhatIf) {

@@ -1,6 +1,7 @@
 ---
 name: bugfix
 description: "Corrige um bug específico dentro do scope dos arquivos afetados. Contexto mínimo. Sem roadmap."
+disable-model-invocation: true
 ---
 
 # /bugfix

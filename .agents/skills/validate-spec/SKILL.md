@@ -1,6 +1,7 @@
 ---
 name: validate-spec
 description: "Obtém somente os níveis aplicáveis à spec e confere evidência já disponível."
+disable-model-invocation: true
 ---
 
 # /validate-spec

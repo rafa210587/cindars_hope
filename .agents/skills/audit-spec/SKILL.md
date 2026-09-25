@@ -1,6 +1,7 @@
 ---
 name: audit-spec
 description: "Use para o audit de Phase 0: mapear o que existe, o que está ausente, os riscos e o menor delta seguro. NÃO implementa."
+disable-model-invocation: true
 ---
 
 # /audit-spec

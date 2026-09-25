@@ -1,6 +1,7 @@
 ---
 name: validate-unity
 description: "Obtém os níveis Unity aplicáveis e registra a evidência real."
+disable-model-invocation: true
 ---
 
 # /validate-unity

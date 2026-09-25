@@ -1,6 +1,7 @@
 ---
 name: resolve-spec-dependency-chain
 description: "Resolve same-wave spec dependencies before execution; use as an internal workflow reference."
+disable-model-invocation: true
 ---
 
 # /resolve-spec-dependency-chain

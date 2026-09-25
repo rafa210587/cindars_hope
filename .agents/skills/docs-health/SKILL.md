@@ -1,6 +1,7 @@
 ---
 name: docs-health
 description: "Valida a estrutura e a consistência da documentação."
+disable-model-invocation: true
 ---
 
 # /docs-health

@@ -100,6 +100,9 @@ try {
     $generatedCommand = [IO.File]::ReadAllText((Join-Path $fixtureRoot '.agents/skills/probe-command/SKILL.md'))
     Assert-HarnessContract ($generatedCommand -match '(?m)^description: "Fixture command\."$') 'command description starts with functional trigger'
     Assert-HarnessContract ($generatedCommand -notmatch 'equivalente ao') 'command description omits repeated compatibility prefix'
+    Assert-HarnessContract ($generatedCommand -match '(?m)^disable-model-invocation: true$') 'command-skill is started by the person, not picked by the model'
+    $generatedSkill = [IO.File]::ReadAllText((Join-Path $fixtureRoot '.agents/skills/probe/SKILL.md'))
+    Assert-HarnessContract ($generatedSkill -notmatch 'disable-model-invocation') 'a real skill stays available to the model'
     Assert-HarnessContract ([IO.File]::ReadAllText((Join-Path $fixtureRoot '.codex/agents/unity-validator.toml')).Contains('sandbox_mode = "workspace-write"')) 'validator can write evidence'
     Assert-HarnessContract ([IO.File]::ReadAllText((Join-Path $fixtureRoot 'AGENTS.md')).Contains('.claude/HARNESS_INDEX.md')) 'compact block discovers catalog'
     Write-FixtureFile '.agents/skills/local-user/note.md' 'User file survives.'

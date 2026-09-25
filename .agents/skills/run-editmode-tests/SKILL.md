@@ -1,6 +1,7 @@
 ---
 name: run-editmode-tests
 description: "Executa EditMode com evidência fresca ou reutiliza resultado pertinente verificável."
+disable-model-invocation: true
 ---
 
 # /run-editmode-tests

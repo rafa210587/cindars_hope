@@ -1,6 +1,7 @@
 ---
 name: start-spec
 description: "Use ao preparar a implementação de uma spec. Entrega um plano de execução sem tocar em código."
+disable-model-invocation: true
 ---
 
 # /start-spec

@@ -1,6 +1,7 @@
 ---
 name: finish-spec
 description: "Confere evidência e decide promoção sem repetir gates válidos."
+disable-model-invocation: true
 ---
 
 # /finish-spec

@@ -1,6 +1,7 @@
 ---
 name: plan-wave
 description: "Planeja a próxima FASE ou wave de desenvolvimento. Único command autorizado a ler ROADMAP.md por padrão."
+disable-model-invocation: true
 ---
 
 # /plan-wave
