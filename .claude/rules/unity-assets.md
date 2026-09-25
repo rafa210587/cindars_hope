@@ -1,3 +1,9 @@
+---
+paths:
+  - "Assets/**"
+  - "Packages/**"
+  - "ProjectSettings/**"
+---
 # Rule: Segurança de Assets & Editor Unity
 
 **1. Sem edits manuais de YAML.** Não edite `.unity`, `.prefab`, `.asset` a menos que a spec autorize explicitamente E a via Unity Editor API seja inviável. Se inevitável, documente:

@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/*.cs"
+---
 # Rule: Seleção de Design Pattern de Gameplay (stub)
 
 > Detalhe completo movido para a skill [non-regression-review](../skills/non-regression-review/SKILL.md) — carregada on-demand em /code-review e closeout. Stub preserva path + invariante.

@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/*.cs"
+---
 # Rule: Escada de Minimalismo de Código (write-less-code)
 
 > O melhor código é o que você não escreve. Antes de implementar qualquer coisa,

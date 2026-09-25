@@ -1,3 +1,9 @@
+---
+paths:
+  - "Assets/_Game/Scripts/Cave/**"
+  - "Assets/_Game/Scripts/**/Cave*/**"
+  - "Assets/_Game/Scripts/**/*Cave*.cs"
+---
 # Rule: Cave Stable Run
 
 Qualquer mudança procedural/runtime da cave precisa preservar o stable-run contract da FASE9F.

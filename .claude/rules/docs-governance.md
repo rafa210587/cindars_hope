@@ -1,3 +1,11 @@
+---
+paths:
+  - "docs/**"
+  - ".specs/**"
+  - "docs_old/**"
+  - "specs/**"
+  - "spec/**"
+---
 # Rule: Governança de Docs
 
 **1. Nenhum documento deletado sem candidato.** Delete só se constar em `docs/project/DOCUMENT_DELETE_CANDIDATES.md` E a tarefa autorizar explicitamente. Permitido sem aprovação: mover para archive, adicionar `status: delete_candidate`, adicionar à lista.

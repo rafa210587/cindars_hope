@@ -1,3 +1,7 @@
+---
+paths:
+  - ".specs/**"
+---
 # Rule: Resolução de Dependência de Spec (stub)
 
 > Detalhe completo movido para a skill [spec-execution](../skills/spec-execution/SKILL.md) — carregada on-demand em execução/closeout de spec. Stub preserva path + invariante.

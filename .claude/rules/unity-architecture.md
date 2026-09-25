@@ -1,3 +1,7 @@
+---
+paths:
+  - "Assets/**"
+---
 # Rule: Invariantes de Arquitetura Unity
 
 **1. Sem global scene search em runtime.** Proibido em `Assets/_Game/Scripts/**` (exceto `Editor/`): `GameObject.Find`, `FindObjectOfType`, `FindObjectsOfType`, `FindObjectsByType`. Use serialized refs, injeção via GameBootstrap ou configuração explícita. Referência ausente → logue wiring error claro, nunca mascare com scene search.
