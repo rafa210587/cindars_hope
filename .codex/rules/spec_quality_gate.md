@@ -1,3 +1,7 @@
+---
+paths:
+  - ".specs/**"
+---
 # Rule: Spec Quality Gate
 
 > Selection, evidence and status: [canonical matrix](../../.specs/SPEC_VALIDATION_MATRIX_MASTER.md).

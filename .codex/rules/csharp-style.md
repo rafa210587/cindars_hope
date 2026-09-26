@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/*.cs"
+---
 # Rule: Estilo & Craft em C# (stub)
 
 > Detalhe completo movido para a skill [non-regression-review](../skills/non-regression-review/SKILL.md) — carregada on-demand em /code-review e closeout. Stub preserva path + invariante.

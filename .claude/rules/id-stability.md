@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/*.cs"
+  - "Assets/_Game/Data/**"
+  - ".specs/**"
+  - "docs/game_rules/**"
+  - "docs/decisions/**"
+---
 # Rule: Estabilidade de ID
 
 Todo ID de domínio (save files, catálogos, registries, specs, game_rules) deve ser `public const string` no catalog canônico. Use a const no código — nunca o literal.

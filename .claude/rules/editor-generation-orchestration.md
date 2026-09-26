@@ -1,3 +1,7 @@
+---
+paths:
+  - "Assets/_Game/Scripts/Editor/**"
+---
 # Rule: Orquestração de Geração de Assets (3 Comandos Canônicos)
 
 Toda geração, validação e reparo de assets do projeto é alcançada por **exatamente três comandos

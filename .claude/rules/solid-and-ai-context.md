@@ -1,3 +1,7 @@
+---
+paths:
+  - "**/*.cs"
+---
 # Rule: SOLID e contexto útil para AI
 
 **Invariante:** Código tem responsabilidade coesa, dependências explícitas e contratos verificáveis; documentação explica intenção sem duplicar fatos extraíveis do código.

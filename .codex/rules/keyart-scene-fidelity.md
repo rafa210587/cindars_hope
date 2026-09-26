@@ -1,3 +1,12 @@
+---
+paths:
+  - "Assets/_Game/Art/**"
+  - "Assets/_Game/Scenes/**"
+  - "Assets/_Game/Scripts/Editor/Art/**"
+  - "Assets/_Game/Scripts/Editor/SceneCreation/**"
+  - "Assets/_Game/Scripts/Editor/**/*Farm*.cs"
+  - "docs/art_catalog/**"
+---
 # Rule: Keyart Scene Fidelity
 
 **Invariant:** A world scene with approved keyart can only be reported visually ready after a

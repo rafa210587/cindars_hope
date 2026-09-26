@@ -2,7 +2,7 @@
 
 Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam workflows; hooks fazem o enforcement mecânico. Consolidado em 2026-06-12; em 2026-06-29 os 15 stubs históricos remanescentes foram **deletados** e os links em ADRs/game_rules/DECISION_LOG repointados para a rule consolidada (ex.: `save-dto-simple-types-only` → `unity-architecture`).
 
-> **Custo de contexto (2026-06-29):** o invariante de cada rule fica sempre carregado; o detalhe verboso de algumas rules "review-lens/processo" foi movido para skills on-demand (marcadas abaixo com → skill). O diretório `.claude/rules/` agora tem só rules ativas (20 + este índice) — sem stubs de redirecionamento.
+> **Custo de contexto (2026-06-29):** o invariante de cada rule fica sempre carregado; o detalhe verboso de algumas rules "review-lens/processo" foi movido para skills on-demand (marcadas abaixo com → skill). O diretório `.claude/rules/` agora tem só rules ativas (20 + este índice) — sem stubs de redirecionamento. Rules com frontmatter `paths:` carregam só quando a conversa toca arquivos correspondentes; rules sem `paths:` (processo, segurança, git, validação) seguem sempre carregadas, e as invariantes centrais continuam em `AGENTS.md`.
 
 ## Active Rules
 
