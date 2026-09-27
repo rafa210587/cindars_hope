@@ -10,6 +10,25 @@ $baselinePath = Join-Path $PSScriptRoot 'architecture-ratchet-baseline.tsv'
 $serializedGuidBaselinePath = Join-Path $PSScriptRoot 'serialized-guid-baseline.tsv'
 $runtimeRoot = Join-Path $ProjectRoot 'Assets\_Game\Scripts'
 
+function Remove-CSharpComments {
+    param([string]$Text)
+    # Interpolation expressions can contain nested literals; raw strings can have
+    # arbitrary quote delimiters. Preserve the entire source in these cases rather
+    # than risk treating executable code as a comment. This may retain comment debt.
+    if ($Text -match '(?:\$@?|@\$)"|"""') { return $Text }
+    # Lexical heuristic, not semantic analysis. Consume literals before recognizing
+    # comments so URLs, escaped quotes and doubled verbatim quotes stay intact.
+    # Preserve literals: other checks intentionally inspect assembly name strings.
+    $tokens = '@"(?:""|[^"])*"|"(?:\\[\s\S]|[^"\\])*"|''(?:\\[\s\S]|[^''\\])*''|(?<comment>//[^\r\n]*|/\*[\s\S]*?\*/)'
+    return [regex]::Replace($Text, $tokens, [Text.RegularExpressions.MatchEvaluator]{
+        param($match)
+        if ($match.Groups['comment'].Success) {
+            return [regex]::Replace($match.Value, '[^\r\n]', ' ')
+        }
+        return $match.Value
+    })
+}
+
 function Read-DataLines {
     param([string]$Path)
 
@@ -64,6 +83,10 @@ foreach ($line in Read-DataLines -Path $baselinePath) {
 $files = @(Get-ChildItem -LiteralPath $runtimeRoot -Recurse -Filter '*.cs' |
     Where-Object { $_.FullName -notmatch '[\\/]Editor[\\/]' })
 if ($files.Count -eq 0) { throw 'Runtime source set is empty; ratchet cannot certify missing inputs.' }
+$sourceText = @{}
+foreach ($file in $files) {
+    $sourceText[$file.FullName] = Remove-CSharpComments ([IO.File]::ReadAllText($file.FullName))
+}
 
 $violations = [System.Collections.Generic.List[string]]::new()
 $summary = [System.Collections.Generic.List[string]]::new()
@@ -81,7 +104,7 @@ foreach ($ruleEntry in $rules.GetEnumerator()) {
     foreach ($file in $files) {
         $rootPrefix = $ProjectRoot.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
         $relativePath = $file.FullName.Substring($rootPrefix.Length).Replace('\', '/')
-        $currentCount = $ruleEntry.Value.Matches([System.IO.File]::ReadAllText($file.FullName)).Count
+        $currentCount = $ruleEntry.Value.Matches($sourceText[$file.FullName]).Count
         $currentTotal += $currentCount
         $key = "$($ruleEntry.Key)`n$relativePath"
         $allowedCount = if ($baseline.ContainsKey($key)) { $baseline[$key] } else { 0 }
@@ -133,7 +156,10 @@ foreach ($sourceRoot in $sourceRoots) {
     if (-not (Test-Path -LiteralPath $sourceRoot -PathType Container)) { throw "Source root missing: $sourceRoot" }
     foreach ($sourceFile in Get-ChildItem -LiteralPath $sourceRoot -Recurse -Filter '*.cs' -File) {
         $assemblyChecked++
-        if ([IO.File]::ReadAllText($sourceFile.FullName).Contains($predefinedAssemblyName)) {
+        if (-not $sourceText.ContainsKey($sourceFile.FullName)) {
+            $sourceText[$sourceFile.FullName] = Remove-CSharpComments ([IO.File]::ReadAllText($sourceFile.FullName))
+        }
+        if ($sourceText[$sourceFile.FullName].Contains($predefinedAssemblyName)) {
             $violations.Add("PredefinedAssemblyName: $($sourceFile.FullName)")
         }
     }

@@ -73,6 +73,54 @@ try {
         $result = Invoke-Fixture
         Assert-Contract ($result.Exit -ne 0 -and -not $result.Output.Contains('Architecture ratchet PASS')) ('invalid data rejected: '+$invalid.Path)
     }
+    # Exercise the production heuristic too; DebtToken only verifies ratchet accounting.
+    $productionRules = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'architecture-ratchet-rules.tsv'))
+    foreach ($call in @(
+        'Object.FindFirstObjectByType<Player>()',
+        'FindFirstObjectByType<Player>()',
+        'FindAnyObjectByType<Player>()',
+        'FindObjectsByType<Player>(sortMode)',
+        'FindObjectOfType<Player>()',
+        'FindObjectsOfType<Player>()',
+        'GameObject . Find("Player")',
+        "UnityEngine . Object`n . FindAnyObjectByType<Player>()"
+    )) {
+        Reset-Fixture
+        Write-Fixture 'tools/architecture/architecture-ratchet-rules.tsv' $productionRules
+        Write-Fixture 'tools/architecture/architecture-ratchet-baseline.tsv' "ForbiddenUnitySearch`tAssets/_Game/Scripts/Example.cs`t0`n"
+        Write-Fixture 'Assets/_Game/Scripts/Example.cs' ('class Example { void Check() { '+$call+'; } }')
+        $result = Invoke-Fixture
+        Assert-Contract ($result.Exit -ne 0 -and $result.Output.Contains('ForbiddenUnitySearch:')) ('production search heuristic rejects '+$call)
+    }
+    Write-Fixture 'Assets/_Game/Scripts/Example.cs' 'class Example { void FindFirstObjectByTypeHelper() {} }'
+    $result = Invoke-Fixture
+    Assert-Contract ($result.Exit -eq 0) 'search method name prefix is not an invocation'
+    foreach ($comment in @(
+        '// FindObjectsByType<Player>()',
+        '/* FindFirstObjectByType<Player>() */',
+        "/* line one`nFindAnyObjectByType<Player>()`n*/"
+    )) {
+        Write-Fixture 'Assets/_Game/Scripts/Example.cs' $comment
+        $result = Invoke-Fixture
+        Assert-Contract ($result.Exit -eq 0) ('comment does not add architecture debt: '+$comment)
+    }
+    foreach ($prefix in @(
+        'var url = "https://example.test";',
+        'var text = "escaped\" // still string";',
+        'var text = @"doubled"" // still string";',
+        'var text = $@"doubled"" // still string";',
+        'var text = $"{"//"}";',
+        'var text = @$"{"//"}";',
+        'var text = """literal " // " content""";',
+        "var text = @`"line one`n// still string`n/* still string */`";",
+        'var quote = ''\''''; var slash = ''/'';',
+        '/* FindAnyObjectByType<Player>() */',
+        "// FindAnyObjectByType<Player>()`n"
+    )) {
+        Write-Fixture 'Assets/_Game/Scripts/Example.cs' ($prefix+' FindAnyObjectByType<Player>();')
+        $result = Invoke-Fixture
+        Assert-Contract ($result.Exit -ne 0 -and $result.Output.Contains('ForbiddenUnitySearch:')) ('real search after literal/comment remains visible: '+$prefix)
+    }
     Write-Output "ARCHITECTURE_RATCHET_CONTRACTS: PASS ($script:checks assertions; immutable real baselines)"
     exit 0
 } finally {

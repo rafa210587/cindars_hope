@@ -101,6 +101,21 @@ Scoped contract fixture only.
     Write-Fixture 'scope.json' '{"changedFiles":["Assets/_Game/Scripts/Example.cs","docs/validation/example_execution_report.md"],"allowedPaths":["Assets/_Game/Scripts/Example.cs","docs/validation/example_execution_report.md"]}'
     $diff = Invoke-Gate 'check_spec_diff_completeness.ps1' @('-ScopePath',$manifestPath)
     Assert-Contract ($diff.Exit -ne 0 -and $diff.Output.Contains('Runtime code changed but no execution report found')) 'deleted report does not satisfy runtime report requirement'
+    Write-Fixture 'scope.json' '{"changedFiles":["docs/validation/blocks_execution_report.md"],"allowedPaths":["docs/validation/blocks_execution_report.md"]}'
+    $fence = [string]::new([char]96, 3)
+    foreach ($forbiddenPosition in @(0,1,2,3)) {
+        $blocks = @()
+        for ($blockIndex = 0; $blockIndex -lt 4; $blockIndex++) {
+            $command = if ($blockIndex -eq $forbiddenPosition) { 'dotnet build | Select-String error' } else { 'Write-Output ok' }
+            $blocks += $fence + "powershell`n" + $command + "`n" + $fence
+        }
+        Write-Fixture 'docs/validation/blocks_execution_report.md' ($blocks -join "`n`n")
+        $quality = Invoke-Gate 'check_spec_quality.ps1' @('-ScopePath',$manifestPath)
+        Assert-Contract ($quality.Exit -ne 0 -and $quality.Output.Contains('Forbidden build validation patterns detected')) ('forbidden command rejected in block '+($forbiddenPosition+1))
+    }
+    Write-Fixture 'docs/validation/blocks_execution_report.md' (($fence + "powershell`nWrite-Output ok`n" + $fence + "`n") * 4)
+    $quality = Invoke-Gate 'check_spec_quality.ps1' @('-ScopePath',$manifestPath)
+    Assert-Contract ($quality.Exit -eq 0) 'multiple safe code blocks accepted'
     Write-Output "VALIDATION_SCOPE_TESTS: PASS ($script:checks assertions; isolated fixtures)"
     exit 0
 } finally {

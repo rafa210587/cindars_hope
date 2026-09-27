@@ -1,7 +1,7 @@
 # rule_id	regex
 RuntimeInitialize	RuntimeInitializeOnLoadMethod
 SingletonDeclaration	\bstatic\s+[^\r\n;=]+\s+(?:Instance|Active|ActiveInstance)\b
-ForbiddenUnitySearch	\b(?:(?:GameObject|Object|UnityEngine\.Object)\.Find(?:ObjectOfType|ObjectsOfType|FirstObjectByType|AnyObjectByType|ObjectsByType)?|FindObjects?OfType)\s*(?:<|\()
+ForbiddenUnitySearch	\b(?:(?:GameObject|Object|UnityEngine\s*\.\s*Object)\s*\.\s*Find(?:ObjectOfType|ObjectsOfType|FirstObjectByType|AnyObjectByType|ObjectsByType)?|Find(?:Objects?OfType|FirstObjectByType|AnyObjectByType|ObjectsByType))\s*(?:<|\()
 ResourcesLoad	\bResources\.Load(?:All)?\s*(?:<|\()
 DirectInput	\b(?:UnityEngine\.)?Input\.Get(?:Key|KeyDown|KeyUp|Axis|AxisRaw|Button|ButtonDown|ButtonUp|MouseButton|MouseButtonDown|MouseButtonUp)\s*\(
 TimeScaleWrite	\bTime\.timeScale\s*=

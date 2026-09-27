@@ -388,7 +388,8 @@ foreach ($report in $reportFiles) {
     # Check for filtered build patterns in code blocks
     if ($content -match '```powershell') {
         $codeBlocks = $content -split '```powershell'
-        for ($i = 1; $i -lt $codeBlocks.Count; $i += 2) {
+        # Split only on opening fences: every subsequent segment is a code block.
+        for ($i = 1; $i -lt $codeBlocks.Count; $i++) {
             $block = $codeBlocks[$i] -split '```' | Select-Object -First 1
 
             foreach ($pattern in $forbiddenPatterns) {
