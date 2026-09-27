@@ -144,7 +144,7 @@ namespace CindarsHope.Editor.Validation
                     if (blocked) continue;
                     var position = endpoint + delta;
                     SetPosition(position);
-                    count = solid.OverlapCollider(filter, overlaps);
+                    count = solid.Overlap(filter, overlaps);
                     if (count == overlaps.Length) throw new InvalidOperationException("Interaction overlap buffer saturated.");
                     for (var i = 0; i < count; i++)
                         if (!overlaps[i].transform.IsChildOf(player.transform)) { blocked = true; break; }

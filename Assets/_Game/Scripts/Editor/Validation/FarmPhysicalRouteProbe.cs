@@ -297,7 +297,7 @@ namespace CindarsHope.Editor.Validation
                 var bodyOffset = (Vector2)playerCollider.bounds.center - (Vector2)player.transform.position;
                 check.queryFeet = (contact ?? (Vector2)bounds.center) - bodyOffset;
                 SetPosition(player, check.queryFeet);
-                int count = playerCollider.OverlapCollider(filter, overlaps);
+                int count = playerCollider.Overlap(filter, overlaps);
                 if (count >= overlaps.Length) throw new InvalidOperationException("Authored solid overlap buffer saturated.");
                 var hitPaths = new List<string>();
                 for (int i = 0; i < count; i++)
@@ -440,7 +440,7 @@ namespace CindarsHope.Editor.Validation
 
         private static bool IsClear(Collider2D collider, ContactFilter2D filter, Collider2D[] overlaps, Transform player)
         {
-            int count = collider.OverlapCollider(filter, overlaps);
+            int count = collider.Overlap(filter, overlaps);
             if (count >= overlaps.Length) throw new InvalidOperationException("Collider overlap buffer saturated.");
             for (int i = 0; i < count; i++) if (!overlaps[i].transform.IsChildOf(player)) return false;
             return true;

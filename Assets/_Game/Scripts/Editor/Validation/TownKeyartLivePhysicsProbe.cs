@@ -334,7 +334,7 @@ namespace CindarsHope.Editor.Validation
             try
             {
                 SetPosition(player,point);
-                int count=solid.OverlapCollider(filter,overlaps);
+                int count=solid.Overlap(filter,overlaps);
                 if(count>=overlaps.Length)return "BUFFER_SATURATED";
                 var names=new List<string>();
                 for(int i=0;i<count;i++)if(overlaps[i]!=null&&!overlaps[i].transform.IsChildOf(player.transform))names.Add(ObjectPath(overlaps[i].transform));
@@ -424,7 +424,7 @@ namespace CindarsHope.Editor.Validation
 
         private static bool Clear(Collider2D solid, ContactFilter2D filter, Collider2D[] overlaps, Transform player)
         {
-            int count = solid.OverlapCollider(filter, overlaps);
+            int count = solid.Overlap(filter, overlaps);
             if (count >= overlaps.Length) throw new InvalidOperationException("Player overlap buffer saturated.");
             for (int i = 0; i < count; i++) if (!overlaps[i].transform.IsChildOf(player)) return false;
             return true;

@@ -444,7 +444,7 @@ namespace CindarsHope.Editor.Dev
             {
                 if (id == "lake" && offset != Vector2.zero) break; // Require the authored deck, never fall back onto shore.
                 Teleport(player, desired + offset);
-                int count = collider.OverlapCollider(filter, overlaps);
+                int count = collider.Overlap(filter, overlaps);
                 if (count >= overlaps.Length) continue;
                 bool blocked = false;
                 for (int i = 0; i < count; i++) if (!overlaps[i].transform.IsChildOf(player.transform)) { blocked = true; break; }
