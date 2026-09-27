@@ -5408,8 +5408,19 @@
     "priority": "",
     "type": "",
     "domain": "",
-    "title": "Skills 21G — ativação auditada de receitas de peixe e couro",
+    "title": "Skills 21G — ativação seletiva de receitas de peixe/couro",
     "path": ".specs/features_futuras/skills_sdd_v1/spec_skills_21g_recipe_activation_v1.md"
+  },
+  {
+    "id": "spec_skills_21g0_craft_cross_scene_foundation_v1",
+    "bucket": "Outro",
+    "status": "DRAFT — blueprint técnico para revisão; implementação NÃO autorizada; fora de .specs/a_implementar/",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Skills 21G0 — fundação Craft persistente entre Farm e Town",
+    "path": ".specs/features_futuras/skills_sdd_v1/spec_skills_21g0_craft_cross_scene_foundation_v1.md"
   },
   {
     "id": "SPEC_SOURCE_OF_TRUTH",

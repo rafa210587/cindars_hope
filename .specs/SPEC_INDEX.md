@@ -3,14 +3,14 @@
 > Gerado por `tools/generate_spec_index.ps1`. NAO editar a mao -- rode o script.
 > Indice compacto para descoberta barata de specs (status por pasta + cabecalho).
 
-Total: **496** specs
+Total: **497** specs
 - Fila-FABLE: 5
 - Fila: 73
 - Closeout-MVP: 12
 - Build-Validated: 12
 - Implementado: 308
 - Automatica: 1
-- Outro: 85
+- Outro: 86
 
 | ID | Bucket | Status | Wave | Domain | Path |
 |---|---|---|---|---|---|
@@ -506,6 +506,7 @@ Total: **496** specs
 | spec_skills_08_equilibrio_aceitacao_v1 | Outro | RASCUNHO — implementação não autorizada | SKILLS_SDD_V1 | Skills | .specs/features_futuras/skills_sdd_v1/spec_skills_08_equilibrio_aceitacao_v1.md |
 | spec_skills_21e_cross_channel_arbitrage_v1 | Outro | SUPERADA COMO POLÍTICA — teto universal por SKU rejeitado após decisão humana de 2026-09-13; somente diagnóstico histórico, implementação NÃO autorizada | - | - | .specs/features_futuras/skills_sdd_v1/spec_skills_21e_cross_channel_arbitrage_v1.md |
 | spec_skills_21g_recipe_activation_v1 | Outro | DRAFT — decisões de balanceamento pendentes; implementação NÃO autorizada; fora de .specs/a_implementar/ | - | - | .specs/features_futuras/skills_sdd_v1/spec_skills_21g_recipe_activation_v1.md |
+| spec_skills_21g0_craft_cross_scene_foundation_v1 | Outro | DRAFT — blueprint técnico para revisão; implementação NÃO autorizada; fora de .specs/a_implementar/ | - | - | .specs/features_futuras/skills_sdd_v1/spec_skills_21g0_craft_cross_scene_foundation_v1.md |
 | SPEC_SOURCE_OF_TRUTH | Outro | - | - | - | .specs/SPEC_SOURCE_OF_TRUTH.md |
 | spec_ui_ux_full_gameplay_inventory_hotbar_menus | Outro | Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md |
 | SPEC_VALIDATION_MATRIX_MASTER | Outro | - | - | - | .specs/SPEC_VALIDATION_MATRIX_MASTER.md |

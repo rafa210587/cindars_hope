@@ -50,9 +50,15 @@ informational. Preserve applicable secret scanning and prevent disclosure of sec
 | UI | Open/close/Esc; focus; movement/combat blocked by modal; empty/error states |
 | Combat/skills | Formulas, cooldowns, status, costs/gates and changed feedback integration |
 | EventBus | Publish/subscribe; unsubscribe/lifetime; reentrancy/allocation when relevant |
+| Architecture | Changed dependency direction, state ownership, thin Unity adapters and no new forbidden APIs; relevant ratchet plus contract review. Existing baseline debt is not permission to add equivalent debt. |
 
 Before/after characterization for a substantial refactor is meaningful evidence.
 Do not reduce statistical samples merely because they are slow.
+Control time, RNG, initial state and input ordering for deterministic logic. Assert observable
+outcomes independently of the implementation, including failure without partial mutation.
+Use actual scene/lifecycle tests for wiring; a deterministic mock does not prove integration.
+For each changed validator, prove a clean fixture passes and a known violation fails with
+a nonzero exit code. Missing inputs or zero selected tests cannot certify behavior.
 
 ## Tooling semantics
 
