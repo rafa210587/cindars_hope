@@ -1,112 +1,52 @@
 ---
 name: event-bus-pattern
-description: Comunicação entre sistemas via GameEventBus — definir eventos como DTOs, publicar e assinar corretamente. Usar sempre que houver comunicação entre sistemas de gameplay (combat, farming, inventory, UI, NPC, cave, economia, ciclo de dia).
+description: Define or review cross-system gameplay requests, facts and subscriptions through GameEventBus, with explicit mutation ownership and lifecycle.
 ---
 
-# Skill: Padrão Event Bus
+# Skill: Event bus pattern
 
-**Regra central: toda comunicação entre sistemas de gameplay usa `GameEventBus.Publish()` / `Subscribe()`. Chamadas diretas MonoBehaviour → MonoBehaviour são proibidas** (rule: unity-architecture).
+**Cross-system gameplay uses `GameEventBus.Publish` / `Subscribe`; one owner commits state.**
+Local helpers/policies and injected queries inside the owner boundary remain explicit calls.
+Bootstrap wiring and Unity callbacks are not gameplay messages.
 
-## Quando usar
+## Request, commit, fact
 
-- Spec adiciona comunicação entre dois sistemas diferentes (ex.: combat → HUD, farm → economy).
-- Spec cria novo tipo de evento ou novo subscriber.
-- Spec menciona "publicar evento", "sistema reage a X", "desacoplar sistemas".
-- Qualquer spec de gameplay que precise que um sistema saiba o que outro fez.
+- Discover existing events and subscribers before adding a type. Use pure DTO payloads with
+  stable IDs/simple values, no Unity references; preserve existing IDs and APIs.
+- A request expresses intent; its authoritative owner validates, commits or rejects it.
+  A completed fact describes state already committed. Never mutate damage in response to
+  `DamageAppliedEvent`: that can double-apply it and make correctness depend on listener order.
+- Conceptual flow (names illustrate semantics, not a request to add duplicate event types):
+  `DamageRequestedEvent` → damage owner validates/applies → `DamageAppliedEvent` → HUD/audio.
+  Rejected requests produce the existing failure feedback and no completed fact.
+- Commit all related state before publishing facts. Transactions keep inventory/gold/job
+  changes atomic; splitting their mutation among subscribers is not a transaction.
+- Check actual dispatch semantics. A synchronous bus is not a queue: callbacks may reenter
+  the owner before Publish returns. Do not assume listener order or automatic deduplication.
+  Prevent request/fact feedback loops; use existing operation IDs when retries need idempotency.
 
-## Definir um evento (DTO puro)
+## Lifetime
 
-```csharp
-// CORRETO — apenas primitivos e IDs
-public readonly struct DamageAppliedEvent
-{
-    public readonly int TargetId;      // ID, nunca referência
-    public readonly float Amount;
-    public readonly bool IsCritical;
-    public DamageAppliedEvent(int targetId, float amount, bool isCritical)
-    { TargetId = targetId; Amount = amount; IsCritical = isCritical; }
-}
+- Unity adapters pair Subscribe in OnEnable with Unsubscribe in OnDisable (or the existing
+  matching OnDestroy contract). Pure subscribers have explicit ownership/disposal.
+- Use the same delegate instance; avoid unremovable anonymous handlers. Rebinding must not
+  duplicate subscriptions. Filter targeted messages by ID and keep callbacks bounded.
+- Tests clean static subscriptions in `finally`/TearDown even when assertions fail.
+  When static state or boot changes, cover repeated entry/exit using the project's actual
+  domain-reload setting. Reuse existing reset/composition paths; do not add auto-bootstraps.
 
-// ERRADO — refs Unity no evento
-public class DamageAppliedEvent
-{
-    public Transform Target;       // ❌ sem Transform
-    public MonoBehaviour Damager;  // ❌ sem MonoBehaviour
-    public GameObject Hit;         // ❌ sem GameObject
-}
-```
+## Evidence
 
-**Naming:** `[Substantivo][Verbo]Event` — `DayStartedEvent`, `EnemyDefeatedEvent`, `PlayerDiedEvent`, `ItemCraftedEvent`.
+Test the owner's observable commit/failure behavior and affected subscribers, not just DTO
+field assignment: wrong target ignored; valid mutation once; rejection leaves state intact;
+completed fact observes committed state; disable/re-enable does not multiply callbacks.
+Add reentrancy/retry/scene-transition cases when those contracts change. Use the canonical
+validation matrix; EditMode alone does not certify scene lifetime or UI wiring.
 
-## Publicar
+## References, only when relevant
 
-```csharp
-// CORRETO
-GameEventBus.Publish(new DamageAppliedEvent(targetId, damage, isCritical));
-
-// ERRADO — chamada direta
-enemy.TakeDamage(damage); // ❌ acoplamento direto
-GetComponent<AudioManager>().Play("hit"); // ❌ chamada cruzada de sistema
-```
-
-## Assinar e desassinar
-
-```csharp
-private void OnEnable()  => GameEventBus.Subscribe<DamageAppliedEvent>(OnDamage);
-private void OnDisable() => GameEventBus.Unsubscribe<DamageAppliedEvent>(OnDamage);
-
-private void OnDamage(DamageAppliedEvent evt)
-{
-    if (evt.TargetId != _myId) return;  // filtrar — não é para mim
-    ApplyDamage(evt.Amount);
-}
-```
-
-**Regras de subscriber:**
-- `OnDisable` ou `OnDestroy` sempre com Unsubscribe — sem isso há memory leak e eventos depois da morte.
-- Filtrar por `TargetId` ou equivalente quando o evento não for global.
-- Handler leve — nenhum loop pesado, nenhuma busca de componente no callback.
-- Nunca publicar o mesmo tipo de evento dentro do seu próprio handler (cadeia circular).
-
-## Checklist (antes de commitar)
-
-```
-[ ] Nenhum FindObjectOfType / FindObjectsByType em código novo
-[ ] Nenhuma chamada direta cross-system — toda comunicação via Publish()
-[ ] Todo Subscribe tem Unsubscribe em OnDisable/OnDestroy
-[ ] Eventos: apenas primitivos + IDs, sem Transform/MonoBehaviour/GameObject
-[ ] Naming: [Substantivo][Verbo]Event
-[ ] Handlers filtram por ID quando evento não é global
-[ ] Nenhuma cadeia circular (A publica B, B publica A)
-```
-
-## Quando NÃO usar
-
-- Comunicação **interna ao mesmo MonoBehaviour** — métodos privados são corretos.
-- **Bootstrap injection** (GameBootstrap.SetX()) durante inicialização — não criar evento para wiring.
-- **Leitura de estado** (`_staminaManager.CurrentStamina`) — acesso direto de leitura é ok se a referência veio do bootstrap.
-- **Lifecycle do Unity** (`OnCollisionEnter`, `OnTriggerEnter`) no mesmo component — não criar evento para isso.
-
-## Testes
-
-Eventos são structs puros → testáveis em EditMode (skill: `editmode-test-authoring`):
-
-```csharp
-[Test]
-public void DamageEvent_CorrectSubscriberReceivesAmount()
-{
-    float received = 0f;
-    void Handler(DamageAppliedEvent e) { if (e.TargetId == 42) received = e.Amount; }
-    GameEventBus.Subscribe<DamageAppliedEvent>(Handler);
-    GameEventBus.Publish(new DamageAppliedEvent(42, 25f, false));
-    Assert.AreEqual(25f, received);
-    GameEventBus.Unsubscribe<DamageAppliedEvent>(Handler);
-}
-```
-
-## Relacionados
-
-- `(rule: unity-architecture)` — GameEventBus obrigatório; chamadas diretas proibidas
-- `(skill: action-feedback-pipeline)` — `PlayerActionFeedbackEvent` para recusas de gameplay
-- `(skill: audio-event-wiring)` — `SfxEventBridge` assina eventos de gameplay via este pattern
-- `(skill: editmode-test-authoring)` — testar contratos de evento em EditMode
+- [Event queue tradeoffs](https://gameprogrammingpatterns.com/event-queue.html): global state
+  and feedback loops; the local GameEventBus is not assumed to implement this queue pattern.
+- [Unity domain reload](https://docs.unity.cn/Manual/DomainReloading.html): static event cleanup.
+- Local rules: `unity-architecture`; skills: `action-feedback-pipeline`, `audio-event-wiring`,
+  `editmode-test-authoring`. External examples do not override project invariants.

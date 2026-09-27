@@ -1,48 +1,35 @@
 ---
 name: system-reuse-audit
-description: Auditoria pré-criação — antes de criar qualquer novo manager, service, SO type ou system, verifique que nada equivalente já existe. Use no Phase 0 de toda spec e sempre que estiver prestes a criar uma classe cujo nome/conceito pode já existir.
+description: Check current owners, contracts and callers before adding a manager, service, data type or system. Use during Phase 0 or when a proposed abstraction may duplicate existing behavior.
 ---
 
-# Skill: System Reuse Audit
+# Skill: System reuse audit
 
-## Por que existe (incidentes reais neste repo)
+**Find the current owner before creating another implementation.** Historical incidents and
+similar folder names are search hints, not proof that two active systems are equivalent.
 
-- `Scripts/Craft/` (CraftingManager, RecipeDataSO, RecipeDatabaseSO — 12 arquivos) e `Scripts/Crafting/` (CraftingService, RecipeDefinition, RecipeType — 5 arquivos) são DOIS sistemas de crafting paralelos.
-- `StatusEffectSO` existe duas vezes: `Combat/StatusEffectSO.cs` e `Combat/StatusEffect/StatusEffectSO.cs`.
-- `SkillActionSO` existe duas vezes: `Combat/Skills/SkillActionSO.cs` e `Skills/SkillActionSO.cs`.
+## Bounded discovery
 
-`spec_quality_gate` marca "criou sistema paralelo quando deveria reusar" como `NEEDS_REWORK`. O hook `runtime-code-guard` sinaliza nomes de classe duplicados no momento do Write — esta skill é a auditoria que você roda ANTES de escrever.
+1. Search exact type names and domain synonyms with `rg` in `Assets/_Game/Scripts`;
+   use `rg --files` for paths. Include untracked work; `git grep` alone misses it.
+2. Inspect candidate declarations, callers, composition wiring and relevant tests.
+   Distinguish executor, unlock/catalog, adapter and legacy compatibility roles.
+3. Record reuse/extend/new and the decisive path in the existing plan or task evidence.
+   No separate report, universal type inventory or fixed time quota is required.
 
-## Procedimento de auditoria (5 minutos, antes de criar qualquer coisa)
+## Decision
 
-```powershell
-# 1. Exact name and near-names
-git grep -nE "class\s+(\w*)<CoreConcept>(\w*)" -- "Assets/_Game/Scripts/*.cs"
-
-# 2. Concept synonyms (e.g., Craft|Crafting|Recipe|Workshop; Shop|Store|Vendor; Spawn|Materialize)
-git grep -lE "<synonym1>|<synonym2>" -- "Assets/_Game/Scripts/*.cs"
-
-# 3. Domain folder listing — does a folder for this domain already exist?
-Get-ChildItem Assets\_Game\Scripts -Directory
-```
-
-## Matriz de decisão
-
-| Achado | Ação |
+| Finding | Action |
 |---|---|
-| Mesmo conceito, sistema ativo | **Reuse/estenda.** Faça o wiring da sua spec nele. |
-| Mesmo conceito, dois sistemas existentes (ex.: Craft vs Crafting) | **PARE — reporte ao humano.** Não escolha um silenciosamente e não adicione um terceiro. |
-| Nome similar, conceito diferente | Renomeie o SEU novo tipo para remover a ambiguidade. |
-| Nada encontrado | Crie, seguindo as convenções de domínio (`<Thing>DataSO`, service na pasta do domínio). |
+| An active owner already implements the contract | Reuse or extend it through existing wiring. |
+| Several candidates | Follow the owner/migration already selected by the approved spec. If still materially ambiguous, report the conflict and continue independent authorized work. Do not add a third system. |
+| Similar name, different responsibility | Preserve the existing type; choose an unambiguous name for the new responsibility. |
+| No suitable implementation | Create only the smallest cohesive type needed by the approved contract. |
 
-## Evidência obrigatória no execution report
+Before extracting, identify state ownership, consumer needs and failure behavior. A helper
+that takes the entire manager hides dependencies instead of separating them. Do not create an
+interface per class; use a port for a real boundary or substitutable policy.
 
-```text
-## Existing Systems Audit
-Searched: <patterns/synonyms used>
-Found: <types/folders, with verdict reuse|extend|new|conflict>
-Created new: <list + one-line justification each>
-Conflicts reported to human: <none | list>
-```
-
-Uma reivindicação `BUILD_VALIDATED` sem esta seção é inválida (item 3 do checklist do spec_quality_gate).
+`runtime-code-guard` flags some duplicate names after writes; it does not prove semantic
+duplication or undo edits. Apply the canonical validation matrix; absence of a particular
+report heading does not invalidate otherwise valid build evidence.

@@ -24,6 +24,12 @@ paths:
 
 ## Patterns e refatoração
 
+Before changing a runtime boundary, record in the existing spec/plan (a few lines suffice):
+the state owner, allowed dependency direction, inputs/outputs, mutation/commit point,
+lifetime and observable failure behavior. Reuse existing contracts; do not add a design document.
+Review save, cross-system or lifecycle contracts before implementation; local fixes remain local.
+Use the selected pattern only when it resolves a demonstrated variation or invariant.
+
 - Aplicar `system-reuse-audit` e `code-minimalism-ladder` antes de criar abstrações.
 - Nomear o problema, a variação real e o precedente ao escolher um design pattern.
 - Preservar API, GUIDs, campos serializados, schema e comportamento; testar a costura
@@ -54,3 +60,8 @@ revisão deve citar a responsabilidade ou contrato violado e seu impacto concret
 revisam coesão/contratos/testes. `Test-ArchitectureRatchet.ps1` impede aumento da dívida
 que mede; não demonstra SOLID nem ausência de todos os ciclos. Gate estrito mantém
 exit codes reais e falhas explícitas, incluindo docs.
+Its regex counts are per file: replacement by a different violation with the same count can
+escape detection. Review added dependencies in the diff; never raise the baseline to pass.
+Assembly compilation rejects assembly cycles, not cycles among domains in one Runtime assembly.
+The ratchet is a textual heuristic: unsupported interpolated/raw literals retain source
+conservatively, so comment/literal matches require inspection and are not semantic violations.

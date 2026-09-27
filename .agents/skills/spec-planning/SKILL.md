@@ -14,6 +14,10 @@ Read the target spec and only its relevant source files; inspect existing implem
    existing code, required delta and the chosen project pattern skill.
 2. Define CREATE versus MODIFY ownership, real paths, existing versus proposed signatures,
    lifecycle, failure behavior, ordering and save compatibility. Do not invent an existing API.
+   For each changed boundary, identify the state owner, permitted dependency direction,
+   mutation/commit point and request-versus-completed-event semantics. State which existing
+   or planned test would reject a violation; distinguish existing evidence from missing
+   coverage. Resolve high-risk contracts before implementing consumers.
 3. Explain reuse decisions. Avoid parallel managers, duplicate catalogs and business logic in views.
 4. Specify per-method edits and pseudocode for nontrivial transactions or formulas.
    Identify shared-file locks and dependent contracts before suggesting parallel execution.

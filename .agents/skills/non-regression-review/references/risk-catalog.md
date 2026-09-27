@@ -31,7 +31,9 @@ Convenções gerais de craft em C# para runtime code. Esta seção trata de *com
 
 ### Enforcement
 
-Estilo é revisado, não hard-gated: `/code-review`, `/review-non-regression`, e o agent `architecture-reviewer`. O hook `runtime-code-guard` já bloqueia o subconjunto arquitetural (search APIs, forbidden namespaces, classes duplicadas).
+Style is reviewed through `/review-non-regression` and `architecture-reviewer`. The PostToolUse
+`runtime-code-guard` reports a subset (search APIs, namespaces, duplicate names); it does not
+undo an edit. File presence does not prove host hook execution.
 
 ---
 
@@ -70,7 +72,7 @@ Revisado pela skill `non-regression-review`, `/code-review`, e o agent `bugfix-i
 
 ---
 
-## (movido de rules/gameplay-design-patterns.md) Seleção de Design Pattern de Gameplay
+## Gameplay pattern selection
 
 Orientação de *seleção* de pattern. Os invariantes duros (GameEventBus para comms de gameplay, no runtime global search, save DTOs) estão em `unity-architecture.md`; esta seção diz **qual pattern buscar**, mapeado para sistemas que já existem aqui, para que código novo combine com o house style em vez de inventar um paralelo.
 
@@ -85,13 +87,36 @@ Mantenha regras de gameplay tuneáveis/testáveis em C# puro (sem dependência d
 | **State Machine** | muitos states/transitions/phases ou boolean flags conflitantes (player, enemy, boss, UI flow, game flow) | `BossPhaseLogic`; skill `state-machine-design` |
 | **Strategy** | a regra muda por type/config (reward grant, pricing, drop selection) | reward strategy em scene interactables; skill `scene-interactable-wiring` |
 | **Command** | uma ação pode vir de input, AI, replay ou uma queue | input/action handling |
-| **Event Bus (Observer)** | sistemas diferentes reagem ao mesmo fato de domínio | `GameEventBus` (rule `event-bus-only-gameplay-communication`; skill `event-bus-pattern`) — **mandatory** para comms de gameplay, não opcional |
+| **Event Bus (Observer)** | sistemas diferentes reagem ao mesmo fato de domínio | `GameEventBus` (rule `unity-architecture`; skill `event-bus-pattern`) — **mandatory** para comms de gameplay, não opcional |
 | **Factory** | a criação precisa de prefab/config/deps/pooling | `ProceduralSfxFactory`, spawn services; skill `bootstrap-wiring` |
-| **Object Pool** | spawn/despawn frequente (projectiles, floating text, drops, wave enemies, SFX) | skill `object-pooling-pattern` (baseline do projeto: sem pooling ainda) |
+| **Object Pool** | Measured spawn/despawn cost justifies reuse and reset complexity | Inspect the current spawn service; skill `object-pooling-pattern` |
 | **Adapter / Ports** | isolar engine, save, audio, analytics do domínio | projections; skill `runtime-bootstrap-pattern` |
 | **Decorator / Modifier** | buffs/debuffs/affixes componíveis | `StatusEffectDatabase`; skills `enemy-ai-authoring`, `ability-effect-composition` |
 | **Null Object** | um default seguro vence um null-check em cada call site | fallback de categoria 2 na seção Error Handling acima |
 | **Flyweight / Data Asset** | dados compartilhados, tuneados pelo designer | ScriptableObjects (skill `data-catalog-authoring`) |
+
+### Contract evidence, only for the chosen pattern
+
+| Pattern/boundary | Property to verify |
+|---|---|
+| State | Legal/illegal transitions, cancellation and enter/exit once; enum/table is sufficient until polymorphism solves real variation. |
+| Strategy/ports | Same preconditions, outcomes and failure semantics for substitutes; domain does not pull concrete services from a locator. |
+| Command/transaction | Input intent validated by one owner; commit atomically, retry safely where required, publish facts after commit. |
+| Observer/bus | Request differs from completed fact; no order-dependent mutation, duplicate subscriptions or reentrant feedback loop. |
+| Factory/pool | Fully configured before activation; reset/dispose on reuse/unload; measured benefit for pooling. |
+| Data asset/projection | Shared authored data stays separate from per-instance mutable state; view projects state and sends intent. |
+
+Patterns are options with costs, not a checklist to instantiate. For runtime boundaries,
+record owner, dependencies, lifetime and failure behavior in the existing plan before coding.
+
+### Primary references (consult only the relevant topic)
+
+- [Unity design patterns and SOLID](https://unity.com/blog/game-programming-patterns-update-ebook): concrete Unity examples, not a mandate to adopt every pattern.
+- [Component tradeoffs](https://gameprogrammingpatterns.com/component.html): decoupling adds complexity; prefer existing seams.
+- [Unity State pattern](https://learn.unity.com/course/design-patterns/tutorial/develop-a-modular-flexible-codebase-with-the-state-programming-pattern): use extra structure when state complexity warrants it.
+- [Unity assembly references](https://docs.unity3d.com/6000.0/Documentation/Manual/assembly-definitions-referencing.html): compiler boundaries apply to assemblies, not every domain inside one assembly.
+
+External guidance supports decisions; project invariants and approved contracts govern implementation.
 
 ### Anti-patterns a sinalizar
 
@@ -108,7 +133,8 @@ Revisado pelo agent `architecture-reviewer` (pre-wave / post-integration) e pela
 
 ## (movido de rules/no-magic-balance-values.md) Sem Magic Values de Balance
 
-Valores tuneáveis de gameplay (dano, custo, duração, threshold, percentagem) devem viver em ScriptableObjects de balance ou constants nomeadas — nunca inline em métodos ou condicionais.
+Tunable gameplay/content values belong in existing balance ScriptableObjects; named constants
+are reserved for fixed technical invariants. Preserve legacy behavior until an authorized migration.
 
 ### O que é um magic balance value
 
@@ -120,7 +146,7 @@ Qualquer literal numérico que determina comportamento de gameplay:
 - Escalas e multipliers (1.15x bônus de acessório)
 - Horas do dia (02:00 de colapso por fadiga)
 
-### Precedentes canônicos — copiar, não reinventar
+### Existing examples to inspect, not blanket permission to copy
 
 | Precedente | Sistema | Tipo |
 |---|---|---|
@@ -130,6 +156,9 @@ Qualquer literal numérico que determina comportamento de gameplay:
 | `DerivedFollowupFormulas.CraftTimeMultiplier` | Multiplicador de crafting | método puro configurável |
 | `FatigueSystem._collapseHour` | Hora de colapso | `[SerializeField]` |
 
+Verify these paths/values in current code. Legacy constants/serialized fields in this table
+are discovery hints, not authorization to hardcode new balance data or to migrate outside scope.
+
 ### Regra
 
 ```csharp
@@ -138,7 +167,7 @@ if (hunger < 20) PublishCriticalEvent();
 yield return new WaitForSeconds(3.5f);
 if (damage > 150) TriggerKnockback();
 
-// CORRETO — threshold nomeado em SO ou const
+// CORRETO — threshold de gameplay vindo da configuração
 if (hunger < _balance.CriticalHungerThreshold) PublishCriticalEvent();
 yield return new WaitForSeconds(_config.ToastDurationSeconds);
 if (damage > _combat.KnockbackThreshold) TriggerKnockback();
@@ -151,7 +180,7 @@ if (damage > _combat.KnockbackThreshold) TriggerKnockback();
 | Tuneável em runtime pelo designer | `[SerializeField]` num SO de balance dedicado |
 | Técnico fixo (não muda entre builds) | `private const float X = ...` no topo da classe |
 | Compartilhado entre sistemas | SO de balance dedicado (ex.: `PlayerNeedsBalanceSO`) |
-| Threshold de regra de domínio | `const` no serviço responsável pela regra |
+| Domain threshold | Gameplay balance/content belongs in an existing SO; only a fixed technical invariant belongs in a named constant. |
 
 ### O que NÃO é magic value
 

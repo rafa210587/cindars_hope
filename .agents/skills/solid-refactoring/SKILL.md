@@ -45,7 +45,7 @@ Do not read history, all classes or all patterns by default.
    - LSP: preserve pre/postconditions and failures; test implementations against the same contract.
    - ISP: narrow the contract to its consumer; do not artificially fragment a cohesive protocol.
    - DIP: inject required contracts/values; wire through the composition root/installers.
-4. **Choose a pattern:** use the `non-regression-review` table and discovered precedents.
+4. **Choose a pattern:** consult only [pattern selection](../non-regression-review/references/risk-catalog.md#gameplay-pattern-selection) and discovered precedents; this does not invoke an audit.
    Justify the problem it solves. No obligation to use a pattern in every class.
 5. **Extract incrementally:** preserve external API, serialized fields, GUIDs,
    save schema and lifecycle. `GameEventBus` remains for gameplay communication between

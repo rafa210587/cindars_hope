@@ -1,32 +1,39 @@
 ---
 name: rng-and-determinism
-description: Usa RNG seeded por sistema para qualquer randomness que toque saves, loot, weather, spawns ou generation. Generaliza o padrão de stable-run da cave (FASE9F) para todos os sistemas. Use sempre que adicionar ou mudar randomness em qualquer ponto do gameplay.
+description: Preserve reproducible gameplay randomness and saved outcomes for loot, weather, spawns and generation. Use when changing RNG, seed derivation or replay-sensitive ordering.
 ---
 
-# Skill: RNG e Determinism
+# Skill: RNG and determinism
 
-O precedente do projeto está na geração da cave (stable-run, FASE9F): seeds determinísticos derivados de `CaveWorldSeed + CaveRunSeed + CaveLevel + stable salt`; revisits nunca fazem reroll; o seed só muda em new game / KO / comando explícito de debug (rule: cave-stable-run). **Aplique a mesma disciplina em todos os outros sistemas.**
+**A seed alone does not establish determinism.** Control algorithm/version, stream ownership,
+call order, stable input ordering and time. Reuse the existing RNG/clock ports; no parallel RNG service.
 
-## Regras para qualquer novo randomness
+## Contract
 
-1. **Nunca use `UnityEngine.Random` (global state) em sistemas cujo outcome é salvo ou revisitado** — loot rolls, weather generation, spawn composition, quality rolls, variação de NPC schedule. Global state significa que a chamada de qualquer outro sistema reordena os seus resultados.
-2. **Um `System.Random` por sistema por escopo**, seeded a partir de componentes estáveis:
-   ```csharp
-   int seed = StableHash(worldSeed, "loot", enemyId, dayNumber);   // order-insensitive system salt
-   var rng = new System.Random(seed);
-   ```
-   Use um string hash determinístico (ex.: FNV-1a sobre a chave composta) — **não** `string.GetHashCode()` (varia por runtime/process) e nunca GUIDs/timestamps para stable IDs (rule: cave-stable-run).
-3. **Mesmo trigger, mesmo resultado:** reabrir o mesmo chest, reentrar no mesmo cave level, refazer o reroll do weather do mesmo dia depois do reload deve produzir outcomes idênticos. Se o reroll FOR o design (daily shop stock), o day number entra no seed.
-4. **Faça o roll no momento da decisão e persista o OUTCOME** no save data — não persista o RNG state e não faça reroll no load.
-5. **Randomness visual-only é exceção** (particle jitter, offsets de idle animation): `UnityEngine.Random` está ok ali — os outcomes nunca são salvos nem relevantes para o gameplay.
-6. **Telegraph para RNG de alto risco:** chances de rare-drop ou critical que gateiam progressão devem ser inspecionáveis nos design docs (percentuais da drop table no loot SO, validados pelo catalog validator), nunca enterradas como magic numbers no código.
+1. Separate Gameplay/World/Visual purposes. Never consume global `UnityEngine.Random` in a
+   saved or revisited gameplay decision. Visual jitter may use it only if it cannot affect gameplay.
+2. Reuse the current stable seed derivation with world/run/entity/day and a domain salt as
+   appropriate. Never use `string.GetHashCode`, timestamps or new GUIDs as stable seeds/IDs.
+   Preserve existing algorithms unless the spec authorizes a versioned migration.
+3. Canonicalize unordered input collections before rolls when order affects selection.
+   Define who advances each stream; adding a cosmetic roll must not change gameplay results.
+4. Persist the decided outcome/snapshot and load it without rerolling. Cave revisits within
+   the same run retain their snapshots; read `cave-stable-run-guard` before changing that flow.
+5. `System.Random(seed)` is not a cross-runtime/version compatibility guarantee. If a spec
+   requires that guarantee, use a versioned existing algorithm and golden vectors; do not
+   introduce a new PRNG solely to make a same-runtime unit test pass.
+6. Supply time/ticks through the existing clock or explicit delta. Do not infer deterministic
+   physics or cross-platform bitwise equality from a fixed seed or a passing pure test.
 
-## Testes (skill: editmode-test-authoring)
+## Tests selected by changed risk
 
-- Mesmos inputs de seed → sequência/outcome idênticos (duas vezes no mesmo teste).
-- Salt diferente por sistema → sequências diferentes (sem correlação cross-system).
-- Outcome persistido: save→load→mesmo resultado sem reroll.
+- Same inputs with independent instances → expected sequence/outcomes; use known vectors
+  when algorithm compatibility is part of the contract, not the production function as oracle.
+- Advance an unrelated stream → target stream unchanged. Different salts need not produce
+  different individual outcomes; collisions are possible and do not prove correlation.
+- Save/load/revisit → persisted outcome unchanged, no extra roll or duplicate reward.
+- Reordered input → same outcome only where order independence is the intended contract.
+- State the runtime/version and tolerance for numeric comparisons. Failing seeds are replay
+  inputs; repeated random runs are not a substitute for a reproducible regression.
 
-## Onde se aplica
-
-fable_09 (variedade de cave biome layout — DEVE permanecer dentro do stable-run contract), fable_06/24 (loot tables, affixes), fable_31 (unidentified magic items), fable_37 (festivals/lunar events).
+Reference when compatibility matters: [Microsoft System.Random remarks](https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-random).

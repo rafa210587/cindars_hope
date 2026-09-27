@@ -13,6 +13,9 @@ tools: Read, Glob, Grep, Bash
 - Antes de iniciar uma nova wave ou batch de specs
 - Depois de uma integração grande (WAVE_INTEGRATION_*)
 - Quando o humano suspeitar de drift arquitetural
+- Before implementing changed save, cross-system or lifecycle contracts; review the existing
+  plan's state owner, dependency direction, commit point and failure behavior. Local low-risk
+  edits do not require a separate agent or full-project review.
 
 ## 7 dimensões de revisão
 
@@ -29,6 +32,8 @@ tools: Read, Glob, Grep, Bash
   helpers, policies e queries locais injetadas mantêm chamadas síncronas explícitas.
 - Sem chamadas diretas MonoBehaviour → MonoBehaviour para gameplay
 - Cadeias de eventos acíclicas (sem A→B→A)
+- Distinguish requests from completed facts; one owner mutates, facts follow commit, and
+  correctness does not depend on subscriber order. Verify reentrancy and lifetime when changed.
 - Payloads leves — apenas primitivos + IDs
 
 **3. Dados em ScriptableObject / Catalog**
@@ -90,7 +95,8 @@ Risk Assessment:
 
 ## Regras
 
-- **NUNCA** aprove COMPLIANT sem checar todas as 7 dimensões
+- Mark each dimension inspected or N/A with scope; do not expand a bounded review to the
+  entire repository. COMPLIANT applies only to inspected contracts, never automatic global approval.
 - **NUNCA** corrija problemas — apenas reporte com arquivo:linha
 - **SEMPRE** explique o impacto arquitetural do finding
 - **SEMPRE** proponha a menor ação corretiva (não uma reescrita)
@@ -101,7 +107,7 @@ Risk Assessment:
 - `save-load-pattern` — verificar conformidade de save DTOs
 - `state-machine-design` — quando flags booleanas conflitantes forem encontradas
 - `monobehaviour-decomposition` — quando MonoBehaviour pesado for encontrado
-- `id-stability` — verificar IDs como const strings
+- Rule `id-stability` — verificar IDs como const strings (not a skill)
 - `non-regression-review` — auditoria complementar de scope/status
 - `system-reuse-audit` — quando sistema paralelo for suspeito
 - `solid-refactoring` — revisar coesão, contratos, dependências e contexto de classe

@@ -25,7 +25,7 @@ Use isto quando um sistema começa a rastrear estado com vários booleans (`isAt
 ## Saída esperada
 
 - Lista de states + transition table (from → trigger → to).
-- Interfaces/classes (`IState` com Enter/Tick/Exit, um pequeno driver `StateMachine`).
+- Smallest representation: enum/transition table or existing driver; introduce `IState` classes only when distinct behavior/lifetime warrants polymorphism. No class-per-state requirement.
 - Invalid-transition policy, declarada.
 - Quais events a machine publica para presentation.
 - EditMode tests (skill `editmode-test-authoring`): transitions válidas chegam ao state esperado; transitions inválidas seguem a policy; side-effects de Enter/Exit disparam uma vez; determinístico dados os mesmos inputs.

@@ -10,7 +10,7 @@ Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam w
 
 **Validation & Spec Lifecycle**
 1. [Validation Truth](./validation-truth.md) — exit code 0 ou não passou; falha de script nunca é secundária; sem claims prematuros de aceitação; níveis de validação honestos
-2. [Spec Quality Gate](./spec_quality_gate.md) — status taxonomy canônica; checklist BUILD_VALIDATED; promotion exige evidência *(detalhe → skill `spec-execution`)*
+2. [Spec Quality Gate](./spec_quality_gate.md) — one acceptance decision containing applicable protected checks; canonical status/evidence in the validation matrix.
 3. [Spec Dependency Resolution](./spec_dependency_resolution.md) — auto-resolve de chains same-wave; return-to-origin *(detalhe → skill `spec-execution`)*
 4. [Testing Quality Gate](./testing-quality-gate.md) — mudanças de código exigem automated tests, Play Mode scenario, ou residual risk *(detalhe → skill `spec-execution`)*
 
@@ -34,11 +34,11 @@ Rules são invariantes do projeto (o *que não pode driftar*). Skills explicam w
 14. [Error Handling & Resilience](./error-handling-resilience.md) — taxonomy de falha em quatro categorias; logs com contexto; fail fast em dev *(detalhe → skill `non-regression-review`)*
 15. [Gameplay Design Pattern Selection](./gameplay-design-patterns.md) — qual pattern usar, mapeado a precedentes; domain em C# puro, engine como adapter *(detalhe → skill `non-regression-review`)*
 16. [Security & File Safety](./security-and-files.md) — sem secrets em código/configs/logs; arquivos sensíveis e saves reais não editados sem pedido; ler scripts de build/deploy por inteiro primeiro
-17. [Sem Magic Balance Values](./no-magic-balance-values.md) — thresholds, custos, duração e dano em SOs de balance ou consts nomeadas; nunca literais inline *(detalhe → skill `non-regression-review`)*
+17. [Sem Magic Balance Values](./no-magic-balance-values.md) — gameplay/content in existing balance SOs; constants only for fixed technical invariants *(detail → skill `non-regression-review`)*
 18. [Escada de Minimalismo de Código](./code-minimalism-ladder.md) — write-less-code: suba a decision ladder (YAGNI → reuse → built-in → nativo → dep → minimal) antes de implementar; carve-out de segurança para validação/erro/save/security (inspirado no ponytail)
 
 **Orquestração de Subagents**
-19. [Resultado de Subagent Não É Evidência](./subagent-results-not-evidence.md) — o orquestrador verifica artefatos no disco + re-roda o build antes de dar tarefa delegada por concluída; nunca confia na narração *(detalhe → skill `delegated-execution`)*
+19. [Resultado de Subagent Não É Evidência](./subagent-results-not-evidence.md) — inspect actual artifacts and input equivalence; reuse valid evidence, rerun only when inputs/risk require it *(detail → skill `delegated-execution`)*
 
 **Arte & Cenas**
 20. [Fidelidade de Cena à Keyart](./keyart-scene-fidelity.md) — scene com keyart aprovada exige captura comparada por região; proporção usa pixels visíveis e referência do player, e padrões repetidos de borda precisam ter intenção visual explícita.

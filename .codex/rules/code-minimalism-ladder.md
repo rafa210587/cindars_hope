@@ -17,7 +17,7 @@ paths:
 3. **Built-in da BCL / .NET.** Use `System.*`/LINQ/coleções antes de escrever utilitário próprio (respeitando hot paths — ver [csharp-style](./csharp-style.md)).
 4. **Nativo da engine.** Use API do Unity (componentes, lifecycle, `ScriptableObject`, `AssetDatabase` no editor) em vez de reimplementar o que a engine já oferece.
 5. **Dependência já no projeto.** Use uma lib/asset já presente antes de adicionar uma nova.
-6. **One-liner / menor expressão.** A solução mais curta que resolve, sem abstração prematura.
+6. **Smallest clear solution.** Preserve readable control flow, cohesive ownership and failure behavior; fewer lines or a one-liner are not quality criteria.
 7. **Implementação mínima nova.** Só então escreva — o mínimo, atrás dos contratos existentes (interfaces, `GameEventBus`, IDs canônicos).
 
 ## Carve-out de segurança (minimalismo NÃO se aplica a guard-rails)

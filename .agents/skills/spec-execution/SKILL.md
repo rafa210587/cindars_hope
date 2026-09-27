@@ -20,14 +20,17 @@ Implementar/avançar spec em `.specs/a_implementar/`, incluindo manutenção aut
 - [ ] Ownership, dirty anterior e arquivos permitidos/proibidos registrados.
 - [ ] Critérios centrais e anti-regressão extraídos; sistemas existentes auditados.
 - [ ] Dependências resolvidas; nenhuma implementação paralela desnecessária.
+- [ ] Changed runtime boundaries have explicit state owner, dependency direction, commit point,
+      lifecycle and failure contract in the existing spec/plan; see `solid-and-ai-context`.
 - [ ] Gates/testes escolhidos pela SPEC_VALIDATION_MATRIX_MASTER e critérios da spec.
 - [ ] Responsável pela rodada integrada Unity/build definido quando aplicável.
 
 ## Leitura mínima
 
-Além do checklist: `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` para promoção/dependências e
-`.specs/SPEC_VALIDATION_MATRIX_MASTER.md` para seleção/status. Não carregar histórico,
-PROJECT_LOG, ROADMAP ou relatórios não relacionados por padrão.
+Read the applicable scope/risk rows of `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` for checks
+and status. Read `.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md` only for dependency resolution,
+batch coordination or promotion. Do not load unrelated rows, history, PROJECT_LOG, ROADMAP
+or reports by default; do not skip a risk introduced by the actual diff.
 
 ## Procedimento
 

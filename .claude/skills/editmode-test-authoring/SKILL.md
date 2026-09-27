@@ -1,72 +1,48 @@
 ---
 name: editmode-test-authoring
-description: Escreve EditMode tests seguindo as convenções existentes do projeto (62 tests, NUnit, domain folders). Use sempre que o Testing Quality Gate exigir testes automatizados para deterministic logic — save DTOs, quest conditions, economy pricing, combat formulas, calendar, crafting timing.
+description: Write focused NUnit EditMode tests for observable domain contracts, deterministic logic, save compatibility and regressions. Reuse existing domain fixtures; no test-per-class quota.
 ---
 
-# Skill: EditMode Test Authoring
+# Skill: EditMode test authoring
 
-## Onde os testes vivem (obrigatório)
+Tests live in `Assets/_Game/Tests/EditMode/<Domain>/`, never `Scripts/`. Inspect the closest
+relevant fixture/assembly and reuse its conventions; test counts and domain lists are not fixed.
 
-```
-Assets/_Game/Tests/EditMode/<Domain>/<Thing>Tests.cs
-```
+## Choose the behavior and oracle
 
-Domains existentes: City, Combat, Companions, Core (Data/Events), Economy, Farm, Fonte, MainProgression, Player, Quests, UI (Calendar/Crafting/Dialogue/Input), World (Calendar).
+1. Map the changed acceptance criterion to an observable result and failure case. Reuse a
+   covering test rather than duplicating it for each extracted class.
+2. Compute expected values from the contract or a reviewed example, not the same production
+   algorithm. Test real rule logic; replace external clock/RNG/I/O through existing seams.
+3. Control initial state, clock/ticks, seed and ordering. No real sleeps, current date,
+   probabilistic assertions or dependency on previous tests for pure logic.
+4. Assert state plus relevant side effects: quantity/gold conservation, rejected operation
+   without partial mutation, one reward after retry, committed state visible to observers.
+5. Reset/dispose owned state and subscriptions in TearDown/finally, including on assertion
+   failure. Do not globally reset unrelated runtime systems to make an integration test pass.
 
-NUNCA sob `Assets/_Game/Scripts/**` — o hook `protected-path-guard` bloqueia isso e o spec_quality_gate proíbe.
+## Risk-specific cases
 
-## Template (bate com os 62 tests existentes)
+| Changed contract | Evidence |
+|---|---|
+| Transaction | Success, capacity/validation failure, rollback and event count/order |
+| Save | Nontrivial state round-trip, missing/legacy/invalid input per real policy, recovery and idempotency |
+| Formula/bounds | Boundary values, representative reviewed examples, overflow/rounding when relevant |
+| Substitutable policy | Same observable contract for applicable implementations |
+| RNG/time | Explicit inputs and replay; follow `rng-and-determinism` |
+| Validator/tool | Valid fixture passes; deliberately invalid fixture fails, including missing inputs |
 
-```csharp
-using NUnit.Framework;
-using CindarsHope.<Domain>.<Area>;
+Pure tests cover services/DTO behavior. Editor asset tests may use Editor APIs in the correct
+assembly; lifecycle, physics, scene transitions and actual input need selected PlayMode tests.
+Do not call a method by reflection and claim the real player flow passed.
 
-namespace CindarsHope.Tests.EditMode.<Domain>
-{
-    [TestFixture]
-    public class <Thing>Tests
-    {
-        private <Service> _service;
+For a bugfix, demonstrate the regression fails before and passes after when feasible in an
+isolated fixture/checkout; never revert concurrent edits to obtain that evidence. Otherwise
+state the limitation. Inspect that the runner actually selected and executed the intended
+tests; zero tests, ignored cases and missing XML do not prove acceptance.
 
-        [SetUp]
-        public void Setup() => _service = new <Service>();
+Run `tools/unity/RunUnityEditModeTests.ps1` with the relevant filter. The Test Runner compiles;
+do not demand a duplicate .NET build on equivalent inputs. Record command, outcome/counts,
+exit code and artifacts in the location selected by `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`.
 
-        // Helper factories for state objects (see FarmWateringServiceTests pattern)
-        private FarmPlotWaterState ExternalPlot(string id = "plot_01") =>
-            new FarmPlotWaterState { PlotId = id, IsExternal = true };
-
-        [Test]
-        public void ManualWatering_MarksPlotWatered()   // naming: <Action>_<ExpectedOutcome>
-        {
-            var plot = ExternalPlot();
-            _service.ApplyManualWatering(plot, 5);
-            Assert.IsTrue(plot.IsWateredToday);
-        }
-    }
-}
-```
-
-## Convenções de test family já usadas no projeto
-
-| Suffix | Testes | Exemplo |
-|---|---|---|
-| `*ContractTests` | shape de DTO/interface, valores default | `LootTableContractTests`, `QuestDefinitionContractTests` |
-| `*IdempotencyTests` | aplicar duas vezes = aplicar uma vez | `QuestRewardIdempotencyTests` |
-| `*ValidationTests` | integridade de dados across catalogs | `EconomyAntiArbitrageValidationTests`, `StableIdsValidationTests` |
-| `*WiringTests` | completude do registro | `FatigueWiringTests`, `OrphanSystemsWiringTests` |
-| `*SaveLoadTests` | round-trip + section null/missing | `QuestSaveLoadTests` |
-
-## Regras
-
-- Teste C# puro de services/DTOs — sem scene objects, sem MonoBehaviour, sem Unity lifecycle.
-- Um comportamento por test; helper factories para o setup do state; sem shared mutable state entre tests.
-- Testes ligados a save devem cobrir: defaults, fallback de section null/missing, fallback de invalid ID, idempotency depois do reload.
-- Regression tests (bugfix): registre evidência de que falha antes do fix e passa depois.
-
-## Validação
-
-Usar `tools/unity/RunUnityEditModeTests.ps1` com filtro e artefatos pertinentes,
-conforme SPEC_VALIDATION_MATRIX_MASTER. O Test Runner compila; não exigir .NET antes
-nem repetir resultados verificados sobre os mesmos inputs por agente/closeout.
-
-O report block (formato Testing Quality Gate) vai no execution report. Nunca afirme "tests passed" sem o output do runner (rule: validation-truth).
+Reference on demand: [Microsoft unit testing practices](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices).
