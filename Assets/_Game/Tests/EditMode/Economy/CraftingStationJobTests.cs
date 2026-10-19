@@ -85,6 +85,8 @@ namespace CindarsHope.Tests.EditMode.Economy
         public void CanStartCraft_LockedRecipe_Fails()
         {
             var lockedRecipe = MakeRecipe(unlocked: false);
+            // Recipes without an unlock slug intentionally have no gate (fable_49).
+            lockedRecipe.RequiredRecipeUnlockId = "recipe_unlock_test_locked";
             var ok = Workbench().CanStartCraft(lockedRecipe, out var reason);
             Assert.IsFalse(ok);
             Assert.IsTrue(reason.Contains("locked"));

@@ -30,9 +30,10 @@ O estado executável foi re-auditado e registrado em
 a fonte de verdade para quantidades e decisões já implementadas. Em particular: universo de 178
 criaturas, Town v9 120x90, Farm v7 64x44, 28 NPCs canônicos e 23 cadeias/69 etapas.
 
-As specs soltas `spec_town_layout_v9_organic.md` e `spec_farm_scene_relayout_v4.md` não devem ser
-executadas para reverter o estado atual. Elas são referências históricas até serem promovidas,
-absorvidas ou reescritas como deltas residuais explícitos.
+`spec_town_layout_v9_organic.md` foi absorvida em
+`.specs/absorvidas/city_relayout_reconciliation/` após a sucessora de 2026-09-10.
+`spec_farm_scene_relayout_v4.md` não deve ser executada para reverter o estado atual;
+permanece referência histórica até promoção, absorção ou reescrita como delta residual explícito.
 
 Fonte unica de specs executaveis: `.specs/a_implementar/`.
 

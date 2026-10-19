@@ -80,8 +80,9 @@ namespace CindarsHope.UI.Skills
             }
         }
 
-        private void OnModalCloseRequested(ModalCloseRequestedEvent _)
+        private void OnModalCloseRequested(ModalCloseRequestedEvent evt)
         {
+            if (!evt.Targets(ModalType.SkillTree)) return;
             if (!_isOpen) return;
             if (!string.IsNullOrEmpty(_selectedTreeId))
             {
@@ -289,8 +290,8 @@ namespace CindarsHope.UI.Skills
             manager?.RebindProgressionManager(progression);
             var rect = new Rect((Screen.width - 580f) * 0.5f, (Screen.height - 590f) * 0.5f, 580f, 590f);
             GUILayout.BeginArea(rect, GUI.skin.window);
-            GUILayout.Label("Skill Trees");
-            GUILayout.Label($"Skill Points disponíveis: {progression?.UnspentSkillPoints ?? 0}");
+            GUILayout.Label(CindarsHope.Localization.LocalizationService.Get("ui.skills.title"));
+            GUILayout.Label($"Pontos de habilidade: {progression?.UnspentSkillPoints ?? 0}");
 
             if (manager == null)
             {
@@ -458,7 +459,10 @@ namespace CindarsHope.UI.Skills
                 return "nenhum";
             }
 
-            var entries = new List<string>(node.PrerequisiteNodeIds);
+            var entries = new List<string>();
+            foreach (var id in node.PrerequisiteNodeIds)
+                entries.Add(SkillTreeManager.Instance != null && SkillTreeManager.Instance.NodeIndex.TryGetValue(id, out var prerequisite)
+                    ? prerequisite.DisplayName : CindarsHope.Localization.LocalizationService.Get("ui.skills.prerequisite"));
             if (node.MinimumPlayerLevel > 1)
             {
                 entries.Add($"level {node.MinimumPlayerLevel}");
@@ -472,12 +476,15 @@ namespace CindarsHope.UI.Skills
 
         private static void DrawActiveSlots(SkillTreeManager manager)
         {
-            GUILayout.Label("Active slots:");
+            GUILayout.Label(CindarsHope.Localization.LocalizationService.Get("ui.skills.slots"));
             GUILayout.BeginHorizontal();
             for (var index = 0; index < SlotKeys.Length; index++)
             {
                 var actionId = manager.State.GetActiveSlotSkillActionId(index);
-                GUILayout.Label($"{SlotKeys[index]}: {(string.IsNullOrWhiteSpace(actionId) ? "vazio" : actionId)}");
+                var label = string.IsNullOrWhiteSpace(actionId) ? "vazio"
+                    : manager.ActionIndex.TryGetValue(actionId, out var action) ? action.DisplayName
+                    : CindarsHope.Localization.LocalizationService.Get("ui.skills.assigned");
+                GUILayout.Label($"{SlotKeys[index]}: {label}");
             }
             GUILayout.EndHorizontal();
         }

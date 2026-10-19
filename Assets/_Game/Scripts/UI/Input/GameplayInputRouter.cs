@@ -11,6 +11,7 @@ namespace CindarsHope.UI.Routing
     /// instead of directly invoking panels. Legacy OnGUI panels check IsActive to
     /// yield their own key handling when this router is present.
     /// </summary>
+    [DefaultExecutionOrder(-1000)]
     [DisallowMultipleComponent]
     public sealed class GameplayInputRouter : MonoBehaviour
     {
@@ -55,15 +56,15 @@ namespace CindarsHope.UI.Routing
                 Input.GetKeyDown(KeyCode.K),
                 Input.GetKeyDown(KeyCode.U));
 
-            Publish(GameplayShortcutDecision.Resolve(frame, hasModal));
+            Publish(GameplayShortcutDecision.Resolve(frame, hasModal), _modalManager?.CurrentModal ?? ModalType.None);
         }
 
-        private static void Publish(GameplayInputCommand command)
+        private static void Publish(GameplayInputCommand command, ModalType targetModal)
         {
             switch (command)
             {
                 case GameplayInputCommand.CloseModal:
-                    GameEventBus.Publish(new ModalCloseRequestedEvent());
+                    GameEventBus.Publish(new ModalCloseRequestedEvent(targetModal));
                     break;
                 case GameplayInputCommand.OpenPause:
                     GameEventBus.Publish(new PauseOpenedEvent());

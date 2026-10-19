@@ -46,11 +46,13 @@ namespace CindarsHope.World
         [SerializeField] private GameTimeManager _timeManager;
 
         private bool _isFishing;
+        private bool _windowReady;
+        private GameObject _castingActor;
         private float _windowOpenTime;
         private int _castIndex;
         private FishingTimingMinigame _minigame;
 
-        public string InteractionPrompt => "Pescar";
+        public string InteractionPrompt => !_isFishing ? "Pescar" : _windowReady ? "Puxar o peixe" : "Aguarde a mordida";
 
         public bool CanInteract(GameObject interactor)
         {
@@ -79,7 +81,7 @@ namespace CindarsHope.World
 
             if (!HasRequiredTool())
             {
-                const string message = "Requires Fishing Rod.";
+                const string message = "Equipe uma vara de pesca.";
                 GameEventBus.Publish(new PlayerActionFeedbackEvent(message));
                 Debug.Log($"FishingSpot blocked fishing. {message} Expected tool id hint '{_requiredToolId}'.", this);
                 return;
@@ -96,10 +98,11 @@ namespace CindarsHope.World
 
                 if (_staminaManager != null && _staminaManager.CurrentStamina < fishCastStaminaCost)
                 {
-                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Not enough stamina to fish."));
+                    GameEventBus.Publish(new PlayerActionFeedbackEvent("Sem energia suficiente para pescar."));
                     return;
                 }
 
+                _castingActor = interactor;
                 StartCoroutine(FishingRoutine(fishCastStaminaCost));
                 return;
             }
@@ -107,6 +110,26 @@ namespace CindarsHope.World
             TryConfirmFishing();
         }
 
+        private void Update()
+        {
+            if (!_isFishing || _castingActor == null) return;
+            if (!CanInteract(_castingActor))
+            {
+                CancelCast();
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Pesca cancelada: você saiu do ponto de pesca."));
+            }
+        }
+
+        private void OnDisable() => CancelCast();
+
+        private void CancelCast()
+        {
+            StopAllCoroutines();
+            _isFishing = false;
+            _windowReady = false;
+            _castingActor = null;
+            _minigame = null;
+        }
         public void RebindInventoryManager(InventoryManager inventoryManager)
         {
             if (inventoryManager == null)
@@ -178,22 +201,25 @@ namespace CindarsHope.World
         private System.Collections.IEnumerator FishingRoutine(int staminaCost)
         {
             _isFishing = true;
+            _windowReady = false;
             if (_staminaManager != null && !_staminaManager.TrySpendStamina(staminaCost))
             {
                 _isFishing = false;
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Not enough stamina to fish."));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Sem energia suficiente para pescar."));
                 yield break;
             }
 
-            GameEventBus.Publish(new PlayerActionFeedbackEvent("Fishing..."));
+            GameEventBus.Publish(new PlayerActionFeedbackEvent("Aguarde a mordida..."));
             yield return new WaitForSeconds(_castDelaySeconds);
+            if (!_isFishing) yield break;
+            _windowReady = true;
             _windowOpenTime = Time.time;
 
             // fable_50: minigame de barra (Perfect/Good/Miss). A view rica fica para F14/F20;
             // aqui é lógica + feedback por prompt. Sem tabela/flag off ⇒ caminho v1 intocado.
             _minigame = UsesFishingV2 ? new FishingTimingMinigame(_timingWindowSeconds) : null;
             _minigame?.Start();
-            GameEventBus.Publish(new PlayerActionFeedbackEvent(UsesFishingV2 ? "Pressione E no centro!" : "Press E now!"));
+            GameEventBus.Publish(new PlayerActionFeedbackEvent(UsesFishingV2 ? "Pressione E no centro!" : "Mordeu! Pressione E!"));
 
             while (_isFishing && Time.time - _windowOpenTime <= _timingWindowSeconds)
             {
@@ -205,16 +231,20 @@ namespace CindarsHope.World
             {
                 // Estourou a janela sem confirmar = Miss (timeout). Mitiga "estado preso em Cast".
                 _isFishing = false;
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Fishing failed."));
+                _windowReady = false;
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("O peixe escapou."));
             }
         }
 
         private void TryConfirmFishing()
         {
+            if (!_isFishing || !_windowReady) return;
+            _windowReady = false;
+            StopAllCoroutines();
             if (Time.time - _windowOpenTime > _timingWindowSeconds)
             {
                 _isFishing = false;
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Fishing failed."));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("O peixe escapou."));
                 return;
             }
 
@@ -235,12 +265,13 @@ namespace CindarsHope.World
 
             if (!_inventoryManager.AddItem(itemId, amount))
             {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Inventory full. Catch kept in the water."));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Inventário cheio. O peixe ficou na água."));
                 Debug.LogWarning($"FishingSpot could not add fish '{itemId}' x{amount}; catch was not consumed.", this);
                 return;
             }
 
             GameEventBus.Publish(new FishCaughtEvent(itemId, amount, Vector2Int.RoundToInt(transform.position)));
+            GameEventBus.Publish(new PlayerActionFeedbackEvent($"Peixe capturado! +{amount}"));
             Debug.Log($"FishingSpot caught '{itemId}' x{amount}.", this);
         }
 
@@ -269,7 +300,7 @@ namespace CindarsHope.World
             const int amount = 1;
             if (!_inventoryManager.AddItem(outcome.ItemId, amount))
             {
-                GameEventBus.Publish(new PlayerActionFeedbackEvent("Inventory full. Catch kept in the water."));
+                GameEventBus.Publish(new PlayerActionFeedbackEvent("Inventário cheio. O peixe ficou na água."));
                 Debug.LogWarning($"FishingSpot could not add fish '{outcome.ItemId}'; catch was not consumed.", this);
                 return;
             }

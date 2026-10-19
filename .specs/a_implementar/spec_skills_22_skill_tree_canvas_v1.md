@@ -7,6 +7,12 @@
 > **Blocks:** spec_skills_23_skill_loadout_hud_v1  
 > **Validation:** EditMode+PlayMode+capturas gráficas
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, ui_modal_rules.md]
+Ordem de execucao: após spec_skills_21_balance_acceptance_v1.
+Depende de: spec_skills_21_balance_acceptance_v1
+Bloqueia: spec_skills_23_skill_loadout_hud_v1
+
 # /speckit.specify
 
 ## Spec

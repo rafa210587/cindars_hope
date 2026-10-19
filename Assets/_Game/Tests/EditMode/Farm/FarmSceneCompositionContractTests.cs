@@ -81,5 +81,17 @@ namespace CindarsHope.Tests.EditMode.Farm
                 -13.1f, -7f, -0.875f, 5.69f), Is.False);
             Assert.That(FarmSceneCompositionContract.SouthFrontPathWidth, Is.LessThanOrEqualTo(1.35f));
         }
+
+        [TestCase(-13.1f, -7.2f, -1f, 4.9f, true)] // Ambient v15 K3 authored positions.
+        [TestCase(-13.1f, -7.2f, -0.98f, 4.9f, false)] // Middle gap exceeds 6.2u.
+        [TestCase(-13.1f, -7.1f, -1.1f, 4.92f, false)] // Total span exceeds 18u.
+        [TestCase(-13.1f, -7.2f, -7.2f, 4.9f, false)] // Overlapping roots.
+        [TestCase(-13.1f, -1f, -7.2f, 4.9f, false)] // Reversed roots.
+        public void SouthBuildingCluster_EnforcesApprovedSpacing(
+            float coopX, float barnX, float processingAX, float processingBX, bool accepted)
+        {
+            Assert.That(FarmSceneCompositionContract.IsSouthBuildingClusterCompact(
+                coopX, barnX, processingAX, processingBX), Is.EqualTo(accepted));
+        }
     }
 }

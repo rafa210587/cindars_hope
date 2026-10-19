@@ -188,6 +188,11 @@ namespace CindarsHope.Save.Migrations
                     || !stationIds.Add(station.StationInstanceId))
                     throw new InvalidOperationException("Missing or duplicate crafting station ID.");
                 var job = station.Job;
+                if (job != null && job.IsEmptySerializedJob)
+                {
+                    station.Job = null;
+                    continue;
+                }
                 if (job == null) continue;
                 if (string.IsNullOrWhiteSpace(job.RecipeId) || string.IsNullOrWhiteSpace(job.OutputItemId)
                     || job.OutputAmount <= 0)

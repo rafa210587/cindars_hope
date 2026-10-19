@@ -9,6 +9,12 @@
 > **Validation:** Unity compile + EditMode state machine + PlayMode skills  
 > **Executor:** Codex/subagent; root valida
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md]
+Ordem de execucao: após spec_skills_10_mechanics_data_rank_readiness_v1.
+Depende de: spec_skills_10_mechanics_data_rank_readiness_v1
+Bloqueia: spec_skills_11_melee_equipment_shapes_v1 e todas as ações seguintes
+
 # /speckit.specify
 
 ## Problema e resultado

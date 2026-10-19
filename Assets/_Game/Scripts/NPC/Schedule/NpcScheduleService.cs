@@ -104,7 +104,11 @@ namespace CindarsHope.NPC.Schedule
             public float ProgressElapsed;
             public float ProgressDistance;
             public Vector3 ProgressOrigin;
+            public Vector3 ProgressWaypoint;
+            public int ProgressRouteIndex;
+            public bool ProgressInitialized;
             public int Replans;
+            public bool IsBlocked;
         }
 
         public readonly struct MoveDiagnostic
@@ -535,6 +539,10 @@ namespace CindarsHope.NPC.Schedule
                     _moveOrders.Remove(npcId);
                     continue;
                 }
+                // Keep the final diagnostic available, but a blocked order is terminal until
+                // a new schedule block explicitly replaces it. Otherwise every progress window
+                // clears the idle destination and logs the same failure again.
+                if (order.IsBlocked) continue;
 
                 var distance = Vector2.Distance(order.Npc.position, order.Target);
                 if (distance <= ArriveRadius)
@@ -543,12 +551,20 @@ namespace CindarsHope.NPC.Schedule
                     continue;
                 }
 
+                if (!order.ProgressInitialized)
+                {
+                    order.ProgressWaypoint = order.Wanderer != null
+                        ? order.Wanderer.CurrentRouteTarget : order.Target;
+                    order.ProgressRouteIndex = order.Wanderer != null ? order.Wanderer.RouteIndex : 0;
+                    order.ProgressOrigin = order.Npc.position;
+                    order.ProgressInitialized = true;
+                }
                 order.ProgressElapsed += Time.fixedDeltaTime;
-                // Progress means distance actually closed toward the requested target. Counting raw
-                // displacement lets a body slide sideways along a wall forever without triggering
-                // the bounded replan contract.
+                // An authored graph detour can increase distance to the final anchor while the
+                // actor correctly closes on its next waypoint. Measure that waypoint instead;
+                // advancing a corner also counts as progress even if the next leg heads away.
                 order.ProgressDistance = NpcRouteRecoveryPolicy.ProgressTowardTarget(
-                    order.ProgressOrigin, order.Npc.position, order.Target);
+                    order.ProgressOrigin, order.Npc.position, order.ProgressWaypoint);
                 if (order.ProgressElapsed >= NpcRouteRecoveryPolicy.ProgressWindowSeconds)
                 {
                     // Deterministic right-of-way is expected waiting, not a blocked route. Restart
@@ -558,10 +574,22 @@ namespace CindarsHope.NPC.Schedule
                         order.ProgressElapsed = 0f;
                         order.ProgressOrigin = order.Npc.position;
                         order.ProgressDistance = 0f;
+                        order.ProgressWaypoint = order.Wanderer.CurrentRouteTarget;
+                        order.ProgressRouteIndex = order.Wanderer.RouteIndex;
                         _moveOrders[npcId] = order;
                         continue;
                     }
-                    var progress = order.ProgressDistance;
+                    var advancedCorner = order.Wanderer != null &&
+                                         order.Wanderer.RouteIndex > order.ProgressRouteIndex;
+                    // Sliding sideways along an induced wall can still shorten Euclidean
+                    // distance to a waypoint. Reuse the graph's actor-sized static-obstacle
+                    // probe so that such a blocked segment consumes the bounded replan budget.
+                    var blockedSegment = !advancedCorner && order.Wanderer != null &&
+                        !NpcTownRouteGraph.SegmentIsPhysicallyReachable(
+                            order.Npc.position, order.Wanderer.CurrentRouteTarget,
+                            GetMovementCollider(order.Wanderer));
+                    var progress = advancedCorner ? NpcRouteRecoveryPolicy.MinimumProgress :
+                        blockedSegment ? 0f : order.ProgressDistance;
                     order.ProgressElapsed = 0f;
                     order.ProgressOrigin = order.Npc.position;
                     order.ProgressDistance = 0f;
@@ -573,6 +601,8 @@ namespace CindarsHope.NPC.Schedule
                             SetRouteOrDirect(order.Wanderer, order.Npc.position, order.Approach, order.Target);
                         else
                             SetRouteToTarget(order.Wanderer, order.Npc.position, order.Target);
+                        order.ProgressWaypoint = order.Wanderer.CurrentRouteTarget;
+                        order.ProgressRouteIndex = order.Wanderer.RouteIndex;
                         Debug.LogWarning($"[NpcScheduleService] Replan {order.Replans}/2 npc={npcId} reason=insufficient_progress from={order.Npc.position} to={order.Target}");
                     }
                     else if (progress < NpcRouteRecoveryPolicy.MinimumProgress && order.Wanderer != null)
@@ -580,7 +610,13 @@ namespace CindarsHope.NPC.Schedule
                         // Route failure is not an interaction lock. Keep the actor safely stopped,
                         // but allow a later schedule block/load restore to issue a fresh route.
                         order.Wanderer.ClearDestination();
+                        order.IsBlocked = true;
                         Debug.LogWarning($"[NpcScheduleService] Waiting at safe position npc={npcId} reason=route_blocked from={order.Npc.position} to={order.Target}");
+                    }
+                    else if (order.Wanderer != null)
+                    {
+                        order.ProgressWaypoint = order.Wanderer.CurrentRouteTarget;
+                        order.ProgressRouteIndex = order.Wanderer.RouteIndex;
                     }
                 }
 

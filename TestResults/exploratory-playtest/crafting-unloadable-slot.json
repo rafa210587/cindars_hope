@@ -1,0 +1,1922 @@
+{
+    "SchemaVersion": 6,
+    "CurrentDay": 1,
+    "CurrentSceneName": "FarmScene",
+    "CurrentScenePath": "Assets/_Game/Scenes/FarmScene.unity",
+    "Player": {
+        "CurrentHP": 100,
+        "MaxHP": 100,
+        "Gold": 50,
+        "CurrentHunger": 100,
+        "MaxHunger": 100,
+        "HungerFractionalDrainAccumulator": 0.0,
+        "CurrentMana": 0,
+        "MaxMana": 0,
+        "PlayerPosition": {
+            "x": -28.0,
+            "y": 2.0
+        },
+        "Fatigue": 23.489059448242189
+    },
+    "Inventory": {
+        "Capacity": 40,
+        "NextItemInstanceSequence": 11,
+        "OriginSchemaVersion": 1,
+        "Slots": [
+            {
+                "SlotIndex": 0,
+                "ItemId": "item_shop_weapon_sword_iron",
+                "ItemInstanceId": "item_shop_weapon_sword_iron#inventory-1",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 1,
+                "ItemId": "item_shop_tool_hoe_basic",
+                "ItemInstanceId": "item_shop_tool_hoe_basic#inventory-2",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 2,
+                "ItemId": "item_tool_fishing_rod_basic",
+                "ItemInstanceId": "item_tool_fishing_rod_basic#inventory-3",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 3,
+                "ItemId": "item_material_wood",
+                "ItemInstanceId": "",
+                "Amount": 9,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 9,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 4,
+                "ItemId": "item_material_stone",
+                "ItemInstanceId": "",
+                "Amount": 15,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 15,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 5,
+                "ItemId": "item_material_iron_ore",
+                "ItemInstanceId": "",
+                "Amount": 8,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 8,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 6,
+                "ItemId": "item_material_copper_ore",
+                "ItemInstanceId": "",
+                "Amount": 8,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 8,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 7,
+                "ItemId": "item_consumable_food_bread",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 8,
+                "ItemId": "item_consumable_potion_hp_small",
+                "ItemInstanceId": "",
+                "Amount": 3,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 3,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 9,
+                "ItemId": "item_consumable_repair_kit_basic",
+                "ItemInstanceId": "",
+                "Amount": 2,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 2,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 10,
+                "ItemId": "item_weapon_bow_basic",
+                "ItemInstanceId": "item_weapon_bow_basic#inventory-4",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 11,
+                "ItemId": "item_ammo_arrow_basic",
+                "ItemInstanceId": "",
+                "Amount": 99,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 99,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 12,
+                "ItemId": "item_spell_fireball_test",
+                "ItemInstanceId": "item_spell_fireball_test#inventory-5",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 13,
+                "ItemId": "item_goddess_tear",
+                "ItemInstanceId": "",
+                "Amount": 2,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 2,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 14,
+                "ItemId": "item_weapon_bow_wood",
+                "ItemInstanceId": "item_weapon_bow_wood#inventory-6",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 15,
+                "ItemId": "item_shield_buckler",
+                "ItemInstanceId": "item_shield_buckler#inventory-7",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 16,
+                "ItemId": "item_weapon_wand_fire",
+                "ItemInstanceId": "item_weapon_wand_fire#inventory-8",
+                "Amount": 1,
+                "IsEquipped": true,
+                "EquipmentBindingId": "equipment-slot:RightHand",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 17,
+                "ItemId": "item_consumable_scroll_learn_minor_heal",
+                "ItemInstanceId": "",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 18,
+                "ItemId": "item_seed_wheat",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 19,
+                "ItemId": "item_seed_carrot",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 20,
+                "ItemId": "item_seed_moonbean",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 21,
+                "ItemId": "item_seed_sunpepper",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 22,
+                "ItemId": "item_seed_crystal_berry",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 23,
+                "ItemId": "item_seed_starroot",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 24,
+                "ItemId": "item_seed_alihana_tear",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 25,
+                "ItemId": "item_seed_senya_pepper",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 26,
+                "ItemId": "item_seed_shadowroot",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 27,
+                "ItemId": "item_seed_thandra_wheat",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 28,
+                "ItemId": "item_seed_vale_pumpkin",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 29,
+                "ItemId": "item_seed_brigandini_grape",
+                "ItemInstanceId": "",
+                "Amount": 5,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 5,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 30,
+                "ItemId": "item_shop_tool_watering_can_basic",
+                "ItemInstanceId": "item_shop_tool_watering_can_basic#inventory-9",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 31,
+                "ItemId": "item_weapon_axe_iron",
+                "ItemInstanceId": "item_weapon_axe_iron#inventory-10",
+                "Amount": 1,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            },
+            {
+                "SlotIndex": 32,
+                "ItemId": "item_material_processed_wood",
+                "ItemInstanceId": "",
+                "Amount": 6,
+                "IsEquipped": false,
+                "EquipmentBindingId": "",
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 6,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            }
+        ],
+        "Items": [
+            {
+                "ItemId": "item_shop_weapon_sword_iron",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_shop_tool_hoe_basic",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_tool_fishing_rod_basic",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_material_wood",
+                "Amount": 9
+            },
+            {
+                "ItemId": "item_material_stone",
+                "Amount": 15
+            },
+            {
+                "ItemId": "item_material_iron_ore",
+                "Amount": 8
+            },
+            {
+                "ItemId": "item_material_copper_ore",
+                "Amount": 8
+            },
+            {
+                "ItemId": "item_consumable_food_bread",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_consumable_potion_hp_small",
+                "Amount": 3
+            },
+            {
+                "ItemId": "item_consumable_repair_kit_basic",
+                "Amount": 2
+            },
+            {
+                "ItemId": "item_weapon_bow_basic",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_ammo_arrow_basic",
+                "Amount": 99
+            },
+            {
+                "ItemId": "item_spell_fireball_test",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_goddess_tear",
+                "Amount": 2
+            },
+            {
+                "ItemId": "item_weapon_bow_wood",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_shield_buckler",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_weapon_wand_fire",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_consumable_scroll_learn_minor_heal",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_seed_wheat",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_carrot",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_moonbean",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_sunpepper",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_crystal_berry",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_starroot",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_alihana_tear",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_senya_pepper",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_shadowroot",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_thandra_wheat",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_vale_pumpkin",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_seed_brigandini_grape",
+                "Amount": 5
+            },
+            {
+                "ItemId": "item_shop_tool_watering_can_basic",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_weapon_axe_iron",
+                "Amount": 1
+            },
+            {
+                "ItemId": "item_material_processed_wood",
+                "Amount": 6
+            }
+        ]
+    },
+    "Equipment": {
+        "EquippedToolId": "",
+        "Slots": [
+            {
+                "SlotType": 2,
+                "ItemInstanceId": "item_weapon_wand_fire#inventory-8"
+            },
+            {
+                "SlotType": 1,
+                "ItemInstanceId": "item_ammo_arrow_basic"
+            }
+        ],
+        "Infusions": [],
+        "Upgrades": [],
+        "UnlockedRecipeIds": []
+    },
+    "Hotbar": {
+        "SlotItemIds": [
+            "item_seed_wheat",
+            "item_seed_carrot",
+            "item_tool_fishing_rod_basic",
+            "item_weapon_bow_basic",
+            "item_ammo_arrow_basic",
+            "item_spell_fireball_test"
+        ],
+        "SelectedSlotIndex": 0
+    },
+    "Progression": {
+        "Level": 1,
+        "CurrentXp": 0,
+        "XpToNextLevel": 100,
+        "TotalXp": 0,
+        "DeepestXpAwardedCaveLevel": 0,
+        "FirstHarvestXpSeedIds": [],
+        "UnspentAttributePoints": 0,
+        "UnspentSkillPoints": 0,
+        "Strength": 1,
+        "Dexterity": 1,
+        "Intelligence": 1,
+        "Willpower": 1,
+        "Constitution": 1,
+        "Breath": 1
+    },
+    "Farm": {
+        "Plots": [],
+        "Trees": [],
+        "Processing": {
+            "Jobs": []
+        },
+        "PendingShipping": {
+            "Entries": []
+        },
+        "ForageSpawns": {
+            "Day": 1,
+            "Spawns": [
+                {
+                    "SpawnId": "farm_forage_11",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_10",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_06",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_05",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_13",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_16",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_12",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_02",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_09",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_14",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_15",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_01",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_08",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_04",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_03",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                },
+                {
+                    "SpawnId": "farm_forage_07",
+                    "ForageId": "",
+                    "State": 2,
+                    "SpawnedDay": -1,
+                    "CollectedDay": -1,
+                    "NextEligibleSpawnDay": -1
+                }
+            ]
+        }
+    },
+    "World": {
+        "Pickups": [
+            {
+                "PickupIndex": 0,
+                "PickupInstanceId": "",
+                "RuntimeGeneratedPickupId": "",
+                "ItemId": "item_seed_carrot",
+                "ItemInstanceId": "",
+                "Amount": 1,
+                "Position": {
+                    "x": 13.0,
+                    "y": 2.0
+                },
+                "IsCollected": false,
+                "IsDynamic": false,
+                "SceneName": "FarmScene",
+                "OriginSchemaVersion": 1,
+                "OriginLots": [
+                    {
+                        "Kind": 1,
+                        "Quantity": 1,
+                        "UnitPaidBasisGold": 0,
+                        "UnitResaleCapGold": 0
+                    }
+                ]
+            }
+        ],
+        "Trees": [
+            {
+                "TreeIndex": 0,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 1,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 2,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 3,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 4,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 5,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 6,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 7,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 8,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 9,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 10,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 11,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 12,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 13,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 14,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 15,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 16,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 17,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 18,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 19,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 20,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 21,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 22,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 23,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 24,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 25,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 26,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 27,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 28,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 29,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 30,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 31,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 32,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 33,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 34,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 35,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 36,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 37,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 38,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 39,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 40,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 41,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 42,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 43,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 44,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 45,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 46,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 47,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 48,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 49,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 50,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 51,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 52,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 53,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 54,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 55,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 56,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 57,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 58,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 59,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 60,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 61,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 62,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 63,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 64,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 65,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 66,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            },
+            {
+                "TreeIndex": 67,
+                "TreeId": "tree_basic",
+                "HitsTaken": 0,
+                "CurrentHp": 3,
+                "IsChopped": false,
+                "IsStump": false,
+                "RegrowthRemainingDays": 0
+            }
+        ]
+    },
+    "Fonte": {
+        "FonteState": 1,
+        "UnlockedFunctions": [
+            0
+        ],
+        "LivingWaterUnlocked": false,
+        "LivingWaterCharges": 0,
+        "LastGrantDay": -1,
+        "IntegratedFragments": []
+    },
+    "CaveRun": {
+        "HasActiveRun": false,
+        "WorldSeed": "",
+        "RunSeed": "",
+        "RunId": "",
+        "CurrentLevel": 1,
+        "DeepestLevel": 1,
+        "UnlockedCheckpoints": [],
+        "DepletedNodeIds": [],
+        "BossDefeats": [],
+        "CurrentLevelSnapshot": {
+            "CaveLevel": 0,
+            "SnapshotId": "",
+            "CaveWorldSeed": "",
+            "CaveRunSeed": "",
+            "BiomeId": "",
+            "LayoutHash": "",
+            "EntrancePosition": {
+                "x": 0.0,
+                "y": 0.0
+            },
+            "ExitPosition": {
+                "x": 0.0,
+                "y": 0.0
+            },
+            "Width": 0,
+            "Height": 0,
+            "WalkableTilesList": [],
+            "WallTilesList": [],
+            "EnemySpawnPointsList": [],
+            "ResourceSpawnPointsList": [],
+            "EnemySpawns": [],
+            "ResourceNodes": [],
+            "ResourceNodeStates": [],
+            "DepletedResourceNodeIds": [],
+            "FishingSpotState": {
+                "HasFishingSpot": false,
+                "FishingSpotId": "",
+                "GridPosition": {
+                    "x": 0,
+                    "y": 0
+                },
+                "FishingProfileId": ""
+            },
+            "EnemySpawnPlan": {
+                "CaveLevel": 0,
+                "BiomeId": "",
+                "CaveWorldSeed": "",
+                "CaveRunSeed": "",
+                "LevelSeed": "",
+                "LayoutHash": "",
+                "Entries": [],
+                "Warnings": []
+            },
+            "LegacyEnemySpawnPlanEntries": [],
+            "Warnings": [],
+            "RedistributionState": {
+                "RedistributionCount": 0,
+                "LastRedistributionReason": "",
+                "RedistributionSeedOffset": 0
+            },
+            "RespawnState": {
+                "RespawnDelayGameDays": 2,
+                "LastRespawnEvaluationDay": -1
+            },
+            "EnemyHpRecords": [],
+            "OpenedChestIds": [],
+            "TrapStates": [],
+            "RevealedCells": [],
+            "EnvironmentElements": [],
+            "HasWater": false,
+            "ConflictState": {
+                "ConflictActive": false,
+                "FactionAId": "",
+                "FactionBId": "",
+                "HasHadConflict": false,
+                "EntryCount": 0
+            }
+        },
+        "VisitedLevelSnapshots": [],
+        "GenerationVersion": "fable_44"
+    },
+    "Cave": {
+        "CurrentCaveLevel": 1,
+        "DeepestLayerReached": 1,
+        "CaveWorldSeed": "",
+        "CaveRunSeed": "",
+        "UnlockedCheckpoints": [],
+        "DepletedNodeIds": [],
+        "VisitedLevelSnapshots": [],
+        "BossDefeatStates": []
+    },
+    "Death": {
+        "ActiveCorpse": {
+            "CorpseId": "",
+            "CorpseStatusValue": 0,
+            "RunId": "",
+            "CaveSeed": "",
+            "CaveLevel": 0,
+            "SceneName": "",
+            "Position": {
+                "x": 0.0,
+                "y": 0.0
+            },
+            "GoldAmount": 0,
+            "CreatedAtGameDay": -1,
+            "CreatedAtGameTime": 0.0,
+            "RecoveredAtGameDay": -1,
+            "ReplacedByCorpseId": "",
+            "SnapshotLayoutHash": "",
+            "SafeAnchorId": "",
+            "OriginSchemaVersion": 0,
+            "LostInventoryItems": [],
+            "LostEquipmentItems": []
+        },
+        "DeathStats": {
+            "TotalCaveDeaths": 0,
+            "LastDeathAtGameDay": -1,
+            "LastDeathAtCaveLevel": -1,
+            "LastCorpseId": ""
+        }
+    },
+    "Economy": {
+        "Shops": []
+    },
+    "Crafting": {
+        "NextCraftedItemSequence": 1,
+        "Stations": [
+            {
+                "StationInstanceId": "farm_workbench_01",
+                "StationType": 1,
+                "StationLevel": 1,
+                "Job": {
+                    "JobId": "",
+                    "StationInstanceId": "",
+                    "RecipeId": "",
+                    "Status": 0,
+                    "RemainingSeconds": 0.0,
+                    "OutputItemId": "",
+                    "OutputAmount": 0,
+                    "OutputInstanceId": "",
+                    "OutputDurabilityMax": 0,
+                    "LivingForgeReservationToken": "",
+                    "LivingForgeDayIndex": 0,
+                    "LivingForgeChoice": 0,
+                    "OriginSchemaVersion": 0,
+                    "OutputOriginLots": [],
+                    "IngredientsConsumed": []
+                }
+            }
+        ]
+    },
+    "Stamina": {
+        "CurrentStamina": 100,
+        "MaxStamina": 100
+    },
+    "EquipmentDurability": {
+        "EquipmentDurabilities": [
+            {
+                "ItemInstanceId": "item_weapon_bow_wood",
+                "CurrentDurability": 80,
+                "MaxDurability": 80
+            },
+            {
+                "ItemInstanceId": "item_weapon_wand_fire#inventory-8",
+                "CurrentDurability": 99,
+                "MaxDurability": 100
+            }
+        ]
+    },
+    "Npcs": {
+        "Npcs": []
+    },
+    "GameTime": {
+        "CurrentDay": 1,
+        "CurrentPhase": 0,
+        "PhaseElapsedSeconds": 151.5028839111328
+    },
+    "PlayerStatusEffects": {
+        "ActiveEffects": []
+    },
+    "ActiveSkillSlots": {
+        "SlotRSkillActionId": "",
+        "SlotTSkillActionId": "",
+        "SlotYSkillActionId": "",
+        "SlotGSkillActionId": ""
+    },
+    "SkillTree": {
+        "Version": 3,
+        "PurchasedNodeIds": [],
+        "NodeRanks": [],
+        "ChosenCapstoneVariants": [],
+        "ActiveSkillSlots": [
+            {
+                "SlotIndex": 0,
+                "InputKey": "1",
+                "SkillActionId": ""
+            },
+            {
+                "SlotIndex": 1,
+                "InputKey": "2",
+                "SkillActionId": ""
+            },
+            {
+                "SlotIndex": 2,
+                "InputKey": "3",
+                "SkillActionId": ""
+            },
+            {
+                "SlotIndex": 3,
+                "InputKey": "4",
+                "SkillActionId": ""
+            }
+        ],
+        "RespecCount": 0
+    },
+    "SurvivalSkills": {
+        "Version": 4,
+        "ActiveRunId": "",
+        "ActiveCaveLevel": 0,
+        "ActiveEncounterId": "",
+        "ActiveEncounterOrdinal": 0,
+        "EncounterOrdinalRunId": "",
+        "NextEncounterOrdinal": 1,
+        "ActiveEnemyInstanceIds": [],
+        "LeashedEnemyInstanceIds": [],
+        "EncounterQuietRemainingSeconds": 0.0,
+        "LunarConsumedEncounterId": "",
+        "LunarConsumedFirstTargetInstanceId": "",
+        "ActiveLunarTargetInstanceId": "",
+        "ActiveLunarVariant": "",
+        "ActiveLunarRank": 0,
+        "ActiveLunarRemainingSeconds": 0.0,
+        "ActiveLunarActionToken": "",
+        "LastOffensiveMagicDamageType": 1,
+        "ConsumedLastBreathEncounterIds": [],
+        "LastBreathArmedRemainingSeconds": 0.0,
+        "CampUsedRunId": "",
+        "ActiveCampRunId": "",
+        "ActiveCampCaveLevel": 0,
+        "ActiveCampRemainingSeconds": 0.0,
+        "ActiveCampPositionX": 0.0,
+        "ActiveCampPositionY": 0.0,
+        "CavebornConsumedRunId": "",
+        "ActiveCavebornRunId": "",
+        "ActiveCavebornRank": 0,
+        "ActiveCavebornRemainingSeconds": 0.0,
+        "CavebornWasInCombat": false,
+        "CavebornRegenDoubled": false
+    },
+    "CraftingPassiveRng": {
+        "SaveScopeId": "save_slot_1",
+        "Attempts": []
+    },
+    "CraftingSkills": {
+        "Version": 1,
+        "CurrentDayIndex": 1,
+        "ConsumedDayIndices": [],
+        "PendingReservations": []
+    },
+    "CombatCapstones": {
+        "ActiveVariant": "",
+        "ActiveRank": 0,
+        "RemainingSeconds": 0.0,
+        "HealChargeArmed": false,
+        "LastResolutionId": "",
+        "ProcessedResolutionIds": [],
+        "MagicArmedVariant": "",
+        "MagicArmedRank": 0,
+        "MagicArmedRemainingSeconds": 0.0,
+        "MagicLockoutRemainingSeconds": 0.0,
+        "MagicMaxManaSnapshot": 0,
+        "MagicLedgerAmounts": [],
+        "MagicLedgerAges": [],
+        "MagicEchoTotal": 0,
+        "MagicEchoDelivered": 0,
+        "MagicEchoDurationSeconds": 0.0,
+        "MagicEchoElapsedSeconds": 0.0
+    },
+    "Bestiary": {
+        "Entries": [],
+        "Knowledge": [],
+        "KnowledgeMilestonesGranted": 0
+    },
+    "Companions": {
+        "Companions": []
+    },
+    "Quests": {
+        "Version": 1,
+        "QuestStates": [],
+        "GlobalKnownHints": [],
+        "DiscoveredSecretQuestIds": [],
+        "RewardedMainActIds": []
+    },
+    "DailyGoals": {
+        "Goals": [
+            {
+                "GoalId": "daily_goal_first_harvest",
+                "Day": 1,
+                "CurrentProgress": 0,
+                "RequiredProgress": 1,
+                "Completed": false,
+                "Claimed": false
+            },
+            {
+                "GoalId": "daily_goal_sell_first_crop",
+                "Day": 1,
+                "CurrentProgress": 0,
+                "RequiredProgress": 1,
+                "Completed": false,
+                "Claimed": false
+            },
+            {
+                "GoalId": "daily_goal_harvest_three",
+                "Day": 1,
+                "CurrentProgress": 0,
+                "RequiredProgress": 3,
+                "Completed": false,
+                "Claimed": false
+            },
+            {
+                "GoalId": "daily_goal_plant_three",
+                "Day": 1,
+                "CurrentProgress": 0,
+                "RequiredProgress": 3,
+                "Completed": false,
+                "Claimed": false
+            },
+            {
+                "GoalId": "daily_goal_gather_resource",
+                "Day": 1,
+                "CurrentProgress": 0,
+                "RequiredProgress": 1,
+                "Completed": false,
+                "Claimed": false
+            },
+            {
+                "GoalId": "daily_goal_talk_to_npc",
+                "Day": 1,
+                "CurrentProgress": 0,
+                "RequiredProgress": 1,
+                "Completed": false,
+                "Claimed": false
+            }
+        ]
+    },
+    "Spellbook": {
+        "KnownSpellIds": [],
+        "TomeProgress": []
+    },
+    "FarmLots": {
+        "OwnedLots": []
+    },
+    "FarmAnimals": {
+        "Animals": []
+    },
+    "Friendship": {
+        "Entries": []
+    },
+    "NpcServices": {
+        "PendingBookOrders": [],
+        "HuntContract": {
+            "TargetEnemyId": "",
+            "IssuedWeek": 0,
+            "Completed": false
+        },
+        "DailyDishLastUsedDay": 0,
+        "PremiumPastureActiveUntilDay": 0
+    },
+    "MainProgression": {
+        "CurrentAct": 0,
+        "Level100GateState": 0,
+        "Level101AccessState": 0,
+        "FinalChoiceState": 0,
+        "PostGameWorldState": ""
+    },
+    "OnboardingHints": {
+        "SeenHintIds": []
+    },
+    "FarmTiles": {
+        "Tiles": []
+    },
+    "TownInteriorLocation": {
+        "Version": 1,
+        "HouseId": "",
+        "AnchorId": "",
+        "ReturnAnchorId": "",
+        "LocalX": 0.0,
+        "LocalY": 0.0,
+        "FacingX": 0.0,
+        "FacingY": 0.0,
+        "SafeTownX": 0.0,
+        "SafeTownY": 0.0
+    }
+}

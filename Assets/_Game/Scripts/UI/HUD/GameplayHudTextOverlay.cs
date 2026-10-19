@@ -300,6 +300,14 @@ namespace CindarsHope.UI.HUD
             AppendClock();
             _builder.Append("    Ouro ").Append(_gold);
 
+            var equipment = CindarsHope.Equipment.EquipmentManager.Instance;
+            var inventory = GameBootstrap.Instance?.InventoryManager as CindarsHope.Inventory.InventoryManager;
+            if (equipment != null && inventory != null)
+            {
+                AppendEquipment(equipment, inventory, CindarsHope.Foundation.EquipmentSlot.RightHand);
+                AppendEquipment(equipment, inventory, CindarsHope.Foundation.EquipmentSlot.LeftHand);
+            }
+
             if (_hasPrompt && !string.IsNullOrWhiteSpace(_prompt))
             {
                 _builder.Append("\n[E] ").Append(_prompt);
@@ -324,6 +332,16 @@ namespace CindarsHope.UI.HUD
 
         // Hugs the dark panel to the text so nothing spills outside the box, and grows the height when the
         // interaction prompt adds a second line. preferredWidth/Height are the natural unwrapped text metrics.
+        private void AppendEquipment(CindarsHope.Equipment.EquipmentManager equipment,
+            CindarsHope.Inventory.InventoryManager inventory, CindarsHope.Foundation.EquipmentSlot slot)
+        {
+            var id = equipment.GetEquippedItem(slot);
+            if (string.IsNullOrWhiteSpace(id)) return;
+            if (!inventory.TryGetItemData(id.Split('#')[0], out var item)) return;
+            _builder.Append("  ·  ").Append(CindarsHope.Localization.LocalizationService.Get("ui.equipment.slot_" + slot.ToString().ToLowerInvariant()))
+                .Append(": ").Append(CindarsHope.UI.Shop.ItemDisplayNameFormatter.GetShortName(item));
+        }
+
         private void ResizePanelToText()
         {
             if (_panelRect == null || _text == null)

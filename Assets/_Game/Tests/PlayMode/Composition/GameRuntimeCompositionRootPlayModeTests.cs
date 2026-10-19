@@ -19,6 +19,7 @@ using CindarsHope.Farm.Lots;
 using CindarsHope.Farm.Resources;
 using CindarsHope.Farm.Runtime;
 using CindarsHope.Farm.Shipping;
+using CindarsHope.Farm.Watering;
 using CindarsHope.Craft;
 using CindarsHope.Inventory;
 using CindarsHope.Items.Runtime;
@@ -116,6 +117,21 @@ namespace CindarsHope.Tests.PlayMode.Composition
                 Scene activeScene = SceneManager.GetActiveScene();
                 Assert.That(activeScene.name, Is.EqualTo(sceneName));
                 Assert.That(activeScene.isLoaded, Is.True);
+
+                if (sceneName == "FarmScene")
+                {
+                    var greenhouseHost = GreenhouseRuntimeHost.Instance;
+                    Assert.That(greenhouseHost, Is.Not.Null, "Serialized FarmScene greenhouse host must run Awake.");
+                    Assert.That(greenhouseHost.gameObject.scene, Is.EqualTo(activeScene));
+                    var greenhouse = greenhouseHost.transform.parent;
+                    Assert.That(greenhouse, Is.Not.Null);
+                    var exterior = greenhouse.Find("GreenhouseFloor");
+                    var reveal = greenhouse.Find("RoofReveal");
+                    Assert.That(exterior != null && exterior.GetComponent<SpriteRenderer>() != null, Is.True);
+                    Assert.That(reveal != null && reveal.GetComponent<RoofRevealController>() != null, Is.True,
+                        "Existing FarmScene greenhouse must wire its reveal at runtime without saving the scene.");
+                    Assert.That(reveal.GetComponent<BoxCollider2D>().isTrigger, Is.True);
+                }
 
                 foreach (GameObject root in activeScene.GetRootGameObjects())
                 {

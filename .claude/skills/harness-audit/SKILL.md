@@ -21,6 +21,8 @@ HARNESS_INDEX é o catálogo fonte; CLAUDE mantém o acesso inicial e o gerador 
 
 ## Procedimento
 1. Identifique escopo e baseline; confira [catálogo](../../../.claude/HARNESS_INDEX.md) sem abrir todo o corpus.
+   Run `pwsh -NoProfile -File tools/codex/Test-HarnessDiscovery.ps1` for full structural inventory
+   and explicit references. Its JSON is deterministic and bounded; inspect omitted findings.
 2. Para os checks concretos, leia [dimensões de auditoria](references/audit-dimensions.md).
 3. Resolva links por arquivo/ID; rastreie referências necessárias além da entrada inicial.
 4. Exercite pedidos representativos proporcionais à mudança, avaliando leitura selecionada,
@@ -42,3 +44,5 @@ Ausência de imagem/tool não pode virar PASS por análise textual.
 ## Saída esperada
 Scope, checks realizados, findings, ações autorizadas executadas e pendências.
 Métricas de bytes/caracteres são proxy de contexto; não demonstram economia real de tokens/faturamento.
+For comparisons, include routing mistakes, repeated reads/checks, review corrections and end-to-end
+usage when actually available. A scripted structural fixture is not a model-behavior benchmark.

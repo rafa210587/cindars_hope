@@ -45,7 +45,8 @@ namespace CindarsHope.Magic
                 return;
             }
 
-            if (Input.GetKeyDown(_useScrollKey))
+            // J belongs to quests and must never consume a spell item.
+            if (_useScrollKey != KeyCode.J && Input.GetKeyDown(_useScrollKey))
             {
                 TryUseFirstUsableSpellItem();
             }

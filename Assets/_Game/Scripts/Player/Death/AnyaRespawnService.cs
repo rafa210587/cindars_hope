@@ -43,8 +43,8 @@ namespace CindarsHope.Player.Death
             }
 
             // Move player to respawn point
-            var playerTransform = _playerManager.gameObject.transform;
-            playerTransform.position = _respawnPoint.position;
+            // PlayerManager belongs to the persistent bootstrap, not the scene avatar.
+            GameEventBus.Publish(new PlayerRespawnedEvent(_respawnPoint.position, _playerManager.CurrentHP, 0));
 
             // Publish respawn completed event
             GameEventBus.Publish(new AnyaRespawnCompletedEvent());

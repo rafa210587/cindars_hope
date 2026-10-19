@@ -3,14 +3,27 @@
 Status: INTEGRATED_SCOPED_PASS; continuação autorizada após piloto v18. Revisão independente: SOUND_WITH_AMENDMENTS incorporada; revisão visual final sem bloqueadores nas amostras. Promoção pendente de aceitação humana.
 Baseline: spec_farm_boat_chicken_motion_v18 e motion_v18/REPORT.md. Reusar movimento, interação, recuperação e save existentes.
 
+required_adrs: [ADR-0011]
+required_game_rules: [farm_rules.md]
+
+Ordem de execucao: após o piloto v18; revisar, gerar folhas, integrar perfis e validar conforme T1–T4.
+Depende de: piloto spec_farm_boat_chicken_motion_v18 e movimento, interação, recuperação e save já existentes.
+Bloqueia: promoção visual final do rebanho até validação humana registrada no status.
+
+# /speckit.specify
+
 ## Spec
 Criar ciclos próprios para animal_cow, animal_sheep, animal_goat, resolvidos porID. Preservar galinha/barco, economia, save e originais. Animais precisam de idle, caminhar frente/costas/lado, pastar e repousar; contato dos pés estável, sem cortes. Vaca maior que pequenos ruminantes; cabra distinguível de ovelha. Não criar animais gratuitos.
 AC: três perfis íntegros, sprites Point/None/no-mips, 19 frames por folha na ordem validada. Soltura e restauração preservam perfil, AnimalDataId e produto; cabra e ovelha compartilham enum, mas não identidade. Em Play os três tipos caminham, param e exibem estados; corpo contido e sem penetrar sólidos além da tolerância de 0,011u do piloto. É obrigatório testar o celeiro na capacidade de quatro animais (duas vacas, cabra e ovelha), todos visíveis e acessíveis antes e após restauração. Captura e revisão independente devem comparar silhueta e apoio dos pés com personagem e porta na câmera real, além de canvas/PPU. Registrar limites de input/humano.
+
+# /speckit.plan
 
 ## Plan
 Arte: dev/art/aseprite/keyart-v4/herd-v19/** emAseprite, fontes cow/sheep_keyart_v4 como referência, semsobrescrever. Canvas48x48,19frames horizontais,apoio(24,8),PPU32 inicialmente. Idle0–1,down2–5,up6–9,side10–13,graze14–16,rest17–18. Perfil da vaca corpo~.9x.55,ruminantes~.7x.45; calibrar pela silhueta/cenacapturada, não aumentar indiscriminadamente.
 Editor: generalizar FarmAnimalMotionAuthoring com descritores limitados dosquatroIDs, mantendo contrato da galinha e sprites IDs estáveis. Novos assets animals/herd_motion_v19/{cow,sheep,goat}_v19.png +Data/Animals perfis correspondentes. GeneratedSpriteImporter exceçõesexatasMultiple32. CreateMvpFarmScene wiringallprofiles e áreaBarn segura emterraaberta, medidana composição.
 Validação: reusar lógica v18; testesperfil/ID se necessários, testesexistentesmotioncare afetados. Estender probe opcional viaenv separado para rebanho, manter modo chicken intacto. RootúnicoUnityowner. NãoeditarSave/runtimebusinesssemdefeito demonstrado.
+
+# /speckit.tasks
 
 ## Tasks / ownership
 - [x] T1 Revisar contratos/arte/área barn; revisão independente SOUND_WITH_AMENDMENTS incorporada antes da integração.

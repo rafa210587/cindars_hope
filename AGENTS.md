@@ -14,8 +14,8 @@ Para tarefas de implementacao, ler somente:
 
 1. `AGENTS.md` ou `CLAUDE.md`
 2. `docs/project/CURRENT_STATE.md` — contexto de execucao primario (~80 linhas)
-3. A spec alvo
-4. Arquivos explicitamente citados pela spec
+3. A spec alvo quando executando uma spec; correção pontual segue `/bugfix`
+4. Arquivos citados pela spec ou diretamente relacionados à correção
 5. O relatorio de validacao imediatamente anterior, somente se listado como dependencia
 
 Nao ler por padrao:
@@ -43,8 +43,11 @@ Leitura minima para qualquer tarefa de implementacao:
 
 1. `AGENTS.md` ou `CLAUDE.md`
 2. `docs/project/CURRENT_STATE.md`
-3. Spec ativa
-4. Arquivos citados pela spec
+3. Spec ativa quando aplicável; bugfix restaura contrato existente sem exigir nova spec
+4. Arquivos citados pela spec ou diretamente relacionados à correção
+
+Uma feature nova continua exigindo spec aprovada. Correções de save/IDs, lifecycle ou comunicação
+entre sistemas preservam análise e testes de risco, mesmo quando o diff é pequeno.
 
 Para detalhes de workflow: `.claude/commands/` e `.claude/skills/`.
 

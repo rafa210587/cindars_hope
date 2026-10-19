@@ -659,10 +659,10 @@ namespace CindarsHope.Equipment
 
             if (toolId.Contains("hoe"))
                 return ToolType.Hoe;
-            if (toolId.Contains("axe"))
-                return ToolType.Axe;
             if (toolId.Contains("pickaxe"))
                 return ToolType.Pickaxe;
+            if (toolId.Contains("axe"))
+                return ToolType.Axe;
             if (toolId.Contains("fishing_rod"))
                 return ToolType.FishingRod;
             if (toolId.Contains("watering_can"))

@@ -236,5 +236,17 @@ namespace CindarsHope.Craft
         public int OriginSchemaVersion;
         public List<ItemOriginLotSaveData> OutputOriginLots;
         public List<CraftingIngredientSaveData> IngredientsConsumed = new List<CraftingIngredientSaveData>();
+
+        // Unity's inline serializer materializes null nested DTOs as all-default objects.
+        // Only that exact representation is absence; any payload must still be validated.
+        public bool IsEmptySerializedJob =>
+            string.IsNullOrEmpty(JobId) && string.IsNullOrEmpty(StationInstanceId) &&
+            string.IsNullOrEmpty(RecipeId) && Status == 0 && RemainingSeconds == 0f &&
+            string.IsNullOrEmpty(OutputItemId) && OutputAmount == 0 &&
+            string.IsNullOrEmpty(OutputInstanceId) && OutputDurabilityMax == 0 &&
+            string.IsNullOrEmpty(LivingForgeReservationToken) && LivingForgeDayIndex == 0 &&
+            LivingForgeChoice == 0 && OriginSchemaVersion == 0 &&
+            (OutputOriginLots == null || OutputOriginLots.Count == 0) &&
+            (IngredientsConsumed == null || IngredientsConsumed.Count == 0);
     }
 }

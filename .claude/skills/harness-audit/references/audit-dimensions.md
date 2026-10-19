@@ -44,3 +44,24 @@ Bug simples; refactor de responsabilidade; sprite estático; ciclo animado; mont
 validação sem edição de gameplay. Para cada cenário, registre entrypoint, referências necessárias,
 limites de ação e evidência esperada. Escolha os cenários pertinentes, sem execução de efeitos
 externos ou geração paga apenas para testar instruções.
+
+## Journey scenarios for routing changes
+
+Review these decisions against actual entries; do not execute a hypothetical gameplay change.
+Use only applicable rows for a small edit. A broad routing change reviews all six.
+
+| Request | Expected entry/read | Evidence and escalation |
+|---|---|---|
+| Fix a typo in existing text | `/bugfix`, target/context; localization only when relevant | Diff/placeholder/key inspection; no new spec, test suite, report or commit. |
+| Fix an isolated calculation defect | `/bugfix`, owner and relevant callers/test | Focused behavioral regression or concrete limitation; no wave protocol or separate reviewer by default. |
+| Add a pure gameplay rule | Approved spec, `spec-execution`, applicable domain contract | Relevant deterministic behavior/boundary tests; pure logic alone does not require PlayMode. |
+| Change an inventory/save transaction | Approved contract/spec, save/transaction skills | Atomicity, compatibility, failure and retry checks; independent review by risk, even for one line. |
+| Repair scene transition wiring | Existing contract, bootstrap/lifecycle skills | Actual integration and state/subscription preservation; escalate beyond simple bugfix if contracts change. |
+| Review a sprite's transparency | `visual-asset-review`, image inspection reference | Inspect pixels/alpha; no animation generation or runtime refactor; unavailable image is NOT RUN. |
+
+For each row, record entry, necessary reads, action boundary and expected evidence in the
+existing spec/task result. Also record undesired work avoided and unresolved ambiguity.
+This is a decision review, not proof a live model will select correctly. To claim improvement
+in model efficiency, compare representative real tasks with equivalent inputs/model/tool access:
+actual usage if available, retries, findings, repeated reads/checks and acceptance. No fixed
+token percentage, agent quota or universal template count is an acceptance criterion.

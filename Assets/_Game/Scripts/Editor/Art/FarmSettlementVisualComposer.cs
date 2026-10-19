@@ -38,8 +38,20 @@ namespace CindarsHope.Editor.Art
             benchBody.transform.position = FarmSettlementPhysicsContract.PottingBench.Center;
             benchBody.AddComponent<BoxCollider2D>().size = FarmSettlementPhysicsContract.PottingBench.Size;
             CreateSouthernCourtyards(group.transform);
+            CreateWorkshopGardenIslands(group.transform);
             CreatePathsideGardens(group.transform);
             CreateNorthernKeyartGardens(group.transform);
+        }
+
+        private static void CreateWorkshopGardenIslands(Transform parent)
+        {
+            // Visual-only foliage frames the craft area without covering the three station fronts.
+            Foliage(parent, "WorkshopBushWest", "undergrowth_keyart_v4", new Vector2(9f, -2.65f), 1.85f);
+            Foliage(parent, "WorkshopFlowersWest", "wildflowers_keyart_v4", new Vector2(9.85f, -2.95f), 1.25f);
+            Foliage(parent, "WorkshopFlowersWorkbenchForge", "wildflowers_keyart_v4", new Vector2(14f, -1.7f), 1.2f);
+            Foliage(parent, "WorkshopFlowersForgeCooking", "wildflowers_keyart_v4", new Vector2(18f, -1.8f), 1.1f);
+            Foliage(parent, "WorkshopFlowersEast", "wildflowers_keyart_v4", new Vector2(22.2f, -2.95f), 1.3f);
+            Foliage(parent, "WorkshopBushEast", "undergrowth_keyart_v4", new Vector2(23.1f, -2.65f), 1.65f);
         }
 
         private static void CreateNorthernKeyartGardens(Transform parent)

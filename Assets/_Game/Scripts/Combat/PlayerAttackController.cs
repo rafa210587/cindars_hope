@@ -304,7 +304,7 @@ namespace CindarsHope.Combat
                 _spellCastService.StaminaManager = _staminaManager;
                 _spellCastService.Spellbook = CindarsHope.Magic.PlayerSpellbook.Instance;
                 // fable_08 EMENDA 6.6-A: auto-target via QUERY de Physics2D (inimigos no raio),
-                // NÃƒO FindObjectsByType (rule unity-architecture). Devolve posiÃ§Ãµes de EnemyHealth.
+                // Consulta apenas colisores dentro do raio e devolve posicoes de EnemyHealth.
                 _spellCastService.EnemyPositionQuery = QueryEnemyPositions;
             }
         }

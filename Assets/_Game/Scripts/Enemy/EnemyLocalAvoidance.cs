@@ -11,6 +11,7 @@ namespace CindarsHope.Enemy
     /// </summary>
     public static class EnemyLocalAvoidance
     {
+        private static readonly RaycastHit2D[] BodyCastHits = new RaycastHit2D[1];
         // ── Tuning (no-magic-balance-values) ────────────────────────────────────────────────────
 
         /// <summary>Comprimento dos whiskers em tiles.</summary>
@@ -144,11 +145,24 @@ namespace CindarsHope.Enemy
             Vector2 desiredDirection,
             LayerMask obstacleLayer,
             bool currentlyAvoiding,
-            float whiskerLength = WhiskerLength)
+            float whiskerLength = WhiskerLength,
+            Collider2D bodyCollider = null)
         {
             GetWhiskerDirections(desiredDirection, out var centerDir, out var leftDir, out var rightDir);
 
-            bool centerHit = Physics2D.Raycast(origin, centerDir, whiskerLength, obstacleLayer).collider != null;
+            // The center ray alone can pass beside a wall while a large enemy body clips it.
+            // Preserve the old point probe for callers without a physical body.
+            bool centerHit;
+            if (bodyCollider != null && !bodyCollider.isTrigger)
+            {
+                var filter = new ContactFilter2D { useTriggers = false };
+                filter.SetLayerMask(obstacleLayer);
+                centerHit = bodyCollider.Cast(centerDir, filter, BodyCastHits, whiskerLength) > 0;
+            }
+            else
+            {
+                centerHit = Physics2D.Raycast(origin, centerDir, whiskerLength, obstacleLayer).collider != null;
+            }
             bool leftHit   = Physics2D.Raycast(origin, leftDir,   whiskerLength, obstacleLayer).collider != null;
             bool rightHit  = Physics2D.Raycast(origin, rightDir,  whiskerLength, obstacleLayer).collider != null;
 

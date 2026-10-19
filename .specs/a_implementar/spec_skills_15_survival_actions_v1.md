@@ -7,6 +7,12 @@
 > **Blocks:** spec_skills_16_crafting_actions_v1 e UI  
 > **Repo lock scope/Validation/Executor:** Ownership / Unity+EditMode+PlayMode+Cave stable-run / execute-spec-strict
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, player_rules.md]
+Ordem de execucao: após spec_skills_14_magic_shapes_v1.
+Depende de: spec_skills_14_magic_shapes_v1
+Bloqueia: spec_skills_16_crafting_actions_v1 e UI
+
 # /speckit.specify
 
 ## Spec

@@ -3,6 +3,14 @@
 Status: INTEGRATED_SCOPED_PASS. Autorização humana: criar spec/plan/tasks, revisar e implementar.
 Fonte: docs/refinements/a_implementar/ref_farm_boat_animal_motion_v1.md.
 
+required_adrs: [ADR-0011]
+required_game_rules: [farm_rules.md]
+
+Ordem de execucao: revisão T1, candidatos barco/galinha T2, movimento/wiring T3–T4, testes e captura T5, revisão T6.
+Depende de: FarmAnimalRuntime, AnimalReleaseHandler, FarmAnimalRegistry e FarmAmbientAnimationAuthoring existentes, conforme plano.
+
+# /speckit.specify
+
 ## Spec
 Entrega coesa: barco animado e galinha comprada/solta/restaurada com apresentação e passeio seguros. Vaca/ovelha reutilizam segurança do movimento existente; novos ciclos específicos ficam na expansão após piloto. Não apresentar sprites estáticos como animação concluída dessas espécies.
 AC1 Barco: ciclo4–6s, até1pixel-fonte de deslocamento, silhueta completa, sem drift/rotação; canvas76x68 e apoio(35,24), transformações/colliders estáveis. Dois ciclos reais em câmera gameplay.
@@ -10,6 +18,8 @@ AC2 Galinha: idle/walk/peck/rest, frente/costas/lateral coerentes; caminhada seg
 AC3 Um runtime porAnimalInstanceId na soltura/restauração. Limites pelo abrigo e corpo inteiro; não atravessar sólidos/água, tentativas limitadas e idle seguro se bloqueado. Animais cedem espaço entre si; não bloqueiam player. Alimentação/coleta continuam acessíveis. Dead/Unavailable param.
 AC4 Estados cosméticos não alteramFedToday/CareScore/produtos/inventário. RNGlocal de apresentação independente; saveDTOs intactos; reset de fase visual permitido. Sem animais grátis.
 AC5 Evidência: testes determinísticos de movimento/limites/bloqueio e interação/restauração pertinente; PlayMode observado, capturas e revisão visual independente. Sem claim de aceitação global.
+
+# /speckit.plan
 
 ## Plan
 P1 Reutilizar FarmAnimalRuntime, AnimalReleaseHandler, FarmAnimalRegistry e serviços care/product. Extrair decisões/temporização para AnimalMotionState(puro) e parâmetros AnimalMotionProfileSO, com adapterUnity e apresentação AnimalSpriteAnimator. Nomes finais podem ajustar à convenção existente sem duplicar classes equivalentes. TiposSave/serviçosdecare permanecem.
@@ -23,6 +33,8 @@ P6 Testes scoped: FarmAnimalsRuntimeTests,FarmAnimalCareTests,AnimalProductColle
 Animal implementer: Assets/_Game/Scripts/Farm/Animals/{FarmAnimalRuntime,AnimalReleaseHandler,AnimalMotion*,AnimalSprite*}.cs; Editor/Farm/GenerateFarmAnimalAssets.cs e novo FarmAnimalMotionAuthoring.cs; Tests/EditMode/Farm/*Motion*Tests.cs e testes runtime existentes se necessário. Pode lerregistry/care/save mas nãoeditar semrevisão.
 Art implementer: dev/art/aseprite/keyart-v4/motion-v18/**, candidatosoffline barco+galinha; semAssets/Unity.
 Root: integraçãoassets/EditorArt/FarmAmbientAnimationAuthoring.cs,SceneCreation/CreateMvpFarmScene.cs wiring, Editor/Dev probe, generatedFarmScene e docs. Nenhuma alteraçãoTown/Skills/Cave/save/asmdef/package. Preserve edits alheios e originals.
+
+# /speckit.tasks
 
 ## Tasks
 - [x] T1 Revisão de spec e riscos antes de runtime.

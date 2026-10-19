@@ -236,9 +236,15 @@ namespace CindarsHope.Save
                 foreach (var station in saveData.Crafting.Stations)
                 {
                     var job = station?.Job;
+                    if (job != null && job.IsEmptySerializedJob)
+                    {
+                        station.Job = null;
+                        job = null;
+                    }
                     if (station == null || string.IsNullOrWhiteSpace(station.StationInstanceId)
                         || !craftingStations.Add(station.StationInstanceId)
-                        || (job != null && (job.OutputAmount <= 0
+                        || (job != null && (string.IsNullOrWhiteSpace(job.RecipeId)
+                        || job.OutputAmount <= 0
                         || !Known(job.OutputItemId))))
                     { errorMessage = "Crafting job has an unknown output."; return false; }
                     if (job?.IngredientsConsumed == null) continue;

@@ -27,3 +27,23 @@ without playback, it cannot establish fluidity or synchronization with in-game s
 The same art request selects different resources depending on the question. A template structures
 output; references explain criteria; examples clarify decisions. Loading everything before
 identifying the problem keeps files separate but loses the benefit of on-demand reading.
+
+## Request: "fix the typo in this error message"
+
+HYPOTHETICAL local correction. Use `/bugfix`, read the target text and its immediate context,
+preserve IDs/placeholders and inspect the diff. If it is player-facing localized text, consult
+`localization-authoring` for that contract. No new spec, class, test suite or separate report.
+Correct response: state the corrected text and check. Mistake: opening the wave protocol and
+requiring PlayMode solely because a `.cs` file contains the string. If the key/schema changes,
+reclassify the risk before editing rather than treating it as punctuation.
+
+## Request: "change one line to bump the save version"
+
+HYPOTHETICAL critical contract. A one-line change can invalidate persisted data. Read the
+approved save contract and affected migration/restore path; use `save-load-pattern` and the
+relevant compatibility fixtures. Define what old and new saves must do before editing.
+Correct response: expose the migration requirement and obtain scoped evidence. Mistake:
+calling it a small fix, changing the number and declaring success from compilation.
+
+These examples explain selection; they neither authorize a real save change nor prove routing
+by a live model. Do not load the art examples when the only ambiguity concerns a code fix.

@@ -30,6 +30,7 @@ namespace CindarsHope.Cave.Death
         private CorpseRecoveryManager _recoveryManager;
         private PlayerManager _playerManager;
         private bool _initialized;
+        private DeathRevivalDecision _revival;
 
         public static void Install(Transform owner)
         {
@@ -61,6 +62,8 @@ namespace CindarsHope.Cave.Death
             GameEventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
             GameEventBus.Subscribe<CorpseRecoveredEvent>(OnCorpseRecovered);
             GameEventBus.Subscribe<CorpseReplacedEvent>(OnCorpseReplaced);
+            GameEventBus.Subscribe<DeathReviveRequestedEvent>(OnReviveRequested);
+            GameEventBus.Subscribe<DeathScreenClosedEvent>(OnDeathScreenClosed);
             StartCoroutine(BindWhenReady());
         }
 
@@ -69,6 +72,9 @@ namespace CindarsHope.Cave.Death
             GameEventBus.Unsubscribe<PlayerDiedEvent>(OnPlayerDied);
             GameEventBus.Unsubscribe<CorpseRecoveredEvent>(OnCorpseRecovered);
             GameEventBus.Unsubscribe<CorpseReplacedEvent>(OnCorpseReplaced);
+            GameEventBus.Unsubscribe<DeathReviveRequestedEvent>(OnReviveRequested);
+            GameEventBus.Unsubscribe<DeathScreenClosedEvent>(OnDeathScreenClosed);
+            _revival?.Close();
         }
 
         private IEnumerator BindWhenReady()
@@ -121,6 +127,10 @@ namespace CindarsHope.Cave.Death
             );
 
             _initialized = true;
+            var inventory = bootstrap.InventoryManager as CindarsHope.Inventory.InventoryManager;
+            _revival = new DeathRevivalDecision(_playerManager, _recoveryManager,
+                () => inventory != null ? inventory.GetAmount(DeathRevivalDecision.GoddessTearItemId) : 0,
+                () => inventory != null && inventory.RemoveItem(DeathRevivalDecision.GoddessTearItemId, 1));
             Debug.Log("[DeathSystemBootstrap] Death system initialized");
         }
 
@@ -129,9 +139,12 @@ namespace CindarsHope.Cave.Death
             if (!_initialized || _resolver == null)
             {
                 Debug.LogError("[DeathSystemBootstrap] Morte recebida antes do sistema inicializar (deps ausentes).");
+                // Preserve the fountain escape path even when boot wiring is unavailable.
+                GameEventBus.Publish(new DeathDecisionReadyEvent(evt.SceneName, 0));
                 return;
             }
 
+            string decisionCorpseId = null;
             if (_resolver.IsDeathInCave(evt.SceneName))
             {
                 Debug.Log($"[DeathSystemBootstrap] Player died in cave ({evt.SceneName}), resolving death...");
@@ -141,6 +154,7 @@ namespace CindarsHope.Cave.Death
                 _resolver.SetCaveRunManager(CindarsHope.Cave.Runtime.CaveRunManager.Instance);
 
                 _resolver.ResolveCaveDeath(evt.SceneName);
+                decisionCorpseId = _resolver.LastCreatedCorpse?.CorpseId;
 
                 if (_recoveryManager != null && _resolver.LastCreatedCorpse != null)
                 {
@@ -153,10 +167,24 @@ namespace CindarsHope.Cave.Death
                 Debug.Log($"[DeathSystemBootstrap] Death outside cave ({evt.SceneName}), no corpse created");
             }
 
+            _revival.Begin(decisionCorpseId);
+            GameEventBus.Publish(new DeathDecisionReadyEvent(evt.SceneName, _revival.EligibleTearCount));
+
             // NAO respawna mais aqui. A DeathScreenCanvasController abre a tela modal e o jogador
             // escolhe: Lagrima da Deusa (reviver no lugar) ou Respawnar na Fonte da Anya (anti-softlock,
             // cross-cena se preciso). Manter o respawn aqui dispararia uma acao antes da escolha.
         }
+
+        private void OnReviveRequested(DeathReviveRequestedEvent evt)
+        {
+            if (_revival == null || !_revival.TryRevive()) return;
+            var avatar = PlayerController.ActiveInstance;
+            if (avatar != null)
+                GameEventBus.Publish(new PlayerRespawnedEvent(avatar.transform.position, _playerManager.CurrentHP, 0));
+            GameEventBus.Publish(new DeathReviveCompletedEvent());
+        }
+
+        private void OnDeathScreenClosed(DeathScreenClosedEvent evt) => _revival?.Close();
 
         private void OnCorpseRecovered(CorpseRecoveredEvent evt)
         {

@@ -5,7 +5,6 @@ using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
 using CindarsHope.Core.Time;
 using CindarsHope.Foundation;
-using CindarsHope.Inventory;
 using CindarsHope.Player.Death;
 using CindarsHope.UI.Modal;
 using CindarsHope.UI.Runtime;
@@ -18,10 +17,10 @@ namespace CindarsHope.UI.Death
     /// Canvas-based death screen "Voce Morreu" (replaces the IMGUI DeathScreenController).
     ///
     /// Responsibilities (SURFACE ONLY — no death/penalty/corpse rule lives here):
-    /// - subscribes to the triggers (PlayerDiedEvent / CavePlayerDefeatedEvent);
+    /// - opens only after DeathDecisionReadyEvent (penalties have committed);
     /// - publishes the contract (DeathScreenOpenedEvent / DeathScreenClosedEvent);
     /// - reads the corpse snapshot from CorpseRecoveryManager (authoritative source);
-    /// - reads the Lagrima da Deusa count from InventoryManager at show time;
+    /// - projects the eligible tear count supplied by the death decision owner;
     /// - PAUSES the game (Time.timeScale=0 + ModalManager.Death) while open; Esc does NOT close.
     ///
     /// Death no longer auto-respawns (DeathSystemBootstrap only creates the corpse). The player
@@ -39,7 +38,8 @@ namespace CindarsHope.UI.Death
         public static DeathScreenCanvasController Instance { get; private set; }
 
         /// <summary>Stable id of the revive consumable (catalog: CanonicalItemCatalog AddSpecials).</summary>
-        public const string GoddessTearItemId = "item_goddess_tear";
+        public const string GoddessTearItemId = DeathRevivalDecision.GoddessTearItemId;
+        private int _eligibleTearCount;
 
         // Cached cross-event state (subscription order is not guaranteed).
         private int _lastResolvedCaveLevel = -1;
@@ -89,18 +89,19 @@ namespace CindarsHope.UI.Death
 
         private void OnEnable()
         {
-            GameEventBus.Subscribe<PlayerDiedEvent>(OnPlayerDied);
-            GameEventBus.Subscribe<CavePlayerDefeatedEvent>(OnCavePlayerDefeated);
+            GameEventBus.Subscribe<DeathDecisionReadyEvent>(OnDecisionReady);
+            GameEventBus.Subscribe<DeathReviveCompletedEvent>(OnReviveCompleted);
             GameEventBus.Subscribe<CavePlayerDeathResolvedEvent>(OnCaveDeathResolved);
             GameEventBus.Subscribe<XpResetToLevelStartEvent>(OnXpReset);
         }
 
         private void OnDisable()
         {
-            GameEventBus.Unsubscribe<PlayerDiedEvent>(OnPlayerDied);
-            GameEventBus.Unsubscribe<CavePlayerDefeatedEvent>(OnCavePlayerDefeated);
+            GameEventBus.Unsubscribe<DeathDecisionReadyEvent>(OnDecisionReady);
+            GameEventBus.Unsubscribe<DeathReviveCompletedEvent>(OnReviveCompleted);
             GameEventBus.Unsubscribe<CavePlayerDeathResolvedEvent>(OnCaveDeathResolved);
             GameEventBus.Unsubscribe<XpResetToLevelStartEvent>(OnXpReset);
+            Dismiss();
         }
 
         private void OnDestroy()
@@ -125,6 +126,14 @@ namespace CindarsHope.UI.Death
 
         // ---- Triggers (preserved) ----
 
+        private void OnDecisionReady(DeathDecisionReadyEvent evt)
+        {
+            _eligibleTearCount = evt.TearCount;
+            OnPlayerDied(new PlayerDiedEvent { SceneName = evt.SceneName });
+        }
+
+        private void OnReviveCompleted(DeathReviveCompletedEvent evt) => Dismiss();
+
         private void OnPlayerDied(PlayerDiedEvent evt)
         {
             if (_isShowing) return;
@@ -136,12 +145,6 @@ namespace CindarsHope.UI.Death
             }
 
             Show(DeathScreenViewModel.ForOverworldDeath(evt.SceneName));
-        }
-
-        private void OnCavePlayerDefeated(CavePlayerDefeatedEvent evt)
-        {
-            if (_isShowing) return;
-            ShowCave(evt.CaveLevel > 0 ? evt.CaveLevel : ResolveCaveLevel());
         }
 
         private void ShowCave(int caveLevel)
@@ -193,9 +196,8 @@ namespace CindarsHope.UI.Death
         {
             if (_isShowing) return;
 
-            // Resolve a contagem de Lagrima da Deusa AGORA (do inventario autoritativo) e injeta na
-            // projection, para o botao de revive saber se habilita e mostrar "(N)".
-            _viewModel = viewModel.WithGoddessTearCount(ResolveGoddessTearCount());
+            // Count belongs to the resolved death choice, including tears moved to its corpse.
+            _viewModel = viewModel.WithGoddessTearCount(_eligibleTearCount);
             _isShowing = true;
 
             PauseGame();
@@ -236,53 +238,13 @@ namespace CindarsHope.UI.Death
             _pauseToken = null;
         }
 
-        // ---- Inventory: Lagrima da Deusa ----
-
-        private static InventoryManager ResolveInventoryManager()
-        {
-            var bootstrap = GameBootstrap.Instance;
-            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — cast local para o tipo concreto
-            // (GameBootstrap.InventoryManager agora retorna a porta IInventoryRuntime).
-            return bootstrap != null ? bootstrap.InventoryManager as InventoryManager : null;
-        }
-
-        private static int ResolveGoddessTearCount()
-        {
-            var inventory = ResolveInventoryManager();
-            return inventory != null ? inventory.GetAmount(GoddessTearItemId) : 0;
-        }
-
         /// <summary>
-        /// Acao do botao "Usar Lagrima da Deusa": consome 1, cura HP cheio e fecha a tela. So roda
-        /// se ainda houver pelo menos 1 (guard contra clique tardio). Reviver no LUGAR (sem mover).
+        /// Requests the authoritative choice; only a successful completion dismisses the screen.
         /// </summary>
         private void OnReviveWithTear()
         {
             if (!_isShowing) return;
-
-            var inventory = ResolveInventoryManager();
-            if (inventory == null || !inventory.HasItem(GoddessTearItemId, 1))
-            {
-                Debug.LogWarning("[DeathScreen] Revive recusado: sem Lagrima da Deusa no inventario.");
-                return;
-            }
-
-            if (!inventory.RemoveItem(GoddessTearItemId, 1))
-            {
-                Debug.LogWarning("[DeathScreen] Revive recusado: RemoveItem falhou para Lagrima da Deusa.");
-                return;
-            }
-
-            var bootstrap = GameBootstrap.Instance;
-            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
-            if (playerManager != null)
-            {
-                // SetHP(MaxHP) re-arma o PlayerDeathController (HP volta > 0).
-                playerManager.SetHP(playerManager.MaxHP);
-            }
-
-            Debug.Log("[DeathScreen] Revive com Lagrima da Deusa: -1 item, HP cheio, jogador vivo no lugar.");
-            Dismiss();
+            GameEventBus.Publish(new DeathReviveRequestedEvent());
         }
 
         /// <summary>

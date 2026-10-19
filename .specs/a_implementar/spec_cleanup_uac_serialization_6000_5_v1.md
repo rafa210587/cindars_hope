@@ -18,6 +18,13 @@
 > **Validation level alvo:** BUILD_VALIDATED (compile 0 warnings UAC) + EditMode de caracterização
 > **Executor:** Claude | Codex
 
+required_adrs: [ADR-0006]
+required_game_rules: [save_rules.md, npc_rules.md]
+
+Ordem de execucao: auditar os três casos, corrigir Festival, depois SaveManager e DialogueLineCondition, e validar; ver Fases 0–4.
+
+# /speckit.specify
+
 ## 5. Contexto
 Após o upgrade para Unity 6000.5.7f1, o analisador de serialização passou a emitir 7 warnings (UAC1001/UAC1010) em 3 arquivos. Não bloqueiam compile, mas poluem o Console e alguns indicam **serialização silenciosamente quebrada** (campo que o Unity ignora). Limpar deixa o Console honesto e o modelo de dados correto.
 
@@ -47,6 +54,8 @@ SaveManager.cs:84  [SerializeField] private CorpseRecoveryManager _corpseRecover
 
 ## 13. Regras de não duplicação
 Sem novo tipo/serviço. Correções mínimas nos 3 arquivos. Não introduzir `Result<T>` nem camada de serialização paralela (rule csharp-style / code-minimalism-ladder).
+
+# /speckit.plan
 
 ## 15. Arquitetura alvo — MODIFICAR (nada a criar, exceto teste)
 ```text
@@ -80,6 +89,8 @@ docs/validation/**
 ```text
 Qualquer .asset/.unity/.prefab; Packages/**; ProjectSettings/**; geradores de conteúdo (salvo se o caso 1 par-bool exigir tocar o gerador de diálogo — então autorizar explicitamente).
 ```
+
+# /speckit.tasks
 
 ## 20. Estratégia de implementação
 ```md

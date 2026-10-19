@@ -100,6 +100,8 @@ autorizados e trabalho independente podem continuar. Batch não prova aceitaçã
 ## Quando NÃO usar
 
 Auditoria read-only ou pergunta sem implementação; bug pontual segue bugfix.
+A local correction without a target spec does not invoke this workflow, `/validate-spec`
+or `/finish-spec`; it selects the relevant checks directly and returns a short result.
 
 ## Quando parar e reportar
 

@@ -127,7 +127,15 @@ namespace CindarsHope.Editor.Validation
                 Check(FindByName(scene, "FarmForagePoints") != null,      "FarmForagePoints (parent) presente");
 
                 // ── Bounds v6 (64x44) ──────────────────────────────────────────────────────────────
-                Check(FindByName(scene, "Bounds") != null,                "Bounds presente");
+                for (int segment = 0; segment < CindarsHope.Farm.Scene.FarmEnclosedValleyBoundaryContract.InnerBoundary.Count; segment++)
+                {
+                    string name = CindarsHope.Farm.Scene.FarmEnclosedValleyBoundaryContract.IsTownGateSegment(segment)
+                        ? "NaturalBoundary_TownGate" : "NaturalBoundary_" + segment;
+                    var boundary = FindByName(scene, name);
+                    var collider = boundary != null ? boundary.GetComponent<PolygonCollider2D>() : null;
+                    Check(collider != null && collider.enabled && !collider.isTrigger && collider.pathCount > 0,
+                        name + " colisor sólido presente");
+                }
 
                 // ── Arvores ────────────────────────────────────────────────────────────────────────
                 Check(FindByName(scene, "Trees") != null,                 "Trees (parent) presente");

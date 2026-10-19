@@ -27,6 +27,10 @@ required_game_rules: [combat_rules.md, cave_rules.md]
 
 ---
 
+Ordem de execucao: após catálogo/direção de ataque e primitivas base fable_83/fable_24/fable_33/fable_80/CX13; antes das expansões P3/P4 listadas em Blocks.
+Depende de: catálogo/direção de ataque, fable_83, fable_24, fable_33/fable_80 e CX13, conforme lista Depends on acima.
+Bloqueia: EnemyAttackAnimator e primitivas P3/P4, conforme lista Blocks acima.
+
 # /speckit.specify
 
 ## Contexto

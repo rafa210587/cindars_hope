@@ -196,6 +196,10 @@ namespace CindarsHope.Tests.PlayMode.NPC
                 wallCollider.size = new Vector2(0.5f, 100f);
                 wall.transform.rotation = Quaternion.Euler(0f, 0f,
                     Mathf.Atan2(firstSegment.y, firstSegment.x) * Mathf.Rad2Deg);
+                // The route must be built while the corridor is still clear; the late obstacle
+                // models a real newly blocked edge. If it is active during route construction,
+                // the graph correctly detours and no recovery should occur.
+                wallCollider.enabled = false;
                 var messages = new List<string>();
                 capture = (condition, stackTrace, type) =>
                 {
@@ -204,6 +208,9 @@ namespace CindarsHope.Tests.PlayMode.NPC
                 Application.logMessageReceived += capture;
                 var saveBefore = SnapshotPersistentFiles();
                 Assert.IsTrue(service.BeginTrackedMoveForDiagnostics(recoveryNpcId, wanderer, target));
+                Assert.IsTrue(wanderer.HasActiveRoute, "late-wall probe must start on the graph route");
+                wallCollider.enabled = true;
+                Physics2D.SyncTransforms();
                 var before = actor.transform.position;
                 var previous = before;
                 var maxStep = 0f;
@@ -238,6 +245,25 @@ namespace CindarsHope.Tests.PlayMode.NPC
                     $"wall={wall.transform.position} wallBounds={wallCollider.bounds} " +
                     $"segment={firstSegment} replans={diagnostic.Replans}");
                 Assert.AreEqual(saveBefore, SnapshotPersistentFiles(), "onscreen replan/wait must not write save");
+                var blockedWarnings = messages.FindAll(m => m.Contains($"Waiting at safe position npc={recoveryNpcId}")).Count;
+                Assert.AreEqual(1, blockedWarnings, "first terminal block emits one diagnostic");
+                var blockedReplans = diagnostic.Replans;
+                var extraSteps = Mathf.CeilToInt(NpcRouteRecoveryPolicy.ProgressWindowSeconds * 2f /
+                    Time.fixedDeltaTime) + 2;
+                for (var step = 0; step < extraSteps; step++)
+                {
+                    yield return new WaitForFixedUpdate();
+                    var alongBlockedSegment = Vector2.Dot(
+                        (Vector2)actor.transform.position - (Vector2)route[0], firstSegment.normalized);
+                    var wallAlongSegment = Vector2.Dot(
+                        (Vector2)wall.transform.position - (Vector2)route[0], firstSegment.normalized);
+                    Assert.Less(alongBlockedSegment, wallAlongSegment + 0.25f,
+                        "after terminal recovery, any resumed idle wander must remain on the safe side");
+                }
+                Assert.AreEqual(1, messages.FindAll(m => m.Contains($"Waiting at safe position npc={recoveryNpcId}")).Count,
+                    "a terminally blocked order must not warn again every progress window");
+                Assert.IsTrue(service.TryGetMoveDiagnostic(recoveryNpcId, out var blockedDiagnostic));
+                Assert.AreEqual(blockedReplans, blockedDiagnostic.Replans, "blocked order must not replan again");
                 Application.logMessageReceived -= capture;
             }
             finally
@@ -247,6 +273,125 @@ namespace CindarsHope.Tests.PlayMode.NPC
                 var restoredBody = actor.GetComponent<Rigidbody2D>();
                 if (restoredBody != null) restoredBody.position = original;
                 actor.GetComponent<NpcWanderer>()?.ClearDestination();
+                Object.Destroy(wall);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator MissingGraph_DirectFallback_StopsAtRealWallWithinReplanBudget()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            yield return SceneManager.LoadSceneAsync("TownScene", LoadSceneMode.Single);
+            yield return null;
+            var service = Object.FindFirstObjectByType<NpcScheduleService>();
+            Assert.IsNotNull(service);
+            var graph = NpcTownRouteGraph.Active;
+            Assert.IsNotNull(graph);
+            var actor = new GameObject("N1_MissingGraphFallbackProbe");
+            var wall = new GameObject("N1_MissingGraphWall");
+            const string npcId = "npc_missing_graph_probe";
+            Application.LogCallback capture = null;
+            try
+            {
+                service.ClearTrackedMovesForDiagnostics();
+                service.RegisterRouteGraph(null);
+                actor.transform.position = new Vector3(1000f, 1000f, 0f);
+                var body = actor.AddComponent<Rigidbody2D>();
+                body.gravityScale = 0f;
+                body.bodyType = RigidbodyType2D.Dynamic;
+                var feet = actor.AddComponent<CircleCollider2D>();
+                feet.radius = 0.25f;
+                var wanderer = actor.AddComponent<NpcWanderer>();
+                wanderer.ConfigureMovement(2f, 0f, 100f, 100f,
+                    new Vector2(995f, 995f), new Vector2(1005f, 1005f));
+                wall.transform.position = new Vector3(1001f, 1000f, 0f);
+                var blocker = wall.AddComponent<BoxCollider2D>();
+                blocker.size = new Vector2(0.25f, 10f);
+                Physics2D.SyncTransforms();
+                yield return new WaitForFixedUpdate();
+                var warnings = new List<string>();
+                capture = (message, _, type) =>
+                {
+                    if (type == LogType.Warning && message.Contains("[NpcScheduleService]")) warnings.Add(message);
+                };
+                Application.logMessageReceived += capture;
+                Assert.IsTrue(service.BeginTrackedMoveForDiagnostics(npcId, wanderer,
+                    new Vector3(1003f, 1000f, 0f)));
+                Assert.IsFalse(wanderer.HasActiveRoute, "missing graph uses the legacy direct fallback");
+                var previous = actor.transform.position;
+                var maxStep = 0f;
+                var deadline = Time.time + 12f;
+                while (Time.time < deadline &&
+                       !warnings.Exists(m => m.Contains($"Waiting at safe position npc={npcId}")))
+                {
+                    yield return new WaitForFixedUpdate();
+                    maxStep = Mathf.Max(maxStep, Vector2.Distance(previous, actor.transform.position));
+                    previous = actor.transform.position;
+                }
+                Assert.IsTrue(service.TryGetMoveDiagnostic(npcId, out var diagnostic));
+                Assert.That(diagnostic.Replans, Is.InRange(1, NpcRouteRecoveryPolicy.MaxReplans));
+                Assert.IsTrue(warnings.Exists(m => m.Contains($"Waiting at safe position npc={npcId}")));
+                Assert.Less(maxStep, 0.2f, "direct fallback must never teleport through the wall");
+                Assert.Less(actor.transform.position.x, wall.transform.position.x,
+                    "the fallback must remain on the physical safe side");
+                Assert.GreaterOrEqual(feet.Distance(blocker).distance,
+                    -Mathf.Max(Physics2D.defaultContactOffset, 0.01f));
+            }
+            finally
+            {
+                if (capture != null) Application.logMessageReceived -= capture;
+                service.RegisterRouteGraph(graph);
+                service.ResetDiagnosticMoveIsolation();
+                Object.Destroy(actor);
+                Object.Destroy(wall);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator IdleWander_TargetBehindSolid_DoesNotPushForever()
+        {
+            // The PlayMode runner's temporary backup scene lacks the death-system bootstrap
+            // dependencies. Its delayed diagnostic can fire while this test loads Town.
+            // Expect only that exact environment diagnostic, not arbitrary errors.
+            LogAssert.Expect(LogType.Error,
+                "[DeathSystemBootstrap] GameBootstrap/PlayerManager/CorpseRecoveryManager nao ficaram prontos apos 120 frames. Sistema de morte NAO inicializado (morte->corpo->respawn indisponivel).");
+            yield return SceneManager.LoadSceneAsync("TownScene", LoadSceneMode.Single);
+            yield return null;
+            var actor = new GameObject("N1_IdleWanderProbe");
+            var wall = new GameObject("N1_IdleWanderWall");
+            try
+            {
+                actor.transform.position = new Vector3(1100f, 1100f, 0f);
+                var body = actor.AddComponent<Rigidbody2D>();
+                body.gravityScale = 0f;
+                actor.AddComponent<CircleCollider2D>().radius = 0.25f;
+                var wanderer = actor.AddComponent<NpcWanderer>();
+                wanderer.ConfigureMovement(1f, 0f, 100f, 100f,
+                    new Vector2(1095f, 1095f), new Vector2(1105f, 1105f));
+                wall.transform.position = new Vector3(1101f, 1100f, 0f);
+                wall.AddComponent<BoxCollider2D>().size = new Vector2(0.25f, 10f);
+                Physics2D.SyncTransforms();
+                yield return new WaitForFixedUpdate();
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var targetField = typeof(NpcWanderer).GetField("_idleTarget", flags);
+                var pausedField = typeof(NpcWanderer).GetField("_isPaused", flags);
+                Assert.IsNotNull(targetField); Assert.IsNotNull(pausedField);
+                var blockedTarget = new Vector3(1103f, 1100f, 0f);
+                targetField.SetValue(wanderer, blockedTarget);
+                pausedField.SetValue(wanderer, false);
+                // 100 ticks are enough to expose a permanently blocked target and stay below
+                // unrelated bootstrap timeout diagnostics in the headless Town harness.
+                for (var step = 0; step < 100; step++) yield return new WaitForFixedUpdate();
+                Assert.Less(actor.transform.position.x, wall.transform.position.x,
+                    "the body must not cross the real solid wall");
+                var paused = (bool)pausedField.GetValue(wanderer);
+                var targetChanged = Vector2.Distance((Vector3)targetField.GetValue(wanderer), blockedTarget) > 0.01f;
+                Assert.IsTrue(paused || targetChanged,
+                    "idle wander must stop or select another destination when its target is physically blocked");
+            }
+            finally
+            {
+                Object.Destroy(actor);
                 Object.Destroy(wall);
             }
         }
@@ -560,17 +705,33 @@ namespace CindarsHope.Tests.PlayMode.NPC
                         var node = FindGraphNode(graph, anchorId);
                         var wanderer = bodies[npcId];
                         wanderer.ClearDestination();
-                        moving[npcId] = (wanderer, node.Position, wanderer.transform.position);
+                        // Renko's opt-in interior adapter owns Work/Home/Night presentation.
+                        // Those blocks intentionally do not enqueue physical Town routes.
+                        var interior = wanderer.GetComponent<NpcInteriorPresentationAdapter>();
+                        var block = service.GetCurrentBlock(npcId, hour);
+                        if (interior == null || block == NpcRuntimeBlock.Social)
+                            moving[npcId] = (wanderer, node.Position, wanderer.transform.position);
                         previousAnchors[npcId] = anchorId;
                     }
                     GameEventBus.Publish(new GameTimeTickEvent(hour, clock.Day));
+                    foreach (var npcId in ids)
+                    {
+                        var interior = bodies[npcId].GetComponent<NpcInteriorPresentationAdapter>();
+                        if (interior == null ||
+                            service.GetCurrentBlock(npcId, hour) == NpcRuntimeBlock.Social) continue;
+                        if (interior.IsBound)
+                            Assert.IsTrue(interior.IsInterior,
+                                $"{npcId} hour {hour} must use its bound interior presentation");
+                        Assert.AreEqual(0, bodies[npcId].RouteCount,
+                            $"{npcId} hour {hour} must not route toward an off-playfield interior before or after binding");
+                    }
                     foreach (var pair in moving)
                     {
                         var directDistance = Vector2.Distance(pair.Value.start, pair.Value.target);
                         if (directDistance <= 2f) continue;
                         service.TryGetMoveDiagnostic(pair.Key, out var orderDiagnostic);
-                        Assert.Greater(pair.Value.wanderer.RouteCount, 2,
-                            $"{pair.Key} hour {hour} must use graph nodes instead of one unchecked direct segment; " +
+                        Assert.GreaterOrEqual(pair.Value.wanderer.RouteCount, 2,
+                            $"{pair.Key} hour {hour} must use a graph route; a valid single-edge route has 2 points, while unchecked direct fallback has 0; " +
                             $"start={pair.Value.start} current={pair.Value.wanderer.transform.position} target={pair.Value.target} " +
                             $"orderTarget={orderDiagnostic.Target} graph={graph.LastFailureDiagnostic}");
                     }
@@ -622,8 +783,8 @@ namespace CindarsHope.Tests.PlayMode.NPC
                         Assert.AreEqual(previousAnchors[npcId], state.CurrentAnchorId, $"wrong anchor {npcId} at hour {hour}");
                     }
                 }
-                Assert.GreaterOrEqual(physicalTransitions, 56,
-                    "full-day acceleration must include at least two physical block transitions per profile on average");
+                Assert.GreaterOrEqual(physicalTransitions, 2 * (ids.Count - 1),
+                    "full-day acceleration must include at least two physical transitions per Town-route profile");
                 Assert.LessOrEqual(maximumFrameDisplacement, acceleratedSpeed * Time.fixedDeltaTime + 0.1f,
                     $"normal onscreen agenda movement must not teleport; max fixed-frame delta={maximumFrameDisplacement:F3}u");
                 Assert.AreEqual(0, recoveryMessages.Count,

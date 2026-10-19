@@ -53,7 +53,7 @@ Quem precisa reagir ao novo dia/clima (farm, NPC, economy, cave) faz `GameEventB
 
 ## Interação com save (ligação com save-load-pattern)
 
-Persistir **só** dia/year/fase lunar como simple types/IDs — nunca `GameObject`/`Transform`/`ScriptableObject` (rule: `save-dto-simple-types-only`). O padrão já existe:
+Persistir **só** dia/year/fase lunar como simple types/IDs — nunca `GameObject`/`Transform`/`ScriptableObject` (rule: `unity-architecture`). O padrão já existe:
 
 - `CalendarSaveData.AbsoluteDayIndex` (int, default 1);
 - `WorldTimeSaveData` → `CurrentDay`, `CurrentYear`, `CurrentLunarPhaseType` (int);

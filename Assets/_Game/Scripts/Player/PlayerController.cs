@@ -135,6 +135,7 @@ namespace CindarsHope.Player
             _activeInstance = this;
             GameEventBus.Subscribe<TownInteriorPlayerLockEvent>(OnTownInteriorPlayerLock);
             GameEventBus.Subscribe<TownInteriorPlayerPlacementRequestedEvent>(OnTownInteriorPlayerPlacementRequested);
+            GameEventBus.Subscribe<PlayerRespawnedEvent>(OnPlayerRespawned);
             // fable_47: aplica imediatamente o fator derivado já calculado (caso o applier
             // tenha rodado antes deste controller existir, ex.: troca de cena).
             PlayerVitalsApplier.Instance?.ReapplyDerivedMoveSpeed();
@@ -148,6 +149,7 @@ namespace CindarsHope.Player
             MoveInput = Vector2.zero;
             GameEventBus.Unsubscribe<TownInteriorPlayerLockEvent>(OnTownInteriorPlayerLock);
             GameEventBus.Unsubscribe<TownInteriorPlayerPlacementRequestedEvent>(OnTownInteriorPlayerPlacementRequested);
+            GameEventBus.Unsubscribe<PlayerRespawnedEvent>(OnPlayerRespawned);
             _townInteriorLockTokens.Clear();
             if (_activeInstance == this)
             {
@@ -288,6 +290,21 @@ namespace CindarsHope.Player
             _distanceSinceLastStep = 0f;
             Physics2D.SyncTransforms();
             GameEventBus.Publish(new TownInteriorPlayerPlacementCompletedEvent(evt.OperationId, true));
+        }
+
+        private void OnPlayerRespawned(PlayerRespawnedEvent evt)
+        {
+            if (!IsFinite(evt.Position.x) || !IsFinite(evt.Position.y)) return;
+            AssignRigidbodyIfNeeded();
+            if (_rigidbody != null)
+            {
+                _rigidbody.linearVelocity = Vector2.zero;
+                _rigidbody.position = evt.Position;
+            }
+            transform.position = new Vector3(evt.Position.x, evt.Position.y, transform.position.z);
+            MoveInput = Vector2.zero;
+            _distanceSinceLastStep = 0f;
+            Physics2D.SyncTransforms();
         }
 
         private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);

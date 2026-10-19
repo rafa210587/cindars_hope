@@ -273,6 +273,16 @@ namespace CindarsHope.Craft
             }
 
             _nextCraftedItemSequence = Math.Max(1, saveData.NextCraftedItemSequence);
+            // Restore replaces the previous session, including stations absent from the save.
+            // Keep station objects: scene interactables may retain their references.
+            foreach (var existingStation in _stations.Values)
+            {
+                existingStation.LoadFromSaveData(new CraftingStationSaveData
+                {
+                    StationInstanceId = existingStation.StationInstanceId,
+                    StationLevel = 1
+                }, _recipeDatabase, requireOriginSchema);
+            }
             if (saveData.Stations == null)
             {
                 return;

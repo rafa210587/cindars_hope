@@ -5,6 +5,12 @@ Harness freeze: no new skill, rule, agent, command or hook until 10 specs are pr
 Fonte canônica de descoberta: este índice. Leia apenas a seção e o artefato correspondentes ao trabalho; links não exigem carregamento recursivo.
 Skills: `skills/<id>/SKILL.md`; commands: `commands/<id>.md`; agents: `agents/<id>.md`.
 No Codex, os mesmos IDs ficam em `.agents/skills/` e `.codex/agents/`; commands também são skills.
+
+Select the journey in CLAUDE first: local correction → `/bugfix`; planned feature/maintenance →
+the applicable approved spec; critical contracts → risk-based review and checks. This catalog
+is lookup, not a reading queue. Known IDs go straight to their entry; aliases are not new workflows.
+To audit structural discovery, use `tools/codex/Test-HarnessDiscovery.ps1`; a structural PASS
+does not prove task routing, semantic quality or that a host actually ran its hooks.
 ## Commands
 
 | Command | When to use |
@@ -16,7 +22,7 @@ No Codex, os mesmos IDs ficam em `.agents/skills/` e `.codex/agents/`; commands 
 | `/finish-spec` | Closeout — phase-aware, no auto-promote |
 | `/reconcile-status` | Audit inconsistencies (may read PROJECT_LOG) |
 | `/plan-wave` | Plan next FASE/wave (reads ROADMAP) |
-| `/bugfix` | Fix a specific bug |
+| `/bugfix` | Short journey restoring an existing contract; focused evidence, no new spec/report/commit by default |
 | `/docs-health` | Run docs validation only |
 | `/review-non-regression` | Audit diff for violations |
 | `/execute-spec-strict` | Strict single-spec execution with validation gates |
@@ -81,7 +87,7 @@ Use `.claude/skills/<name>/SKILL.md` when task matches:
 | `ability-effect-composition` | Designing how abilities/spells/status effects compose from reusable effects |
 | `monobehaviour-decomposition` | Splitting a god-MonoBehaviour into thin adapter + pure-C# core |
 | `solid-refactoring` | Refactor cohesive responsibilities, dependencies and SOLID contracts while preserving behavior |
-| `object-pooling-pattern` | Pooling de objetos para spawn/despawn frequente (projéteis, drops, floating text, SFX) |
+| `object-pooling-pattern` | Measured spawn/despawn cost justifies pooling; verify ownership, reset and lifetime |
 | `rng-and-determinism` | RNG com seed para conteúdo determinístico; quando não usar UnityEngine.Random |
 | `progression-curve-design` | Curvas de XP, thresholds de level, scaling de stat; design de progressão |
 | `economy-balance-tuning` | Preços, sinks/sources de gold, balance de shop; specs de tuning de economy |
@@ -125,7 +131,7 @@ Delegate via `.claude/agents/`:
 | `docs-curator` | Document governance |
 | `unity-validator` | Validation only |
 | `non-regression-auditor` | Regression audit |
-| `architecture-reviewer` | Pre-wave architecture |
+| `architecture-reviewer` | Review changed critical contracts before implementation or a substantial integration; not required for every local fix |
 | `bugfix-investigator` | Bug investigation |
 | `asset-wiring-specialist` | Unity data / prefab wiring |
 | `game-design-reviewer` | Design review de specs de gameplay antes da implementação (loops, economy, pacing, failure states) |

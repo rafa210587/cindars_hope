@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using CindarsHope.EditorTools.Validation;
 using CindarsHope.Foundation;
+using CindarsHope.SceneManagement;
+using CindarsHope.Cave.Runtime;
+using UnityEditor;
 using CindarsHope.World.Scenes;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -112,6 +115,8 @@ namespace CindarsHope.Editor.Validation
             var foundGates = new HashSet<string>();
             var foundAnchors = new HashSet<string>();
             var inspectedScenes = new HashSet<Scene>();
+            var destinations = new List<(string scene, string anchor, string source)>();
+            var sceneAnchors = new HashSet<string>();
 
             if (scenes != null)
             {
@@ -126,6 +131,44 @@ namespace CindarsHope.Editor.Validation
 
                     foreach (var root in scene.GetRootGameObjects())
                     {
+                        foreach (var point in root.GetComponentsInChildren<SceneSpawnPoint>(true))
+                        {
+                            if (string.IsNullOrWhiteSpace(point.SpawnId))
+                                AddError(report, "EMPTY_ANCHOR_ID", "SpawnId is empty.", scene.path, point.name);
+                            else
+                            {
+                                if (!sceneAnchors.Add(scene.name + ":" + point.SpawnId))
+                                    AddError(report, "DUPLICATE_ANCHOR", point.SpawnId, scene.path, point.name);
+                                foundAnchors.Add(point.SpawnId);
+                                // Legacy aliases retain expected-ID coverage without resolving a portal's literal target.
+                                foundAnchors.Add(point.SpawnId.StartsWith("spawn_") ? point.SpawnId : "spawn_" + point.SpawnId);
+                            }
+                        }
+                        foreach (var portal in root.GetComponentsInChildren<ScenePortal>(true))
+                        {
+                            string destination = string.IsNullOrWhiteSpace(portal.TargetSceneName)
+                                ? System.IO.Path.GetFileNameWithoutExtension(portal.TargetScenePath) : portal.TargetSceneName;
+                            if (string.IsNullOrWhiteSpace(destination))
+                                AddError(report, "EMPTY_DESTINATION", "Portal destination is empty.", scene.path, portal.name);
+                            if (string.IsNullOrWhiteSpace(portal.TargetSpawnId))
+                                AddError(report, "EMPTY_TARGET_ANCHOR", "Portal target is empty.", scene.path, portal.name);
+                            destinations.Add((destination, portal.TargetSpawnId, portal.name));
+                            if (scene.name == SceneId.Farm && destination == SceneId.Town) foundGates.Add(SceneId.GateFarmTownExit);
+                            if (scene.name == SceneId.Town && destination == SceneId.Farm) foundGates.Add(SceneId.GateTownFarmExit);
+                            if (scene.name == SceneId.Cave && destination == SceneId.Farm) foundGates.Add(SceneId.GateCaveFarmExit);
+                        }
+                        foreach (var entrance in root.GetComponentsInChildren<CaveEntranceInteractable>(true))
+                        {
+                            var serialized = new SerializedObject(entrance);
+                            string gateId = serialized.FindProperty("_transitionGateId").stringValue;
+                            string destination = serialized.FindProperty("_targetCaveScene").stringValue;
+                            string target = serialized.FindProperty("_targetSpawnId").stringValue;
+                            if (string.IsNullOrWhiteSpace(gateId)) AddError(report, "EMPTY_GATE_ID", "Cave gate id is empty.", scene.path, entrance.name);
+                            else if (!foundGates.Add(gateId)) AddError(report, "DUPLICATE_GATE", gateId, scene.path, entrance.name);
+                            if (string.IsNullOrWhiteSpace(destination)) AddError(report, "EMPTY_DESTINATION", "Cave destination is empty.", scene.path, entrance.name);
+                            if (string.IsNullOrWhiteSpace(target)) AddError(report, "EMPTY_TARGET_ANCHOR", "Cave target is empty.", scene.path, entrance.name);
+                            destinations.Add((destination, target, entrance.name));
+                        }
                         foreach (var gate in root.GetComponentsInChildren<SceneTransitionGate>(true))
                         {
                             if (string.IsNullOrWhiteSpace(gate.TransitionId))
@@ -150,6 +193,12 @@ namespace CindarsHope.Editor.Validation
                 }
             }
 
+            // Legacy portals resolve the literal SpawnId, not the normalized reporting alias.
+            foreach (var destination in destinations)
+                if (!sceneAnchors.Contains(destination.scene + ":" + destination.anchor) &&
+                    !HasModernAnchor(scenes, destination.scene, destination.anchor))
+                    AddError(report, "UNRESOLVED_TARGET_ANCHOR", destination.scene + ":" + destination.anchor, "", destination.source);
+
             foreach (string id in ExpectedGates)
             {
                 if (!foundGates.Contains(id)) AddError(report, "MISSING_GATE", id);
@@ -159,6 +208,17 @@ namespace CindarsHope.Editor.Validation
                 if (!foundAnchors.Contains(id)) AddError(report, "MISSING_ANCHOR", id);
             }
             return report;
+        }
+
+        private static bool HasModernAnchor(IReadOnlyList<Scene> scenes, string sceneName, string id)
+        {
+            if (scenes == null) return false;
+            foreach (var scene in scenes)
+                if (scene.IsValid() && scene.isLoaded && scene.name == sceneName)
+                    foreach (var root in scene.GetRootGameObjects())
+                        foreach (var anchor in root.GetComponentsInChildren<SceneSpawnAnchor>(true))
+                            if (anchor.SpawnAnchorId == id) return true;
+            return false;
         }
 
         private static void AddError(ValidationReport report, string code, string message,

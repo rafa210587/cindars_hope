@@ -6,6 +6,13 @@
 > **Parallelizable:** por família de arte após profiles; **Depends on:** spec_skills_25_action_presentation_foundation_v1  
 > **Validation:** asset validator+PlayMode gráfico+capturas
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, combat_rules.md]
+Ordem de execucao: após spec_skills_25_action_presentation_foundation_v1.
+Depende de: spec_skills_25_action_presentation_foundation_v1
+
+Bloqueia: aceite visual do catálogo completo das 31 ações descrito nesta spec; não há fase posterior nomeada.
+
 # /speckit.specify
 
 ## Spec

@@ -303,7 +303,7 @@ namespace CindarsHope.Cave.Death
 
         private Vector2 GetPlayerPosition()
         {
-            var playerTransform = _playerManager?.gameObject.transform;
+            var playerTransform = PlayerController.ActiveInstance != null ? PlayerController.ActiveInstance.transform : null;
             return playerTransform != null ? playerTransform.position : Vector2.zero;
         }
 

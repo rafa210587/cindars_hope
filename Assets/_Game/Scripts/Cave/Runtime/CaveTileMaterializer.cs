@@ -4,6 +4,7 @@ using CindarsHope.Cave.Data;
 using CindarsHope.Cave.Ecosystem;
 using CindarsHope.Cave.Generation;
 using CindarsHope.Combat;
+using CindarsHope.Core.Physics;
 using CindarsHope.DebugTools;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -51,7 +52,7 @@ namespace CindarsHope.Cave.Runtime
         // dar profundidade/aro onde o chão encontra a parede (complementa o WallInteriorTint/
         // WallTopEdgeTint já existentes, que fazem o mesmo do lado da parede). Valor de apresentação
         // (não-balance) — const nomeada local a este materializer, mesmo raciocínio dos tints acima.
-        private static readonly Color FloorEdgeShadowTint = new Color(0.62f, 0.6f, 0.58f);
+        private static readonly Color FloorEdgeShadowTint = new Color(0.78f, 0.76f, 0.74f);
 
         // Fix pós-Play-Mode 2026-07-04: guard one-shot por instância (skill observability-and-logging)
         // — o materializer é recriado por CaveRuntimeMaterializer.EnsureCollaborators() apenas 1x por
@@ -358,6 +359,9 @@ namespace CindarsHope.Cave.Runtime
                 }
 
                 wallTile.name = $"WallTile_{tilePos.x}_{tilePos.y}";
+                // Ambos os ramos (prefab/fallback) precisam entrar na máscara WorldSolid usada
+                // pelo desvio dos inimigos; o BoxCollider2D abaixo continua no mesmo root.
+                GameplayLayerNames.TryAssignRuntimeLayer(wallTile, GameplayLayerNames.WorldSolid);
 
                 var collider = wallTile.AddComponent<BoxCollider2D>();
                 collider.size = Vector2.one;

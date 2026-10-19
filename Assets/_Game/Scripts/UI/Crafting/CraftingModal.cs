@@ -7,6 +7,9 @@ using CindarsHope.Foundation;
 using CindarsHope.Skills.Runtime;
 using CindarsHope.UI.Modal;
 using UnityEngine;
+using CindarsHope.Localization;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.UI.Shop;
 
 namespace CindarsHope.UI.Crafting
 {
@@ -25,8 +28,19 @@ namespace CindarsHope.UI.Crafting
         private string _feedback = string.Empty;
         private LivingForgeBenefitChoice _livingForgeChoice;
         private int _selectedCommonMaterialIndex;
+        private Vector2 _recipeScroll;
 
         private static readonly string[] Actions = { "Craft", "Cancel", "Collect", "Close" };
+        private static readonly KeyCode[] NavigationKeys =
+        {
+            KeyCode.Escape,
+            KeyCode.W, KeyCode.UpArrow,
+            KeyCode.S, KeyCode.DownArrow,
+            KeyCode.A, KeyCode.LeftArrow,
+            KeyCode.D, KeyCode.RightArrow,
+            KeyCode.Q, KeyCode.R,
+            KeyCode.E, KeyCode.Return, KeyCode.Space
+        };
 
         public bool IsOpen => _isOpen;
 
@@ -38,6 +52,7 @@ namespace CindarsHope.UI.Crafting
         private void OnDisable()
         {
             GameEventBus.Unsubscribe<OpenCraftingStationRequestedEvent>(HandleOpenStationRequested);
+            Close();
         }
 
         // Estação física pediu para abrir o craft (apertou E numa forja/alambique/tear…). Resolve a estação
@@ -64,40 +79,51 @@ namespace CindarsHope.UI.Crafting
                 return;
             }
 
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            var key = ReadNavigationKey();
+            if (key == KeyCode.Escape)
             {
                 Close();
                 return;
             }
 
-            if (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+            if (key == KeyCode.W || key == KeyCode.UpArrow)
             {
                 MoveSelection(-1);
             }
-            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.S) || global::UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
+            else if (key == KeyCode.S || key == KeyCode.DownArrow)
             {
                 MoveSelection(1);
             }
-            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.A) || global::UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
+            else if (key == KeyCode.A || key == KeyCode.LeftArrow)
             {
                 _selectedActionIndex = (_selectedActionIndex + Actions.Length - 1) % Actions.Length;
             }
-            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.D) || global::UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
+            else if (key == KeyCode.D || key == KeyCode.RightArrow)
             {
                 _selectedActionIndex = (_selectedActionIndex + 1) % Actions.Length;
             }
-            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.Q))
+            else if (key == KeyCode.Q)
             {
                 CycleLivingForgeChoice();
             }
-            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.R))
+            else if (key == KeyCode.R)
             {
                 CycleLivingForgeMaterial();
             }
-            else if (global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space))
+            else if (key == KeyCode.E || key == KeyCode.Return || key == KeyCode.Space)
             {
                 ExecuteSelectedAction();
             }
+        }
+
+        private static KeyCode ReadNavigationKey()
+        {
+            foreach (var key in NavigationKeys)
+            {
+                if (global::UnityEngine.Input.GetKeyDown(key)) return key;
+            }
+
+            return KeyCode.None;
         }
 
         public void Configure(CraftingRuntime runtime, ModalManager modalManager)
@@ -173,13 +199,19 @@ namespace CindarsHope.UI.Crafting
                         return;
                     }
 
-                    _runtime.TryStartCraft(_station, recipe, selection, out _feedback);
+                    if (_runtime.TryStartCraft(_station, recipe, selection, out _feedback))
+                        _feedback = _station.HasActiveJob
+                            ? string.Format(LocalizationService.Get("ui.crafting.started"), ItemName(recipe.OutputItemId))
+                            : string.Format(LocalizationService.Get("ui.crafting.created"), ItemName(recipe.OutputItemId), recipe.OutputAmount);
+                    else _feedback = PresentFailure(_feedback);
                     break;
                 case "Cancel":
-                    _runtime.TryCancel(_station, out _feedback);
+                    if (_runtime.TryCancel(_station, out _feedback)) _feedback = LocalizationService.Get("ui.crafting.cancelled");
+                    else _feedback = PresentFailure(_feedback);
                     break;
                 case "Collect":
-                    _runtime.TryCollect(_station, out _feedback);
+                    if (_runtime.TryCollect(_station, out _feedback)) _feedback = LocalizationService.Get("ui.crafting.collected");
+                    else _feedback = PresentFailure(_feedback);
                     break;
                 default:
                     Close();
@@ -208,37 +240,42 @@ namespace CindarsHope.UI.Crafting
             CindarsHope.Core.MenuGuiStyle.Apply();
             var rect = new Rect((Screen.width - 620f) * 0.5f, (Screen.height - 430f) * 0.5f, 620f, 430f);
             GUILayout.BeginArea(rect, GUI.skin.window);
-            GUILayout.Label($"Crafting - {_station.StationType} ({_station.StationInstanceId})");
-            GUILayout.Label("W/S: recipe  A/D: action  E/Enter: confirm  Esc: close  C: pocket crafting");
+            GUILayout.Label(LocalizationService.Get("ui.crafting.title"));
+            GUILayout.Label(LocalizationService.Get("ui.crafting.controls"));
             GUILayout.Space(8f);
 
             if (_recipes.Count == 0)
             {
-                GUILayout.Label("No compatible recipes available.");
+                GUILayout.Label(LocalizationService.Get("ui.crafting.empty"));
             }
             else
             {
+                _recipeScroll = GUILayout.BeginScrollView(_recipeScroll, GUILayout.Height(135f));
                 for (var index = 0; index < _recipes.Count; index++)
                 {
                     var recipe = _recipes[index];
                     var prefix = index == _selectedRecipeIndex ? "> " : "  ";
-                    GUILayout.Label($"{prefix}{recipe.DisplayName} -> {recipe.OutputItemId} x{recipe.OutputAmount} ({recipe.CraftTimeSeconds:0.0}s)");
+                    if (GUILayout.Button($"{prefix}{ItemName(recipe.OutputItemId)} ×{recipe.OutputAmount} ({recipe.CraftTimeSeconds:0.0}s)"))
+                    { _selectedRecipeIndex = index; ResetLivingForgeSelection(); }
                 }
 
+                GUILayout.EndScrollView();
                 var selected = _recipes[_selectedRecipeIndex];
                 GUILayout.Space(8f);
-                GUILayout.Label($"Ingredients: {FormatIngredients(selected)}");
+                GUILayout.Label(string.Format(LocalizationService.Get("ui.crafting.ingredients"), FormatIngredients(selected)));
                 DrawLivingForgeSelection(selected);
             }
 
             GUILayout.Space(8f);
             GUILayout.Label(_station.HasActiveJob
-                ? $"Job in progress: {_station.Job.RemainingSeconds:0.0}s remaining"
-                : _station.HasCompletedOutput ? "Output completed and waiting for collection." : "Station idle.");
+                ? string.Format(LocalizationService.Get("ui.crafting.remaining"), _station.Job.RemainingSeconds)
+                : LocalizationService.Get(_station.HasCompletedOutput ? "ui.crafting.ready" : "ui.crafting.idle"));
             GUILayout.BeginHorizontal();
             for (var index = 0; index < Actions.Length; index++)
             {
-                GUILayout.Label(index == _selectedActionIndex ? $"[{Actions[index]}]" : Actions[index], GUILayout.Width(120f));
+                var label = LocalizationService.Get("ui.crafting.action_" + Actions[index].ToLowerInvariant());
+                if (GUILayout.Button(index == _selectedActionIndex ? $"[{label}]" : label, GUILayout.Width(140f)))
+                { _selectedActionIndex = index; ExecuteSelectedAction(); }
             }
 
             GUILayout.EndHorizontal();
@@ -261,10 +298,28 @@ namespace CindarsHope.UI.Crafting
             var parts = new List<string>();
             foreach (var ingredient in recipe.Ingredients)
             {
-                parts.Add($"{ingredient.ItemId} x{ingredient.Amount}");
+                parts.Add($"{ItemName(ingredient.ItemId)} ×{ingredient.Amount}");
             }
 
             return string.Join(", ", parts);
+        }
+
+        private static string ItemName(string id)
+        {
+            var inventory = GameBootstrap.Instance?.InventoryManager as CindarsHope.Inventory.InventoryManager;
+            return inventory != null && inventory.TryGetItemData(id, out var item)
+                ? ItemDisplayNameFormatter.GetFullName(item) : LocalizationService.Get("ui.item.unknown");
+        }
+
+        public static string PresentFailure(string reason)
+        {
+            if (reason == "Only an in-progress job can be cancelled.") return LocalizationService.Get("ui.crafting.cancel_unavailable");
+            if (reason == "No completed output to collect.") return LocalizationService.Get("ui.crafting.collect_unavailable");
+            if (reason != null && reason.StartsWith("Missing ingredient ")) return LocalizationService.Get("ui.crafting.material_missing");
+            if (reason != null && reason.StartsWith("Inventory is full")) return LocalizationService.Get("ui.crafting.inventory_full");
+            if (reason == "Not enough stamina.") return LocalizationService.Get("ui.crafting.stamina_missing");
+            if (reason == "Station already has a pending job or output.") return LocalizationService.Get("ui.crafting.busy");
+            return LocalizationService.Get(reason);
         }
 
         public static bool TryBuildLivingForgeSelection(

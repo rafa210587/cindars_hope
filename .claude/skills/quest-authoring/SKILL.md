@@ -31,12 +31,12 @@ O projeto já tem um orchestrator de quest completo (`QuestService` + `QuestRegi
 6. **Flags via `QuestFlagService`.** Grant/clear de flag passa por `QuestFlagService` (registrado em `QuestFlagRegistry`, validado por `QuestFlagValidator`); o resultado entra em `GrantedFlagIds`. Sem set direto de bool espalhado.
 7. **Anti-softlock para quests críticas.** Quest crítica precisa de fallback explícito: `SuggestedFallbackId` na condition, defer de future-condition, ou um caminho de turn-in alternativo. Uma quest principal nunca pode travar por sistema ausente ou por reward que falhou ao aplicar.
 8. **Spoiler/visibility.** Conteúdo escondido (secret quest, future steps, hidden rewards) é projetado por `QuestVisibilityPolicy` no `QuestLogProjectionService`, não omitido na definição. Secret quest só aparece no log após `OfferSecretQuest`/`MarkSecretDiscovered`.
-9. **Comunicação só via `GameEventBus`.** `AcceptQuest`/`MarkObjectiveComplete`/`TurnIn` publicam `QuestAcceptedEvent`, `QuestObjectiveProgressedEvent`, `QuestReadyToCompleteEvent`, `QuestCompletedEvent`, `QuestRewardClaimedEvent`. UI/NPC consomem esses eventos — sem chamada direta MonoBehaviour→MonoBehaviour (rule: event-bus-only-gameplay-communication).
-10. **Save por id.** Estado novo vai no `QuestStateRecord` como simple types + ids estáveis (sem Unity refs); cubra defaults e restore em `RestoreFromSaveData`/`QuestStateNormalizer` (rule: save-dto-simple-types-only, skill: save-load-pattern).
+9. **Comunicação só via `GameEventBus`.** `AcceptQuest`/`MarkObjectiveComplete`/`TurnIn` publicam `QuestAcceptedEvent`, `QuestObjectiveProgressedEvent`, `QuestReadyToCompleteEvent`, `QuestCompletedEvent`, `QuestRewardClaimedEvent`. UI/NPC consomem esses eventos — sem chamada direta MonoBehaviour→MonoBehaviour (rule: unity-architecture).
+10. **Save por id.** Estado novo vai no `QuestStateRecord` como simple types + ids estáveis (sem Unity refs); cubra defaults e restore em `RestoreFromSaveData`/`QuestStateNormalizer` (rule: unity-architecture, skill: save-load-pattern).
 
 ## Testes
 
-A seção **"Quest test expectations"** do (rule: testing-quality-gate) é **obrigatória**. O orchestrator é C# puro testável — adicione EditMode tests (skill: editmode-test-authoring) cobrindo, com justificativa explícita para qualquer item não testado:
+Select affected quest contracts through `.specs/SPEC_VALIDATION_MATRIX_MASTER.md`; the testing-quality-gate rule does not contain a separate quest section. O orchestrator é C# puro testável — adicione EditMode tests (skill: editmode-test-authoring) cobrindo, com justificativa explícita para qualquer item não testado:
 
 - condition evaluation (`QuestConditionResolver.EvaluateAll` — pass/fail, future = Pass);
 - trigger handling (dedupe de `QuestTriggerRouter`, condition-blocked);
@@ -60,4 +60,4 @@ Fluxo vivo (quest giver, board, log UI, Esc-close) vai para um human Play Mode s
 - (skill: data-catalog-authoring) — catálogo de quest definitions + flags como dados com id estável.
 - (skill: editmode-test-authoring) — cobertura de condition/trigger/reward/save.
 - (skill: save-load-pattern) — persistência de `QuestStateRecord` por id.
-- (rule: event-bus-only-gameplay-communication), (rule: save-dto-simple-types-only), (rule: testing-quality-gate).
+- (rule: unity-architecture), (rule: unity-architecture), (rule: testing-quality-gate).

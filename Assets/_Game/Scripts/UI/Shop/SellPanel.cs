@@ -73,6 +73,7 @@ namespace CindarsHope.UI.Shop
             _itemDatabase = itemDatabase;
             _modalManager = modalManager;
             _detailsText = ShopPanelLayoutUtility.EnsureResponsiveLayout(transform as RectTransform, _itemsContainer, _detailsText);
+            ShopPanelLayoutUtility.ConfigureFeedback(_feedbackText);
             HideVisualOnly();
         }
 

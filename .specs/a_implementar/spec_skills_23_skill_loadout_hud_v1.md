@@ -7,6 +7,12 @@
 > **Blocks:** spec_skills_24_ui_pixel_art_v1  
 > **Validation:** EditMode+PlayMode+capturas gráficas
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, ui_rules.md]
+Ordem de execucao: após spec_skills_22_skill_tree_canvas_v1.
+Depende de: spec_skills_22_skill_tree_canvas_v1
+Bloqueia: spec_skills_24_ui_pixel_art_v1
+
 # /speckit.specify
 
 ## Spec

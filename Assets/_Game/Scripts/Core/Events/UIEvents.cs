@@ -20,5 +20,11 @@ namespace CindarsHope.Core.Events
 
     public struct DeathScreenClosedEvent { }
 
-    public struct ModalCloseRequestedEvent { }
+    public readonly struct ModalCloseRequestedEvent
+    {
+        public readonly CindarsHope.Foundation.ModalType TargetModal;
+        public ModalCloseRequestedEvent(CindarsHope.Foundation.ModalType targetModal) => TargetModal = targetModal;
+        public bool Targets(CindarsHope.Foundation.ModalType modal)
+            => TargetModal == CindarsHope.Foundation.ModalType.None || TargetModal == modal;
+    }
 }

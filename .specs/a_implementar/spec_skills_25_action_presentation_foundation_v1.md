@@ -7,6 +7,12 @@
 > **Blocks:** spec_skills_26_action_animation_catalog_v1  
 > **Validation:** EditMode+PlayMode gráfico
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, combat_rules.md]
+Ordem de execucao: após spec_skills_24_ui_pixel_art_v1.
+Depende de: spec_skills_24_ui_pixel_art_v1
+Bloqueia: spec_skills_26_action_animation_catalog_v1
+
 # /speckit.specify
 
 ## Spec

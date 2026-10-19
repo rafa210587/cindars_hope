@@ -1,6 +1,6 @@
 ---
 name: gameplay-test-scenario
-description: Gera um human test scenario para implementação de gameplay/runtime. Exigido para o closeout de Phase 3. Use depois de implementar qualquer spec que mude comportamento de gameplay, UI, combat, save, cave, farm, shop, equipment, skill tree ou asset.
+description: Describe an executed or planned gameplay scenario when scene, input, lifecycle or human acceptance requires integration evidence. Not required for pure logic or a local correction covered by focused tests.
 ---
 
 # Skill: Gameplay test scenario
@@ -15,8 +15,9 @@ under the canonical `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` acceptance gate.
 
 ## Quando NÃO usar
 
-Docs/harness use their diff; pure logic/bugfix use EditMode XML and the exit code in the
-commit message. Do not require a separate human scenario for those changes.
+Docs/harness use their diff; pure logic/local corrections use relevant focused evidence
+and the exit code in the task result or authorized commit. Bugfixes affecting integration
+still require that integration evidence; the label bugfix does not waive lifecycle/input/save risks.
 
 ## Procedimento
 

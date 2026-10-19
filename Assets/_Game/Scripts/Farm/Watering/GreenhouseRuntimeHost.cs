@@ -37,6 +37,7 @@ namespace CindarsHope.Farm.Watering
             _instance = this;
             RegisterConfiguredPlots();
             _provider.SetGreenhouseUnlocked(_unlockedByDefault);
+            ConfigureExteriorReveal();
         }
 
         private void OnDestroy()
@@ -61,6 +62,19 @@ namespace CindarsHope.Farm.Watering
 
         /// <summary>Exclusão de chuva: a chuva não rega os canteiros da estufa.</summary>
         public bool IsRainExcluded(string plotId) => _provider.IsRainExcluded(plotId);
+
+        private void ConfigureExteriorReveal()
+        {
+            var greenhouse = transform.parent;
+            var exterior = greenhouse != null ? greenhouse.Find("GreenhouseFloor") : null;
+            var renderer = exterior != null ? exterior.GetComponent<SpriteRenderer>() : null;
+            if (renderer == null)
+            {
+                Debug.LogError("Greenhouse exterior renderer is missing; interior reveal is unavailable.", this);
+                return;
+            }
+            GreenhouseRevealRuntime.Configure(greenhouse, renderer);
+        }
 
         private void RegisterConfiguredPlots()
         {

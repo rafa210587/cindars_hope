@@ -22,6 +22,8 @@ namespace CindarsHope.NPC
     {
         [SerializeField] private NpcDataSO _npcData;
         [SerializeField] private Rigidbody2D _rigidbody;
+        private Collider2D _movementCollider;
+        private static readonly RaycastHit2D[] IdleCastHits = new RaycastHit2D[1];
 
         [Header("Idle wander (todos os NPCs)")]
         [SerializeField] private float _moveSpeed = 1.3f;
@@ -77,6 +79,13 @@ namespace CindarsHope.NPC
             if (_rigidbody == null)
             {
                 _rigidbody = GetComponent<Rigidbody2D>();
+            }
+            var colliders = GetComponentsInChildren<Collider2D>(true);
+            for (var i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i] == null || colliders[i].isTrigger) continue;
+                _movementCollider = colliders[i];
+                break;
             }
 
             StartPause();
@@ -274,6 +283,18 @@ namespace CindarsHope.NPC
         private void MoveTowardIdleTarget()
         {
             if (Vector2.Distance(transform.position, _idleTarget) < 0.1f)
+            {
+                StartPause();
+                return;
+            }
+
+            // Idle picks are local/random rather than graph routes. If the physical feet cannot
+            // reach the sampled point, pause and sample again on the existing idle cadence;
+            // repeatedly pushing the same collider leaves residents visibly stuck.
+            var toTarget = (Vector2)(_idleTarget - transform.position);
+            if (_movementCollider != null &&
+                _movementCollider.Cast(toTarget.normalized,
+                    new ContactFilter2D { useTriggers = false }, IdleCastHits, toTarget.magnitude) > 0)
             {
                 StartPause();
                 return;

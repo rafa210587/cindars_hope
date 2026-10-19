@@ -3,14 +3,15 @@
 > Gerado por `tools/generate_spec_index.ps1`. NAO editar a mao -- rode o script.
 > Indice compacto para descoberta barata de specs (status por pasta + cabecalho).
 
-Total: **497** specs
+Total: **509** specs
 - Fila-FABLE: 5
-- Fila: 73
+- Fila: 82
 - Closeout-MVP: 12
 - Build-Validated: 12
-- Implementado: 308
+- Implementado: 309
 - Automatica: 1
-- Outro: 86
+- Absorvida: 11
+- Outro: 77
 
 | ID | Bucket | Status | Wave | Domain | Path |
 |---|---|---|---|---|---|
@@ -48,6 +49,17 @@ Total: **497** specs
 | spec_farm_scene_spatial_contract_v1 | Fila | A implementar | WAVE FARM KEYART — Fundação espacial | Farm | .specs/a_implementar/spec_farm_scene_spatial_contract_v1.md |
 | spec_farmer_animation_visual_revision_v1 | Fila | CODE_COMPLETE — laboratório SCOPED_PASS; aprovação artística humana PENDING | FARMER_REVIEW — estudos anteriores à integração | Player / Combat / Art | .specs/a_implementar/spec_farmer_animation_visual_revision_v1.md |
 | spec_inventory_operations_and_action_readiness_v1 | Fila | CODE_COMPLETE | QUALITY_IMPROVEMENTS | - | .specs/a_implementar/spec_inventory_operations_and_action_readiness_v1.md |
+| spec_playtest_cave_render_artifacts_v1 | Fila | PARTIAL; revisão 2, gates visuais headless PASS, aceite humano e replay pendentes. | - | Cave | .specs/a_implementar/spec_playtest_cave_render_artifacts_v1.md |
+| spec_playtest_cave_wall_enemy_physics_v1 · Revisão: 1 · Status: implementação e gate focal PASS; aceite de circulação/revisit pendente | Fila | - | - | - | .specs/a_implementar/spec_playtest_cave_wall_enemy_physics_v1.md |
+| spec_playtest_crafting_save_roundtrip_v1 | Fila | UNITY_VALIDATED em 2026-09-27 (EditMode 166/166 e 29/29); save/load jogado pendente. Sem promoção. | correções do playtest 2026-09-27; Type: Runtime/Save; Domain: Craft/Save; Priority: P1 | - | .specs/a_implementar/spec_playtest_crafting_save_roundtrip_v1.md |
+| spec_playtest_death_recovery_v1 | Fila | - | - | - | .specs/a_implementar/spec_playtest_death_recovery_v1.md |
+| spec_playtest_farm_town_prop_physics_v1 | Fila | PARTIAL; EditMode 23/23 e PlayMode focal 3/3 PASS, rotas gerais/cais Town/captura visual pendentes. | - | Farm/Town | .specs/a_implementar/spec_playtest_farm_town_prop_physics_v1.md |
+| spec_playtest_fishing_lifecycle_v1 | Fila | UNITY_VALIDATED em 2026-09-27 (EditMode integrado 166/166 e regressão final 35/35); pesca jogada pendente. Sem promoção. | - | - | .specs/a_implementar/spec_playtest_fishing_lifecycle_v1.md |
+| spec_playtest_integrated_coverage_v1 | Fila | PARTIAL em 2026-09-27; AC01 PASS, PlayMode headless composição 2/2 PASS, AC02/03 NOT RUN, docs PASS, architecture global FAIL. Sem promoção. | - | - | .specs/a_implementar/spec_playtest_integrated_coverage_v1.md |
+| spec_playtest_npc_enemy_navigation_v1 | Fila | PARTIAL — NPC PlayMode 11/11, Enemy EditMode 23/23 e parede real da Cave 1/1 PASS; movimento em Cave real/aceite humano pendentes. | - | NPC/Enemy | .specs/a_implementar/spec_playtest_npc_enemy_navigation_v1.md |
+| spec_playtest_ui_access_feedback_v1 | Fila | - | - | - | .specs/a_implementar/spec_playtest_ui_access_feedback_v1.md |
+| spec_playtest_wiring_validation_v1 | Fila | UNITY_VALIDATED em 2026-09-27 (EditMode 166/166, reparo Editor 2→0); equipamento/portais jogados pendentes. Sem promoção. | - | - | .specs/a_implementar/spec_playtest_wiring_validation_v1.md |
+| spec_playtest_world_readability_v1 | Fila | PARTIAL em 2026-09-27; reveal testado, Cave/circulação/escala/combate visual pendentes. Sem promoção. | - | - | .specs/a_implementar/spec_playtest_world_readability_v1.md |
 | spec_progressive_harness_visual_workflows_v1 | Fila | CODE_COMPLETE; harness validado, docs global FAIL; sem promoção. | - | Harness / Art workflows | .specs/a_implementar/spec_progressive_harness_visual_workflows_v1.md |
 | spec_semantic_navigation_pilot_v1 | Fila | - | - | - | .specs/a_implementar/spec_semantic_navigation_pilot_v1.md |
 | spec_serena_unity_readonly_integration_v1 | Fila | CODE_COMPLETE — project-local MCP enabled; scoped integration checks PASS; no global acceptance. | - | - | .specs/a_implementar/spec_serena_unity_readonly_integration_v1.md |
@@ -76,7 +88,6 @@ Total: **497** specs
 | spec_solid_ai_harness_hardening_v1 | Fila | CODE_COMPLETE_WITH_GLOBAL_GATES_FAILING — execução autorizada pelo pedido humano desta conversa | SOLID_AI — Qualidade estrutural e ferramentas | Core / Save | .specs/a_implementar/spec_solid_ai_harness_hardening_v1.md |
 | spec_solid_class_context_v1 | Fila | CODE_COMPLETE_WITH_GLOBAL_GATES_FAILING | SOLID_AI | Architecture | .specs/a_implementar/spec_solid_class_context_v1.md |
 | spec_solid_inventory_save_refactor_v1 | Fila | CODE_COMPLETE_WITH_GLOBAL_GATES_FAILING — execução e evidência em docs/validation | SOLID_AI — manutenção autorizada pelo pedido humano desta sessão | Inventory / Save / Quest | .specs/a_implementar/spec_solid_inventory_save_refactor_v1.md |
-| spec_town_building_visuals | Fila | - | - | - | .specs/a_implementar/spec_town_building_visuals.md |
 | spec_town_components_doors_and_collision_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_components_doors_and_collision_v1.md |
 | spec_town_integrated_acceptance_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_integrated_acceptance_v1.md |
 | spec_town_interior_catalog_v1 | Fila | - | - | - | .specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_catalog_v1.md |
@@ -84,7 +95,6 @@ Total: **497** specs
 | spec_town_interior_npc_commerce_v1 | Fila | - | - | - | .specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_npc_commerce_v1.md |
 | spec_town_interior_transition_save_v1 | Fila | - | - | - | .specs/a_implementar/town_interiors_hybrid_v1/spec_town_interior_transition_save_v1.md |
 | spec_town_keyart_fidelity_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_keyart_fidelity_v1.md |
-| spec_town_layout_v9_organic | Fila | - | - | - | .specs/a_implementar/spec_town_layout_v9_organic.md |
 | spec_town_native_architecture_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_native_architecture_v1.md |
 | spec_town_npc_visuals_navigation_v1 | Fila | - | - | - | .specs/a_implementar/spec_town_npc_visuals_navigation_v1.md |
 | spec_town_spatial_expansion_and_access_v1 | Fila | DEFERRED_TO_FINAL_HUMAN_VALIDATION — Unity/PlayMode/AC12 independente PASS; cenário humano final pendente | TOWN EXPANSION V1 | City / TownScene | .specs/a_implementar/spec_town_spatial_expansion_and_access_v1.md |
@@ -378,6 +388,7 @@ Total: **497** specs
 | spec_fase9i_player_combat_weapons_magic_skill_actions | Implementado | A implementar | - | - | .specs/implementados/spec_fase9i_player_combat_weapons_magic_skill_actions.md |
 | spec_fase9j_cave_entry_loadout_death_anya_corpse | Implementado | A implementar | - | - | .specs/implementados/spec_fase9j_cave_entry_loadout_death_anya_corpse.md |
 | spec_fase9k_skill_trees_nodes_active_slots_respec | Implementado | A implementar | - | - | .specs/implementados/spec_fase9k_skill_trees_nodes_active_slots_respec.md |
+| spec_harness_proportional_routing_and_discovery_v1 | Implementado | ACCEPTED — implementada e validada no escopo em 2026-09-27; autorização humana nesta sessão. | manutenção do harness existente; não cria macro-wave. | - | .specs/implementados/spec_harness_proportional_routing_and_discovery_v1.md |
 | spec_hunger_001_fome_comida_e_hp_por_fome | Implementado | Implementado parcial | - | - | .specs/implementados/spec_hunger_001_fome_comida_e_hp_por_fome.md |
 | spec_hunger_stamina_status_balance | Implementado | Implementado completo | - | - | .specs/implementados/spec_hunger_stamina_status_balance.md |
 | spec_inventory_001_inventario_itens_gold_e_stacks | Implementado | Implementado parcial parcial | - | - | .specs/implementados/spec_inventory_001_inventario_itens_gold_e_stacks.md |
@@ -425,6 +436,17 @@ Total: **497** specs
 | spec_world_001_pickups_persistentes_save_load | Implementado | Implementado parcial | - | - | .specs/implementados/spec_world_001_pickups_persistentes_save_load.md |
 | spec_world_activities_fishing_trees_pickups_loot | Implementado | Implementado parcial | - | - | .specs/implementados/spec_world_002_activities_fishing_trees_pickups_loot.md |
 | ENRICHMENT_SUMMARY_OVERNIGHT_WAVES_20260523 | Automatica | - | - | - | .specs/automaticas/ENRICHMENT_SUMMARY_OVERNIGHT_WAVES_20260523.md |
+| LEGACY_SPECS_CROSSWALK | Absorvida | - | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md |
+| spec_14a_cave_enemy_spawnplan_materialization_run_stability | Absorvida | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md |
+| spec_14a_fix2_spawn_density_combat_feedback_damage_numbers | Absorvida | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md |
+| spec_14b_cave_snapshot_replay_enemy_plan | Absorvida | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14b_cave_snapshot_replay_enemy_plan.md |
+| spec_cave_runtime_generation_checkpoints_boss_gates | Absorvida | Implementado parcial - escopo residual ativo | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_cave_runtime_generation_checkpoints_boss_gates.md |
+| spec_city_real_walkin_houses_no_teleport | Absorvida | ABSORVIDA / NÃO EXECUTAR | WAVE CITY — Coerência da TownScene (pós fable_40) | City | .specs/absorvidas/city_relayout_reconciliation/spec_city_real_walkin_houses_no_teleport.md |
+| spec_combat_movement_projectiles_melee_visuals_runtime | Absorvida | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_combat_movement_projectiles_melee_visuals_runtime.md |
+| spec_enemy_ai_roster_bestiary_faction_locks_runtime | Absorvida | Implementado parcial - escopo residual ativo | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md |
+| spec_town_building_visuals | Absorvida | - | - | - | .specs/absorvidas/city_relayout_reconciliation/spec_town_building_visuals.md |
+| spec_town_layout_v9_organic | Absorvida | - | - | - | .specs/absorvidas/city_relayout_reconciliation/spec_town_layout_v9_organic.md |
+| spec_ui_ux_full_gameplay_inventory_hotbar_menus | Absorvida | Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md |
 | 03_spec_quest_anti_softlock_validation_future | Outro | A implementar | WAVE 03 — Quest / Objective / Event System | Quests / Main Quest Safety / Recovery / Validation | .specs/features_futuras/03_spec_quest_anti_softlock_validation_future.md |
 | 03_spec_quest_bestiary_discovery_objectives_future | Outro | A implementar | WAVE 03 — Quest / Objective / Event System | Quests / Bestiary / Knowledge / Anti-spoiler | .specs/features_futuras/03_spec_quest_bestiary_discovery_objectives_future.md |
 | 03_spec_quest_debug_validation_tools_future | Outro | A implementar | WAVE 03 — Quest / Objective / Event System | Quests / Debug / Dev Validation / Diagnostics | .specs/features_futuras/03_spec_quest_debug_validation_tools_future.md |
@@ -478,16 +500,8 @@ Total: **497** specs
 | 24_spec_cave_weather_lunar_deep_modifiers_future_runtime | Outro | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Cave Weather Lunar Deep Modifiers / Alihana Senya Nyx / Storm Fog Snow Cold Heat | .specs/features_futuras/24_spec_cave_weather_lunar_deep_modifiers_future_runtime.md |
 | 24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime | Outro | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Companions Advanced / Party / Equipment / Skill Tree / Tactical Commands / AI Squad | .specs/features_futuras/24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime.md |
 | 24_spec_festival_minigames_event_framework_future_runtime | Outro | A implementar / Future mapped | WAVE 24 — Remaining Future Closure | Festival Minigames / Calendar Events / City Farm Social Hooks / Rewards | .specs/features_futuras/24_spec_festival_minigames_event_framework_future_runtime.md |
-| LEGACY_SPECS_CROSSWALK | Outro | - | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md |
-| spec_14a_cave_enemy_spawnplan_materialization_run_stability | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md |
-| spec_14a_fix2_spawn_density_combat_feedback_damage_numbers | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md |
-| spec_14b_cave_snapshot_replay_enemy_plan | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_14b_cave_snapshot_replay_enemy_plan.md |
 | spec_cave_elite_spawn_semantics_v1 | Outro | RASCUNHO — não aprovado para implementação | - | - | .specs/features_futuras/spec_cave_elite_spawn_semantics_v1.md |
 | spec_cave_enemy_blocking_decor_overlap_v1 | Outro | RASCUNHO — não aprovado para implementação | - | - | .specs/features_futuras/spec_cave_enemy_blocking_decor_overlap_v1.md |
-| spec_cave_runtime_generation_checkpoints_boss_gates | Outro | Implementado parcial - escopo residual ativo | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_cave_runtime_generation_checkpoints_boss_gates.md |
-| spec_city_real_walkin_houses_no_teleport | Outro | ABSORVIDA / NÃO EXECUTAR | WAVE CITY — Coerência da TownScene (pós fable_40) | City | .specs/absorvidas/city_relayout_reconciliation/spec_city_real_walkin_houses_no_teleport.md |
-| spec_combat_movement_projectiles_melee_visuals_runtime | Outro | A implementar | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_combat_movement_projectiles_melee_visuals_runtime.md |
-| spec_enemy_ai_roster_bestiary_faction_locks_runtime | Outro | Implementado parcial - escopo residual ativo | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md |
 | SPEC_EXECUTION_ORDER | Outro | - | - | - | .specs/SPEC_EXECUTION_ORDER.md |
 | SPEC_EXISTING_IMPLEMENTATION_AUDIT | Outro | auditoria documental executada parcialmente por ChatGPT/GitHub connector. | - | - | .specs/SPEC_EXISTING_IMPLEMENTATION_AUDIT.md |
 | SPEC_GENERATION_ROADMAP_MASTER | Outro | roadmap macro de geração de specs. | - | - | .specs/SPEC_GENERATION_ROADMAP_MASTER.md |
@@ -508,7 +522,6 @@ Total: **497** specs
 | spec_skills_21g_recipe_activation_v1 | Outro | DRAFT — decisões de balanceamento pendentes; implementação NÃO autorizada; fora de .specs/a_implementar/ | - | - | .specs/features_futuras/skills_sdd_v1/spec_skills_21g_recipe_activation_v1.md |
 | spec_skills_21g0_craft_cross_scene_foundation_v1 | Outro | DRAFT — blueprint técnico para revisão; implementação NÃO autorizada; fora de .specs/a_implementar/ | - | - | .specs/features_futuras/skills_sdd_v1/spec_skills_21g0_craft_cross_scene_foundation_v1.md |
 | SPEC_SOURCE_OF_TRUTH | Outro | - | - | - | .specs/SPEC_SOURCE_OF_TRUTH.md |
-| spec_ui_ux_full_gameplay_inventory_hotbar_menus | Outro | Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente | - | - | .specs/absorvidas/legacy_pre_wave_reconciliation/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md |
 | SPEC_VALIDATION_MATRIX_MASTER | Outro | - | - | - | .specs/SPEC_VALIDATION_MATRIX_MASTER.md |
 | SPEC_WAVE_EXECUTION_PROTOCOL | Outro | documento canônico de governança de execução por waves. | - | - | .specs/SPEC_WAVE_EXECUTION_PROTOCOL.md |
 

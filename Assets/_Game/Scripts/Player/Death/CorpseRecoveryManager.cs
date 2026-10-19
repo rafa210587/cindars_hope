@@ -94,6 +94,48 @@ namespace CindarsHope.Player.Death
             }
         }
 
+        public int GetRevivalTearCount(string corpseId)
+        {
+            if (!HasActiveCorpse || string.IsNullOrEmpty(corpseId) || _activeCorpse.CorpseId != corpseId) return 0;
+            var count = 0;
+            foreach (var item in _activeCorpse.InventoryItems)
+                if (item != null && item.ItemId == DeathRevivalDecision.GoddessTearItemId)
+                    count += Math.Max(0, item.Amount);
+            return count;
+        }
+
+        public bool TryConsumeRevivalTear(string corpseId)
+        {
+            if (GetRevivalTearCount(corpseId) <= 0) return false;
+            var items = _activeCorpse.InventoryItems;
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                if (item == null || item.ItemId != DeathRevivalDecision.GoddessTearItemId || item.Amount <= 0) continue;
+                if (item.OriginSchemaVersion == 1)
+                {
+                    // Keep paid/resale provenance consistent with the remaining physical units.
+                    var lots = item.OriginLots;
+                    var total = 0;
+                    if (lots != null)
+                        foreach (var lot in lots)
+                            if (lot != null && lot.Quantity > 0) total += lot.Quantity;
+                    if (total != item.Amount) return false;
+                    for (var j = 0; j < lots.Count; j++)
+                    {
+                        if (lots[j] == null || lots[j].Quantity <= 0) continue;
+                        lots[j].Quantity--;
+                        if (lots[j].Quantity == 0) lots.RemoveAt(j);
+                        break;
+                    }
+                }
+                item.Amount--;
+                if (item.Amount == 0) items.RemoveAt(i);
+                return true;
+            }
+            return false;
+        }
+
         private bool RecoverGold()
         {
             if (_activeCorpse.GoldAmount <= 0)

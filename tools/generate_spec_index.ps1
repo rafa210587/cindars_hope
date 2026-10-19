@@ -33,6 +33,7 @@ function Get-Bucket([string]$relPath) {
     if ($relPath -match 'closeout_mvp[\\/]')                  { return 'Closeout-MVP' }
     if ($relPath -match 'a_implementar[\\/]fable[\\/]')       { return 'Fila-FABLE' }
     if ($relPath -match 'a_implementar[\\/]')                 { return 'Fila' }
+    if ($relPath -match 'absorvidas[\\/]')                    { return 'Absorvida' }
     if ($relPath -match 'automaticas[\\/]')                   { return 'Automatica' }
     if ($relPath -match '_templates[\\/]')                    { return 'Template' }
     return 'Outro'
@@ -110,7 +111,7 @@ foreach ($f in $files) {
 }
 
 # Ordena por bucket (fila primeiro) depois por id
-$bucketOrder = @{ 'Fila-FABLE'=0; 'Fila'=1; 'Closeout-MVP'=2; 'Build-Validated'=3; 'Implementado'=4; 'Automatica'=5; 'Template'=6; 'Outro'=7 }
+$bucketOrder = @{ 'Fila-FABLE'=0; 'Fila'=1; 'Closeout-MVP'=2; 'Build-Validated'=3; 'Implementado'=4; 'Automatica'=5; 'Template'=6; 'Absorvida'=7; 'Outro'=8 }
 $rows = $rows | Sort-Object @{ Expression = { $bucketOrder[$_.bucket] } }, id
 
 # ---- JSON ----

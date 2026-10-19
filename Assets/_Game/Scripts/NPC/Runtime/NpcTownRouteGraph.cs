@@ -345,7 +345,7 @@ namespace CindarsHope.NPC.Runtime
             return best;
         }
 
-        private static bool SegmentIsPhysicallyReachable(Vector3 from, Vector3 to, Collider2D self)
+        internal static bool SegmentIsPhysicallyReachable(Vector3 from, Vector3 to, Collider2D self)
             => SegmentIsPhysicallyReachable(from, to, self, out _);
 
         private static bool SegmentIsPhysicallyReachable(Vector3 from, Vector3 to, Collider2D self,

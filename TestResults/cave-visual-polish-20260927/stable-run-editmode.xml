@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="20" result="Passed" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0,1210174">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="3605" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.121017" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="5031" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="3605" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.102933" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="56472" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="5032" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="3605" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.088893" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="5037" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="3502" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.075344" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="5039" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="3485" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.063142" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="5075" name="Cave" fullname="CindarsHope.Tests.EditMode.Cave" runstate="Runnable" testcasecount="345" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.031676" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="4762" name="CaveRuntimeMaterializerDecompositionTests" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.021668" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="4765" name="GridToWorld_ArbitraryPosition_MatchesFormula" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.GridToWorld_ArbitraryPosition_MatchesFormula" methodname="GridToWorld_ArbitraryPosition_MatchesFormula" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="1432664011" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.009899" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4764" name="GridToWorld_Center_ReturnsNearZero" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.GridToWorld_Center_ReturnsNearZero" methodname="GridToWorld_Center_ReturnsNearZero" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="618879433" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000233" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4763" name="GridToWorld_Origin_ReturnsNegativeHalfWidthHeight" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.GridToWorld_Origin_ReturnsNegativeHalfWidthHeight" methodname="GridToWorld_Origin_ReturnsNegativeHalfWidthHeight" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="1673257228" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000272" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4771" name="ResolveColliderRadius_Boss_Returns12" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.ResolveColliderRadius_Boss_Returns12" methodname="ResolveColliderRadius_Boss_Returns12" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="276395362" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000241" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4770" name="ResolveColliderRadius_Huge_Returns095" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.ResolveColliderRadius_Huge_Returns095" methodname="ResolveColliderRadius_Huge_Returns095" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="1585137399" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000080" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4769" name="ResolveColliderRadius_Large_Returns065" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.ResolveColliderRadius_Large_Returns065" methodname="ResolveColliderRadius_Large_Returns065" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="1795605633" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000054" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4768" name="ResolveColliderRadius_Medium_ReturnsFallback045" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.ResolveColliderRadius_Medium_ReturnsFallback045" methodname="ResolveColliderRadius_Medium_ReturnsFallback045" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="1707233728" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000048" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4772" name="ResolveColliderRadius_NullOrEmpty_ReturnsFallback045" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.ResolveColliderRadius_NullOrEmpty_ReturnsFallback045" methodname="ResolveColliderRadius_NullOrEmpty_ReturnsFallback045" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="911208964" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000075" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4767" name="ResolveColliderRadius_Small_Returns035" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.ResolveColliderRadius_Small_Returns035" methodname="ResolveColliderRadius_Small_Returns035" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="1333529814" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000055" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4766" name="ResolveColliderRadius_Tiny_Returns025" fullname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests.ResolveColliderRadius_Tiny_Returns025" methodname="ResolveColliderRadius_Tiny_Returns025" classname="CindarsHope.Tests.EditMode.Cave.CaveRuntimeMaterializerDecompositionTests" runstate="Runnable" seed="1595653644" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000045" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="4781" name="CaveStableHashUsageTests" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.004492" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="4787" name="Compute_DifferentLevelInSeedString_ProducesDifferentHash" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.Compute_DifferentLevelInSeedString_ProducesDifferentHash" methodname="Compute_DifferentLevelInSeedString_ProducesDifferentHash" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="1519466138" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.001467" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4785" name="Compute_EmptyString_MatchesGoldenValue" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.Compute_EmptyString_MatchesGoldenValue" methodname="Compute_EmptyString_MatchesGoldenValue" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="1970134564" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000114" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4782" name="Compute_EnemySeedString_MatchesGoldenValue" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.Compute_EnemySeedString_MatchesGoldenValue" methodname="Compute_EnemySeedString_MatchesGoldenValue" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="268650421" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000090" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4784" name="Compute_ResourceSelectionSeedString_MatchesGoldenValue" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.Compute_ResourceSelectionSeedString_MatchesGoldenValue" methodname="Compute_ResourceSelectionSeedString_MatchesGoldenValue" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="2146236848" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000067" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4783" name="Compute_ResourceSpawnSeedString_MatchesGoldenValue" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.Compute_ResourceSpawnSeedString_MatchesGoldenValue" methodname="Compute_ResourceSpawnSeedString_MatchesGoldenValue" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="1199184348" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000053" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4786" name="Compute_SameInput_ProducesSameHash_AcrossRepeatedCalls" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.Compute_SameInput_ProducesSameHash_AcrossRepeatedCalls" methodname="Compute_SameInput_ProducesSameHash_AcrossRepeatedCalls" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="912952107" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000103" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4790" name="DeriveSummonSeed_DifferentSummonerId_ProducesDifferentSeed" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.DeriveSummonSeed_DifferentSummonerId_ProducesDifferentSeed" methodname="DeriveSummonSeed_DifferentSummonerId_ProducesDifferentSeed" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="241769260" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000234" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4789" name="DeriveSummonSeed_MatchesGoldenValue_ComputedFromFnv1aCombination" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.DeriveSummonSeed_MatchesGoldenValue_ComputedFromFnv1aCombination" methodname="DeriveSummonSeed_MatchesGoldenValue_ComputedFromFnv1aCombination" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="447979601" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000105" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4791" name="DeriveSummonSeed_NullCaveRunSeedOrSummonerId_DoesNotThrow" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.DeriveSummonSeed_NullCaveRunSeedOrSummonerId_DoesNotThrow" methodname="DeriveSummonSeed_NullCaveRunSeedOrSummonerId_DoesNotThrow" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="801858271" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000716" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4788" name="DeriveSummonSeed_SameInputs_ProducesSameSeed_AcrossRepeatedCalls" fullname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests.DeriveSummonSeed_SameInputs_ProducesSameSeed_AcrossRepeatedCalls" methodname="DeriveSummonSeed_SameInputs_ProducesSameSeed_AcrossRepeatedCalls" classname="CindarsHope.Tests.EditMode.Cave.CaveStableHashUsageTests" runstate="Runnable" seed="257971842" result="Passed" start-time="2026-09-28 02:46:21Z" end-time="2026-09-28 02:46:21Z" duration="0.000087" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

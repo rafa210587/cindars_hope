@@ -135,6 +135,10 @@ namespace CindarsHope.UI
                 return;
             }
 
+            if (GameBootstrap.Instance?.ModalManager?.HasActiveModal == true) return;
+            var selected = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
+            if (selected != null && selected.TryGetComponent<UnityEngine.UI.InputField>(out var input) && input.isFocused) return;
+
             if (global::UnityEngine.Input.GetKeyDown(KeyCode.O))
             {
                 GrantDebugXp();

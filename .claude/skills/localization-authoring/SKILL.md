@@ -17,8 +17,10 @@ framework or change quest, NPC, item or save IDs while adding presentation keys.
    [runtime usage](references/runtime-usage.md).
 4. Read [migration and closeout](references/migration-and-closeout.md) only for an explicitly
    scoped hardcode sweep or compatibility review. Pre-existing debt is not incidental scope.
-5. Test successful lookup, missing-key visibility and parameter formatting. For affected UI,
-   use `hud-canvas-binding` to inspect glyphs, accents, expansion, wrapping and truncation.
+5. New keys or changed lookup/formatting require relevant success, missing-key and parameter
+   tests. For a typo in an existing value, preserve key/placeholders and inspect the diff;
+   reuse unchanged lookup coverage. Inspect rendered glyphs/wrapping through `hud-canvas-binding`
+   when the change can affect font coverage, expansion or layout, not for every punctuation fix.
 
 Keys use stable domain-based names; dynamic values are formatted after resolving the key.
 Deliver new/migrated keys, call sites, fallback behavior, tests and pending visual coverage.

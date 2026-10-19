@@ -14,6 +14,12 @@
 > **Validation level:** Unity compile + EditMode Skills + PlayMode foundation
 > **Executor:** Codex/subagent com revisão do root
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md]
+Ordem de execucao: após specs implementadas 01/02/03; refinamento funcional v3 aprovado.
+Depende de: specs implementadas 01/02/03; refinamento funcional v3 aprovado
+Bloqueia: mecânicas Melee, Ranged, Magic, Survival/Crafting, passivas, UI e animações
+
 # /speckit.specify
 
 ## Problema e resultado

@@ -1,38 +1,34 @@
 ---
 name: runtime-bootstrap-pattern
-description: Padroniza como runtime systems se auto-conectam às scenes (o idiom *RuntimeBootstrap) sem global searches proibidos. Use em specs de wiring de orphan-system (fable_15, fable_16) ou em qualquer novo scene-runtime binding.
+description: Repair or migrate existing RuntimeBootstrap wiring without new global searches or auto-bootstraps. New service composition uses bootstrap-wiring and existing domain installers.
 ---
 
-# Skill: Runtime Bootstrap Pattern
+# Skill: Legacy runtime bootstrap wiring
 
-## Estado atual (honesto)
+**Legacy auto-installation is debt to inspect, not the template for a new system.**
+The canonical route is `GameRuntimeCompositionRoot` plus domain installers or explicit
+scene wiring; see [bootstrap-wiring](../bootstrap-wiring/SKILL.md) when that boundary changes.
 
-O projeto desenvolveu um idiom de fato: classes `*RuntimeBootstrap` (Quest, CraftingStation, NpcSchedule, FarmDailyGoal, PlayerMovementAction) que localizam suas dependências com `FindObjectOfType` — o que viola a rule `unity-architecture` §1. ~14 runtime files carregam esse débito. **Uma decisão humana está pendente: abençoar uma versão restringida do idiom ou agendar a sua remoção.** Até lá:
+## Bounded repair
 
-## Regras para QUALQUER novo scene-runtime binding
+1. Find the existing owner, consumers and initialization/disposal order. Do not assume an old
+   list of bootstrap classes still describes the current checkout.
+2. For a missing scene reference, repair the responsible Editor generator/serialized binding.
+   Preserve IDs, fields, scene ownership and concurrent work; use Unity Editor APIs for assets.
+3. When a scoped migration is authorized, move installation into the existing composition path.
+   Do not add `RuntimeInitializeOnLoadMethod`, global service points, searches or Resources
+   fallback to conceal missing wiring. Preserve explicitly required legacy compatibility paths.
+4. Required dependencies fail with an actionable wiring diagnostic; optional dependencies
+   follow their declared fallback. Never silently search the scene to make a test pass.
+5. Gameplay reacts through GameEventBus; lifetime/rebinding must not duplicate handlers or
+   keep destroyed scene references. No polling another owner's state to simulate initialization.
 
-1. **Não copie o pattern `FindObjectOfType`.** O hook `runtime-code-guard` o sinaliza em código novo.
-2. Ordem de resolution para dependências:
-   1. Serialized reference atribuída pelo scene creator (`Editor/SceneCreation/CreateMvp*Scene.cs` faz o wiring) — preferido;
-   2. GameBootstrap injection (`Core/Bootstrap/GameBootstrap.cs` guarda a ref e injeta via método explícito) — para managers cross-scene;
-   3. registro via `[RuntimeInitializeOnLoadMethod]` onde o sistema registra A SI MESMO num static service point no load (precedente WAVE07: InventoryPanelController/CharacterEquipmentPanelController) — para controllers que precisam existir antes do scene wiring.
-3. **Dependência ausente = wiring error barulhento, nunca fallback search silencioso:**
+## Evidence
 
-```csharp
-Debug.LogError($"WiringError: scene={gameObject.scene.name} object={name} component={GetType().Name} missingField=_questService affectedId={questId}");
-```
+Select the actual risk: binding completeness for a data repair; scene load/unload and repeated
+initialization for lifecycle changes; save-provider identity if persistence binding changes.
+An EditMode registration test alone does not prove a live transition. Use focused existing
+tests/smokes, without mandatory global validation or human scenario for every wiring edit.
 
-4. Os scene creators são a fonte de verdade do wiring: ao adicionar um serialized field, atualize o gerador `CreateMvp*Scene` correspondente na mesma mudança (skill: scene-interactable-wiring) e documente qualquer Inspector wiring necessário do humano.
-5. Conecte-se ao gameplay flow via eventos do GameEventBus, não fazendo polling do state de outros sistemas no `Update()`.
-
-## Ao tocar num *RuntimeBootstrap EXISTENTE
-
-- Spec scope o inclui → migre seus lookups para a ordem de resolution acima e remova as chamadas `FindObjectOfType`.
-- Spec scope NÃO o inclui → deixe-o, mas liste-o no execution report sob known debt.
-
-## Checklist para specs de wiring de orphan-system (estilo fable_15/16)
-
-- [ ] Auditar qual manager/service está órfão e quem deveria ser dono do seu lifecycle (GameBootstrap vs. scene creator).
-- [ ] Fazer o wiring pela ordem de resolution acima; sem novos global searches.
-- [ ] `*WiringTests` EditMode test que assegura completude do registro (precedente: `OrphanSystemsWiringTests`).
-- [ ] Human Play Mode scenario para o comportamento conectado (skill: gameplay-test-scenario).
+Existing out-of-scope debt may be noted in the task result; it does not force a new report or
+an unrelated migration. A contract expansion returns to the approved scope/spec before editing.

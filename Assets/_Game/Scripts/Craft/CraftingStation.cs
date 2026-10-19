@@ -419,6 +419,7 @@ namespace CindarsHope.Craft
             }
 
             StationLevel = saveData.StationLevel > 0 ? saveData.StationLevel : 1;
+            _job = null;
             if (saveData.Job == null || string.IsNullOrWhiteSpace(saveData.Job.RecipeId))
             {
                 return;

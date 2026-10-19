@@ -61,8 +61,63 @@ Material visual continua em `spec_farm_enclosed_valley_keyart_v2`; preservar tra
 
 ## Próximas ações
 
-1. Reconciliar falhas farm/keyart e wiring de assets/gates sem alterar cena concorrente.
-2. Resolver docs/strict sem afrouxar gates.
+Atualização pontual de 2026-09-27: Farm selecionada **56/56 PASS**; as quatro falhas
+de 08/09 não reapareceram. Contrato sul reconciliado com ambient v15 e prefab Fireball
+restaurado (validator PASS). Menu global ainda FAIL: duas picaretas sem WeaponId,
+validator de transições incompatível com componentes usados e check legado `Bounds`.
+Não houve aceite humano ou alteração de cenas. [Evidência e continuação](../validation/FARM_WIRING_RECONCILIATION.md).
+
+Playtest exploratório por agente em 27/09: Farm/Town/Cave, comércio e ataque com espada
+exercitados em Play Mode. Revive com lágrima indisponível após morte, spawn de retorno
+inválido e problemas visuais/UX registrados; sem aceite humano ou promoção de specs.
+[Achados, prioridades e limites](../validation/EXPLORATORY_PLAYTEST_2026_09_27.md).
+Continuação: menus, crafting e plantio/rega exercitados; save recém-gravado após crafting
+recusado no load por job vazio, pausa não abre e baú permanece placeholder.
+[Cobertura e reprodução do bloqueador](../validation/EXPLORATORY_MENUS_2026_09_27.md).
+[Refinamento das correções e melhorias](../refinements/a_implementar/ref_playtest_correcoes_e_experiencia_v1.md):
+22 decisões; Rafa autorizou gerar e executar sete specs `spec_playtest_*` em 27/09.
+Código do pacote foi implementado, com EditMode integrado 166/166 PASS e rodada final focal 29/29 PASS.
+O reparo das picaretas mudou dois assets; FarmScene foi preservada, com reveal da estufa conectado
+em runtime. [Relatório e roteiro de aceite](../validation/spec_playtest_integrated_coverage_v1/REPORT.md).
+Status integrado **PARTIAL**: strict docs **SCOPED_PASS** após reconciliar 29 specs legadas,
+absorver duas Town obsoletas e reconhecer IDs de wave existentes. Strict architecture ainda falha
+em 13 violações de outros módulos após remover um falso positivo em comentário;
+`CraftingModal` e `DialogueModal` não aparecem mais na lista.
+Após revisão independente, timeout da pesca e ID do spawn Cave→Farm foram corrigidos;
+EditMode 25/25 e 35/35 PASS e PlayMode headless de composição/cenas/host da estufa 2/2 PASS.
+Validação integrada read-only: Farm 64/64 PASS, picaretas sem erro WeaponId, mas FAIL
+em três diagnósticos de transição estática da Cave (ver relatório).
+Rotas jogadas após as correções, visual da Cave, circulação e sensação de combate **NOT RUN**:
+Rafa pediu que não se controle a tela agora. Nenhuma spec do pacote foi promovida/aceita.
+
+Complemento de 27/09, sem controle da tela: quatro specs novas em `a_implementar` cobrem
+artefatos de luz da Cave, layer físico das paredes da Cave, bases físicas de props Farm/Town
+e navegação NPC/Enemy. O feixe opaco foi substituído no render por sprite RGBA pequeno;
+captura gráfica oculta confirmou que o retângulo claro sumiu. As faixas escuras eram buracos
+de Tilemap: `floor_c` tinha pivô inferior por omissão no importador canônico; reimport pelo Editor
+fixou pivô central (64,64), e a nova captura não mostra as faixas. Bases de cinco props Farm, poço e cercas Town
+são instaladas em runtime; 32 arbustos baixos permanecem sem collider, e casts nas duas
+pontes e no cais passaram. Paredes geradas da Cave agora usam `WorldSolid`, visível ao
+desvio dos monstros. NPC idle/recuperação de rota e avoidance de monstros receberam correções
+focais. Unity: EditMode combinado 23/23 e Cave import 3/3, PlayMode Farm/Town 3/3,
+N1 11/11, Cave wall 1/1 e smoke gráfico 1/1 PASS.
+Ratchet global ainda FAIL pelas violações preexistentes; nenhuma das duas novas chamadas
+`PhysicsAllQuery` permanece. Rotas gerais, circulação/revisita na Cave e aceite humano seguem
+pendentes. [Relatórios Cave](../validation/spec_playtest_cave_render_artifacts_v1/REPORT.md),
+[paredes Cave](../validation/spec_playtest_cave_wall_enemy_physics_v1/REPORT.md),
+[física](../validation/spec_playtest_farm_town_prop_physics_v1/REPORT.md) e
+[navegação](../validation/spec_playtest_npc_enemy_navigation_v1/REPORT.md).
+
+Primeira rodada de polimento visual sem controle da tela: estudos ChatGPT orientaram variantes
+editáveis no Aseprite para grama da Cidade, piso da Cave e caminho da Fazenda. A Cidade reduziu
+quadrados escuros no recorte medido; a Cave suavizou paleta/sombra; a Fazenda reduziu o amarelo
+do caminho. Capturas gráficas das três áreas passaram, mas caminhos serrilhados/largos, células
+retangulares da Cave e contraste dos inimigos ainda exigem trabalho. Specs visuais continuam
+em `a_implementar`; aceite humano e revisão em movimento não foram executados.
+[Evidência, fontes e limites](../validation/visual_polish_20260927/REPORT.md).
+
+1. Sanear as 13 violações de arquitetura de outros módulos em fatias próprias, sem mascarar o gate.
+2. Quando houver autorização para interação com a tela, executar as rotas A/B do relatório, incluindo Cave e combate.
 3. Executar `spec_validation_human_playmode_smoke_v1` em Town/Farm/Cave e registrar evidência humana.
 4. Prosseguir refactors de UI, ports tipados e bootstraps legados com testes.
 

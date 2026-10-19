@@ -27,15 +27,29 @@ namespace CindarsHope.UI.Shop
             return detailsText != null ? detailsText : CreateDetailsText(panel);
         }
 
+        public static void ConfigureFeedback(Text feedback)
+        {
+            if (feedback == null) return;
+            var rect = feedback.rectTransform;
+            rect.anchorMin = new Vector2(0, 0);
+            rect.anchorMax = new Vector2(1, 0);
+            rect.pivot = new Vector2(0.5f, 0);
+            rect.anchoredPosition = new Vector2(0, 56);
+            rect.sizeDelta = new Vector2(-40, 62);
+            feedback.horizontalOverflow = HorizontalWrapMode.Wrap;
+            feedback.verticalOverflow = VerticalWrapMode.Overflow;
+            feedback.alignment = TextAnchor.UpperLeft;
+        }
+
         private static void WrapItemsInScrollViewport(RectTransform content, RectTransform panel)
         {
             var listW = panel != null ? panel.sizeDelta.x - 40f : 480f;
-            var listH = panel != null ? panel.sizeDelta.y - 180f : 280f;
+            var listH = panel != null ? panel.sizeDelta.y - 300f : 280f;
             var parent = content.parent;
             var viewportObject = new GameObject("ItemsScroll_Runtime", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(RectMask2D), typeof(ScrollRect));
             viewportObject.transform.SetParent(parent, false);
             var viewport = viewportObject.GetComponent<RectTransform>();
-            viewport.anchoredPosition = new Vector2(0f, 62f);
+            viewport.anchoredPosition = new Vector2(0f, 82f);
             viewport.sizeDelta = new Vector2(listW, listH);
             viewportObject.GetComponent<Image>().color = new Color(0.06f, 0.07f, 0.09f, 0.75f);
 
@@ -67,8 +81,11 @@ namespace CindarsHope.UI.Shop
             var detailsObject = new GameObject("Details_Runtime", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
             detailsObject.transform.SetParent(panel, false);
             var rect = detailsObject.GetComponent<RectTransform>();
-            rect.anchoredPosition = new Vector2(0f, -86f);
-            rect.sizeDelta = new Vector2(480f, 100f);
+            rect.anchorMin = new Vector2(0, 0);
+            rect.anchorMax = new Vector2(1, 0);
+            rect.pivot = new Vector2(0.5f, 0);
+            rect.anchoredPosition = new Vector2(0f, 125f);
+            rect.sizeDelta = new Vector2(-40f, 100f);
             var details = detailsObject.GetComponent<Text>();
             details.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             details.fontSize = 14;

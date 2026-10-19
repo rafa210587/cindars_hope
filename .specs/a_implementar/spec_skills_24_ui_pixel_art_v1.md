@@ -7,6 +7,12 @@
 > **Blocks:** spec_skills_25_action_presentation_foundation_v1  
 > **Validation:** asset validator+PlayMode+capturas gráficas
 
+required_adrs: [ADR-0010, ADR-0011]
+required_game_rules: [skill_tree_rules.md, ui_rules.md]
+Ordem de execucao: após spec_skills_23_skill_loadout_hud_v1.
+Depende de: spec_skills_23_skill_loadout_hud_v1
+Bloqueia: spec_skills_25_action_presentation_foundation_v1
+
 # /speckit.specify
 
 ## Spec

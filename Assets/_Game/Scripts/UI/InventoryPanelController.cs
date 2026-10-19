@@ -129,8 +129,9 @@ namespace CindarsHope.UI
             if (!_isOpen) Toggle();
         }
 
-        private void OnModalCloseRequested(ModalCloseRequestedEvent _)
+        private void OnModalCloseRequested(ModalCloseRequestedEvent evt)
         {
+            if (!evt.Targets(ModalType.Inventory)) return;
             if (_isOpen) CloseOrBack();
         }
 
@@ -413,6 +414,8 @@ namespace CindarsHope.UI
                 return;
             }
 
+            if (!IsActionEnabled(_selectedActionIndex)) return;
+
             switch (_actions[_selectedActionIndex])
             {
                 case "Use":
@@ -592,8 +595,8 @@ namespace CindarsHope.UI
                 return;
             }
 
-            var equipped = slot.IsEquipped ? $" [{slot.EquipmentBindingId}]" : string.Empty;
-            GUILayout.Label($"Selected: {ResolveDisplayName(slot.ItemId)} x{slot.Amount}{equipped}");
+            var equipped = slot.IsEquipped ? $" [{EquipmentLabel(slot.EquipmentBindingId)}]" : string.Empty;
+            GUILayout.Label($"{CindarsHope.Localization.LocalizationService.Get("ui.inventory.selected")}: {ResolveDisplayName(slot.ItemId)} ×{slot.Amount}{equipped}");
             if (_mode == PanelMode.MoveMergeDestination)
             {
                 GUILayout.Label($"Origem: slot {_moveMergeSourceSlotIndex + 1}; destino: slot {_selectedSlotIndex + 1}.");
@@ -614,7 +617,7 @@ namespace CindarsHope.UI
                 var isEnabled = IsActionEnabled(index);
                 var label = _actions[index] == "Use"
                     ? (isEnabled ? "Usar" : "Usar (indisponivel)")
-                    : _actions[index] == "Equip" ? GetEquipActionLabel() : _actions[index];
+                    : _actions[index] == "Equip" ? GetEquipActionLabel() : CindarsHope.Localization.LocalizationService.Get("ui.inventory.action_" + _actions[index].ToLowerInvariant());
                 var previousEnabled = GUI.enabled;
                 GUI.enabled = isEnabled;
                 if (GUILayout.Button(index == _selectedActionIndex ? $"> {label}" : label))
@@ -626,9 +629,13 @@ namespace CindarsHope.UI
             }
 
             GUILayout.EndVertical();
+            if (!CanUseSelectedItem()) GUILayout.Label(CindarsHope.Localization.LocalizationService.Get("ui.inventory.use_unavailable"));
             GUILayout.Label("Esc: voltar ao inventario");
             GUILayout.EndArea();
         }
+
+        private static string EquipmentLabel(string id)
+            => CindarsHope.Localization.LocalizationService.Get("ui.equipment.slot_" + id.ToLowerInvariant());
 
         private int FindFirstEnabledActionIndex()
         {
@@ -664,7 +671,13 @@ namespace CindarsHope.UI
 
         private bool IsActionEnabled(int actionIndex)
         {
-            return actionIndex < 0 || actionIndex >= _actions.Length || _actions[actionIndex] != "Use" || CanUseSelectedItem();
+            if (actionIndex < 0 || actionIndex >= _actions.Length) return false;
+            if (_actions[actionIndex] == "Use") return CanUseSelectedItem();
+            if (_actions[actionIndex] == "Equip")
+                return _inventoryManager != null && _inventoryManager.TryGetSlot(_selectedSlotIndex, out var slot)
+                    && !slot.IsEmpty && _inventoryManager.TryGetItemData(slot.ItemId, out var item)
+                    && (slot.IsEquipped || (item.IsEquippable && EquipmentSlotRules.ResolveEquipmentSlot(item) != EquipmentSlot.None));
+            return true;
         }
 
         private bool CanUseSelectedItem()
@@ -847,7 +860,7 @@ namespace CindarsHope.UI
                 return;
             }
 
-            CompleteEquipmentSelection(true, $"{slot.ItemId} equipado em {_targetEquipmentSlot}.");
+            CompleteEquipmentSelection(true, $"{ResolveDisplayName(slot.ItemId)} — {EquipmentLabel(_targetEquipmentSlot.ToString())}.");
         }
 
         private void ReplaceEquippedItem(EquipmentSlot equipmentSlot, int slotIndex, InventorySlot slot)

@@ -517,6 +517,7 @@ namespace CindarsHope.Save
             if (!File.Exists(savePath))
             {
                 Debug.Log($"Save file not found at {savePath}.", this);
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, "Nenhum save encontrado neste slot."));
                 return false;
             }
 
@@ -525,6 +526,8 @@ namespace CindarsHope.Save
                 if (!TryReadSaveWithMigration(savePath, true, out var saveData, out var migrationResult))
                 {
                     Debug.LogWarning($"Save file at {savePath} could not be loaded. {migrationResult.ErrorMessage}", this);
+                    GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false,
+                        "Não foi possível carregar o save. O progresso atual foi preservado."));
                     return false;
                 }
 

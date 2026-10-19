@@ -26,6 +26,7 @@ namespace CindarsHope.Farm.Runtime
     public class FarmSceneRuntimeBootstrap : MonoBehaviour
     {
         [SerializeField] private Collider2D[] _authoredSolidBases = System.Array.Empty<Collider2D>();
+        private System.Collections.Generic.IReadOnlyList<Collider2D> _runtimePropBases = System.Array.Empty<Collider2D>();
 
         // Tile size = 1 Unity unit = 32px. Bounds v6: 64x44, origin centrada (0,0).
         // Tile (0,0) = canto inferior esquerdo = world (-32, -22).
@@ -37,6 +38,10 @@ namespace CindarsHope.Farm.Runtime
 
         private void Start()
         {
+            // Scene.isLoaded and all authored roots are available by Start; Awake can run
+            // while an additive/single scene is still being deserialized.
+            if (gameObject.scene.name == "FarmScene")
+                _runtimePropBases = FarmPropPhysicsInstaller.Ensure(gameObject.scene);
             var grid = DomainManagerRegistry.Get<FarmTileGrid>();
             if (grid == null)
             {
@@ -83,6 +88,12 @@ namespace CindarsHope.Farm.Runtime
             foreach (var entranceBase in FarmEntrancePhysicsContract.CaveSideBases) RegisterBlockedSolidRect(zones, grid, entranceBase);
             // Explicit scene references keep visible prop bases and soil masks on the same footprint.
             foreach (var solid in _authoredSolidBases)
+            {
+                if (solid == null || solid.isTrigger || !solid.enabled || !solid.gameObject.activeInHierarchy) continue;
+                var bounds = solid.bounds;
+                RegisterBlockedSolidRect(zones, grid, new FarmSolidRect(solid.name, bounds.center, bounds.size));
+            }
+            foreach (var solid in _runtimePropBases)
             {
                 if (solid == null || solid.isTrigger || !solid.enabled || !solid.gameObject.activeInHierarchy) continue;
                 var bounds = solid.bounds;

@@ -89,6 +89,8 @@ To calibrate its contents, consult the [hypothetical example](references/example
 Do not load both by default; examples neither prove execution nor grant authorization.
 
 ## When NOT to use
+- A local correction restoring an existing contract: `/bugfix` does not require a new spec.
+  New behavior or high-risk contract changes still need the applicable approved scope.
 - Execute/implement a ready spec → `spec-execution`.
 - Create skill/rule/agent/command/hook → `harness-authoring`.
 - Move a spec to `implementados/` with evidence → `docs-migration`.

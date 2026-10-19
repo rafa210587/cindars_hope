@@ -1,6 +1,6 @@
 # SPEC — Town Layout v9 (orgânico, guiado pela imagem de referência)
 
-**Status:** A_IMPLEMENTAR
+**Status:** SUPERSEDED — referência histórica; substituída por `spec_town_spatial_expansion_and_access_v1` em 2026-09-10.
 **Tipo:** WAVE_INTEGRATION / scene layout (editor-only)
 **Dependências:** Fundação de rendering v2 já aplicada (sorting layers Ground/World/Roof + Y-sort custom axis Y + pivots BottomCenter — concluída em 2026-07-03).
 **Origem:** Pedido direto do usuário (2026-07-03): aproximar a TownScene da imagem de referência gerada (cidade murada, portão sul, praça central com estátua/fonte, distritos), podendo ser MAIS ORGÂNICO que a grade rígida da referência.

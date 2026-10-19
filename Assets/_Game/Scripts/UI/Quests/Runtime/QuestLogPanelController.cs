@@ -136,8 +136,8 @@ namespace CindarsHope.UI.Quests.Runtime
 
             if (active.Count == 0)
             {
-                GUI.Label(new Rect(rect.x + 10, y, 480, 20), "(nenhuma missão ativa)");
-                y += 25;
+                GUI.Label(new Rect(rect.x + 10, y, 480, 50), CindarsHope.Localization.LocalizationService.Get("ui.quests.empty"));
+                y += 55;
             }
 
             foreach (var record in active)

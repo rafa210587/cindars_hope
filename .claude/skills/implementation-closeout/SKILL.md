@@ -29,9 +29,9 @@ Ao finalizar spec, refactor, tooling, bugfix ou alteração documental relevante
    que compile não prova; não precisa repetir testes confiáveis do executor.
 2. Conferir evidência vigente. Executar somente gates faltantes/invalidados ou necessários
    para uma preocupação nova. Consultar SPEC_VALIDATION_MATRIX_MASTER.
-3. Update evidence using spec-execution (diff/commit or conditional report) and authorized
-   indices/status; não mover specs
-   automaticamente. /finish-spec determina elegibilidade.
+3. For a local correction without a spec, return cause/fix, relevant check and remaining risk;
+   no new report, spec promotion or commit by default. For actual spec execution, update its
+   proportional evidence and authorized indices/status; `/finish-spec` determines eligibility.
 4. Após editar/mover docs, obter docs validation sobre esse estado. Isso não invalida
    compile/testes C# cujos inputs não mudaram.
 5. Se encerrando integração ampla, obter uma rodada global pertinente e testes integrados.
@@ -44,7 +44,8 @@ Ao finalizar spec, refactor, tooling, bugfix ou alteração documental relevante
 Arquivos, comportamento/contratos entregues, evidência e limites.
 Only when the risk table requires a spec report: at most 60 lines with criteria, reused
 systems, requirement/test mapping, validation and honest status; one integration paragraph.
-No new docs/validation folder for docs/harness or pure logic; use diff or commit + XML.
+No new docs/validation folder for docs/harness or pure logic; use diff and applicable artifacts.
+When no commit is requested, the final task response records command/result and artifact paths.
 
 ## Quando NÃO usar
 

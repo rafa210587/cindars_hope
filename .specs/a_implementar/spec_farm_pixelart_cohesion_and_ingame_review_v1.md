@@ -21,6 +21,11 @@
 required_adrs: []
 required_game_rules: []
 
+Ordem de execucao: preservar baseline, regenerar, capturar câmera real, medir contrato visual e registrar closeout conforme Fases 0–5.
+Depende de: gerador/contratos atuais, referência keyart e laboratório farmer citados em Depends on.
+
+# /speckit.specify
+
 ## 5. Contexto
 
 O usuário autorizou continuar os ajustes de sprites, avaliar o personagem in-game e arrumar a fazenda inteira com base na pixel art. Pediu pesquisar métodos de jogos indies e adaptar a geração de imagens com GPT. A cena salva já contém elementos das correções existentes. A regeneração focal reconciliará o estado do gerador com a cena e permitirá avaliar a nova mistura de chão; não se presume que regenerar resolverá os achados visuais.
@@ -78,6 +83,8 @@ Antes de executar, reconfirmar git status dos arquivos permitidos, hash da cena/
 ## 13. Regras de não duplicação
 
 Reusar `CreateMvpFarmScene`, `FarmSceneCapture`, `WorldTilemapGround`, `FarmDecorationPlanner`, `FarmSceneCompositionContract` e `FarmSceneSpatialContract`. Não criar Tilemap/gerador/câmera de gameplay/catálogo de arte paralelos. Não impor12frames ou96px de produção: seis–oito poses coerentes são referência de trabalho; doze e maior resolução continuam hipóteses experimentais. O procedimento GPT é descrito no workflow, não em novos hooks/agentes redundantes.
+
+# /speckit.plan
 
 ## 15. Arquitetura alvo — criar versus modificar
 
@@ -147,6 +154,7 @@ Assets/_Game/Scripts/Editor/Dev/FarmPlayModeCaptureSession.cs (+meta Unity, some
 Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
 Assets/_Game/Scripts/Editor/Art/WorldTilemapGround.cs
 Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs
+Assets/_Game/Scripts/Editor/Art/FarmSettlementVisualComposer.cs (somente composicao visual sem collider)
 Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs
 Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs
 Assets/_Game/Scenes/FarmScene.unity (somente regeneração Unity API com backup anterior)

@@ -7,6 +7,12 @@
 > **Blocks:** spec_skills_20_survival_crafting_capstones_v1 e UI  
 > **Validation:** Unity compile + EditMode + PlayMode por subfase + reauditoria independente
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, combat_rules.md]
+Ordem de execucao: após spec_skills_18_crafting_economy_passives_v1.
+Depende de: spec_skills_18_crafting_economy_passives_v1
+Bloqueia: spec_skills_20_survival_crafting_capstones_v1 e UI
+
 # /speckit.specify
 
 ## Decisões de equilíbrio

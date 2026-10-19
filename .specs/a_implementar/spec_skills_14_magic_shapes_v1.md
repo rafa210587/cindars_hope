@@ -7,6 +7,12 @@
 > **Blocks:** spec_skills_15_survival_actions_v1 e UI  
 > **Repo lock scope/Validation/Executor:** Ownership / Unity+EditMode+PlayMode / execute-spec-strict
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, combat_rules.md]
+Ordem de execucao: após spec_skills_13_ranged_identity_v1.
+Depende de: spec_skills_13_ranged_identity_v1
+Bloqueia: spec_skills_15_survival_actions_v1 e UI
+
 # /speckit.specify
 
 ## Spec

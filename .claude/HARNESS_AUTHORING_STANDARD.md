@@ -29,6 +29,13 @@ recursive reading list.
   Do not add a support file unless it changes decisions in a concrete scenario.
 - Line/byte counts are review signals, not standalone gates or token/cost measurements.
   Do not pad to a quota or move text merely to satisfy a size limit.
+- Start with the user's journey and risk. Local corrections must retain a short path without
+  mandatory spec, delegation, report or commit; a new feature still requires its approved spec.
+- Before adding a resource, name the decision it improves. A short self-contained entry needs
+  neither template nor example. For ambiguity-prone choices, prefer one correct example and
+  one plausible mistake with the boundary explained, not a large gallery of near-duplicates.
+- Describe triggers as actions/contracts, not every domain keyword. Conditional references
+  must say why they are needed; known IDs do not require rereading the entire catalog.
 
 ## Artifact formats
 ### Templates, examples and scripts
@@ -67,6 +74,9 @@ recursive reading list.
 
 ## Validation and authorization
 - Check frontmatter, transitive references, catalog, generated copies and idempotence when affected.
+- Use `tools/codex/Test-HarnessDiscovery.ps1` for explicit structural contracts. Exercise
+  routing scenarios from the existing audit dimensions for decision quality; keep these
+  results distinct from automated structure checks and real model/task benchmarks.
 - Exercise scenarios proportionate to the change; correct formatting does not prove good routing.
 - Derive results from current evidence; never hardcode PASS/NOT RUN in an execution template.
 - Agent summaries do not replace artifacts. Safety, save, scope and evidence remain binding.

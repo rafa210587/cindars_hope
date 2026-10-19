@@ -118,12 +118,12 @@ $count = if ($initRefsInsidePre) { $initRefsInsidePre.Count } else { 0 }
 Ok "Found $count live refinamento_init files in pre_refinamentos; completed refinements may be promoted out of this folder."
 
 $badImplementedSpecs = Get-ChildItem ".specs/implementados" -Filter "*.md" -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -notlike "spec_*" -and $_.Name -ne "README.md" }
+    Where-Object { $_.Name -notlike "spec_*" -and $_.Name -notlike "[0-9][0-9]_spec_*" -and $_.Name -ne "README.md" }
 
 if ($badImplementedSpecs) {
-    $badImplementedSpecs | ForEach-Object { Fail "Implemented spec without spec_ prefix: $($_.FullName)" }
+    $badImplementedSpecs | ForEach-Object { Fail "Implemented spec without spec_ or NN_spec_ prefix: $($_.FullName)" }
 } else {
-    Ok "Implemented specs use spec_ prefix."
+    Ok "Implemented specs use spec_ or NN_spec_ prefix."
 }
 
 $badFutureSpecs = Get-ChildItem ".specs/a_implementar" -Filter "*.md" -ErrorAction SilentlyContinue |

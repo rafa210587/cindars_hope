@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="31" result="Passed" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0,1736036">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="3605" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.173604" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="5031" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="3605" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.154878" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42168" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="5032" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="3605" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.141374" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="5037" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="3502" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.127621" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="5039" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="3485" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.115067" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="5075" name="Cave" fullname="CindarsHope.Tests.EditMode.Cave" runstate="Runnable" testcasecount="345" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.052456" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="4644" name="CaveBiomeArtProfilesTests" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.032653" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="4658" name="BandForLevel_CoversAllEightBiomeBands" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.BandForLevel_CoversAllEightBiomeBands" methodname="BandForLevel_CoversAllEightBiomeBands" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="841411787" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.009179" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4657" name="BiomeChangeDecision_DifferentBand_IsAChange" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.BiomeChangeDecision_DifferentBand_IsAChange" methodname="BiomeChangeDecision_DifferentBand_IsAChange" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1284292858" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000293" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4655" name="BiomeChangeDecision_FirstEntry_AlwaysCountsAsChange" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.BiomeChangeDecision_FirstEntry_AlwaysCountsAsChange" methodname="BiomeChangeDecision_FirstEntry_AlwaysCountsAsChange" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="628564639" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000086" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4656" name="BiomeChangeDecision_SameBand_IsNotAChange" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.BiomeChangeDecision_SameBand_IsNotAChange" methodname="BiomeChangeDecision_SameBand_IsNotAChange" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1866887406" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000154" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4661" name="CaveBiomeArtDebug_Default_ResolvesNaturalBand" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.CaveBiomeArtDebug_Default_ResolvesNaturalBand" methodname="CaveBiomeArtDebug_Default_ResolvesNaturalBand" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1763866046" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000139" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4662" name="CaveBiomeArtDebug_Forced_OverridesArtBandOnly" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.CaveBiomeArtDebug_Forced_OverridesArtBandOnly" methodname="CaveBiomeArtDebug_Forced_OverridesArtBandOnly" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1165525796" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000136" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4652" name="ComputeCellHash_DifferentCell_ProducesDifferentHash" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.ComputeCellHash_DifferentCell_ProducesDifferentHash" methodname="ComputeCellHash_DifferentCell_ProducesDifferentHash" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="144750023" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.001314" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4653" name="ComputeCellHash_IsNonNegative" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.ComputeCellHash_IsNonNegative" methodname="ComputeCellHash_IsNonNegative" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="2080791673" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.001935" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4651" name="ComputeCellHash_SameInputs_ProducesSameHash" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.ComputeCellHash_SameInputs_ProducesSameHash" methodname="ComputeCellHash_SameInputs_ProducesSameHash" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1030566048" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000163" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4672" name="IsFloorEdgeNextToWall_DiagonalWallNeighbor_DoesNotCountAsEdge" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsFloorEdgeNextToWall_DiagonalWallNeighbor_DoesNotCountAsEdge" methodname="IsFloorEdgeNextToWall_DiagonalWallNeighbor_DoesNotCountAsEdge" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="514365999" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.001269" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4671" name="IsFloorEdgeNextToWall_NoWallNeighbor_IsNotEdge" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsFloorEdgeNextToWall_NoWallNeighbor_IsNotEdge" methodname="IsFloorEdgeNextToWall_NoWallNeighbor_IsNotEdge" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="766342780" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000236" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4670" name="IsFloorEdgeNextToWall_WallToEastOrWest_IsEdge" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsFloorEdgeNextToWall_WallToEastOrWest_IsEdge" methodname="IsFloorEdgeNextToWall_WallToEastOrWest_IsEdge" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="611107278" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000181" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4669" name="IsFloorEdgeNextToWall_WallToNorth_IsEdge" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsFloorEdgeNextToWall_WallToNorth_IsEdge" methodname="IsFloorEdgeNextToWall_WallToNorth_IsEdge" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1828114856" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000109" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4668" name="IsFloorEdgeNextToWall_WallToSouth_IsEdge" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsFloorEdgeNextToWall_WallToSouth_IsEdge" methodname="IsFloorEdgeNextToWall_WallToSouth_IsEdge" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="677993917" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000091" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4667" name="IsWallInterior_DiagonalWalkableNeighbor_DoesNotCountAsEdge" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsWallInterior_DiagonalWalkableNeighbor_DoesNotCountAsEdge" methodname="IsWallInterior_DiagonalWalkableNeighbor_DoesNotCountAsEdge" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1524458162" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000155" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4665" name="IsWallInterior_WallCellWithFloorToEastOrWest_IsEdge_NotInterior" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsWallInterior_WallCellWithFloorToEastOrWest_IsEdge_NotInterior" methodname="IsWallInterior_WallCellWithFloorToEastOrWest_IsEdge_NotInterior" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="251326824" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000126" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4664" name="IsWallInterior_WallCellWithFloorToNorth_IsEdge_NotInterior" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsWallInterior_WallCellWithFloorToNorth_IsEdge_NotInterior" methodname="IsWallInterior_WallCellWithFloorToNorth_IsEdge_NotInterior" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="53190377" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000087" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4663" name="IsWallInterior_WallCellWithFloorToSouth_IsEdge_NotInterior" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsWallInterior_WallCellWithFloorToSouth_IsEdge_NotInterior" methodname="IsWallInterior_WallCellWithFloorToSouth_IsEdge_NotInterior" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="94582515" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000073" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4666" name="IsWallInterior_WallCellWithNoWalkableNeighbor_IsInterior" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.IsWallInterior_WallCellWithNoWalkableNeighbor_IsInterior" methodname="IsWallInterior_WallCellWithNoWalkableNeighbor_IsInterior" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1100115530" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000102" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4660" name="Registry_EditorSetProfiles_Null_BecomesEmptyList_NeverNull" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Registry_EditorSetProfiles_Null_BecomesEmptyList_NeverNull" methodname="Registry_EditorSetProfiles_Null_BecomesEmptyList_NeverNull" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1080254517" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000578" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4659" name="Registry_EditorSetProfiles_ProfilesResolveThroughResolver_SameAsSerializedArray" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Registry_EditorSetProfiles_ProfilesResolveThroughResolver_SameAsSerializedArray" methodname="Registry_EditorSetProfiles_ProfilesResolveThroughResolver_SameAsSerializedArray" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="448832862" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.001686" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4650" name="Resolver_DuplicateBandId_FirstEntryWins" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Resolver_DuplicateBandId_FirstEntryWins" methodname="Resolver_DuplicateBandId_FirstEntryWins" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="520943026" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000325" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4645" name="Resolver_EmptyProfileList_TryGetProfile_ReturnsFalse" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Resolver_EmptyProfileList_TryGetProfile_ReturnsFalse" methodname="Resolver_EmptyProfileList_TryGetProfile_ReturnsFalse" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="558289482" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000145" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4649" name="Resolver_MultipleProfiles_TryGetProfile_ReturnsCorrectBand" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Resolver_MultipleProfiles_TryGetProfile_ReturnsCorrectBand" methodname="Resolver_MultipleProfiles_TryGetProfile_ReturnsCorrectBand" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="984100059" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000281" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4646" name="Resolver_NullProfileList_DoesNotThrow_AndAllTryGetReturnFalse" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Resolver_NullProfileList_DoesNotThrow_AndAllTryGetReturnFalse" methodname="Resolver_NullProfileList_DoesNotThrow_AndAllTryGetReturnFalse" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="873149051" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000525" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4647" name="Resolver_ProfileWithoutFloorTiles_TryGetFloorTile_ReturnsFalse" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Resolver_ProfileWithoutFloorTiles_TryGetFloorTile_ReturnsFalse" methodname="Resolver_ProfileWithoutFloorTiles_TryGetFloorTile_ReturnsFalse" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="972225561" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000256" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4648" name="Resolver_UnknownTrapId_TryGetTrapSprite_ReturnsFalse" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.Resolver_UnknownTrapId_TryGetTrapSprite_ReturnsFalse" methodname="Resolver_UnknownTrapId_TryGetTrapSprite_ReturnsFalse" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1100996016" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.000163" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4654" name="TryGetFloorTile_SameCellHash_ReturnsSameTileAcrossCalls" fullname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests.TryGetFloorTile_SameCellHash_ReturnsSameTileAcrossCalls" methodname="TryGetFloorTile_SameCellHash_ReturnsSameTileAcrossCalls" classname="CindarsHope.Tests.EditMode.Cave.CaveBiomeArtProfilesTests" runstate="Runnable" seed="1254242124" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.001010" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="4736" name="CaveLightShaftPresentationTests" fullname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests" classname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.012626" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="4737" name="FloorTiles_ImportedWithCenteredPivot_DoNotLeaveTilemapGaps" fullname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests.FloorTiles_ImportedWithCenteredPivot_DoNotLeaveTilemapGaps" methodname="FloorTiles_ImportedWithCenteredPivot_DoNotLeaveTilemapGaps" classname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests" runstate="Runnable" seed="1227498694" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.002332" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4738" name="LightShaft_GeneratedSpriteHasTransparentBackgroundAndSmallWorldBounds" fullname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests.LightShaft_GeneratedSpriteHasTransparentBackgroundAndSmallWorldBounds" methodname="LightShaft_GeneratedSpriteHasTransparentBackgroundAndSmallWorldBounds" classname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests" runstate="Runnable" seed="1149065837" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.004333" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="4739" name="LightShaft_ProfileEnablesSmallTransparentOverlay_AbsentProfileLeavesOnlyVignette" fullname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests.LightShaft_ProfileEnablesSmallTransparentOverlay_AbsentProfileLeavesOnlyVignette" methodname="LightShaft_ProfileEnablesSmallTransparentOverlay_AbsentProfileLeavesOnlyVignette" classname="CindarsHope.Tests.EditMode.Cave.CaveLightShaftPresentationTests" runstate="Runnable" seed="2018088549" result="Passed" start-time="2026-09-28 02:37:07Z" end-time="2026-09-28 02:37:07Z" duration="0.004866" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

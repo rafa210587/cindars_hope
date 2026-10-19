@@ -48,6 +48,9 @@ namespace CindarsHope.SceneManagement
 
         private void Start()
         {
+            // Saved-scene roots are complete and Scene.isLoaded is true by Start.
+            if (gameObject.scene.name == "TownScene")
+                TownPropPhysicsInstaller.Ensure(gameObject.scene);
             var bootstrap = GameBootstrap.Instance;
             if (bootstrap == null)
             {

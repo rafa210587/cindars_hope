@@ -4,13 +4,26 @@
 
 ## Initial reading
 
-For implementation, read this router, `docs/project/CURRENT_STATE.md`, the active spec and its explicitly referenced files. The invariants in `AGENTS.md` remain binding.
+Read this router, `docs/project/CURRENT_STATE.md` and the files relevant to the selected journey below.
+For spec execution, also read the active spec and its referenced files. The invariants in `AGENTS.md` remain binding.
 Select only the needed workflow from the [harness catalog](.claude/HARNESS_INDEX.md); references are conditional, never a mandatory reading queue.
 Spec planning uses `spec-authoring`; execution uses `spec-execution`; closeout uses `/finish-spec`. These workflows point to applicable sources and gates.
 For staged SDD authoring: `refinement-authoring` → `spec-authoring` → `spec-planning` → `spec-task-authoring` (including consistency review). Existing complete specs remain valid.
 Do not load PROJECT_LOG, ROADMAP, the full GDD, docs_old, unrelated refinements/reports or archived specs by default. History is for audit/reconciliation/regression; roadmap is for planning.
 
 ## Proportionate execution
+
+Choose by intended behavior and risk, not file count:
+
+| Journey | Entry and minimum evidence |
+|---|---|
+| Local correction of an existing contract; typo or bounded bug | `/bugfix`: reproduce/inspect → smallest fix → relevant check → short result. No new spec, separate plan/report, delegation or commit by default. |
+| New feature or cohesive planned maintenance | Approved spec; use the short maintenance format when sufficient, then `spec-execution`. |
+| Save/IDs, cross-system, lifecycle or structural contract change | Review affected contracts and integration risks before editing; use the existing spec or amend/create the necessary scoped spec. A one-line diff can take this journey. |
+
+Escalate when discovery changes the risk or intended contract; continue independent authorized
+work. A bugfix request does not authorize a new feature. Reuse existing tests/evidence and add
+only missing coverage. A reversible wording fix needs inspection, not a new test suite.
 
 The owner may complete a small fix, bounded edit and its behavior test in the same context. Delegate when an independent slice, specialization or risk-based review justifies coordination; do not delegate every edit automatically.
 Define ownership, inputs, acceptance criteria and evidence when delegating. Preserve concurrent work; inspect artifacts and results before accepting summaries. Reuse valid gates over equivalent inputs.

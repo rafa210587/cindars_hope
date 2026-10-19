@@ -14,6 +14,15 @@
 | **Validation level** | BUILD_VALIDATED + Unity regen + captura sem Gizmos comparada à keyart |
 | **Executor** | Codex (wiring) + arte gerada no ChatGPT (dep. externa marcada) |
 
+required_adrs: [ADR-0011]
+required_game_rules: []
+
+Ordem de execucao: após spec_farm_scene_keyart_visual_corrections_v1; executar as frentes Água, Montanha, Decoração, Homestead e Floresta conforme §20.
+Depende de: spec_farm_scene_keyart_visual_corrections_v1, conforme tabela inicial.
+Bloqueia: spec_farm_scene_keyart_playmode_acceptance_v1, conforme tabela inicial.
+
+# /speckit.specify
+
 ## Objetivo
 Fechar o gap de ESTILO restante entre a FarmScene e a keyart aprovada, adicionando o conteúdo/densidade
 que ainda falta após a wave keyart e as correções v1. Referência de verdade: a keyart. Cada item abaixo
@@ -33,10 +42,14 @@ Select-String -Path Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs -Pa
 Get-ChildItem Assets/_Game/Art/Generated/World/props, Assets/_Game/Art/Generated/World/tiles -Filter *.png | Select Name
 ```
 
+# /speckit.plan
+
 ## §13 — Não duplicar
 Reusar `FarmDecorationPlanner` (só estender biomas/pesos/props), `WorldTilemapGround` (transição já existe),
 o contrato espacial (polígonos do lago/rio/montanha) e `CreateMvpFarmScene`. NÃO criar sistema paralelo de
 decoração/terreno. Skills: `tilemap-world-rendering`, `chatgpt-web-sprite-gen` (arte), `scene-interactable-wiring`.
+
+# /speckit.tasks
 
 ## §20 — Fases (cada uma: arte se preciso → wiring → DoD por captura vs keyart)
 

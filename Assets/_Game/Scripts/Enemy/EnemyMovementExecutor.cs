@@ -15,6 +15,7 @@ namespace CindarsHope.Enemy
         // ─── Referências injetadas ────────────────────────────────────────────
 
         private Rigidbody2D _rb;
+        private Collider2D _movementCollider;
         private Transform _transform;
         private EnemyDataSO _enemyData;
         private EnemyMovementProfileSO _movementProfile;
@@ -135,6 +136,7 @@ namespace CindarsHope.Enemy
             float burrowSpeedMultiplier = 1.7f)
         {
             _rb = rb;
+            _movementCollider = rb != null ? rb.GetComponent<Collider2D>() : null;
             _transform = transform;
             _enemyData = enemyData;
             _movementProfile = movementProfile;
@@ -277,6 +279,11 @@ namespace CindarsHope.Enemy
             // fable_24: dispatch the new moves first; they fully own the chase velocity for their tick.
             if (TryMoveNewBehaviour(effectiveMove))
             {
+                // Orbit/strafe are navigation velocities; committed charges, leaps and dashes
+                // keep their authored straight-line motion and telegraph timing.
+                if (effectiveMove == EnemyMovementType.CircleStrafe ||
+                    effectiveMove == EnemyMovementType.FloatingOrbit)
+                    ApplyLocalAvoidance(_rb.linearVelocity);
                 return;
             }
 
@@ -329,23 +336,26 @@ namespace CindarsHope.Enemy
                     break;
             }
 
-            // fable_83: pathing leve — desvio local de obstáculo via whiskers.
-            // Só roda se a layer de obstáculo foi configurada no prefab (layer 0 = skip).
-            if (ObstacleLayerMask.value != 0)
-            {
-                var avoidance = EnemyLocalAvoidance.SteerWithRaycast(
-                    _transform.position,
-                    _getDirectionToPlayer(),
-                    ObstacleLayerMask,
-                    IsAvoidingObstacle);
-                IsAvoidingObstacle = avoidance.IsAvoiding;
-                _rb.linearVelocity = avoidance.Direction * (speed * (avoidance.IsAvoiding ? EnemyLocalAvoidance.AvoidanceSpeedMultiplier : 1f));
-            }
-            else
+            // fable_83: local obstacle avoidance, shared with navigational orbit movement.
+            // A missing obstacle layer keeps the requested velocity unchanged.
+            ApplyLocalAvoidance(_getDirectionToPlayer() * speed);
+        }
+
+        private void ApplyLocalAvoidance(Vector2 requestedVelocity)
+        {
+            if (ObstacleLayerMask.value == 0 || requestedVelocity.sqrMagnitude < 0.0001f)
             {
                 IsAvoidingObstacle = false;
-                _rb.linearVelocity = _getDirectionToPlayer() * speed;
+                _rb.linearVelocity = requestedVelocity;
+                return;
             }
+
+            var avoidance = EnemyLocalAvoidance.SteerWithRaycast(
+                _transform.position, requestedVelocity.normalized, ObstacleLayerMask,
+                IsAvoidingObstacle, EnemyLocalAvoidance.WhiskerLength, _movementCollider);
+            IsAvoidingObstacle = avoidance.IsAvoiding;
+            _rb.linearVelocity = avoidance.Direction * requestedVelocity.magnitude *
+                (avoidance.IsAvoiding ? EnemyLocalAvoidance.AvoidanceSpeedMultiplier : 1f);
         }
 
         // ─── fable_24: the 12 new moves ──────────────────────────────────────

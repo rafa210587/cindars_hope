@@ -19,6 +19,8 @@ required_game_rules: [cave_rules.md]
 
 ---
 
+Ordem de execucao: após CV01/CV02/CV03 e o planner fable_78, conforme as dependências já listadas.
+
 # /speckit.specify
 
 ## 5. Contexto

@@ -613,8 +613,8 @@ namespace CindarsHope.Editor.Items
             Weapon("item_weapon_sword_steel", "Steel Sword", 300);
             Weapon("item_weapon_axe_iron", "Iron Axe", 130);
             Weapon("item_weapon_axe_steel", "Steel Axe", 320);
-            Weapon("item_tool_pickaxe_iron", "Iron Pickaxe", 90, dormant: false);
-            Weapon("item_tool_pickaxe_steel", "Steel Pickaxe", 220, dormant: false);
+            rows.Add(new CatalogItemRow { Id = "item_tool_pickaxe_iron", DisplayName = "Iron Pickaxe", Category = ItemCategory.Tool, BaseValue = 90, MaxStack = 1, IsEquippable = true, Dormant = false, Source = CatalogItemSource.Shop });
+            rows.Add(new CatalogItemRow { Id = "item_tool_pickaxe_steel", DisplayName = "Steel Pickaxe", Category = ItemCategory.Tool, BaseValue = 220, MaxStack = 1, IsEquippable = true, Dormant = false, Source = CatalogItemSource.Shop });
             Weapon("item_weapon_hammer_iron", "Iron Hammer", 140);
             Weapon("item_weapon_hammer_steel", "Steel Hammer", 340);
             Weapon("item_weapon_spear_iron", "Iron Spear", 125);

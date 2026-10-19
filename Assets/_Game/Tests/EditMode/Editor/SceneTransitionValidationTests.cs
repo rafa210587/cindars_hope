@@ -12,6 +12,13 @@ namespace CindarsHope.Tests.EditMode.Editor
 {
     public class SceneTransitionValidationTests
     {
+        [Test]
+        public void FarmReturnFromCave_UsesSerializedSpawnId()
+        {
+            var sceneYaml = System.IO.File.ReadAllText("Assets/_Game/Scenes/FarmScene.unity");
+            StringAssert.Contains("_spawnId: " + SceneId.SpawnFarmFromCave, sceneYaml);
+        }
+
         private Scene _original;
         private Scene _selected;
         private Scene _other;
@@ -98,6 +105,29 @@ namespace CindarsHope.Tests.EditMode.Editor
             Assert.That(report.Issues.Exists(issue => issue.Code == "EMPTY_TARGET_ANCHOR"), Is.True);
         }
 
+        [Test]
+        public void LegacyPortal_RequiresLiteralTargetId_NotReportingAlias()
+        {
+            var portal = AddObject(_selected, "legacy portal").AddComponent<CindarsHope.SceneManagement.ScenePortal>();
+            SetString(portal, "_targetSceneName", _selected.name);
+            SetString(portal, "_targetSpawnId", "spawn_farm_from_town");
+            var point = AddObject(_selected, "legacy point").AddComponent<SceneSpawnPoint>();
+            SetString(point, "_spawnId", "farm_from_town");
+            var invalid = ValidateSceneTransitions.ValidateLoadedScenes(new[] { _selected });
+            Assert.That(invalid.Issues.Exists(x => x.Code == "UNRESOLVED_TARGET_ANCHOR"), Is.True);
+            SetString(portal, "_targetSpawnId", "farm_from_town");
+            var validReference = ValidateSceneTransitions.ValidateLoadedScenes(new[] { _selected });
+            Assert.That(validReference.Issues.Exists(x => x.Code == "UNRESOLVED_TARGET_ANCHOR"), Is.False);
+        }
+        [Test]
+        public void LegacyLiteralAnchor_SatisfiesExpectedFarmReturnCoverage()
+        {
+            var point = AddObject(_selected, "farm return").AddComponent<SceneSpawnPoint>();
+            SetString(point, "_spawnId", SceneId.SpawnFarmFromCave);
+            var report = ValidateSceneTransitions.ValidateLoadedScenes(new[] { _selected });
+            Assert.That(report.Issues.Exists(issue => issue.Code == "MISSING_ANCHOR"
+                && issue.Message == SceneId.SpawnFarmFromCave), Is.False);
+        }
         private static void AddCanonicalComponents(Scene scene, bool inactive)
         {
             string[] gates = { SceneId.GateFarmTownExit, SceneId.GateFarmCaveEntrance, SceneId.GateTownFarmExit, SceneId.GateCaveFarmExit };

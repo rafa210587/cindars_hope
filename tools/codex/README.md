@@ -1,10 +1,35 @@
 # Codex Harness Generator — Cindar's Hope
 
+Para continuar o trabalho em outra máquina, consulte o [guia de migração ao notebook](../../docs/operations/MIGRACAO_NOTEBOOK_CODEX.md).
+`Export-NotebookTransfer.ps1` gera um pacote offline; `Import-NotebookTransfer.ps1` verifica/restaura;
+`Test-NotebookTransfer.ps1` exercita uma fixture isolada. A exportação real exige Unity/Codex fechados.
+
 Materializa o harness do Codex a partir da fonte canônica `.claude/`. A geração preserva
 preferências locais e compartilha os scripts de guard; paridade de arquivos não comprova
 que o host carregou ou executou os hooks nesta sessão.
 
 ## Como rodar
+
+Para auditar descoberta e referências canônicas sem carregar todo o corpus no contexto:
+
+```powershell
+pwsh -NoProfile -File tools/codex/Test-HarnessDiscovery.ps1
+pwsh -NoProfile -File tools/codex/Test-HarnessDiscoveryContracts.ps1
+```
+
+O primeiro retorna JSON determinístico com contagens por tipo, findings ordenados e truncamento
+explícito (`-MaxFindings`, default 20). `-ProjectRoot` permite fixture/checkout; `-OutputPath`
+opcional grava um JSON novo fora dos inputs/Assets. Exit 0 exige zero findings; entrada inválida,
+referência quebrada ou descoberta inconsistente falham. Não acessa rede nem executa hooks/Unity.
+Confere catálogo, identidade, links Markdown locais e refs tipadas no corpus canônico, incluindo
+recursos condicionais; links externos e conteúdo fenced exemplificativo não são validados.
+Isso é cobertura estrutural, não aprovação semântica de todas as instruções nem teste de uso por IA.
+Os contratos usam fixtures válidas e inválidas; a revisão dos seis cenários fica no recurso
+existente `.claude/skills/harness-audit/references/audit-dimensions.md`.
+
+Correções locais usam `/bugfix`: causa/menor fix/check pertinente/resposta. Spec e revisão ampliada
+entram quando comportamento ou risco exigem; uma alteração pequena de save não é de baixo risco.
+Não criar relatório, commit ou delegação apenas para satisfazer formato de evidência.
 
 Para descobrir alterações sem despejar o working tree inteiro no contexto, use PowerShell 7:
 

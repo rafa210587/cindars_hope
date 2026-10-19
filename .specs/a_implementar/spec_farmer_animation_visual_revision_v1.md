@@ -18,8 +18,16 @@
 > **Validation level alvo:** CODE_COMPLETE + SCOPED_PASS de artefatos/contratos; aprovação artística humana pendente
 > **Executor:** Codex ou Claude; geração pelos recursos imagegen autorizados
 > **Autorização:** humano nesta sessão: “certo execute, faça uma spec antes, com plan e tasks e execute.” Autoriza executar este laboratório; não autoriza integrar sprites ao jogo.
-> **required_adrs:** []
+required_adrs: [ADR-0011]
 > **required_rules:** []
+
+required_game_rules: []
+
+Ordem de execucao: após revisão e laboratório existentes; seguir Fases 0–3 antes da decisão humana sobre integração.
+Depende de: art/farmer-animation-review/ANIMATION_REVIEW.md e laboratório existente, conforme Depends on acima.
+Bloqueia: decisão humana futura de produção/integração da arte, conforme Blocks acima.
+
+# /speckit.specify
 
 ## 5. Contexto
 O laboratório já reproduz os originais e dois estudos gerados. A próxima entrega amplia a avaliação para todas as ações e torna comparável sua leitura no tamanho do personagem. É uma revisão visual, sem exigência de aceitar ou importar os resultados.
@@ -46,6 +54,8 @@ A fase0 de execução reconfirma o mesmo manifesto antes de gerar; resultados v�
 
 ## 13. Regras de não duplicação
 Estender `build_preview.py`, `candidate_data`, `DATA.candidates` e os contratos de crops/pesos existentes. Não criar outro viewer, pipeline raster, manager, interface C#, teste Unity ou registry de gameplay. Manter os estudos v1 acessíveis; não sobrescrever PNGs anteriores nem tratar caixas alpha como posição dos pés quando armas/fundos interferem.
+
+# /speckit.plan
 
 ## 15. Arquitetura alvo — CRIAR vs MODIFICAR
 CRIAR: `candidates-v2.json` como lista de variantes; quatro PNGs/JSONs/prompts frontais; `verify_review.py` para integridade/contratos; `REVIEW_V2.md` e execution report.
@@ -87,6 +97,8 @@ Novas tentativas preservam as rejeitadas; ampliar nomes desta lista na spec ante
 
 ## 19. Arquivos proibidos
 `Assets/**` incluindo PNG/meta, `.unity`, `.prefab`, `.asset`; `Packages/**`; `ProjectSettings/**`; `tools/**`; `.claude/**`; `.codex/**`; `.gitignore`; `docs_old/**`; logs/status globais e documentos não listados. Não instalar libs, criar commits/push, forçar Git add ou manipular raster por Python.
+
+# /speckit.tasks
 
 ## 20. Estratégia de implementação — plano e tasks por edição
 ### Fase0 — contratos e referências

@@ -4511,7 +4511,18 @@ namespace CindarsHope.Editor.SceneCreation
             parent.transform.position = Vector3.zero;
             // Grama base COM VARIACAO sob TODA a cidade (best practice: base + variantes esparsas via
             // Tilemap). Substitui a laje unica lisa + os pads de distrito (que cobriam a variacao).
-            WorldTilemapGround.PaintGrass(parent.transform, "TownWorldGrid", 0, "Ground", Vector2.zero,
+            var baseGrass = WorldSpriteLibrary.Ground("ground_grass");
+            var harmonyGrass = WorldSpriteLibrary.Prop("town_grass_harmony_v1");
+            var otherGrass = WorldSpriteLibrary.Ground("ground_grass_b");
+            var flowers = WorldSpriteLibrary.Ground("ground_grass_flower");
+            var pebbles = WorldSpriteLibrary.Ground("ground_grass_pebble");
+            if (baseGrass == null || harmonyGrass == null || otherGrass == null || flowers == null || pebbles == null)
+                throw new System.InvalidOperationException("Town grass palette is incomplete.");
+            var grass = WorldTilemapGround.GetOrCreateLayer(parent.transform, "TownWorldGrid", "Ground",
+                WorldTilemapGround.SpriteWorldSize(baseGrass), 0, "Ground");
+            WorldTilemapGround.PaintRectWeighted(grass,
+                new[] { baseGrass, harmonyGrass, otherGrass, flowers, pebbles },
+                new[] { 60, 15, 15, 6, 4 }, Vector2.zero,
                 new Vector2(
                     TownDistrictLayout.WidthTiles + TownCityLayout.ExteriorForestGroundPadding,
                     TownDistrictLayout.HeightTiles + TownCityLayout.ExteriorForestGroundPadding));

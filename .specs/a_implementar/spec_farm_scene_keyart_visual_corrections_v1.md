@@ -14,6 +14,13 @@
 | **Validation level** | BUILD_VALIDATED + Unity regen + captura sem Gizmos + Play Mode da ponte |
 | **Executor** | Codex (ou Claude) |
 
+required_adrs: [ADR-0011]
+required_game_rules: []
+
+Ordem de execucao: após os contratos da wave FARM KEYART, executar Fases A–E de §20 antes do aceite PlayMode.
+
+# /speckit.specify
+
 ## Objetivo
 Corrigir 5 defeitos visuais/físicos reportados pelo humano sobre a FarmScene gerada (pós-wave keyart),
 aproximando-a da keyart aprovada (`docs/art_catalog/_reference_keyart_GPT/farm_keyart_layout_aprovado_v1.png`):
@@ -45,6 +52,8 @@ Select-String -Path Assets/_Game/Scripts/Farm/Scene/FarmSceneNavigationPolicy.cs
 Select-String -Path Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs -Pattern "CreateFarmPerimeterTreeline|CreateTree|CreateTrees|treeline"
 ```
 
+# /speckit.plan
+
 ## §13 — Não duplicar (reusar o que existe)
 NÃO criar novo sistema de escala/decoração/colisão. Ajustar os **contratos e o gerador existentes**:
 `FarmSceneCompositionContract` (constantes de escala), `FarmDecorationPlanner` (máscara), `CreateMvpFarmScene`
@@ -59,6 +68,8 @@ Reusar `system-reuse-audit`, `tilemap-world-rendering`, `scene-interactable-wiri
   polígono de água (Lake/River) + buffer, e o footprint de casa/estufa/pátio (já parcial).
 - `FarmSceneNavigationPolicy` — garantir corredor livre no `BridgePassageProbe (15,3)` e água bloqueada
   em `(15,5)` e `(15,1)` (o validator já checa; a geometria precisa bater).
+
+# /speckit.tasks
 
 ## §20 — Estratégia por fase (edição por arquivo/método + DoD)
 

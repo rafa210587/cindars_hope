@@ -50,8 +50,10 @@ namespace CindarsHope.World.Scale
         public const float PathSpurWidth = 0.9f;
         public const float TownPathWidth = 1.45f;
         public const float SouthFrontPathWidth = 1.15f;
-        public const float SouthBuildingMaximumCenterGap = 5.5f;
-        public const float SouthBuildingMaximumClusterSpan = 15.5f;
+        // Ambient v15 K3 approved X = -13.1, -7.2, -1.0, 4.9, widening the former compact row.
+        public const float SouthBuildingMaximumCenterGap = 6.2f;
+        public const float SouthBuildingMaximumClusterSpan = 18f;
+        private const float SouthBuildingPositionTolerance = 0.001f;
 
         private const float BridgeScaleTolerance = 0.01f;
         // Escala por ALTURA-ALVO (CreateTree usa TreeVisualTargetHeight / nativeHeight): com a arte
@@ -143,10 +145,10 @@ namespace CindarsHope.World.Scale
         public static bool IsSouthBuildingClusterCompact(float coopX, float barnX, float processingAX, float processingBX)
         {
             if (!(coopX < barnX && barnX < processingAX && processingAX < processingBX)) return false;
-            return barnX - coopX <= SouthBuildingMaximumCenterGap &&
-                   processingAX - barnX <= SouthBuildingMaximumCenterGap &&
-                   processingBX - processingAX <= SouthBuildingMaximumCenterGap &&
-                   processingBX - coopX <= SouthBuildingMaximumClusterSpan;
+            return barnX - coopX <= SouthBuildingMaximumCenterGap + SouthBuildingPositionTolerance &&
+                   processingAX - barnX <= SouthBuildingMaximumCenterGap + SouthBuildingPositionTolerance &&
+                   processingBX - processingAX <= SouthBuildingMaximumCenterGap + SouthBuildingPositionTolerance &&
+                   processingBX - coopX <= SouthBuildingMaximumClusterSpan + SouthBuildingPositionTolerance;
         }
     }
 }

@@ -43,7 +43,7 @@ namespace CindarsHope.Foundation
         public const string SpawnFarmFromTown = "spawn_farm_from_town";
 
         /// <summary>FarmScene spawn used when returning from Cave.</summary>
-        public const string SpawnFarmFromCave = "spawn_farm_from_cave";
+        public const string SpawnFarmFromCave = "farm_from_cave";
 
         /// <summary>TownScene spawn used when arriving from Farm.</summary>
         public const string SpawnTownFromFarm = "spawn_town_from_farm";

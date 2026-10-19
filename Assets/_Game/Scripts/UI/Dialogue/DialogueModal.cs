@@ -23,6 +23,8 @@ namespace CindarsHope.UI.Dialogue
 
         private IModalRuntime _modalManager;
         private bool _isShowing = false;
+        private ScrollRect _speechScroll;
+        private ScrollRect _choiceScroll;
         private List<Button> _choiceButtons = new();
         private int _selectedChoiceIndex = -1;
         private DialogueChoice _selectedChoice = null;
@@ -50,6 +52,16 @@ namespace CindarsHope.UI.Dialogue
             if (!_isShowing)
                 return;
 
+            if (global::UnityEngine.Input.GetKeyDown(KeyCode.Escape)) { Hide(); return; }
+            if (_speechScroll != null && global::UnityEngine.Input.GetKeyDown(KeyCode.PageDown))
+                _speechScroll.verticalNormalizedPosition = Mathf.Clamp01(_speechScroll.verticalNormalizedPosition - 0.25f);
+            if (_speechScroll != null && global::UnityEngine.Input.GetKeyDown(KeyCode.PageUp))
+                _speechScroll.verticalNormalizedPosition = Mathf.Clamp01(_speechScroll.verticalNormalizedPosition + 0.25f);
+
+            var confirm = global::UnityEngine.Input.GetKeyDown(KeyCode.Return)
+                || global::UnityEngine.Input.GetKeyDown(KeyCode.Space)
+                || global::UnityEngine.Input.GetKeyDown(KeyCode.E);
+
             if (_choiceButtons.Count > 0 && (global::UnityEngine.Input.GetKeyDown(KeyCode.W) || global::UnityEngine.Input.GetKeyDown(KeyCode.UpArrow)))
             {
                 SelectPreviousChoice();
@@ -58,12 +70,12 @@ namespace CindarsHope.UI.Dialogue
             {
                 SelectNextChoice();
             }
-            else if (_choiceButtons.Count > 0 && (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E)))
+            else if (_choiceButtons.Count > 0 && confirm)
             {
                 ConfirmChoice();
             }
             else if (_choiceButtons.Count == 0
-                && (global::UnityEngine.Input.GetKeyDown(KeyCode.Return) || global::UnityEngine.Input.GetKeyDown(KeyCode.Space) || global::UnityEngine.Input.GetKeyDown(KeyCode.E) || global::UnityEngine.Input.GetKeyDown(KeyCode.Escape)))
+                && confirm)
             {
                 Hide();
             }
@@ -91,9 +103,23 @@ namespace CindarsHope.UI.Dialogue
 
             if (_dialogueText != null)
             {
+                if (_speechScroll == null) _speechScroll = WrapScroll(_dialogueText.rectTransform, "SpeechScroll");
+                _dialogueText.horizontalOverflow = HorizontalWrapMode.Wrap;
+                _dialogueText.verticalOverflow = VerticalWrapMode.Overflow;
                 _dialogueText.text = dialogueText;
+                _dialogueText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                    Mathf.Max(_speechScroll.viewport.rect.height, _dialogueText.preferredHeight));
+                _speechScroll.verticalNormalizedPosition = 1f;
             }
 
+            if (_choiceScroll == null && _choicesContainer is RectTransform content)
+            {
+                _choiceScroll = WrapScroll(content, "ChoiceScroll");
+                var layout = content.GetComponent<VerticalLayoutGroup>();
+                if (layout != null) { layout.childControlHeight = true; layout.childForceExpandHeight = false; }
+                var fitter = content.GetComponent<ContentSizeFitter>() ?? content.gameObject.AddComponent<ContentSizeFitter>();
+                fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            }
             ClearChoices();
             if (choices != null && choices.Count > 0)
             {
@@ -145,7 +171,11 @@ namespace CindarsHope.UI.Dialogue
                 var button = buttonObj.GetComponent<Button>();
                 if (button != null)
                 {
-                    button.GetComponentInChildren<Text>().text = choice.Label;
+                    var label = button.GetComponentInChildren<Text>();
+                    label.text = choice.Label;
+                    label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    var layout = button.GetComponent<LayoutElement>() ?? button.gameObject.AddComponent<LayoutElement>();
+                    layout.minHeight = Mathf.Max(44f, label.preferredHeight + 16f);
                     _choiceButtons.Add(button);
 
                     var localChoice = choice;
@@ -158,6 +188,33 @@ namespace CindarsHope.UI.Dialogue
                 _selectedChoiceIndex = 0;
                 UpdateChoiceHighlight();
             }
+        }
+
+        private static ScrollRect WrapScroll(RectTransform content, string name)
+        {
+            var obj = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(RectMask2D), typeof(ScrollRect));
+            var viewport = (RectTransform)obj.transform;
+            viewport.SetParent(content.parent, false);
+            viewport.anchorMin = content.anchorMin;
+            viewport.anchorMax = content.anchorMax;
+            viewport.pivot = content.pivot;
+            viewport.anchoredPosition = content.anchoredPosition;
+            viewport.sizeDelta = content.sizeDelta;
+            obj.GetComponent<Image>().color = Color.clear;
+            content.SetParent(viewport, false);
+            content.anchorMin = new Vector2(0, 1);
+            content.anchorMax = new Vector2(1, 1);
+            content.pivot = new Vector2(0.5f, 1);
+            content.anchoredPosition = Vector2.zero;
+            content.sizeDelta = new Vector2(0, viewport.rect.height);
+            var scroll = obj.GetComponent<ScrollRect>();
+            scroll.viewport = viewport;
+            scroll.content = content;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 24;
+            return scroll;
         }
 
         private void ClearChoices()
@@ -204,6 +261,8 @@ namespace CindarsHope.UI.Dialogue
 
         private void UpdateChoiceHighlight()
         {
+            if (_choiceScroll != null && _choiceButtons.Count > 1)
+                _choiceScroll.verticalNormalizedPosition = 1f - (float)_selectedChoiceIndex / (_choiceButtons.Count - 1);
             for (int i = 0; i < _choiceButtons.Count; i++)
             {
                 var colors = _choiceButtons[i].colors;

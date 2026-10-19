@@ -2162,6 +2162,8 @@ namespace CindarsHope.Editor.SceneCreation
             CreateContractSolidBase(greenhouseRoot.transform, "SolidNorthBase", new FarmSolidRect("GreenhouseNorth",
                 new Vector2(interior.center.x, interior.yMax + thickness * 0.5f), new Vector2(interior.width + thickness, thickness)));
 
+            GreenhouseRevealWiring.Configure(greenhouseRoot.transform, floorSr);
+
             const int greenhouseBaseIndex = 200;
             var plotIds = new string[4];
             const float spacing = 1.2f;

@@ -1,3 +1,4 @@
+using System.Collections;
 using CindarsHope.Core;
 using CindarsHope.Core.Bootstrap;
 using CindarsHope.Core.Events;
@@ -30,7 +31,8 @@ namespace CindarsHope.Player.Death
 
         // Cena que contem a Fonte da Anya (a Fonte vive na FarmScene; ver CreateMvpFarmScene).
         private const string FountainSceneName = SceneNames.Farm;
-        private const string FountainSpawnAnchorId = SceneId.SpawnFarmDefault;
+        // Must match SceneSpawnPoint._spawnId in the serialized FarmScene.
+        private const string FountainSpawnAnchorId = SceneId.SpawnFarmFromCave;
         private const string RespawnGateId = "gate_death_respawn_anya_fountain";
 
         // True enquanto esperamos a cena da Fonte carregar para completar um respawn cross-cena.
@@ -70,6 +72,8 @@ namespace CindarsHope.Player.Death
         private void OnDisable()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            StopAllCoroutines();
+            _awaitingFountainScene = false;
         }
 
         /// <summary>
@@ -78,6 +82,7 @@ namespace CindarsHope.Player.Death
         /// </summary>
         public void Respawn()
         {
+            if (_awaitingFountainScene) return;
             var fountain = FindActiveFountainRespawnPoint();
             if (fountain != null && fountain.RespawnPoint != null)
             {
@@ -107,18 +112,25 @@ namespace CindarsHope.Player.Death
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (!_awaitingFountainScene)
+            if (!_awaitingFountainScene || scene.name != FountainSceneName)
             {
                 return;
             }
 
+            StartCoroutine(CompleteAfterSceneSpawn(scene));
+        }
+
+        private IEnumerator CompleteAfterSceneSpawn(Scene scene)
+        {
+            // SceneSpawnInstaller/PlayerSpawnResolver apply their placement in Start.
+            yield return null;
             _awaitingFountainScene = false;
 
             var fountain = FindActiveFountainRespawnPoint();
             if (fountain != null && fountain.RespawnPoint != null)
             {
                 CompleteRespawnAtFountain(fountain);
-                return;
+                yield break;
             }
 
             Debug.LogWarning(
@@ -155,7 +167,8 @@ namespace CindarsHope.Player.Death
             for (var i = 0; i < instances.Count; i++)
             {
                 var fountain = instances[i];
-                if (fountain != null && fountain.RespawnPoint != null)
+                if (fountain != null && fountain.RespawnPoint != null
+                    && fountain.RespawnPoint.gameObject.scene == SceneManager.GetActiveScene())
                 {
                     return fountain;
                 }

@@ -30,6 +30,8 @@ namespace CindarsHope.UI.Shop
         private ItemDatabaseSO _itemDatabase;
         private CindarsHope.Foundation.IModalRuntime _modalManager;
         private string _shopId;
+        private ItemDataSO _selectedItem;
+        private int _selectedPrice;
         private readonly List<BuyPanelItem> _displayedItems = new List<BuyPanelItem>();
 
         public event Action OnBackPressed;
@@ -60,6 +62,7 @@ namespace CindarsHope.UI.Shop
             _itemDatabase = itemDatabase;
             _modalManager = modalManager;
             _detailsText = ShopPanelLayoutUtility.EnsureResponsiveLayout(transform as RectTransform, _itemsContainer, _detailsText);
+            ShopPanelLayoutUtility.ConfigureFeedback(_feedbackText);
             HideVisualOnly();
         }
 
@@ -175,6 +178,8 @@ namespace CindarsHope.UI.Shop
 
             UpdateGoldDisplay();
             RefreshItemStock();
+            if (_selectedItem != null && _shopManager.TryGetSession(_shopId, out var session))
+                ShowItemDetails(_selectedItem, _selectedPrice, session.GetItemStock(_selectedItem.Id));
         }
 
         private void SetFeedback(string message)
@@ -187,6 +192,8 @@ namespace CindarsHope.UI.Shop
 
         private void ShowItemDetails(ItemDataSO itemData, int unitPrice, int stock)
         {
+            _selectedItem = itemData;
+            _selectedPrice = unitPrice;
             SetDetails($"{ItemDisplayNameFormatter.GetTooltip(itemData)}\nCompra: {unitPrice}g | Estoque: {stock}");
         }
 

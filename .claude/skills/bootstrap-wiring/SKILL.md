@@ -1,90 +1,49 @@
 ---
 name: bootstrap-wiring
-description: Faz o wiring de novos runtime services, managers e databases na nova arquitetura de composição (GameRuntimeCompositionRoot + DomainRuntimeInstallers) e o idiom self-healing de SerializeField + fallback Resources.Load para sistemas instanciados por cena (ex.: cadeia visual da cave). Use ao adicionar um serviço/manager/database SO que outros sistemas acessem, ao migrar um *RuntimeBootstrap para installer, ou ao wirar um asset de dados numa cena.
+description: Wire runtime services and scene data through existing composition/domain installers and Editor generators. Use for new service wiring, legacy bootstrap migration or missing serialized dependencies.
 ---
 
-# Skill: Wiring de Bootstrap / Composição
+# Skill: Bootstrap and composition wiring
 
-> **Mudança estrutural (2026-07): o wiring migrou de `GameBootstrap` para uma raiz de composição.**
-> Serviços runtime instalam por `GameRuntimeCompositionRoot` → installers em `DomainRuntimeInstallers.cs`.
-> `GameBootstrap` ainda existe (legado, em migração) — não adicione serviço novo lá; use o padrão abaixo.
+**Reuse the current composition owner; new wiring must not add global lookup or auto-bootstrap.**
+Inspect `Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs`, the relevant installer
+in `DomainRuntimeInstallers.cs` and affected consumers only when service composition changes.
+For a local serialized-reference repair, inspect its scene generator and consumer first.
 
-## Quando usar
+## Choose the existing boundary
 
-- Adicionar um **runtime service/manager** que outros sistemas acessam (antes ia no GameBootstrap).
-- **Migrar** um `*RuntimeBootstrap` auto-instalado (`RuntimeInitializeOnLoadMethod`/`EnsureInstance`) para o padrão de installer.
-- Wirar um **database/asset SO** consumido por um sistema instanciado por cena (materializer, controller de cena).
-- Scene creators (`CreateMvp*Scene.cs`) que precisam apontar um asset num `[SerializeField]`.
+| Target | Route |
+|---|---|
+| Persistent runtime service | Existing domain installer/composition root; preserve install order and disposal. |
+| Scene component/data asset | Explicit serialized reference or injected dependency through the responsible Editor generator/scene installer. |
+| Legacy auto-bootstrap | Scoped migration or repair via `runtime-bootstrap-pattern`; no new auto-installer. |
+| Save provider | Existing typed provider registry via `save-section-provider`. |
+| HUD/interactable | Existing `hud-canvas-binding` or `scene-interactable-wiring` contract. |
 
-## Quando NÃO usar
+## Implement within the contract
 
-- UI/HUD de gameplay → `hud-canvas-binding` / `ui-projection-pattern`.
-- Objeto interativo de cena (crop, chest, resource) → `scene-interactable-wiring`.
-- Save section nova → `save-section-provider`.
+1. Identify state owner, lifetime, required/optional dependencies and who registers/unregisters.
+   Read actual APIs; do not add a parallel manager or assume an Install signature from an old example.
+2. Add the smallest binding to the current installer or generator. Installation/rebinding is
+   idempotent where the contract requires it; configure before activation exposes callbacks.
+3. New services do not use `RuntimeInitializeOnLoadMethod`, static service locators or the
+   legacy GameBootstrap as an alternate composition root. Existing adapters may still reference
+   GameBootstrap under their current contract; do not migrate unrelated consumers incidentally.
+4. Missing required dependencies produce clear wiring diagnostics. Do not add `Resources.Load`
+   to hide a generator omission or increase ratchet debt. Existing Resources compatibility
+   fallbacks remain only where the approved contract requires them; do not delete them blindly.
+5. Materialize assets/scenes with the existing Unity Editor pipeline, never manual YAML.
+   Include the relevant generator when introducing a serialized dependency. Keep menu operations
+   in the existing orchestration commands, with no incidental package/settings change.
+6. Preserve persistent-service identity across scene transitions; scene-local views/subscribers
+   must detach and bind to that owner. Publish gameplay facts after owner initialization/commit.
 
-## Leitura mínima
+## Validation and limits
 
-1. `CLAUDE.md` (regra 5 — fronteiras modulares) + spec alvo
-2. `Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs` (ordem de instalação)
-3. `Assets/_Game/Scripts/Composition/DomainRuntimeInstallers.cs` (installers por domínio)
+Use the canonical matrix: selected binding checks plus actual lifecycle/transition smoke when
+that behavior changes. Test repeated installation, missing dependencies and unload/rebind as
+applicable; include save provider identity when affected. Reuse equivalent Test Runner compile
+evidence instead of requiring a separate build. A runtime null check does not prove wiring.
 
-## Arquitetura atual (2 padrões, escolha por tipo de sistema)
-
-### A) Runtime service (singleton cross-scene) → installer na raiz de composição
-
-`GameRuntimeCompositionRoot` (roda `BeforeSceneLoad`, `DontDestroyOnLoad`) instala:
-- em `InstallRuntimeServices()` — serviços **independentes de cena** (combat state, input router, skills, crafting, cave conflito);
-- em `Start()` — serviços **dependentes de cena / AfterSceneLoad** (npc, world, farm, item, player, `CaveSceneRuntimeInstaller`, narrative, quest, audio, presentation).
-
-Passos para adicionar um serviço novo:
-
-1. No sistema, exponha um `public static void Install(Transform owner)` (idempotente) — substitui o antigo `EnsureInstance()`/`RuntimeInitializeOnLoadMethod`. Ele cria o host (`new GameObject` + `SetParent(owner)`) **ou** anexa componente em objeto existente; owner ignorado quando anexa em algo já presente.
-2. Em `DomainRuntimeInstallers.cs`, chame `SeuSistema.Install(owner)` dentro do installer de domínio apropriado (`CaveSceneRuntimeInstaller`, `WorldRuntimeInstaller`, etc.) — installers são `internal static class` finos, uma linha por sistema.
-3. Se for um domínio novo sem installer, crie um `internal static class SeuDomainRuntimeInstaller` e chame-o no `Start()` ou `InstallRuntimeServices()` do `GameRuntimeCompositionRoot`, na posição correta de ordem.
-4. **Não** reintroduza `RuntimeInitializeOnLoadMethod` de auto-bootstrap (CLAUDE.md rule 5: "não criar novo auto-bootstrap").
-
-### B) Sistema instanciado por CENA (materializer/controller) → SerializeField + fallback Resources ("self-healing")
-
-Sistemas como a cadeia visual da cave (`CaveRuntimeMaterializer`) são **scene-component**, não serviços. Recebem databases/profiles por `[SerializeField]`. Como o campo pode ficar null numa cena recriada (o scene creator nem sempre wira), o idiom canônico é **resolver com fallback Resources**, deixando o SerializeField como override e o Resources como rede de segurança:
-
-```csharp
-[SerializeField] private FooDatabaseSO _fooDatabase;
-
-private FooDatabaseSO ResolveFooDatabase()
-{
-    if (_fooDatabase != null) return _fooDatabase;
-    var resolved = Resources.Load<FooDatabaseSO>("FooDatabase"); // Assets/_Game/Resources/FooDatabase.asset
-    // log one-shot [Cave][Wiring]: de onde veio (serialized/resources) ou WARNING se null ("rode Inicializar Projeto")
-    return resolved;
-}
-```
-
-Precedentes reais: `CaveRuntimeMaterializer.ResolveEnvironmentElementDatabase()`, `ResolveBiomeArtProfiles()` (registry via Resources), `EnsureCombatDatabasesBound()`. Para o fallback funcionar, **o gerador de editor materializa o asset em `Assets/_Game/Resources/`** (idempotente, como `GenerateCaveEnvironmentElementProfiles` faz o database e `GenerateCaveBiomeArtProfiles` faz o registry) — registrado como `RunStep` em `Inicializar Projeto` (ver rule `editor-generation-orchestration`).
-
-> Regra prática: se o sistema é um serviço cross-scene → padrão A (installer). Se é componente de cena que lê um asset SO → padrão B (SerializeField + ResolveX via Resources + gerador materializa em Resources). Wirar o mesmo asset no scene creator é opcional/redundante quando o fallback Resources já cobre.
-
-## Regras invariantes
-
-- Sem `GameObject.Find()`/`FindObjectOfType()` — nunca (hook `runtime-code-guard` sinaliza).
-- Consumer com null-check + `LogWarning` claro (scene/component/field/id/como corrigir) — ver skill `observability-and-logging`.
-- Asset de dados só materializado via editor API (`AssetDatabase`), nunca YAML na mão.
-- Novo gerador/materializador de asset não expõe `[MenuItem]` avulso — entra como `RunStep` nos 3 comandos canônicos (rule `editor-generation-orchestration`).
-
-## Validação
-
-Selecionar gates na SPEC_VALIDATION_MATRIX_MASTER. Para feedback .NET aplicável, usar
-`tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1`; projetos vêm dos asmdefs/solução.
-Drift de csproj pede investigação/regeneração, não reexecução automática. Manter smoke
-de composição/lifecycle pertinente; reusar evidência verificada sobre os mesmos inputs.
-
-## Regressões comuns
-
-- Adicionar auto-bootstrap novo (`RuntimeInitializeOnLoadMethod`) em vez de installer.
-- SerializeField de asset sem `ResolveX()` de fallback → null na cena recriada → sistema silenciosamente inerte (foi exatamente o bug de `_environmentElementDatabase`/`_ecosystemBalance` da cave).
-- Criar o fallback Resources mas esquecer o gerador materializar o asset em `Assets/_Game/Resources/`.
-- Wirar no scene creator errado; editar `.unity` na mão.
-
-## Quando parar e reportar
-
-- A spec proíbe tocar `GameRuntimeCompositionRoot`/`DomainRuntimeInstallers` mas o serviço precisa de instalação → pare, reporte.
-- Scene YAML precisaria de edição manual → materialize o asset em Resources + use o fallback, ou peça regeneração da cena via `Inicializar Projeto`.
+If the needed owner/asset is outside approved scope, report the concrete dependency and continue
+independent work. Do not evade ownership or Editor requirements with a fallback loading path.

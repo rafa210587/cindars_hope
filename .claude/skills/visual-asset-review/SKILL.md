@@ -5,7 +5,8 @@ description: Audits sprite, tile and prop images for fidelity, actual alpha and 
 
 # Skill: Visual Asset Review
 
-The project's visual evidence requires examining the delivered file and the target's reference.
+Inspect the delivered file. Fidelity acceptance also requires the approved reference;
+a technical alpha/crop investigation can answer that bounded question without style approval.
 
 **Core rule: descriptions, alt-text and executor summaries do not replace the actual image.**
 
@@ -15,14 +16,15 @@ The project's visual evidence requires examining the delivered file and the targ
 
 ## Essential checklist
 - [ ] Exact file opened; source and revision identified.
-- [ ] Side-by-side comparison with the approved reference.
+- [ ] For fidelity/identity acceptance: side-by-side comparison with the approved reference.
 - [ ] Alpha measured when transparency is required.
 - [ ] Inspection at native pixels and intended scale.
 - [ ] Findings distinguish observation, inference and missing evidence.
 
 ## Procedure
-1. Identify image, version and reference. Use the image reader actually available in the session.
-2. Compare silhouette, colors, accessories, perspective and pixel clusters.
+1. Identify the exact image/version and requested criterion. Use the image reader actually available.
+2. For fidelity, compare silhouette, colors, accessories, perspective and pixel clusters with
+   the approved reference. For alpha-only investigation, inspect pixels/alpha without claiming fidelity.
 3. For transparency, downloads, crops or tiles, read [technical inspection](references/image-inspection.md).
 4. Record localized defects, impact and suggested correction; do not approve details you could not inspect.
 

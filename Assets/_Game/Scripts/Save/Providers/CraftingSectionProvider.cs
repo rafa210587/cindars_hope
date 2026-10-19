@@ -35,11 +35,8 @@ namespace CindarsHope.Save.Providers
                 return;
             }
 
-            var data = sectionData as CraftingRuntimeSaveData;
-            if (data != null)
-            {
-                _craftingRuntime.LoadFromSaveData(data, schemaVersion >= 6);
-            }
+            var data = sectionData as CraftingRuntimeSaveData ?? new CraftingRuntimeSaveData();
+            _craftingRuntime.LoadFromSaveData(data, schemaVersion >= 6);
         }
     }
 }

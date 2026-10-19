@@ -10,6 +10,12 @@
 > **Validation:** Unity compile + EditMode Skills/Combat + PlayMode em Cave  
 > **Executor:** Codex/Claude via execute-spec-strict
 
+required_adrs: [ADR-0010]
+required_game_rules: [skill_tree_rules.md, combat_rules.md, inventory_equipment_rules.md]
+Ordem de execucao: após spec_skills_10b_action_timing_commit_v1.
+Depende de: spec_skills_10b_action_timing_commit_v1
+Bloqueia: spec_skills_12_melee_movement_posture_v1 e UI de skills
+
 # /speckit.specify
 
 ## Spec

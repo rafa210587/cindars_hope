@@ -10,6 +10,9 @@
 > Bloqueia:fechamento visual da Farm. Ordem de execucao:contatos → materiais → integração.
 > Executor:root orquestra; candidatos independentes; integração Unity serial com freeze de Assets.
 
+required_adrs: [ADR-0011]
+required_game_rules: [farm_rules.md]
+
 ## Spec
 
 Objetivo: remover contatos visualmente falsos e pesca no centro do cais, harmonizando a leitura

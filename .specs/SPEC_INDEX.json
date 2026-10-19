@@ -374,6 +374,127 @@
     "path": ".specs/a_implementar/spec_inventory_operations_and_action_readiness_v1.md"
   },
   {
+    "id": "spec_playtest_cave_render_artifacts_v1",
+    "bucket": "Fila",
+    "status": "PARTIAL; revisão 2, gates visuais headless PASS, aceite humano e replay pendentes.",
+    "wave": "",
+    "priority": "P1",
+    "type": "Runtime/visual",
+    "domain": "Cave",
+    "title": "SPEC — Cave: artefatos de luz e faixas visuais",
+    "path": ".specs/a_implementar/spec_playtest_cave_render_artifacts_v1.md"
+  },
+  {
+    "id": "spec_playtest_cave_wall_enemy_physics_v1 · Revisão: 1 · Status: implementação e gate focal PASS; aceite de circulação/revisit pendente",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "Runtime/physics · Domain: Cave/Enemy navigation · Priority: P1 · Parallelizable: no · Repo lock: CaveTileMaterializer.cs.",
+    "domain": "",
+    "title": "SPEC — Cave: paredes no layer de obstáculos dos monstros",
+    "path": ".specs/a_implementar/spec_playtest_cave_wall_enemy_physics_v1.md"
+  },
+  {
+    "id": "spec_playtest_crafting_save_roundtrip_v1",
+    "bucket": "Fila",
+    "status": "UNITY_VALIDATED em 2026-09-27 (EditMode 166/166 e 29/29); save/load jogado pendente. Sem promoção.",
+    "wave": "correções do playtest 2026-09-27; Type: Runtime/Save; Domain: Craft/Save; Priority: P1",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Correção do roundtrip de crafting após playtest",
+    "path": ".specs/a_implementar/spec_playtest_crafting_save_roundtrip_v1.md"
+  },
+  {
+    "id": "spec_playtest_death_recovery_v1",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC — correção de derrota, lágrima e retorno à Fonte",
+    "path": ".specs/a_implementar/spec_playtest_death_recovery_v1.md"
+  },
+  {
+    "id": "spec_playtest_farm_town_prop_physics_v1",
+    "bucket": "Fila",
+    "status": "PARTIAL; EditMode 23/23 e PlayMode focal 3/3 PASS, rotas gerais/cais Town/captura visual pendentes.",
+    "wave": "",
+    "priority": "P1",
+    "type": "Scene Physics/Editor",
+    "domain": "Farm/Town",
+    "title": "SPEC — bases físicas de props na Farm e Town",
+    "path": ".specs/a_implementar/spec_playtest_farm_town_prop_physics_v1.md"
+  },
+  {
+    "id": "spec_playtest_fishing_lifecycle_v1",
+    "bucket": "Fila",
+    "status": "UNITY_VALIDATED em 2026-09-27 (EditMode integrado 166/166 e regressão final 35/35); pesca jogada pendente. Sem promoção.",
+    "wave": "",
+    "priority": "",
+    "type": "Runtime maintenance; Domain: World/Fishing; Priority: P2; Decisão: D20.",
+    "domain": "",
+    "title": "SPEC — pesca: janela, lifecycle e feedback do playtest",
+    "path": ".specs/a_implementar/spec_playtest_fishing_lifecycle_v1.md"
+  },
+  {
+    "id": "spec_playtest_integrated_coverage_v1",
+    "bucket": "Fila",
+    "status": "PARTIAL em 2026-09-27; AC01 PASS, PlayMode headless composição 2/2 PASS, AC02/03 NOT RUN, docs PASS, architecture global FAIL. Sem promoção.",
+    "wave": "",
+    "priority": "",
+    "type": "Validation; Domain: Farm/Town/Cave/UI; Priority: P2; Executor: root.",
+    "domain": "",
+    "title": "Cobertura integrada das correções de playtest",
+    "path": ".specs/a_implementar/spec_playtest_integrated_coverage_v1.md"
+  },
+  {
+    "id": "spec_playtest_npc_enemy_navigation_v1",
+    "bucket": "Fila",
+    "status": "PARTIAL — NPC PlayMode 11/11, Enemy EditMode 23/23 e parede real da Cave 1/1 PASS; movimento em Cave real/aceite humano pendentes.",
+    "wave": "",
+    "priority": "P1/P2",
+    "type": "Runtime/Validation",
+    "domain": "NPC/Enemy",
+    "title": "SPEC — navegação física de NPCs e monstros",
+    "path": ".specs/a_implementar/spec_playtest_npc_enemy_navigation_v1.md"
+  },
+  {
+    "id": "spec_playtest_ui_access_feedback_v1",
+    "bucket": "Fila",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "spec_playtest_ui_access_feedback_v1",
+    "path": ".specs/a_implementar/spec_playtest_ui_access_feedback_v1.md"
+  },
+  {
+    "id": "spec_playtest_wiring_validation_v1",
+    "bucket": "Fila",
+    "status": "UNITY_VALIDATED em 2026-09-27 (EditMode 166/166, reparo Editor 2→0); equipamento/portais jogados pendentes. Sem promoção.",
+    "wave": "",
+    "priority": "",
+    "type": "Editor/Data maintenance; Domain: Validation/Items; Priority: P2; Decisão: D22.",
+    "domain": "",
+    "title": "SPEC — catálogo e validadores de wiring após playtest",
+    "path": ".specs/a_implementar/spec_playtest_wiring_validation_v1.md"
+  },
+  {
+    "id": "spec_playtest_world_readability_v1",
+    "bucket": "Fila",
+    "status": "PARTIAL em 2026-09-27; reveal testado, Cave/circulação/escala/combate visual pendentes. Sem promoção.",
+    "wave": "",
+    "priority": "",
+    "type": "Wiring/Validation; Domain: World/Farm/Cave; Priority: P1/P2; Decisões: D15–D19, D22.",
+    "domain": "",
+    "title": "SPEC — mundo: reveal da estufa e investigação visual do playtest",
+    "path": ".specs/a_implementar/spec_playtest_world_readability_v1.md"
+  },
+  {
     "id": "spec_progressive_harness_visual_workflows_v1",
     "bucket": "Fila",
     "status": "CODE_COMPLETE; harness validado, docs global FAIL; sem promoção.",
@@ -682,17 +803,6 @@
     "path": ".specs/a_implementar/spec_solid_inventory_save_refactor_v1.md"
   },
   {
-    "id": "spec_town_building_visuals",
-    "bucket": "Fila",
-    "status": "",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC — Town Building Visuals (kits 3-partes por arquétipo)",
-    "path": ".specs/a_implementar/spec_town_building_visuals.md"
-  },
-  {
     "id": "spec_town_components_doors_and_collision_v1",
     "bucket": "Fila",
     "status": "",
@@ -768,17 +878,6 @@
     "domain": "",
     "title": "SPEC — Town Keyart Fidelity v1",
     "path": ".specs/a_implementar/spec_town_keyart_fidelity_v1.md"
-  },
-  {
-    "id": "spec_town_layout_v9_organic",
-    "bucket": "Fila",
-    "status": "",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC — Town Layout v9 (orgânico, guiado pela imagem de referência)",
-    "path": ".specs/a_implementar/spec_town_layout_v9_organic.md"
   },
   {
     "id": "spec_town_native_architecture_v1",
@@ -4004,6 +4103,17 @@
     "path": ".specs/implementados/spec_fase9k_skill_trees_nodes_active_slots_respec.md"
   },
   {
+    "id": "spec_harness_proportional_routing_and_discovery_v1",
+    "bucket": "Implementado",
+    "status": "ACCEPTED — implementada e validada no escopo em 2026-09-27; autorização humana nesta sessão.",
+    "wave": "manutenção do harness existente; não cria macro-wave.",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Harness — jornadas proporcionais e descoberta verificável",
+    "path": ".specs/implementados/spec_harness_proportional_routing_and_discovery_v1.md"
+  },
+  {
     "id": "spec_hunger_001_fome_comida_e_hp_por_fome",
     "bucket": "Implementado",
     "status": "Implementado parcial",
@@ -4519,6 +4629,127 @@
     "domain": "",
     "title": "Enrichment Summary — Specifications Enhanced via SpecKit + Refinements",
     "path": ".specs/automaticas/ENRICHMENT_SUMMARY_OVERNIGHT_WAVES_20260523.md"
+  },
+  {
+    "id": "LEGACY_SPECS_CROSSWALK",
+    "bucket": "Absorvida",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "Legacy Specs Crosswalk — Pre-Wave Reconciliation",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md"
+  },
+  {
+    "id": "spec_14a_cave_enemy_spawnplan_materialization_run_stability",
+    "bucket": "Absorvida",
+    "status": "A implementar",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC 14A - Cave Enemy SpawnPlan, Materialization and Run Stability",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md"
+  },
+  {
+    "id": "spec_14a_fix2_spawn_density_combat_feedback_damage_numbers",
+    "bucket": "Absorvida",
+    "status": "A implementar",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC 14A-FIX2 - Spawn Density, Combat Logs and Floating Damage Numbers",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md"
+  },
+  {
+    "id": "spec_14b_cave_snapshot_replay_enemy_plan",
+    "bucket": "Absorvida",
+    "status": "A implementar",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC 14B - Cave Snapshot Replay with EnemySpawnPlan",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_14b_cave_snapshot_replay_enemy_plan.md"
+  },
+  {
+    "id": "spec_cave_runtime_generation_checkpoints_boss_gates",
+    "bucket": "Absorvida",
+    "status": "Implementado parcial - escopo residual ativo",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC - Cave runtime generation, checkpoints e boss gates",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_cave_runtime_generation_checkpoints_boss_gates.md"
+  },
+  {
+    "id": "spec_city_real_walkin_houses_no_teleport",
+    "bucket": "Absorvida",
+    "status": "ABSORVIDA / NÃO EXECUTAR",
+    "wave": "WAVE CITY — Coerência da TownScene (pós fable_40)",
+    "priority": "P1",
+    "type": "Runtime + Tooling (editor scene generator)",
+    "domain": "City",
+    "title": "SPEC — Cidade Real: Casas Percorríveis, Portas Funcionais, Marcos Cívicos e Sem Teleporte",
+    "path": ".specs/absorvidas/city_relayout_reconciliation/spec_city_real_walkin_houses_no_teleport.md"
+  },
+  {
+    "id": "spec_combat_movement_projectiles_melee_visuals_runtime",
+    "bucket": "Absorvida",
+    "status": "A implementar",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC 18 - Combat Movement, Projectiles, Spells and Melee Visuals Runtime",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_combat_movement_projectiles_melee_visuals_runtime.md"
+  },
+  {
+    "id": "spec_enemy_ai_roster_bestiary_faction_locks_runtime",
+    "bucket": "Absorvida",
+    "status": "Implementado parcial - escopo residual ativo",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC 13 - Enemy AI, roster, bestiary e faction locks runtime",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md"
+  },
+  {
+    "id": "spec_town_building_visuals",
+    "bucket": "Absorvida",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC — Town Building Visuals (kits 3-partes por arquétipo)",
+    "path": ".specs/absorvidas/city_relayout_reconciliation/spec_town_building_visuals.md"
+  },
+  {
+    "id": "spec_town_layout_v9_organic",
+    "bucket": "Absorvida",
+    "status": "",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC — Town Layout v9 (orgânico, guiado pela imagem de referência)",
+    "path": ".specs/absorvidas/city_relayout_reconciliation/spec_town_layout_v9_organic.md"
+  },
+  {
+    "id": "spec_ui_ux_full_gameplay_inventory_hotbar_menus",
+    "bucket": "Absorvida",
+    "status": "Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente",
+    "wave": "",
+    "priority": "",
+    "type": "",
+    "domain": "",
+    "title": "SPEC - UI/UX full gameplay, inventory, hotbar e menus",
+    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md"
   },
   {
     "id": "03_spec_quest_anti_softlock_validation_future",
@@ -5104,50 +5335,6 @@
     "path": ".specs/features_futuras/24_spec_festival_minigames_event_framework_future_runtime.md"
   },
   {
-    "id": "LEGACY_SPECS_CROSSWALK",
-    "bucket": "Outro",
-    "status": "",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "Legacy Specs Crosswalk — Pre-Wave Reconciliation",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md"
-  },
-  {
-    "id": "spec_14a_cave_enemy_spawnplan_materialization_run_stability",
-    "bucket": "Outro",
-    "status": "A implementar",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC 14A - Cave Enemy SpawnPlan, Materialization and Run Stability",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_cave_enemy_spawnplan_materialization_run_stability.md"
-  },
-  {
-    "id": "spec_14a_fix2_spawn_density_combat_feedback_damage_numbers",
-    "bucket": "Outro",
-    "status": "A implementar",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC 14A-FIX2 - Spawn Density, Combat Logs and Floating Damage Numbers",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md"
-  },
-  {
-    "id": "spec_14b_cave_snapshot_replay_enemy_plan",
-    "bucket": "Outro",
-    "status": "A implementar",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC 14B - Cave Snapshot Replay with EnemySpawnPlan",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_14b_cave_snapshot_replay_enemy_plan.md"
-  },
-  {
     "id": "spec_cave_elite_spawn_semantics_v1",
     "bucket": "Outro",
     "status": "RASCUNHO — não aprovado para implementação",
@@ -5168,50 +5355,6 @@
     "domain": "",
     "title": "Cave — impedir spawn dentro de decor bloqueante em novas runs",
     "path": ".specs/features_futuras/spec_cave_enemy_blocking_decor_overlap_v1.md"
-  },
-  {
-    "id": "spec_cave_runtime_generation_checkpoints_boss_gates",
-    "bucket": "Outro",
-    "status": "Implementado parcial - escopo residual ativo",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC - Cave runtime generation, checkpoints e boss gates",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_cave_runtime_generation_checkpoints_boss_gates.md"
-  },
-  {
-    "id": "spec_city_real_walkin_houses_no_teleport",
-    "bucket": "Outro",
-    "status": "ABSORVIDA / NÃO EXECUTAR",
-    "wave": "WAVE CITY — Coerência da TownScene (pós fable_40)",
-    "priority": "P1",
-    "type": "Runtime + Tooling (editor scene generator)",
-    "domain": "City",
-    "title": "SPEC — Cidade Real: Casas Percorríveis, Portas Funcionais, Marcos Cívicos e Sem Teleporte",
-    "path": ".specs/absorvidas/city_relayout_reconciliation/spec_city_real_walkin_houses_no_teleport.md"
-  },
-  {
-    "id": "spec_combat_movement_projectiles_melee_visuals_runtime",
-    "bucket": "Outro",
-    "status": "A implementar",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC 18 - Combat Movement, Projectiles, Spells and Melee Visuals Runtime",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_combat_movement_projectiles_melee_visuals_runtime.md"
-  },
-  {
-    "id": "spec_enemy_ai_roster_bestiary_faction_locks_runtime",
-    "bucket": "Outro",
-    "status": "Implementado parcial - escopo residual ativo",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC 13 - Enemy AI, roster, bestiary e faction locks runtime",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_enemy_ai_roster_bestiary_faction_locks_runtime.md"
   },
   {
     "id": "SPEC_EXECUTION_ORDER",
@@ -5432,17 +5575,6 @@
     "domain": "",
     "title": "Spec Source of Truth - Cindar's Hope",
     "path": ".specs/SPEC_SOURCE_OF_TRUTH.md"
-  },
-  {
-    "id": "spec_ui_ux_full_gameplay_inventory_hotbar_menus",
-    "bucket": "Outro",
-    "status": "Em implementacao parcial - incremento UI Gameplay MVP entregue em codigo em 2026-05-26; fechamento amplo pendente",
-    "wave": "",
-    "priority": "",
-    "type": "",
-    "domain": "",
-    "title": "SPEC - UI/UX full gameplay, inventory, hotbar e menus",
-    "path": ".specs/absorvidas/legacy_pre_wave_reconciliation/spec_ui_ux_full_gameplay_inventory_hotbar_menus.md"
   },
   {
     "id": "SPEC_VALIDATION_MATRIX_MASTER",

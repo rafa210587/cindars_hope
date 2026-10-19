@@ -27,28 +27,16 @@ namespace CindarsHope.Cave.Runtime
         private const float VignetteInnerEdgeFraction = 0.35f;
         private const string VignetteObjectName = "CaveVignetteOverlay";
         private const string LightShaftObjectName = "CaveEntranceLightShaft";
-        // Bugfix 2026-07-10 (Play Mode CV04, BUG 1): light_shaft.png é uma imagem grande (1254x1254 @
-        // 128 PPU ~= 9.8 unidades) desenhada com névoa/gradiente semi-transparente ao redor do brilho.
-        // Com blending Normal (Sprites/Default) e o alpha antigo (0.55) essa névoa lavava a sala inteira
-        // como um retângulo cinza. Blending ADITIVO (ver GetOrCreateLightShaftMaterial) faz a névoa
-        // escura/transparente não contribuir em nada — só o núcleo claro do feixe soma luz — e a escala
-        // reduzida (LightShaftScale) volta o feixe a um cone estreito perto da entrada em vez do sprite
-        // no tamanho nativo. Alpha aditivo pode ficar mais alto que o alpha Normal antigo sem lavar a
-        // cena porque adição satura em branco, não em cinza opaco.
-        private const float LightShaftAdditiveAlpha = 0.6f;
-        // Fallback só usado se nem o shader aditivo nem Sprites/Default forem resolvíveis no shader
-        // aditivo (ambiente sem Legacy Shaders empacotados) — alpha bem baixo para não repetir o bug 1
-        // mesmo sem aditivo disponível.
-        private const float LightShaftFallbackAlpha = 0.22f;
+        // O PNG anterior contém um xadrez claro opaco em todos os pixels. Um sprite gerado com alpha
+        // real evita que o fundo seja ampliado sobre a sala e independe de shader aditivo no build.
+        private const int LightShaftTextureSize = 64;
         private static readonly Vector3 LightShaftScale = new Vector3(3f, 5f, 1f);
         // Vinheta acima de tudo (paredes/decor/inimigos/player); feixe logo abaixo dela.
         private const int VignetteSortingOrder = 50;
         private const int LightShaftSortingOrder = 40;
 
         private static Sprite _cachedVignetteSprite;
-        private static Material _cachedLightShaftMaterial;
-        private static bool _lightShaftMaterialIsAdditive;
-        private static bool _lightShaftMaterialResolved;
+        private static Sprite _cachedLightShaftSprite;
 
         /// <summary>Cria a vinheta estática do nível + (se o profile do bioma fornecer) o feixe de luz
         /// perto da entrada. Ambos são adicionados a materializedObjects (limpos/recriados a cada
@@ -142,7 +130,13 @@ namespace CindarsHope.Cave.Runtime
             int bandId,
             List<GameObject> materializedObjects)
         {
-            if (biomeArtResolver == null || !biomeArtResolver.TryGetLightShaftSprite(bandId, out var sprite) || sprite == null)
+            if (biomeArtResolver == null || !biomeArtResolver.TryGetLightShaftSprite(bandId, out var sourceSprite) || sourceSprite == null)
+            {
+                return;
+            }
+
+            var sprite = GetOrCreateLightShaftSprite();
+            if (sprite == null)
             {
                 return;
             }
@@ -151,8 +145,7 @@ namespace CindarsHope.Cave.Runtime
             var go = new GameObject(LightShaftObjectName);
             go.transform.SetParent(parent);
             go.transform.position = worldPos;
-            // Bugfix 2026-07-10 (BUG 1): sprite nativo tem ~9.8 unidades de lado; escala estreita e alta
-            // volta o feixe a um cone perto da entrada em vez de cobrir a sala inteira.
+            // Sprite gerado tem 1x1 unidade; o feixe ocupa apenas 3x5 unidades perto da entrada.
             go.transform.localScale = LightShaftScale;
 
             var renderer = go.AddComponent<SpriteRenderer>();
@@ -160,56 +153,50 @@ namespace CindarsHope.Cave.Runtime
             renderer.sortingLayerName = CaveWorldSortingLayers.World;
             renderer.sortingOrder = LightShaftSortingOrder;
 
-            var material = GetOrCreateLightShaftMaterial(out var isAdditive);
-            if (material != null)
-            {
-                renderer.material = material;
-            }
-
-            var alpha = isAdditive ? LightShaftAdditiveAlpha : LightShaftFallbackAlpha;
-            renderer.color = new Color(1f, 1f, 1f, alpha);
+            renderer.color = Color.white;
 
             materializedObjects.Add(go);
         }
 
-        /// <summary>Bugfix 2026-07-10 (BUG 1) — resolve (1x, cacheado estaticamente) um material de
-        /// blending ADITIVO para o feixe de luz: com aditivo, a névoa escura/semi-transparente do
-        /// sprite não contribui (preto aditivo = nenhuma luz somada), só o núcleo claro brilha — sem
-        /// isso o feixe lia como um quadrado cinza translúcido sobre a névoa (blending Normal soma a
-        /// própria névoa como cor opaca). Fallback null-safe: shader aditivo ausente do build (Legacy
-        /// Shaders não empacotados) usa Sprites/Default com alpha bem reduzido (LightShaftFallbackAlpha)
-        /// — nunca lança, nunca deixa o feixe sem material.</summary>
-        private static Material GetOrCreateLightShaftMaterial(out bool isAdditive)
+        /// <summary>Textura pequena, transparente e determinística; não depende do PNG opaco do
+        /// profile nem de shader Legacy. O profile ainda controla se há feixe neste bioma.</summary>
+        internal static Sprite GetOrCreateLightShaftSprite()
         {
-            if (!_lightShaftMaterialResolved)
+            if (_cachedLightShaftSprite != null)
             {
-                _lightShaftMaterialResolved = true;
+                return _cachedLightShaftSprite;
+            }
 
-                var additiveShader = Shader.Find("Legacy Shaders/Particles/Additive")
-                    ?? Shader.Find("Particles/Additive");
-                if (additiveShader != null)
+            var texture = new Texture2D(LightShaftTextureSize, LightShaftTextureSize, TextureFormat.RGBA32, false)
+            {
+                name = "CaveLightShaftGeneratedTexture",
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp
+            };
+
+            for (var y = 0; y < LightShaftTextureSize; y++)
+            {
+                var depth = 1f - y / (float)(LightShaftTextureSize - 1);
+                var halfWidth = Mathf.Lerp(0.035f, 0.42f, depth);
+                var verticalFade = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(depth / 0.08f))
+                    * Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((1f - depth) / 0.22f));
+                for (var x = 0; x < LightShaftTextureSize; x++)
                 {
-                    _cachedLightShaftMaterial = new Material(additiveShader) { name = "CaveLightShaftAdditiveMaterial" };
-                    _lightShaftMaterialIsAdditive = true;
-                }
-                else
-                {
-                    Debug.LogWarning(
-                        "[Cave][Wiring] CaveVignetteController: shader aditivo " +
-                        "'Legacy Shaders/Particles/Additive' nao encontrado neste build. Feixe de luz da " +
-                        "entrada da cave usa Sprites/Default com alpha reduzido como fallback (visual mais " +
-                        "fraco, porem sem lavar a sala). Verifique se Legacy Shaders esta incluido no " +
-                        "projeto/build.");
-                    var fallbackShader = Shader.Find("Sprites/Default");
-                    _cachedLightShaftMaterial = fallbackShader != null
-                        ? new Material(fallbackShader) { name = "CaveLightShaftFallbackMaterial" }
-                        : null;
-                    _lightShaftMaterialIsAdditive = false;
+                    var horizontalDistance = Mathf.Abs(x / (float)(LightShaftTextureSize - 1) - 0.5f);
+                    var sideFade = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((halfWidth - horizontalDistance) / 0.12f));
+                    var alpha = 0.28f * verticalFade * sideFade;
+                    texture.SetPixel(x, y, new Color(1f, 0.88f, 0.61f, alpha));
                 }
             }
 
-            isAdditive = _lightShaftMaterialIsAdditive;
-            return _cachedLightShaftMaterial;
+            texture.Apply(false);
+            _cachedLightShaftSprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, LightShaftTextureSize, LightShaftTextureSize),
+                new Vector2(0.5f, 0.5f),
+                LightShaftTextureSize);
+            _cachedLightShaftSprite.name = "CaveLightShaftGeneratedSprite";
+            return _cachedLightShaftSprite;
         }
     }
 }

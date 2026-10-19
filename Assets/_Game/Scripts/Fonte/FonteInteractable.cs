@@ -23,24 +23,38 @@ namespace CindarsHope.Fonte
             return _openMenu == null || _openMenu == this;
         }
 
+        private CindarsHope.Foundation.IModalRuntime _modal;
+
+        private void OnEnable() => GameEventBus.Subscribe<ModalCloseRequestedEvent>(OnCloseRequested);
+        private void OnCloseRequested(ModalCloseRequestedEvent evt) { if (evt.Targets(CindarsHope.Foundation.ModalType.AnyaFountain) && _openMenu == this) Close(); }
+
         public void Interact(GameObject interactor)
         {
-            _openMenu = _openMenu == this ? null : this;
+            if (_openMenu == this) { Close(); return; }
+            _modal = GameBootstrap.Instance?.ModalManager;
+            if (_openMenu != null || _modal == null || !_modal.PushModal(CindarsHope.Foundation.ModalType.AnyaFountain)) return;
+            _openMenu = this;
+        }
+
+        private void Close()
+        {
+            if (_openMenu != this) return;
+            _openMenu = null;
+            _modal?.TryPopIfCurrent(CindarsHope.Foundation.ModalType.AnyaFountain);
+            _modal = null;
         }
 
         private void OnDisable()
         {
-            if (_openMenu == this)
-            {
-                _openMenu = null;
-            }
+            GameEventBus.Unsubscribe<ModalCloseRequestedEvent>(OnCloseRequested);
+            Close();
         }
 
         private void Update()
         {
             if (_openMenu == this && Input.GetKeyDown(KeyCode.Escape))
             {
-                _openMenu = null;
+                Close();
             }
         }
 
@@ -70,7 +84,7 @@ namespace CindarsHope.Fonte
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Fechar (Esc)"))
             {
-                _openMenu = null;
+                Close();
             }
 
             GUILayout.EndArea();
@@ -78,7 +92,6 @@ namespace CindarsHope.Fonte
 
         private void DrawFunctions(FonteRuntimeService service)
         {
-            GUILayout.Label($"Estado: {service.Section.FonteState}");
             GUILayout.Label("Ponto de Retorno — ativo (voce desperta aqui ao cair).");
 
             // Água Viva: visível apenas com o Fragmento da Água (canon: sem spoiler).

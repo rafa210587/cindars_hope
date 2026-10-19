@@ -6,6 +6,8 @@ description: "{{specific action and trigger distinguishing this skill from neigh
 <!-- Authoring template, not an installed skill. Copy to the authorized target and replace
 all {{fields}}. Remove this note and unused sections. Name must match the folder.
 Conditional resources must exist before links to them are created. -->
+<!-- Do not instantiate every section. For a simple correction, keep a short entry with
+the decision and relevant check. Add a template/example only for a recurring ambiguity. -->
 
 # Skill: {{title}}
 
@@ -15,6 +17,8 @@ Conditional resources must exist before links to them are created. -->
 
 ## When to use
 {{concrete situation; exclusion only if it prevents misrouting}}
+
+{{only if risk can change the route: what remains a local correction and what requires escalation}}
 
 ## Essential procedure
 1. {{identify the target and existing contract}}
@@ -28,6 +32,7 @@ If unsure about {{decision}} → {{link to the existing filled example}}
 
 ## Output and evidence
 {{expected artifact; observable criteria; obtained result, not an assumed one}}
+{{only when needed: relevant existing test or missing coverage; no mandatory report/commit}}
 
 ## Boundaries
 {{what cannot be concluded without evidence and out-of-scope dependencies}}

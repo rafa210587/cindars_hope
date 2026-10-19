@@ -129,8 +129,9 @@ namespace CindarsHope.UI.Character
             if (!_isOpen) Toggle(PanelMode.Attributes);
         }
 
-        private void OnModalCloseRequested(ModalCloseRequestedEvent _)
+        private void OnModalCloseRequested(ModalCloseRequestedEvent evt)
         {
+            if (!evt.Targets(ModalType.CharacterEquipment)) return;
             if (_isOpen) Close();
         }
 
@@ -275,7 +276,7 @@ namespace CindarsHope.UI.Character
             DrawEquipmentSlot(equipment, inventory, 2, EquipmentSlot.LeftHand, "Mao esquerda");
             DrawEquipmentSlot(equipment, inventory, 3, EquipmentSlot.Accessory, "Lateral / Acessorio");
             GUILayout.Space(10f);
-            GUILayout.Label("Stats derivados: bonus aplicados pelo equipamento/skills em runtime.");
+            GUILayout.Label(CindarsHope.Localization.LocalizationService.Get("ui.equipment.stats_unavailable"));
         }
 
         private void DrawAttribute(PlayerProgressionManager progression, int rowIndex, PlayerAttributeType type, string label, int value)
@@ -307,7 +308,14 @@ namespace CindarsHope.UI.Character
                 GUI.backgroundColor = Color.yellow;
             }
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"{label}: {(string.IsNullOrWhiteSpace(itemId) ? "vazio" : itemId)}", GUILayout.Width(260f));
+            var displayName = "vazio";
+            if (!string.IsNullOrWhiteSpace(itemId))
+            {
+                var definitionId = itemId.Split('#')[0];
+                displayName = inventory != null && inventory.TryGetItemData(definitionId, out var data)
+                    ? CindarsHope.UI.Shop.ItemDisplayNameFormatter.GetFullName(data) : "Item desconhecido";
+            }
+            GUILayout.Label($"{label}: {displayName}", GUILayout.Width(260f));
             if (GUILayout.Button(string.IsNullOrWhiteSpace(itemId) ? "Equipar" : "Trocar", GUILayout.Width(82f)))
             {
                 _selectedIndex = rowIndex;

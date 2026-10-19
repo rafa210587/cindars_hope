@@ -2,11 +2,24 @@
 
 Status: INTEGRATED_SCOPED_PASS. Pedido humano autorizado: mais arbustos e graminhas pelo mapa da fazenda. Aceitação visual humana pendente.
 
+required_adrs: [ADR-0011]
+required_game_rules: []
+
+Ordem de execucao: distribuir cobertura no composer, regenerar cena e então validar máscaras/capturas, conforme T1–T3.
+Depende de: FarmSettlementVisualComposer.TryRegionalPlant, vegetação aprovada e capturas v19 citadas no plano.
+Bloqueia: aceite visual da cobertura v20; não há dependência de gameplay subsequente declarada.
+
+# /speckit.specify
+
 ## Spec
 Adicionar cobertura vegetal baixa nas clareiras usando a arte existente. Sem colliders; Ground/4 abaixo do jogador. Preservar caminhos, cultivos, água, portas, poço, fonte, cercas e área dos animais. Manter árvores, proporções e sistemas existentes.
 
+# /speckit.plan
+
 ## Plan
 Reusar FarmSettlementVisualComposer.TryRegionalPlant e suas máscaras de footprint. Distribuição determinística, espaçada e irregular dentro da clareira; alternar arbustos 0,65–0,9u e tufos 0,3–0,45u da vegetação aprovada. Não gerar imagens nem alterar resolução/importação. Gerar cena por FarmSceneCapture.RegenAndCapture e comparar enquadramentos v19/v20.
+
+# /speckit.tasks
 
 ## Tasks
 - [x] Adicionar distribuição ao composer; inspeção visual do sprite reutilizado.

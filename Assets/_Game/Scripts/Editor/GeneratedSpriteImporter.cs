@@ -33,7 +33,7 @@ namespace CindarsHope.Editor
 
         private static readonly string[] CaveBiomeTileFileNames =
         {
-            "floor_a.png", "floor_b.png", "floor_detail.png", "wall_face.png", "wall_top.png"
+            "floor_a.png", "floor_b.png", "floor_c.png", "floor_detail.png", "wall_face.png", "wall_top.png"
         };
 
         private void OnPreprocessTexture()

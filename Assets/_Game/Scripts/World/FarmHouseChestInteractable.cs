@@ -12,7 +12,7 @@ namespace CindarsHope.World
     /// </summary>
     public class FarmHouseChestInteractable : MonoBehaviour, IInteractable
     {
-        public string InteractionPrompt => "Abrir bau";
+        public string InteractionPrompt => CindarsHope.Localization.LocalizationService.Get("interact.chest.unavailable");
 
         public bool CanInteract(GameObject interactor)
         {

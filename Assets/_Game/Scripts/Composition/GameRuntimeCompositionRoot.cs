@@ -147,6 +147,7 @@ namespace CindarsHope.Composition
             GameTimeScaleCoordinator.Reset();
             CombatStateTrackerBootstrap.Install();
             GameplayInputRouter.Install(_instance != null ? _instance.transform : null);
+            PauseMenuController.Install(_instance != null ? _instance.transform : null);
             ActiveSkillExecutionController.Install();
             SurvivalSkillRuntimeCoordinator.Install(_instance != null ? _instance.transform : null);
             EfficiencyMarkRuntimeCoordinator.Install(_instance != null ? _instance.transform : null);

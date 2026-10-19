@@ -5,6 +5,12 @@
 
 ## Selection by scope and risk
 
+Local corrections restoring an existing contract use `/bugfix` without a new spec or promotion
+workflow. Select the relevant checks below directly; save/IDs, cross-system and lifecycle risks
+still apply. New features require an approved spec. A small diff alone does not establish low risk.
+When no commit is requested, record command, result and artifact paths in the final task response
+or existing spec evidence instead of creating a commit just to hold validation information.
+
 Each spec declares exactly one blocking acceptance gate in its existing validation section:
 name the existing test, command or executed scenario, its relevant scope and expected result.
 The gate must prove all acceptance criteria and include applicable risk checks below;

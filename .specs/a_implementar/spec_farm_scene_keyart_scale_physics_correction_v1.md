@@ -18,6 +18,10 @@
 required_adrs: []
 required_game_rules: []
 
+Ordem de execucao: após a implementação-fonte FARM KEYART 1–7, antes do aceite visual.
+Depende de: implementação-fonte das specs FARM KEYART 1–7, conforme Depends on acima.
+Bloqueia: aceite visual, conforme Blocks acima.
+
 # /speckit.specify
 
 ## 9. Observed baseline — 2026-08-14

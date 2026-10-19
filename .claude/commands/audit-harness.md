@@ -10,7 +10,10 @@ sem filtro, auditar as dimensões aplicáveis ao harness.
 
 ## Procedimento
 1. Usar `harness-audit`; selecionar dimensões e cenários pertinentes ao escopo.
-2. Conferir descoberta pelo `.claude/HARNESS_INDEX.md`, referências transitivas e cópias publicadas.
+2. Run `pwsh -NoProfile -File tools/codex/Test-HarnessDiscovery.ps1` for structural discovery,
+   typed references and local links. Read complete findings when the bounded output omits any;
+   optional `-OutputPath` writes a new JSON outside inputs. Check generated copies separately.
+   Do not equate this result with semantic review or actual hook execution.
 3. Priorizar findings por risco: instrução incorreta, referência quebrada, perda de segurança/evidência
    ou misrouting. Tamanho de arquivo é sinal para análise, não reprovação por limite arbitrário.
 4. Entregar localização, evidência, impacto e correção mínima. Auditoria isolada não edita;

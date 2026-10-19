@@ -1,6 +1,9 @@
 # Rule: Política de Leitura de Contexto
 
-**Leia apenas:** `CLAUDE.md`, `docs/project/CURRENT_STATE.md`, a spec ativa, e arquivos citados explicitamente pela spec.
+**Read by journey:** `CLAUDE.md`, `docs/project/CURRENT_STATE.md` and the target files.
+Spec execution also reads the active spec and its referenced files. A local correction uses
+`/bugfix`; read an existing spec only when needed to establish the intended contract. Do not
+create a spec or load execution/promotion protocols merely to fix a typo or bounded defect.
 
 **Não leia por padrão:** `PROJECT_LOG.md`, `ROADMAP.md`, GDD completo, `IMPLEMENTATION_STATUS.md`, refinements antigos, archived specs, validation reports não relacionados.
 

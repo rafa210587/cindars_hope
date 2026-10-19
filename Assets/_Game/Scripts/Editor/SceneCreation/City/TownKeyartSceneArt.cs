@@ -203,11 +203,17 @@ namespace CindarsHope.Editor.SceneCreation
         {
             var root = new GameObject("TownMaterialGround");
             SceneManager.MoveGameObjectToScene(root, scene);
-            var sprites = new[] { WorldSpriteLibrary.Ground("ground_grass_a"),
+            var sprites = new[] { WorldSpriteLibrary.Prop("town_grass_harmony_v1"),
                 WorldSpriteLibrary.Ground("ground_grass_b"), WorldSpriteLibrary.Ground("ground_grass_flower") };
             var maps = new Tilemap[sprites.Length];
+            var tiles = new Tile[sprites.Length];
             for (int i = 0; i < sprites.Length; i++)
-                if (sprites[i] != null) maps[i] = TownKeyartGround.Layer(root.transform, "MaterialPocket_" + i, -1 + i);
+                if (sprites[i] != null)
+                {
+                    maps[i] = TownKeyartGround.Layer(root.transform, "MaterialPocket_" + i, -1 + i);
+                    tiles[i] = i == 0 ? TownKeyartGround.TileFor(sprites[i])
+                        : WorldTilemapGround.GetTile(sprites[i]);
+                }
             for (int index = 0; index < TownKeyartGeometry.MaterialPocketPolygons.Length; index++)
             {
                 var polygon = TownKeyartGeometry.MaterialPocketPolygons[index];
@@ -215,7 +221,7 @@ namespace CindarsHope.Editor.SceneCreation
                 if (map == null) continue;
                 float minX = float.MaxValue, maxX = float.MinValue, minY = float.MaxValue, maxY = float.MinValue;
                 foreach (var p in polygon) { minX = Mathf.Min(minX, p.x); maxX = Mathf.Max(maxX, p.x); minY = Mathf.Min(minY, p.y); maxY = Mathf.Max(maxY, p.y); }
-                var tile = WorldTilemapGround.GetTile(sprites[index % sprites.Length]);
+                var tile = tiles[index % tiles.Length];
                 for (float x = minX; x <= maxX; x += TownKeyartGround.CellSize)
                 for (float y = minY; y <= maxY; y += TownKeyartGround.CellSize)
                 {
