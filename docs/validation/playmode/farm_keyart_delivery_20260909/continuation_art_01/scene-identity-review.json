@@ -1,0 +1,122 @@
+{
+  "treeCountBefore": 50,
+  "treeCountAfter": 71,
+  "treeIndicesPreserved": false,
+  "treeIndexDiff": [
+    {
+      "InputObject": 3,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 4,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 5,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 8,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 9,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 10,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 11,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 14,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 15,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 16,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 17,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 20,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 21,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 26,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 27,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 32,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 33,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 37,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 38,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 56,
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": 60,
+      "SideIndicator": "=>"
+    }
+  ],
+  "whiteHealthyTintCount": 71,
+  "homesteadDecorationCount": 19,
+  "homesteadAllowedRange": [
+    5,
+    48
+  ],
+  "allPriorTreeIndicesRetained": true,
+  "addedTreeIndices": [
+    3,
+    4,
+    5,
+    8,
+    9,
+    10,
+    11,
+    14,
+    15,
+    16,
+    17,
+    20,
+    21,
+    26,
+    27,
+    32,
+    33,
+    37,
+    38,
+    56,
+    60
+  ],
+  "changedTreeDataGuidsForPriorIndices": []
+}

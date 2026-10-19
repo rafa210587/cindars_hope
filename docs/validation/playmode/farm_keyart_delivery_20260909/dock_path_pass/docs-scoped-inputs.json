@@ -1,0 +1,490 @@
+[
+  {
+    "path": ".specs/a_implementar/spec_farm_pixelart_cohesion_and_ingame_review_v1.md",
+    "sha256": "3A6BC7C5601BE6906D4A4B5CE5B0D96965D1FE4315BB0F6711B67C519CF837C0"
+  },
+  {
+    "path": "art/farm-pixelart-review/build_delivery_preview.py",
+    "sha256": "A75E6AADC44A653CEEBF1DB2CF8663D92AB766F818C541B67ADFA6CE2F7758DF"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/animals.png",
+    "sha256": "AA4F8055C7730E7721022D7D3CAE90893C3A8AD9EACB88175B1A486DCB0303CC"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/before_lake.png",
+    "sha256": "000F9409CC8580489F06800B473A9ECC4C6C67F06FE9AA61078AD1A057950890"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/before.png",
+    "sha256": "83B61C36F3073B72E99C2B112FE7647466A6CE9EB2F04E04729B8029D2BCC4B6"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/bridge.png",
+    "sha256": "140DB63C4A72A68B03A2544FB782280C5804DD66657A3D9978868314B29267E0"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/composition.png",
+    "sha256": "D5A0824F38E40D39A5DCDD39A21A62E0892FA32FB90CC2BC99606CF17F340470"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/cultivation.png",
+    "sha256": "D0DC853B35E0FC61769E2606ACCC98ECF5CFD48776663C6E2F808CB0D0BCC5B7"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/current.png",
+    "sha256": "63DF825566A6477FFFDE8D47714DD75AF7C021AE70D682C75A0974C4EA9CB7D2"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/focus_animals.png",
+    "sha256": "402829D2DEA009A27AB3C13D1A39BC1F3D56853D469C89D42EB6A45BB50202FC"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/focus_cultivation.png",
+    "sha256": "DA9D72030BBE4813CD4094E437D7654CC567DA9E7F6AC88EF44D61939E4BFA73"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/focus_forest.png",
+    "sha256": "EDAF17F64E510E2F87E7814087CFC04C9D6834458DF6AB773198B779823901EB"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/focus_homestead.png",
+    "sha256": "2E274D8BF69FBEADD7F605FF0EB1ABBA71DA1AA381C8597D841AB25E85FD7B86"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/focus_lake.png",
+    "sha256": "81B2098554998C9268FE488B4AC52D86FFFF2CFAD7DE6E3AA19D67BDDE72CDE7"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/focus_mountain.png",
+    "sha256": "1D000BA2476079D4D56ABA89E206B685230081DA52D940F4C45FDF3A2DD49F0C"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/focus_water_bridge.png",
+    "sha256": "FE8F17EF8BEEE0AEBB8B20FC0F512A07A9F6F8CD0048265CA62C14704821C085"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/forest.png",
+    "sha256": "89B506A093FDB65076EF40E606D44AD3DA03CE2319D9DBD47FCD4BBA06CCC238"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/homestead.png",
+    "sha256": "CFE982C589E44F6A23750E4A4D326D7163FFC0CC69B2AEEC9333CD13B145F797"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/lake.png",
+    "sha256": "81B2098554998C9268FE488B4AC52D86FFFF2CFAD7DE6E3AA19D67BDDE72CDE7"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/mountain.png",
+    "sha256": "F5245F7A6B2FFE824FC52E55B3DEF06E6CABA31337682D6EB21E92A50D1CFA36"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/reference.png",
+    "sha256": "C382053B0CE44FB7DEEC66C022A2A6297D751AF1D00C67B5AD4E046C56A0F205"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-assets/spawn.png",
+    "sha256": "9376B5E86808208F532951A98E083865A9701AC9772F0694C723342767C01886"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery-standalone.html",
+    "sha256": "EB0CAE0C7F7F2A07CF72A497A07E5C6720EA5B3145C1F01537BFDB78BEB031BA"
+  },
+  {
+    "path": "art/farm-pixelart-review/delivery.html",
+    "sha256": "606C19399135A51B2A5C96A70D4DD45634DD5DDBCFF3F40458A51F3268A86963"
+  },
+  {
+    "path": "art/farm-pixelart-review/dock-path-review.md",
+    "sha256": "11068C58A16565B51EE4EB46D02D8298780B8605C5D973986970AACC2CE43F62"
+  },
+  {
+    "path": "Assets/_Game/Scenes/FarmScene.unity",
+    "sha256": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+    "sha256": "FF87191F7A76545F89F3559398D36D117FCBB4712A2D88D5D35BD131999A74C4"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmLandscapeVisualComposer.cs",
+    "sha256": "5C97CB3C8FD74358C67BB39859DD7F13FD8E249D342DA5BABB2574319EB01FC7"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Dev/FarmPlayModeCaptureSession.cs",
+    "sha256": "C9D0AC208FCABA43E1B1717FE25359016861F225DE82737CBC932E82C3BF0436"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+    "sha256": "27185705FB33B9C72C3713B6F2E7198E081F4D8BD6728C7C68EB01D6EE76EBA8"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Validation/FarmInteractionSelectionProbe.cs",
+    "sha256": "B65C3B62E90446A2090E75F8ECD79C26B1F7FF36BC9CCD644C219F48E582A073"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Validation/FarmPhysicalRouteProbe.cs",
+    "sha256": "DE7E6AF4372B262A1C6363F25F12F6311246D679E2192421C4C4F7ED7C9AF8A7"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/FarmLevel1LayoutContract.cs",
+    "sha256": "4A06A3221FD6BB358373E605A957A5D824D9CA544A0AF20DA28C76019C281D78"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs",
+    "sha256": "2A39CB98FB9CEC2AEAC9530683D43726ADB03DED6C45AA5CFBADA6D05B094A28"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneNavigationContractTests.cs",
+    "sha256": "0C6D736210D71E03AED7BD82AFA5AB5F053FB6DA4BE110CF24664CADE8AF6F87"
+  },
+  {
+    "path": "docs/IMPLEMENTATION_STATUS.md",
+    "sha256": "24875976C0C858A2719DB43125117BCB9C43427517C31E3FF0491E57A2C3FEDB"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/after-scale-inventory.json",
+    "sha256": "4CD39A8907B02AD93BA67C7A05CF432546295274B7A90A1169947E61EA960B00"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/audit_dock_baseline.py",
+    "sha256": "424DCE01987F7AB168D4CCA3573DB44BC3A7D098C5BB50473C9ECE505A431B5A"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/audit_scene.py",
+    "sha256": "E6A3E8F4F31362639835E2F1FF38A8876A00B8A0CD1FEB7CB08FA77881973D7B"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/baseline-inputs.json",
+    "sha256": "028B63F172B4810ADE1DB6EB1BB68DD00C7943D26A2ACEC7DC1FA2ADF5AB650C"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/baseline-scale-inventory.json",
+    "sha256": "32A4DE074808D4ABA5367F14265689C296B9B1EC9D21490E9B8DE6741E1538A6"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_animals.png",
+    "sha256": "8872271C286D00BE347989D247F9373060BFE58410261B31B411316AF635967F"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_closeup.png",
+    "sha256": "B43A289005AD480C7DDBC72FA8D8C231F37A60235D001CFBD6A41CD4FD80435E"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_keyart_composition.png",
+    "sha256": "05975B00A92BC5210496C17041F15CF7DBB7CEF107A12BE230B6DA4DEF4D2559"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_region_animals.png",
+    "sha256": "8872271C286D00BE347989D247F9373060BFE58410261B31B411316AF635967F"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_region_cultivation.png",
+    "sha256": "DF43F3AB1780D9F9E5002F133C6A63BD926F9D7DBBD5C64BCB23E84493674768"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_region_forest.png",
+    "sha256": "EDAF17F64E510E2F87E7814087CFC04C9D6834458DF6AB773198B779823901EB"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_region_homestead.png",
+    "sha256": "1F8CD3C3F5F4532E460FC73849935DF730720368BCC7E34500A40C5E33CC4170"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_region_mountain.png",
+    "sha256": "773DB918C1C5B3604EA00FD9103EDFA6009B454937A6B8DA4448E00A6DBD71BD"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture_region_water_bridge.png",
+    "sha256": "16B1A7DEFE871B809436BE583CE039D449AAA9644621085463FF2183076BB624"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/farm_capture.png",
+    "sha256": "83B61C36F3073B72E99C2B112FE7647466A6CE9EB2F04E04729B8029D2BCC4B6"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/FarmScene.unity.meta.snapshot",
+    "sha256": "A74A2BFF860537ECFF7E07AD55B3620F20ADCF4D2A3216DB87114D2B565FE8C3"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/FarmScene.unity.snapshot",
+    "sha256": "1C6311A582901D2F69A60A3D3E90E43940E95C3D18E8D1485CA3C7944F764844"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/log-scan.txt",
+    "sha256": "ABCE1D1DB35E950742AE496B0B2B5515876BC660D7AC46CFA84CF6DEB014C24C"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/process.json",
+    "sha256": "659C8B8A32E161E2EAE4585D332B083520D0E4F46339B5A6A2466B7764DDB1F1"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/runner-result.json",
+    "sha256": "9FA5D86B479E13881C774F02B2699E25074F7347183DD552C40B039FA7064D4A"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/scene-identity-review.json",
+    "sha256": "CBCA00D894482CDDD22F84BD3ED78FC79B081B82B6C11C5701A92AF8AC886695"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_diagnostic/unity.log",
+    "sha256": "4D38BC442386BF11BF70D2FCE72B16FFC98E81328B10727EA1F5FF2A68DB2983"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/animals.png",
+    "sha256": "C7355685C2AA6F004176FCE072A204D987E06BE1CBA4300387837C6C16F4D940"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/bridge.png",
+    "sha256": "057140730853B06C74BF1C99CC677ACF723D07AD0D0A5A3C07599B75148323D8"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/capture-metadata.json",
+    "sha256": "0F02BF80C927E7164C999DE9372D0C4980DAD833FF92CC95D5A0C97CE5C60278"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/cultivation.png",
+    "sha256": "925E886B1CB507158B1B5528388D56E35B5CE5BE445795D889B7EADB25061144"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/FarmScene.unity.meta.snapshot",
+    "sha256": "A74A2BFF860537ECFF7E07AD55B3620F20ADCF4D2A3216DB87114D2B565FE8C3"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/FarmScene.unity.snapshot",
+    "sha256": "1C6311A582901D2F69A60A3D3E90E43940E95C3D18E8D1485CA3C7944F764844"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/forest.png",
+    "sha256": "492CEF55C56303F91A1CC12003BC749191A5BB533549675E24DDFBF2D37979C3"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/homestead.png",
+    "sha256": "2B7E721BD445372FC41CACF22AC37AB31F0FF9BEBAD1AC1CECE84544FC818D5B"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/lake.png",
+    "sha256": "000F9409CC8580489F06800B473A9ECC4C6C67F06FE9AA61078AD1A057950890"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/log-scan.txt",
+    "sha256": "A7E8ECBB24F1106FFC8B6E2BBEE887227FBFBB143CA0F2107FD81CA021B199A8"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/mountain.png",
+    "sha256": "1D000BA2476079D4D56ABA89E206B685230081DA52D940F4C45FDF3A2DD49F0C"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/process.json",
+    "sha256": "72350F043FEFA26D94B9165D79017B99C357A7D9010159AE6500AFC3E71991A5"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/runner-result.json",
+    "sha256": "9FA5D86B479E13881C774F02B2699E25074F7347183DD552C40B039FA7064D4A"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/spawn.png",
+    "sha256": "FCC904BBE15B2B2B5028ED059FF96B5462F59C1CB203762950C8962E0F9682DF"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/unity.log",
+    "sha256": "426826DF20AD86690BE27DFC7414D0884AB60B2EBA4EDCEE502F416D518A228C"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/before_gameplay/validation-audit.json",
+    "sha256": "AF5CBD3BE908355A0F111AF0777672446CB837A1148B6C869A24896A92DA1890"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/dock-after-water-review.json",
+    "sha256": "CB7D078D896D93D2D3D59FFF9A31B9863EC4964B401AAD70EB9620169CFB6BBB"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/dock-baseline-water-review.json",
+    "sha256": "0F26CC5CA0456D7DE1E271F8A2E2D6DB8753F3341C0A59EC3B06A59AD5B76F6E"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/final-audit.json",
+    "sha256": "92CFCF99992057017258354FCDF99639813A7C59344908E5EF190B67AC1E1A74"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/focal-inputs.json",
+    "sha256": "13609D3717BE972D9D8B8584379598F0BD406AFF836DE16F21E7E3E099D7AA27"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/focal-tests_01.log",
+    "sha256": "450089B4BA47F9288263339C4CF327A20C8CBC61419E94F408E2EFCEB271E0EA"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/focal-tests_01.xml",
+    "sha256": "6C83E81F1BFC9BD1B4360679EE841374A551CCCBD6C8601A5C28831F1C267D98"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/animals.png",
+    "sha256": "AA4F8055C7730E7721022D7D3CAE90893C3A8AD9EACB88175B1A486DCB0303CC"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/bridge.png",
+    "sha256": "140DB63C4A72A68B03A2544FB782280C5804DD66657A3D9978868314B29267E0"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/capture-metadata.json",
+    "sha256": "5C18A8960C804B7D30B426A78E286022816B32F73B248F99FEB7B7CECEEE992F"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/cultivation.png",
+    "sha256": "D0DC853B35E0FC61769E2606ACCC98ECF5CFD48776663C6E2F808CB0D0BCC5B7"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/FarmScene.unity.meta.snapshot",
+    "sha256": "A74A2BFF860537ECFF7E07AD55B3620F20ADCF4D2A3216DB87114D2B565FE8C3"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/FarmScene.unity.snapshot",
+    "sha256": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/forest.png",
+    "sha256": "89B506A093FDB65076EF40E606D44AD3DA03CE2319D9DBD47FCD4BBA06CCC238"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/homestead.png",
+    "sha256": "CFE982C589E44F6A23750E4A4D326D7163FFC0CC69B2AEEC9333CD13B145F797"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/lake.png",
+    "sha256": "81B2098554998C9268FE488B4AC52D86FFFF2CFAD7DE6E3AA19D67BDDE72CDE7"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/log-scan.txt",
+    "sha256": "A7E8ECBB24F1106FFC8B6E2BBEE887227FBFBB143CA0F2107FD81CA021B199A8"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/mountain.png",
+    "sha256": "F5245F7A6B2FFE824FC52E55B3DEF06E6CABA31337682D6EB21E92A50D1CFA36"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/process.json",
+    "sha256": "18CA2AA2A2F0844CD50443A7278CCE3B4719E4E729989A002128B8D6BEA4956D"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/runner-result.json",
+    "sha256": "9FA5D86B479E13881C774F02B2699E25074F7347183DD552C40B039FA7064D4A"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/spawn.png",
+    "sha256": "9376B5E86808208F532951A98E083865A9701AC9772F0694C723342767C01886"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/unity.log",
+    "sha256": "95ADEA56B993790EECDF15BACF9D08614523A6EE9674F9B8787C67C01FEC0F59"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/gameplay_01/validation-audit.json",
+    "sha256": "92CFCF99992057017258354FCDF99639813A7C59344908E5EF190B67AC1E1A74"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/Invoke-FarmValidation.ps1",
+    "sha256": "80774ADA1130FF7B4D2E68FA425819C47858324C6CFB58293A915DCDA47AB576"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/measure_scene.py",
+    "sha256": "3C1017072E6BCA61B6935824F73B541CB95D2B7E8ED86D8E5FA4DE9C0606E1BF"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_animals.png",
+    "sha256": "F36BA909F54F70FFFC1DD4D9FB81ED21F1851906F7010C757E7EEF1EB8C838F7"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_closeup.png",
+    "sha256": "43ADEDE6F82C26B166379D861363E60BA0C383FA35370769F56804817E7446D9"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_keyart_composition.png",
+    "sha256": "D5A0824F38E40D39A5DCDD39A21A62E0892FA32FB90CC2BC99606CF17F340470"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_region_animals.png",
+    "sha256": "F36BA909F54F70FFFC1DD4D9FB81ED21F1851906F7010C757E7EEF1EB8C838F7"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_region_cultivation.png",
+    "sha256": "DA9D72030BBE4813CD4094E437D7654CC567DA9E7F6AC88EF44D61939E4BFA73"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_region_forest.png",
+    "sha256": "0DAC1DB66AD0CFA3327E045AD793637371BCE97022BF013AFA2A52BD6156B81C"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_region_homestead.png",
+    "sha256": "598EABD893BFDCF924C2838B124DBA882676369CB83E33530C38FEAC9FB19E59"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_region_mountain.png",
+    "sha256": "D8D87F54702F01EAE9583A6737280CBEDFABCF1C408B4C279F1369DA4565B1A3"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture_region_water_bridge.png",
+    "sha256": "DA48C6DE42A3987F9745F94238F20B8A31E02AED1888D9B99BA35F691C3AFEE5"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/farm_capture.png",
+    "sha256": "63DF825566A6477FFFDE8D47714DD75AF7C021AE70D682C75A0974C4EA9CB7D2"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/FarmScene.unity.meta.snapshot",
+    "sha256": "A74A2BFF860537ECFF7E07AD55B3620F20ADCF4D2A3216DB87114D2B565FE8C3"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/FarmScene.unity.snapshot",
+    "sha256": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/log-scan.txt",
+    "sha256": "1E6A5BF5B1EF05D0DB95F05B5FEF508EB0D36DD9D4BADFA87385921454284334"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/process.json",
+    "sha256": "E1DABF2526D6326C016E9C48C201A7855D5017845EEF5BF073F80FC14209C164"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/runner-result.json",
+    "sha256": "9FA5D86B479E13881C774F02B2699E25074F7347183DD552C40B039FA7064D4A"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/scale-inventory.json",
+    "sha256": "4CD39A8907B02AD93BA67C7A05CF432546295274B7A90A1169947E61EA960B00"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/scene-identity-review.json",
+    "sha256": "636D1101A920E645603AA116B5EE18AD46EB0F61EF9225908EF791ECAFF18E82"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/regen_01/unity.log",
+    "sha256": "C5F7C2790072663EA61CC93736E4B5BE11D58063616E0065EFC856DF1E40711A"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/reused-art-inputs.json",
+    "sha256": "77574B6DEC7760FA58F3FD323F459767A4BD567449A2EF637C0F26DFACBAD928"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/scene-identity-review.json",
+    "sha256": "636D1101A920E645603AA116B5EE18AD46EB0F61EF9225908EF791ECAFF18E82"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/validation-plan.md",
+    "sha256": "AA7489B680F3E7E77FBC5B58468C8C31E355CC239E2FD869D1A7BB6C2D0233DE"
+  },
+  {
+    "path": "docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/validation-report.md",
+    "sha256": "AC76FE138D37AB160FCDDF3601EDA0CCC824C0DC3E2DFC21C52D6CB4937420CF"
+  },
+  {
+    "path": "docs/validation/spec_farm_pixelart_cohesion_and_ingame_review_v1_execution_report.md",
+    "sha256": "2F931C4A50B5541475FA302F849B9E88D7E651E4692BD621C30223F7987DF345"
+  },
+  {
+    "path": "PROJECT_LOG.md",
+    "sha256": "B0187BBD81B7579DC84E0D8E1BEF437CC446ECE5440E7AB17A9D11FC64169B43"
+  }
+]

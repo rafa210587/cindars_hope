@@ -1,0 +1,258 @@
+using System.Collections.Generic;
+using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
+using CindarsHope.Foundation;
+using CindarsHope.Inventory;
+using CindarsHope.Economy.Transactions;
+using CindarsHope.Player;
+using UnityEngine;
+
+namespace CindarsHope.Economy
+{
+    [DisallowMultipleComponent]
+    public sealed class EconomyManager : MonoBehaviour, IGameBootstrapRuntimeService
+    {
+        // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — esta classe NAO ganha um
+        // accessor estatico global (diferente do molde Audio/AudioManager.cs usado em Core|Enemy e
+        // Core|Craft): o ratchet GlobalGoldAccess (tools/architecture/architecture-ratchet-rules.tsv)
+        // proibe esse padrao de acesso global a este manager de ouro em qualquer lugar do runtime
+        // (baseline 0). GameBootstrap resolve via GetComponent no mesmo GameObject (o gerador de cena
+        // adiciona este componente ao mesmo bootstrapObject), sem reintroduzir um acesso global.
+        [SerializeField] private InventoryManager _inventoryManager;
+        [SerializeField] private PlayerManager _playerManager;
+
+        // fable_19 (CA-2): ponto de venda URBANO da cidade. Apenas este source exige a licença de
+        // barraca (license_market_stall). Cave merchant (shop_cave_wandering_merchant_l*) e venda
+        // direta a NPC NÃO passam por este gate; o shipping da fazenda usa outro fluxo.
+        private const string UrbanSellSourceId = "shop_town_sell_box";
+
+        public bool IsInitialized { get; private set; }
+        public string BootstrapServiceId => nameof(EconomyManager);
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<ItemPurchaseRequestedEvent>(HandleItemPurchaseRequested);
+            GameEventBus.Subscribe<SellAllRequestedEvent>(HandleSellAllRequested);
+            Initialize();
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<ItemPurchaseRequestedEvent>(HandleItemPurchaseRequested);
+            GameEventBus.Unsubscribe<SellAllRequestedEvent>(HandleSellAllRequested);
+            Shutdown();
+        }
+
+        public void Initialize()
+        {
+            if (IsInitialized)
+            {
+                return;
+            }
+
+            IsInitialized = true;
+        }
+
+        public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
+        {
+            Initialize();
+        }
+
+        public void Shutdown()
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            IsInitialized = false;
+        }
+
+        public void ShutdownFromBootstrap()
+        {
+            Shutdown();
+        }
+
+        private void HandleItemPurchaseRequested(ItemPurchaseRequestedEvent evt)
+        {
+            if (!HasRequiredManagers("compra", out var failureMessage))
+            {
+                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, failureMessage);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(evt.ItemId))
+            {
+                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, "Compra falhou: item vazio.");
+                return;
+            }
+
+            if (evt.Amount <= 0)
+            {
+                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, $"Compra falhou: quantidade invalida para '{evt.ItemId}'.");
+                return;
+            }
+
+            if (evt.TotalCost < 0)
+            {
+                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, $"Compra falhou: custo invalido para '{evt.ItemId}'.");
+                return;
+            }
+
+            PurchaseTransactionResult transaction = AtomicPurchaseTransaction.ExecutePurchased(
+                _inventoryManager,
+                _playerManager,
+                evt.ItemId,
+                evt.Amount,
+                evt.TotalCost);
+            if (!transaction.Success)
+            {
+                string failure = transaction.Failure switch
+                {
+                    PurchaseTransactionFailure.InsufficientFunds =>
+                        $"Ouro insuficiente para comprar '{evt.ItemId}' x{evt.Amount}.",
+                    PurchaseTransactionFailure.InventoryFull =>
+                        $"Compra falhou: inventario sem espaco para '{evt.ItemId}' x{evt.Amount}.",
+                    PurchaseTransactionFailure.DebitFailed =>
+                        $"Compra falhou ao gastar {evt.TotalCost}g.",
+                    PurchaseTransactionFailure.InventoryWriteFailed =>
+                        $"Compra falhou: nao foi possivel adicionar '{evt.ItemId}' x{evt.Amount}.",
+                    _ => $"Compra falhou: transacao invalida para '{evt.ItemId}' x{evt.Amount}."
+                };
+                PublishTransaction(false, "Purchase", evt.ItemId, evt.Amount, 0, failure);
+                return;
+            }
+
+            PublishTransaction(true, "Purchase", evt.ItemId, evt.Amount, -evt.TotalCost, $"Compra concluida: '{evt.ItemId}' x{evt.Amount} por {evt.TotalCost}g.");
+        }
+
+        private void HandleSellAllRequested(SellAllRequestedEvent evt)
+        {
+            if (!HasRequiredManagers("venda", out var failureMessage))
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0, failureMessage);
+                return;
+            }
+
+            // fable_19 (CA-2): o ponto de venda URBANO recusa sem a licença de barraca. Ponto único
+            // de gate (sem if espalhado): consulta a fachada CityServiceAccess (fail-closed). Venda a
+            // NPC e ao mercador errante da caverna seguem livres (source diferente).
+            if (string.Equals(evt.SourceId, UrbanSellSourceId, System.StringComparison.Ordinal)
+                && !CindarsHope.City.Services.CityServiceAccess.UrbanSellAllowed())
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    "Voce precisa da Licenca de Barraca de Mercado (Tovin, 200g) para vender neste ponto.");
+                return;
+            }
+
+            var snapshot = new List<KeyValuePair<string, int>>(_inventoryManager.Items);
+            var amounts = new Dictionary<string, int>();
+            var unitPrices = new Dictionary<string, int>();
+            long normalGold = 0;
+            long totalAmount = 0;
+            long retainedAmount = 0;
+
+            foreach (var entry in snapshot)
+            {
+                var itemId = entry.Key;
+                var amount = _inventoryManager.GetEligibleAmount(itemId);
+                retainedAmount += entry.Value - amount;
+                if (amount <= 0 || !SellableItemPolicy.IsSellable(itemId))
+                {
+                    continue;
+                }
+
+                if (!_inventoryManager.TryGetItemData(itemId, out var itemData))
+                {
+                    Debug.LogWarning($"{nameof(EconomyManager)} skipped unknown sellable item id '{itemId}'.", this);
+                    continue;
+                }
+
+                var itemValue = (long)itemData.BaseValue * amount;
+                if (itemValue <= 0 || itemValue > int.MaxValue
+                    || normalGold + itemValue > int.MaxValue
+                    || totalAmount + amount > int.MaxValue)
+                {
+                    PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                        $"Venda falhou: valor invalido ou overflow para '{itemId}'.");
+                    return;
+                }
+                amounts[itemId] = amount;
+                unitPrices[itemId] = itemData.BaseValue;
+                normalGold += itemValue;
+                totalAmount += amount;
+            }
+
+            if (amounts.Count == 0)
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    $"Venda concluida: nenhum item vendavel encontrado. {retainedAmount} unidade(s) retida(s).");
+                return;
+            }
+
+            if (!_inventoryManager.TryPrepareBatchRemoval(amounts, out var batch))
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    "Venda falhou: inventario mudou durante a cotacao.");
+                return;
+            }
+
+            var totalGold = (int)normalGold;
+
+            // fable_23 (CA-2): ponto ÚNICO nomeado do bônus de ouro em vendas de acessório (Anel de
+            // Finan +5%). Consulta síncrona ao AccessoryEffectRouter; sem acessório => neutro (sem if
+            // espalhado). Não-stack já garantido no roteador (2 anéis iguais != +10%).
+            var goldGainModifier = DomainManagerRegistry.Get<IGoldGainModifierRuntime>();
+            if (goldGainModifier != null)
+            {
+                totalGold = goldGainModifier.ApplyGoldGain(totalGold);
+            }
+
+            // fable_37 (CA-2 economia): ponto ÚNICO nomeado do multiplicador de venda por evento de mundo
+            // (pico de Lua Âmbar +10% e/ou cultivo em alta +25%). Lê WorldEventHooks (resolução do dia);
+            // sem evento ativo => multiplicador neutro 1.0. O EconomyManager não conhece o WorldEventService.
+            totalGold = CindarsHope.World.Events.WorldEventHooks.ApplySellGold(totalGold);
+
+            if (!AtomicOriginSaleTransaction.TryQuoteBatch(batch, unitPrices, totalGold,
+                out var paidGold, out var limitedUnits)
+                || !AtomicOriginSaleTransaction.TryCommitBatch(_inventoryManager, _playerManager,
+                    batch, paidGold))
+            {
+                PublishTransaction(false, "SellAll", string.Empty, 0, 0,
+                    "Venda falhou: cotacao ou credito indisponivel.");
+                return;
+            }
+            var message = $"Venda concluida: {totalAmount} itens por {paidGold}g."
+                + (limitedUnits > 0 ? $" {limitedUnits} unidade(s) com limite de compra." : string.Empty)
+                + (retainedAmount > 0 ? $" {retainedAmount} unidade(s) retida(s)." : string.Empty);
+            PublishTransaction(true, "SellAll", string.Empty, (int)totalAmount, paidGold, message);
+        }
+
+        private bool HasRequiredManagers(string operationName, out string failureMessage)
+        {
+            if (_inventoryManager == null || _playerManager == null)
+            {
+                failureMessage = $"Economia falhou na {operationName}: InventoryManager ou PlayerManager ausente.";
+                return false;
+            }
+
+            failureMessage = string.Empty;
+            return true;
+        }
+
+        private void PublishTransaction(bool wasSuccessful, string transactionType, string itemId, int amount, int goldDelta, string message)
+        {
+            if (wasSuccessful)
+            {
+                Debug.Log(message, this);
+            }
+            else
+            {
+                Debug.LogWarning(message, this);
+            }
+
+            GameEventBus.Publish(new EconomyTransactionCompletedEvent(wasSuccessful, transactionType, itemId, amount, goldDelta, message));
+        }
+    }
+}

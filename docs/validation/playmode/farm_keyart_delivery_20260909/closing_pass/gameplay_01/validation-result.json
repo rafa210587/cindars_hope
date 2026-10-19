@@ -1,0 +1,20 @@
+{
+  "status": "FAIL",
+  "views": 8,
+  "runtimeErrors": 0,
+  "physicalRoutesStatus": "PASS",
+  "physicalRoutesCount": 16,
+  "visitedNodes": 6529,
+  "interactionSelectionStatus": "FAIL",
+  "selected": 3,
+  "selectionTotal": 4,
+  "failedSelectionIds": [
+    "house"
+  ],
+  "sceneUnchanged": true,
+  "sceneSha256": "feabdca936a8b56b299920af6a46c2161c85691631858321a15bc275d1cd440b",
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "failure": "Real interaction selection failed or absent; inspect interactionSelection.",
+  "interpretation": "Door selection failed on bounded physical samples; craft3PASS. Source geometry suggests very narrow reachable selection band; not proof of absolute impossibility. Root authorized local door trigger correction without changing blocker, global reach or probe."
+}

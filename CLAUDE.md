@@ -1,166 +1,44 @@
 # CLAUDE.md — Cindar's Hope
 
-## Contexto do projeto
-Jogo 2D pixel art RPG + farm sim desenvolvido em Unity LTS com C#.
-Mundo: Vaalara, cidade Cindar's Hope, região Dornecia.
-Arte: Aseprite como ferramenta principal; Pixelorama/LibreSprite como fallback, sprites 32x32px, resolução 1280x720.
-IA de arte: ChatGPT/DALL-E para conceito e ícones simples; PixelLab/Scenario opcionais para sprites/tilesets; Aseprite obrigatório para acabamento final.
-Geração de código: Codex (VS Code) + Claude.
-Spec: GitHub SpecKit com fluxo Specify → Plan → Tasks → Implement.
+2D pixel-art RPG + farm sim in Unity/C#. World: Vaalara / Cindar's Hope / Dornecia. Specs live in `.specs/`; never recreate `specs/` or `spec/`.
 
-## Documentos de referência (ler antes de qualquer tarefa)
-- docs/GDD_v2.6.md           — design completo do jogo
-- docs/ARCH_fase4_v2.2.md    — arquitetura técnica, padrões, eventos
-- docs/FASE5_ambiente_v1.2.md — setup micro do ambiente
-- specs/                      — specs por sistema (geradas na Fase 7)
+## Initial reading
 
-## Modelo de LLM padrão
-claude-sonnet-4-6
+Read this router, `docs/project/CURRENT_STATE.md` and the files relevant to the selected journey below.
+For spec execution, also read the active spec and its referenced files. The invariants in `AGENTS.md` remain binding.
+Select only the needed workflow from the [harness catalog](.claude/HARNESS_INDEX.md); references are conditional, never a mandatory reading queue.
+Spec planning uses `spec-authoring`; execution uses `spec-execution`; closeout uses `/finish-spec`. These workflows point to applicable sources and gates.
+For staged SDD authoring: `refinement-authoring` → `spec-authoring` → `spec-planning` → `spec-task-authoring` (including consistency review). Existing complete specs remain valid.
+Do not load PROJECT_LOG, ROADMAP, the full GDD, docs_old, unrelated refinements/reports or archived specs by default. History is for audit/reconciliation/regression; roadmap is for planning.
 
-## Regras INVIOLÁVEIS de código
+## Proportionate execution
 
-1. NUNCA usar GameObject.Find() ou FindObjectOfType()
-   → Usar injeção via [SerializeField] no Inspector ou eventos
-2. NUNCA criar comunicação direta entre sistemas
-   → Sempre via GameEventBus.Publish() e Subscribe()
-3. NUNCA hardcodar dados de jogo (HP, dano, preços, nomes)
-   → Sempre em ScriptableObject no Assets/_Game/Data/
-4. SEMPRE fazer Unsubscribe em OnDisable ou OnDestroy
-   → void OnDisable() => GameEventBus.Unsubscribe<XEvent>(OnX);
-5. NUNCA escrever lógica de negócio em MonoBehaviour
-   → MonoBehaviour só faz ponte entre Unity e classes C# puras
-6. SEMPRE prefixar ScriptableObjects: ItemDataSO, SeedDataSO, etc.
-7. SEMPRE prefixar eventos: DayStartedEvent, PlayerDiedEvent, etc.
-8. SEMPRE commits em português
-9. NUNCA implementar feature sem spec aprovada (Fase 7+)
-10. Sprites: SEMPRE importar com Filter Mode Point + Compression None
-11. Direção visual: cozy farm pixel art inspirado por Harvest Moon/Stardew Valley, mas com identidade própria; não copiar assets, personagens, UI ou paleta proprietária
+Choose by intended behavior and risk, not file count:
 
-## Convenções de nomenclatura
+| Journey | Entry and minimum evidence |
+|---|---|
+| Local correction of an existing contract; typo or bounded bug | `/bugfix`: reproduce/inspect → smallest fix → relevant check → short result. No new spec, separate plan/report, delegation or commit by default. |
+| New feature or cohesive planned maintenance | Approved spec; use the short maintenance format when sufficient, then `spec-execution`. |
+| Save/IDs, cross-system, lifecycle or structural contract change | Review affected contracts and integration risks before editing; use the existing spec or amend/create the necessary scoped spec. A one-line diff can take this journey. |
 
-| Tipo | Convenção | Exemplo |
-|---|---|---|
-| Classes | PascalCase | PlayerController, FarmSystem |
-| Eventos | [Acao][Substantivo]Event | DayStartedEvent, ItemCraftedEvent |
-| ScriptableObjects | [Tipo]DataSO | ItemDataSO, SeedDataSO |
-| Prefabs | [Categoria]_[Nome] | Creature_Slime, NPC_Brumdar |
-| Sprites | [Cat]_[Nome]_[Tamanho].png | Item_SwordIron_32x32.png |
-| Variáveis private | _camelCase | _currentHP, _isGrounded |
-| Variáveis public/[SerializeField] | PascalCase | MaxHP, MoveSpeed |
-| Constantes | UPPER_SNAKE | MAX_COMPANIONS, BASE_HUNGER_RATE |
-| Cenas | PascalCase | FarmScene, TownScene, CaveScene |
+Escalate when discovery changes the risk or intended contract; continue independent authorized
+work. A bugfix request does not authorize a new feature. Reuse existing tests/evidence and add
+only missing coverage. A reversible wording fix needs inspection, not a new test suite.
 
-## Estrutura de pastas
+The owner may complete a small fix, bounded edit and its behavior test in the same context. Delegate when an independent slice, specialization or risk-based review justifies coordination; do not delegate every edit automatically.
+Define ownership, inputs, acceptance criteria and evidence when delegating. Preserve concurrent work; inspect artifacts and results before accepting summaries. Reuse valid gates over equivalent inputs.
+Use independent review for higher-risk changes (save contracts, cross-system gameplay, architecture, substantial visual integration). Auditors are read-only; `unity-validator` may run tools and write evidence, without fixing runtime.
+Before execution or delegation, apply [task model routing](.claude/rules/task-model-routing.md): choose the most economical available model suited to the slice's risk and validation, with escalation when needed. This project authorizes that selection; an explicit user model choice takes precedence. Apply overrides only through supported host controls; otherwise retain the configured model and report the limitation. Reasoning effort is not model selection. Do not translate Claude aliases into Codex models.
 
-```
-Assets/_Game/
-├── Data/           ← ScriptableObjects (nunca .cs aqui)
-├── Scripts/
-│   ├── Core/       ← GameEventBus, TimeManager, SaveManager, Events/
-│   ├── Player/
-│   ├── Farm/
-│   ├── Cave/
-│   ├── Combat/
-│   ├── Craft/
-│   ├── Companion/
-│   ├── NPC/
-│   ├── UI/
-│   ├── Save/
-│   └── Utils/
-├── Scenes/
-├── Prefabs/
-├── Sprites/
-│   └── Placeholders/  ← retângulos coloridos para MVP
-├── Animations/
-├── Tilemaps/
-└── Audio/             ← vazio até Fase 10 (polish)
-```
+## Invariants and conflicts
 
-## Padrão de MonoBehaviour
+Full rules live in `AGENTS.md` and [.claude/rules/RULES.md](.claude/rules/RULES.md). Preserve Git/file safety, architecture, IDs/save, pixel-art imports and validation truth.
+Specs override roadmap/refinements; conflicts with CURRENT_STATE must be reported to the user. Do not expand scope, promote a spec without evidence, delete documents without authorization/candidate status or edit Unity YAML without the explicit conditions.
+A failed mandatory gate needs a documented resolution path; runtime requires a test, Play Mode scenario or justified residual risk. Compile does not prove human/visual acceptance.
+Commits remain in Portuguese. Push, PR/MR and prohibited Git operations remain subject to AGENTS authorization requirements.
 
-```csharp
-public class NomeDoSistema : MonoBehaviour
-{
-    [SerializeField] private NomeDataSO _data;
+## Language and discovery
 
-    void OnEnable() => GameEventBus.Subscribe<XEvent>(OnX);
-    void OnDisable() => GameEventBus.Unsubscribe<XEvent>(OnX);
-
-    private void OnX(XEvent e)
-    {
-        // reagir ao evento
-    }
-}
-```
-
-## Padrão de ScriptableObject
-
-```csharp
-[CreateAssetMenu(fileName = "X_NomeDoItem", menuName = "CindarsHope/Categoria/Tipo")]
-public class TipoDataSO : ScriptableObject
-{
-    public string Id;
-    public string DisplayName;
-    [TextArea] public string Description;
-    public Sprite Icon;
-}
-```
-
-## Paleta de cores (hex)
-
-| Ambiente | Cor | Hex |
-|---|---|---|
-| Fazenda | Laranja | #D4832A |
-| Fazenda | Bronze | #8B6914 |
-| Fazenda | Terra | #6B3A2A |
-| Fazenda | Verde musgo | #4A6741 |
-| Cidade | Azul ardósia | #4A5E7A |
-| Cidade | Pedra | #7A8A9A |
-| Cidade | Âmbar lanterna | #D4A850 |
-| Caverna | Cinza carvão | #2A2A2A |
-| Caverna | Roxo escuro | #3A1F4A |
-| Caverna | Cinza úmido | #4A4A5A |
-| Global | Outline personagens | #0A0A0A |
-
-## Placeholders do MVP (Fase 8)
-
-Retângulos coloridos em Assets/_Game/Sprites/Placeholders/:
-- Jogador: cubo azul 32x48
-- Inimigo: cubo vermelho 32x32
-- Planta estágio 0: cubo verde escuro 32x32
-- Planta estágio final: cubo verde claro 32x32
-- Tile chão fazenda: #C8A464 (areia laranja)
-- Tile chão caverna: #555555
-- Tile parede caverna: #333333
-- Item dropado: cubo amarelo 16x16
-- NPC: cubo branco 32x48
-- Workshop: retângulo cinza 64x64
-
-
-## Regras adicionais para Codex — Fase 8
-
-1. Implementar em PRs pequenos, seguindo `FASE8_EXECUTION_PLAN_CODEX_v1.0.md`.
-2. Nunca implementar mais de um PR por tarefa, salvo pedido explícito.
-3. Todo PR deve declarar arquivos alterados e teste manual.
-4. Nunca trocar arquitetura por conveniência.
-5. Nunca usar `StreamingAssets` para save editável; usar `Application.persistentDataPath`.
-6. Nunca serializar `ScriptableObject`, `GameObject`, `Transform`, `MonoBehaviour` ou referência Unity em JSON de save.
-7. Persistência sempre por IDs estáveis.
-8. Não usar `FindObjectsByType` em runtime para montar sistemas; preferir `[SerializeField]`, installer de cena ou Editor script.
-9. Se a tarefa exigir configuração manual pesada no Unity, criar Editor script reproduzível.
-10. Se houver dúvida entre MVP e V2/FULL, escolher MVP e registrar pendência.
-
-## Documentos operacionais adicionais
-
-- `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` — plano de execução por PR.
-- `docs/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` — contratos de eventos, IDs, registries e save.
-- `docs/SPRITE_PIPELINE_AI_ASEPRITE_v1.0.md` — pipeline de arte com IA + Aseprite.
-
-## Regras de arte com IA
-
-1. Não copiar assets, paleta proprietária, UI, personagens ou sprites de Stardew Valley/Harvest Moon.
-2. Usar referências apenas como direção de gênero: legibilidade, câmera, conforto visual.
-3. IA pode gerar conceito, variações e rascunhos.
-4. Aseprite é a etapa final obrigatória para limpar pixels, paleta, outline e export.
-5. Todo sprite aprovado deve ter `.aseprite/.ase` fonte quando houver edição manual relevante.
-6. PNG final entra em `Assets/_Game/Sprites/...` com import `Point`, `Compression None`, `Generate Mip Maps false`.
+Use English for new or migrated AI instructions and supporting resources; preserve identifiers and validator-consumed literals. Keep conversation, user-facing game text and human documentation in the requested language; this session uses Portuguese.
+Select skills by the task, then load only relevant references, templates or examples. Discoverability is not a guarantee of correct selection or of every configured agent being available in the current session.
+For working-tree discovery, start with `pwsh -File tools/codex/Get-ChangeSummary.ps1`; inspect exact affected paths before editing. Bound search/log output, report omitted counts, and retrieve details when needed. Never truncate skill instructions, decisive errors or evidence required for a conclusion.

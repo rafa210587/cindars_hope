@@ -1,0 +1,122 @@
+--- a/Assets/_Game/Scripts/Editor/Validation/FarmDoorAndWaterProbe.cs
++++ b/Assets/_Game/Scripts/Editor/Validation/FarmDoorAndWaterProbe.cs
+@@ -21,6 +21,8 @@
+             public string phase, path, leafSprite, eventMarker;
+             public float time, fixedTime, roofAlpha;
+             public int doorFrame, waterFrame = -1, fixedSteps;
++            public int waterAnimationFlagBits;
++            public string waterAnimationFlags;
+             public bool blockerEnabled, doorOpen, doorAnimating;
+             public Vector2 playerPosition;
+         }
+@@ -28,13 +30,16 @@
+         {
+             public string status = "RUNNING", reason;
+             public float traversalCaptureInterval = 0.09f;
+-            public string timing = "Every PNG carries its observed Time.time and fixedTime; preview timing must use consecutive timestamp deltas, never an invented constant playback rate. Moving-body snapshots target 0.09s intervals; stationary duplicates are omitted. Door poses are captured when observed to change.";
++            public string timing = "Every PNG carries its observed Time.time and fixedTime; preview timing must use consecutive timestamp deltas, never an invented constant playback rate. Moving-body snapshots target 0.09s intervals; stationary duplicates are omitted. Door poses are captured when observed to change. Water PNGs are sampled periodically regardless of frame changes and tagged after Camera.Render; identical frames are retained as evidence.";
+             public string method = "Initial framing at the earlier physically validated house selection position. Thereafter actual player Rigidbody2D.MovePosition in FixedUpdate, with PlayerController temporarily disabled. Live selector invokes only HouseDoorInteractable. No forced alpha/door state, injected input, portal, save or load. Water reads actual Tilemap.GetAnimationFrame. This is controlled-body traversal, not a movement-input test.";
+             public Vector2 originalPlayerPosition, preparedPlayerPosition;
+             public Vector3 houseCameraPosition, lakeCameraPosition;
+             public float cameraAspect, orthographicSize;
+             public int width, height, waterAnimationFrameCount;
+-            public string waterColliderStateBefore, waterColliderStateAfter;
++            public string waterColliderStateBefore, waterColliderStateAfter, waterAnimationFlagsBefore;
++            public bool waterAdvancedObserved, waterWrapObserved;
++            public int waterDistinctFrames;
++            public float waterSampleDuration;
+             public List<string> checks = new List<string>();
+             public List<Sample> samples = new List<Sample>();
+         }
+@@ -239,23 +244,44 @@
+                         camera.transform.position = new Vector3(24f, -10f, originalCameraPosition.z);
+                         Result.lakeCameraPosition = camera.transform.position;
+                         Result.waterColliderStateBefore = WaterFingerprint();
++                        Result.waterAnimationFlagsBefore = water.GetTileAnimationFlags(waterCell).ToString();
+                         lastWaterCapture = -1f;
+                         ChangePhase(Phase.Water);
+                         break;
+                     case Phase.Water:
++                        Require(elapsed < 4f, "Water observation exceeded its 4s limit without proving the loop.");
+                         Require(WaterFingerprint() == Result.waterColliderStateBefore, "Water collision changed during animation.");
+-                        var frame = water.GetAnimationFrame(waterCell);
+-                        if ((lastWaterCapture < 0f || elapsed - lastWaterCapture >= 0.18f) && frame != lastWaterFrame)
++                        // Render periodically even if the last reported frame is unchanged. Batch
++                        // rendering may update native tile animation; gating renders by that frame
++                        // could suppress the very update this probe is meant to observe.
++                        if (lastWaterCapture < 0f || elapsed - lastWaterCapture >= 0.18f)
+                         {
++                            var sample = Capture("water_" + Result.samples.Count.ToString("D3"), captureWater: true);
++                            var frame = sample.waterFrame;
++                            var flags = (TileAnimationFlags)sample.waterAnimationFlagBits;
++                            Require((flags & (TileAnimationFlags.LoopOnce | TileAnimationFlags.PauseAnimation)) == 0,
++                                "Water tile is configured to stop/pause: " + sample.waterAnimationFlags);
++                            Require(frame >= 0 && frame < Result.waterAnimationFrameCount, "Water reported an invalid animation frame.");
+                             seenWaterFrames.Add(frame);
+-                            Capture("water_" + Result.samples.Count.ToString("D3"), frame);
+-                            lastWaterCapture = elapsed;
++                            if (lastWaterFrame >= 0)
++                            {
++                                if (frame > lastWaterFrame) Result.waterAdvancedObserved = true;
++                                else if (frame < lastWaterFrame && Result.waterAdvancedObserved) Result.waterWrapObserved = true;
++                            }
++                            lastWaterCapture = sample.time - phaseStarted;
+                             lastWaterFrame = frame;
++                            Result.waterDistinctFrames = seenWaterFrames.Count;
++                            Result.waterSampleDuration = lastWaterCapture;
++                            Require(WaterFingerprint() == Result.waterColliderStateBefore,
++                                "Water collision changed during Camera.Render.");
+                         }
+-                        if (elapsed < 1.4f) break;
+-                        Require(seenWaterFrames.Count >= 4, "Water tile did not expose at least four distinct live animation frames.");
++                        if (Result.waterSampleDuration < 2.6f) break;
++                        if (seenWaterFrames.Count != 6 || !Result.waterWrapObserved)
++                        {
++                            break;
++                        }
+                         Result.waterColliderStateAfter = WaterFingerprint();
+-                        Result.checks.Add("Water.GetAnimationFrame changed across at least four poses during >=1.4s with identical lake/river colliders.");
++                        Result.checks.Add("Periodic PNGs sampled after Camera.Render show all six water indices and a lower index after forward progress (wrap), over >=2.6s; LoopOnce/Pause absent and all three water colliders unchanged. Repeated frames remain in evidence.");
+                         Result.status = "PASS";
+                         phase = Phase.Finished;
+                         Dispose();
+@@ -340,13 +366,13 @@
+             }).ToArray() });
+         }
+ 
+-        private void Capture(string id, int waterFrame = -1)
++        private Sample Capture(string id, bool captureWater = false)
+         {
+             var sample = new Sample { phase = id, time = Time.time, fixedTime = Time.fixedTime,
+                 playerPosition = body.position, fixedSteps = driver.FixedSteps,
+                 doorFrame = Array.IndexOf(frames, leaf.sprite), leafSprite = leaf.sprite != null ? leaf.sprite.name : "null",
+                 blockerEnabled = blocker.enabled, doorOpen = door.IsOpen, doorAnimating = door.IsAnimating,
+-                roofAlpha = roof.color.a, waterFrame = waterFrame, path = Path.Combine(outputDirectory, id + ".png") };
++                roofAlpha = roof.color.a, path = Path.Combine(outputDirectory, id + ".png") };
+             var oldTarget = camera.targetTexture;
+             var oldActive = RenderTexture.active;
+             var target = new RenderTexture(Result.width, Result.height, 24, RenderTextureFormat.ARGB32);
+@@ -355,12 +381,23 @@
+             {
+                 camera.targetTexture = target;
+                 camera.Render();
++                if (captureWater)
++                {
++                    // Annotate the rendered observation, not the potentially stale pre-render index.
++                    sample.time = Time.time;
++                    sample.fixedTime = Time.fixedTime;
++                    sample.waterFrame = water.GetAnimationFrame(waterCell);
++                    var flags = water.GetTileAnimationFlags(waterCell);
++                    sample.waterAnimationFlagBits = (int)flags;
++                    sample.waterAnimationFlags = flags.ToString();
++                }
+                 RenderTexture.active = target;
+                 texture = new Texture2D(Result.width, Result.height, TextureFormat.RGB24, false);
+                 texture.ReadPixels(new Rect(0, 0, Result.width, Result.height), 0, 0);
+                 texture.Apply();
+                 File.WriteAllBytes(sample.path, texture.EncodeToPNG());
+                 Result.samples.Add(sample);
++                return sample;
+             }
+             finally
+             {

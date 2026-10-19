@@ -1,0 +1,1 @@
+PASS: reopened frame counts, square canvases, durations, tags, hidden preserved baselines

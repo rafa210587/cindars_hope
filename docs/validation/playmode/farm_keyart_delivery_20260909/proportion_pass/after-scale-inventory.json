@@ -1,0 +1,1047 @@
+{
+  "sceneSha256": "EB848C096E5E13CD015E61516EE0E7E11374708CBB22B37CF22CB9515F723D16",
+  "playerHeight": 1.1875,
+  "measurements": [
+    {
+      "path": "FarmRichness/Visual_CentralWell",
+      "sprite": "Assets/_Game/Art/Generated/World/props/well.png",
+      "spriteGuid": "67ea7338ccb733844beda8d8e5fb16c9",
+      "position": [
+        -7.0,
+        10.0,
+        0.0
+      ],
+      "lossyScale": [
+        4.4,
+        4.4,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        1.6843750000000002,
+        2.2
+      ],
+      "alpha05WorldSize": [
+        1.6843750000000002,
+        2.2
+      ],
+      "heightRelativeToPlayer": 1.8526315789473686,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "ShippingBin_farm_shipping_bin_01/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+      "spriteGuid": "5364a341bf60e62429073f54f540f50e",
+      "position": [
+        10.0,
+        3.0,
+        0.0
+      ],
+      "lossyScale": [
+        0.402010074,
+        0.402010074,
+        1.8
+      ],
+      "fullRectWorldSize": [
+        1.341080481234375,
+        1.25000007384375
+      ],
+      "alpha05WorldSize": [
+        1.2908292219843749,
+        1.19974881459375
+      ],
+      "heightRelativeToPlayer": 1.0103147912368422,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_201",
+      "sprite": "Assets/_Game/Art/Generated/World/tiles/ground_soil.png",
+      "spriteGuid": "a4031fe5846653a4b91c1bf8ec493954",
+      "position": [
+        23.30000114,
+        8.8000002,
+        0.0
+      ],
+      "lossyScale": [
+        1.1,
+        1.1,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.55,
+        0.55
+      ],
+      "alpha05WorldSize": [
+        0.55,
+        0.55
+      ],
+      "heightRelativeToPlayer": 0.46315789473684216,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmProcessing/Station_WineBarrel/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/building/barrel_shed.png",
+      "spriteGuid": "ceb8f2908c4bf0549901f260eb8a74c7",
+      "position": [
+        5.0,
+        -18.0,
+        0.0
+      ],
+      "lossyScale": [
+        1.312134010483076,
+        1.312134010483076,
+        0.89090914
+      ],
+      "fullRectWorldSize": [
+        4.366946003638987,
+        4.900000445397738
+      ],
+      "alpha05WorldSize": [
+        4.2029292523286035,
+        4.735983694087353
+      ],
+      "heightRelativeToPlayer": 3.988196795020929,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual_ClearingFlower_04",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        -22.5,
+        6.6,
+        0.0
+      ],
+      "lossyScale": [
+        0.8,
+        0.8,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.35625,
+        0.4
+      ],
+      "alpha05WorldSize": [
+        0.35625,
+        0.4
+      ],
+      "heightRelativeToPlayer": 0.3368421052631579,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_202",
+      "sprite": "Assets/_Game/Art/Generated/World/tiles/ground_soil.png",
+      "spriteGuid": "a4031fe5846653a4b91c1bf8ec493954",
+      "position": [
+        22.1000004,
+        7.60000038,
+        0.0
+      ],
+      "lossyScale": [
+        1.1,
+        1.1,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.55,
+        0.55
+      ],
+      "alpha05WorldSize": [
+        0.55,
+        0.55
+      ],
+      "heightRelativeToPlayer": 0.46315789473684216,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmAnimalHousings/Coop_01/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/building/coop.png",
+      "spriteGuid": "aaef0158236367d47a047cc462a85fc5",
+      "position": [
+        -16.0,
+        -18.0,
+        0.0
+      ],
+      "lossyScale": [
+        1.1755102,
+        1.1755102,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        2.6908163171874997,
+        4.499999984375
+      ],
+      "alpha05WorldSize": [
+        2.5438775421875,
+        4.353061209374999
+      ],
+      "heightRelativeToPlayer": 3.6657357552631575,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual_ClearingFlower_02",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        -21.0,
+        4.0,
+        0.0
+      ],
+      "lossyScale": [
+        0.8,
+        0.8,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.35625,
+        0.4
+      ],
+      "alpha05WorldSize": [
+        0.35625,
+        0.4
+      ],
+      "heightRelativeToPlayer": 0.3368421052631579,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual_ClearingFlower_05",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        -25.5,
+        1.4,
+        0.0
+      ],
+      "lossyScale": [
+        0.8,
+        0.8,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.35625,
+        0.4
+      ],
+      "alpha05WorldSize": [
+        0.35625,
+        0.4
+      ],
+      "heightRelativeToPlayer": 0.3368421052631579,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual_ClearingFlower_06",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        -22.5,
+        1.4,
+        0.0
+      ],
+      "lossyScale": [
+        0.8,
+        0.8,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.35625,
+        0.4
+      ],
+      "alpha05WorldSize": [
+        0.35625,
+        0.4
+      ],
+      "heightRelativeToPlayer": 0.3368421052631579,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "CraftingStation_Workbench/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/props/workbench.png",
+      "spriteGuid": "2c323108975c3d64ab9e84b75f64c3e9",
+      "position": [
+        12.0,
+        -1.0,
+        0.0
+      ],
+      "lossyScale": [
+        0.48241207,
+        0.48241207,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        1.75628144234375,
+        1.5000000301562502
+      ],
+      "alpha05WorldSize": [
+        1.69597993359375,
+        1.43969852140625
+      ],
+      "heightRelativeToPlayer": 1.2123777022368423,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmProcessing/Station_CheesePress/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/building/cheese_hut.png",
+      "spriteGuid": "9a5224c12227c174ca7fed0e801821b5",
+      "position": [
+        -2.0,
+        -18.0,
+        0.0
+      ],
+      "lossyScale": [
+        1.274796810243902,
+        1.274796810243902,
+        0.89090914
+      ],
+      "fullRectWorldSize": [
+        3.555487978570883,
+        4.900000239374998
+      ],
+      "alpha05WorldSize": [
+        3.396138377290395,
+        4.740650638094511
+      ],
+      "heightRelativeToPlayer": 3.99212685313222,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "CraftingStation_Forge/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/props/forge.png",
+      "spriteGuid": "c4d015a9d2e4eba479bee16d1b52ac8c",
+      "position": [
+        16.0,
+        -1.0,
+        0.0
+      ],
+      "lossyScale": [
+        0.43146068,
+        0.43146068,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        1.456179795,
+        1.5000000203125
+      ],
+      "alpha05WorldSize": [
+        1.4022472099999999,
+        1.4460674353125
+      ],
+      "heightRelativeToPlayer": 1.2177409981578948,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_203",
+      "sprite": "Assets/_Game/Art/Generated/World/tiles/ground_soil.png",
+      "spriteGuid": "a4031fe5846653a4b91c1bf8ec493954",
+      "position": [
+        23.30000114,
+        7.60000038,
+        0.0
+      ],
+      "lossyScale": [
+        1.1,
+        1.1,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.55,
+        0.55
+      ],
+      "alpha05WorldSize": [
+        0.55,
+        0.55
+      ],
+      "heightRelativeToPlayer": 0.46315789473684216,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/props/fonte_anya.png",
+      "spriteGuid": "ec22588db42abf240ac156e3955bb778",
+      "position": [
+        -24.0,
+        4.0,
+        0.0
+      ],
+      "lossyScale": [
+        0.82656825,
+        0.82656825,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        3.131918759765625,
+        3.49999993359375
+      ],
+      "alpha05WorldSize": [
+        3.028597728515625,
+        3.39667890234375
+      ],
+      "heightRelativeToPlayer": 2.8603611809210525,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "RiverAndBridge/Bridge_01/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/props/bridge_keyart_v2.png",
+      "spriteGuid": "3318aa2fdc9917641a23d927d57dfb11",
+      "position": [
+        27.0,
+        1.4066668600000003,
+        0.037925925
+      ],
+      "lossyScale": [
+        0.379259262,
+        0.37925925799999993,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        6.435555602062499,
+        2.1451851780624995
+      ],
+      "alpha05WorldSize": [
+        5.6059259664375,
+        1.4014814768281247
+      ],
+      "heightRelativeToPlayer": 1.180194927855263,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/GreenhouseFloor",
+      "sprite": "Assets/_Game/Art/Generated/World/building/greenhouse.png",
+      "spriteGuid": "93f8f076d3fc4e34d9f831369939e3a7",
+      "position": [
+        23.0,
+        6.0,
+        0.0
+      ],
+      "lossyScale": [
+        1.4114069,
+        1.4114069,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        4.32243363125,
+        5.8000002296875
+      ],
+      "alpha05WorldSize": [
+        4.14600776875,
+        5.6235743671875005
+      ],
+      "heightRelativeToPlayer": 4.735641572368421,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_GreenhouseGarden",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        21.2,
+        5.5,
+        0.0
+      ],
+      "lossyScale": [
+        1.3,
+        1.3,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.5789062500000001,
+        0.65
+      ],
+      "alpha05WorldSize": [
+        0.5789062500000001,
+        0.65
+      ],
+      "heightRelativeToPlayer": 0.5473684210526316,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmAnimalHousings/Barn_01/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/building/barn.png",
+      "spriteGuid": "defb41e0ed2b41245b6657d006cd2cc2",
+      "position": [
+        -9.0,
+        -18.0,
+        0.0
+      ],
+      "lossyScale": [
+        1.4095914,
+        1.4095914,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        5.0106569296875,
+        6.1999996734375005
+      ],
+      "alpha05WorldSize": [
+        4.8344580046875,
+        6.0238007484375
+      ],
+      "heightRelativeToPlayer": 5.0726743144736846,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmRichness/Visual_GreenhouseCompost",
+      "sprite": "Assets/_Game/Art/Generated/World/props/compost_bin.png",
+      "spriteGuid": "e2e09a7967f143a4a857b05c26edd642",
+      "position": [
+        24.8,
+        5.3,
+        0.0
+      ],
+      "lossyScale": [
+        1.8,
+        1.8,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.95625,
+        0.9
+      ],
+      "alpha05WorldSize": [
+        0.95625,
+        0.9
+      ],
+      "heightRelativeToPlayer": 0.7578947368421053,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmDecoration/FarmSettlementDetails/Visual_GreenhouseSupplies",
+      "sprite": "Assets/_Game/Art/Generated/World/props/crate.png",
+      "spriteGuid": "8a4f1ea6e1a7cd24097a0bdf6017d146",
+      "position": [
+        21.0,
+        4.8,
+        0.0
+      ],
+      "lossyScale": [
+        1.3,
+        1.3,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.61953125,
+        0.65
+      ],
+      "alpha05WorldSize": [
+        0.61953125,
+        0.65
+      ],
+      "heightRelativeToPlayer": 0.5473684210526316,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual_ClearingFlower_01",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        -27.0,
+        4.0,
+        0.0
+      ],
+      "lossyScale": [
+        0.8,
+        0.8,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.35625,
+        0.4
+      ],
+      "alpha05WorldSize": [
+        0.35625,
+        0.4
+      ],
+      "heightRelativeToPlayer": 0.3368421052631579,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual_ClearingFlower_03",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        -25.5,
+        6.6,
+        0.0
+      ],
+      "lossyScale": [
+        0.8,
+        0.8,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.35625,
+        0.4
+      ],
+      "alpha05WorldSize": [
+        0.35625,
+        0.4
+      ],
+      "heightRelativeToPlayer": 0.3368421052631579,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_200",
+      "sprite": "Assets/_Game/Art/Generated/World/tiles/ground_soil.png",
+      "spriteGuid": "a4031fe5846653a4b91c1bf8ec493954",
+      "position": [
+        22.1000004,
+        8.8000002,
+        0.0
+      ],
+      "lossyScale": [
+        1.1,
+        1.1,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.55,
+        0.55
+      ],
+      "alpha05WorldSize": [
+        0.55,
+        0.55
+      ],
+      "heightRelativeToPlayer": 0.46315789473684216,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FarmHouse/Roof",
+      "sprite": "Assets/_Game/Art/Generated/World/building/farmhouse_keyart_v2.png",
+      "spriteGuid": "c7a4c139bcfb6624f9896eaec958f21b",
+      "position": [
+        16.0,
+        5.2360384,
+        0.0
+      ],
+      "lossyScale": [
+        0.94938916,
+        0.94938916,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        10.191099264375,
+        8.4925827203125
+      ],
+      "alpha05WorldSize": [
+        8.51483402875,
+        7.016579260625
+      ],
+      "heightRelativeToPlayer": 5.908698324736842,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "CraftingStation_CookingStation/Visual",
+      "sprite": "Assets/_Game/Art/Generated/World/props/cooking_station.png",
+      "spriteGuid": "9543c05bdf3dc4d4198959efc0d8bb55",
+      "position": [
+        20.0,
+        -1.0,
+        0.0
+      ],
+      "lossyScale": [
+        0.46715328,
+        0.46715328,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        1.48175181,
+        1.499999985
+      ],
+      "alpha05WorldSize": [
+        1.42335765,
+        1.4416058250000001
+      ],
+      "heightRelativeToPlayer": 1.2139838526315792,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    },
+    {
+      "path": "FonteAnya/Visual_AnyaClearing",
+      "sprite": "Assets/_Game/Art/Generated/World/foliage/flower_patch.png",
+      "spriteGuid": "b46595018987c1341a341e6e0c64a526",
+      "position": [
+        -22.5,
+        3.0,
+        0.0
+      ],
+      "lossyScale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "fullRectWorldSize": [
+        0.4453125,
+        0.5
+      ],
+      "alpha05WorldSize": [
+        0.4453125,
+        0.5
+      ],
+      "heightRelativeToPlayer": 0.42105263157894735,
+      "note": "Serialized single-sprite estimate; runtime metadata is authoritative."
+    }
+  ],
+  "boxColliders": [
+    {
+      "path": "Bounds/Bottom",
+      "trigger": "0",
+      "sizeWorld": [
+        66.0,
+        1.0
+      ],
+      "centerWorld": [
+        0.0,
+        -22.5
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/Wall_Top",
+      "trigger": "0",
+      "sizeWorld": [
+        7.0,
+        0.22
+      ],
+      "centerWorld": [
+        16.0,
+        12.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "Bounds/Left",
+      "trigger": "0",
+      "sizeWorld": [
+        1.0,
+        46.0
+      ],
+      "centerWorld": [
+        -32.5,
+        0.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "CraftingStation_Forge",
+      "trigger": "1",
+      "sizeWorld": [
+        0.6040449,
+        1.7
+      ],
+      "centerWorld": [
+        16.0,
+        -1.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_201",
+      "trigger": "1",
+      "sizeWorld": [
+        1.1,
+        1.1
+      ],
+      "centerWorld": [
+        23.30000114,
+        9.0750002
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/Wall_Right",
+      "trigger": "0",
+      "sizeWorld": [
+        0.22,
+        6.0
+      ],
+      "centerWorld": [
+        19.5,
+        9.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "Bounds/Top",
+      "trigger": "0",
+      "sizeWorld": [
+        66.0,
+        1.0
+      ],
+      "centerWorld": [
+        0.0,
+        22.5
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmProcessing/Station_CheesePress",
+      "trigger": "1",
+      "sizeWorld": [
+        2.00325202,
+        2.00325202
+      ],
+      "centerWorld": [
+        -2.0,
+        -18.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/Wall_Left",
+      "trigger": "0",
+      "sizeWorld": [
+        0.22,
+        6.0
+      ],
+      "centerWorld": [
+        12.5,
+        9.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/Wall_BottomR",
+      "trigger": "0",
+      "sizeWorld": [
+        3.0,
+        0.22
+      ],
+      "centerWorld": [
+        18.0,
+        6.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FonteAnya",
+      "trigger": "1",
+      "sizeWorld": [
+        1.8,
+        1.2
+      ],
+      "centerWorld": [
+        -24.0,
+        4.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_202",
+      "trigger": "1",
+      "sizeWorld": [
+        1.1,
+        1.1
+      ],
+      "centerWorld": [
+        22.1000004,
+        7.87500038
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/RoofReveal",
+      "trigger": "1",
+      "sizeWorld": [
+        7.0,
+        6.0
+      ],
+      "centerWorld": [
+        16.0,
+        9.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "ShippingBin_farm_shipping_bin_01",
+      "trigger": "1",
+      "sizeWorld": [
+        2.3400000000000003,
+        1.9800000000000002
+      ],
+      "centerWorld": [
+        10.0,
+        3.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "Bounds/Right",
+      "trigger": "0",
+      "sizeWorld": [
+        1.0,
+        46.0
+      ],
+      "centerWorld": [
+        32.5,
+        0.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "CraftingStation_Workbench/SolidBody",
+      "trigger": "0",
+      "sizeWorld": [
+        0.5065326,
+        0.4052261
+      ],
+      "centerWorld": [
+        12.0,
+        -0.76723619
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmAnimalHousings/Coop_01",
+      "trigger": "1",
+      "sizeWorld": [
+        2.2,
+        1.8
+      ],
+      "centerWorld": [
+        -16.0,
+        -18.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "CraftingStation_Workbench",
+      "trigger": "1",
+      "sizeWorld": [
+        0.67537683,
+        1.7
+      ],
+      "centerWorld": [
+        12.0,
+        -1.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_203",
+      "trigger": "1",
+      "sizeWorld": [
+        1.1,
+        1.1
+      ],
+      "centerWorld": [
+        23.30000114,
+        7.87500038
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "CraftingStation_Forge/SolidBody",
+      "trigger": "0",
+      "sizeWorld": [
+        0.4530337,
+        0.36242697
+      ],
+      "centerWorld": [
+        16.0,
+        -0.79182023
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/Door",
+      "trigger": "1",
+      "sizeWorld": [
+        1.6,
+        2.22
+      ],
+      "centerWorld": [
+        16.0,
+        5.99
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/Door",
+      "trigger": "0",
+      "sizeWorld": [
+        1.0,
+        0.22
+      ],
+      "centerWorld": [
+        16.0,
+        5.99
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "CraftingStation_CookingStation/SolidBody",
+      "trigger": "0",
+      "sizeWorld": [
+        0.49051094,
+        0.39240876
+      ],
+      "centerWorld": [
+        20.0,
+        -0.77459854
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmHouse/Wall_BottomL",
+      "trigger": "0",
+      "sizeWorld": [
+        3.0,
+        0.22
+      ],
+      "centerWorld": [
+        14.0,
+        6.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "CraftingStation_CookingStation",
+      "trigger": "1",
+      "sizeWorld": [
+        0.6540146,
+        1.7
+      ],
+      "centerWorld": [
+        20.0,
+        -1.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmProcessing/Greenhouse/FarmPlot_200",
+      "trigger": "1",
+      "sizeWorld": [
+        1.1,
+        1.1
+      ],
+      "centerWorld": [
+        22.1000004,
+        9.0750002
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmProcessing/Station_WineBarrel",
+      "trigger": "1",
+      "sizeWorld": [
+        2.06192476,
+        2.06192476
+      ],
+      "centerWorld": [
+        5.0,
+        -18.0
+      ],
+      "enabled": "1"
+    },
+    {
+      "path": "FarmAnimalHousings/Barn_01",
+      "trigger": "1",
+      "sizeWorld": [
+        2.2,
+        1.8
+      ],
+      "centerWorld": [
+        -9.0,
+        -18.0
+      ],
+      "enabled": "1"
+    }
+  ]
+}

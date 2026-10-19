@@ -1,0 +1,474 @@
+using System.Collections.Generic;
+using CindarsHope.Farm.Scene;
+using UnityEditor;
+using UnityEngine;
+
+namespace CindarsHope.Editor.Art
+{
+    /// <summary>Composes measured landscape sprites over existing terrain without owning collision.</summary>
+    public static class FarmLandscapeVisualComposer
+    {
+        public static void CreateNorthCliff(Transform parent)
+        {
+            const string path = "Assets/_Game/Art/Generated/World/props/cliff_keyart_v1.png";
+            if (AssetImporter.GetAtPath(path) is TextureImporter importer && importer.maxTextureSize < 4096)
+            {
+                importer.maxTextureSize = 4096;
+                importer.SaveAndReimport();
+            }
+            var sprite = WorldSpriteLibrary.Prop("cliff_keyart_v1");
+            var boundary = FarmEnclosedValleyBoundaryContract.InnerBoundary;
+            // Match each northern collision edge, including its slope, rather than a flat historic Y.
+            for (var edge = 14; edge < 24; edge++)
+            {
+                var from = boundary[edge];
+                var to = boundary[edge + 1];
+                var count = Mathf.Max(1, Mathf.CeilToInt(Vector2.Distance(from, to) / 3.2f));
+                for (var piece = 0; piece <= count; piece++)
+                {
+                    var foot = Vector2.Lerp(from, to, (float)piece / count);
+                    var height = 5.8f + ((edge * 7 + piece * 3) % 6) * 0.65f;
+                    var column = CliffColumn(sprite, (edge + piece) % 4);
+                    Place(parent, "Visual_CliffPlateau_" + edge + "_" + piece, column,
+                        foot + new Vector2(1.4f, 4.2f), height + 1.3f,
+                        666f / 724f, new Vector2(0.5f, 31f / 724f), piece % 2 == 0, 3, Color.white);
+                    Place(parent, "Visual_CliffModule_" + edge + "_" + piece, column, foot, height,
+                        666f / 724f, new Vector2(0.5f, 31f / 724f), (piece + edge) % 2 == 0, 4, Color.white);
+                }
+            }
+            CreateClearingPlantMasses(parent);
+        }
+        private static void CreateClearingPlantMasses(Transform parent)
+        {
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            var flowers = WorldSpriteLibrary.Foliage("wildflowers_keyart_v4");
+            // Unequal masses on the quiet sides of the well/fountain and inner forest edge.
+            var centers = new[] { new Vector2(-9.8f, 12.8f), new Vector2(-4.5f, 16.3f),
+                new Vector2(-32.8f, 6.6f), new Vector2(-24.8f, -0.4f),
+                new Vector2(-34.6f, 0.5f), new Vector2(5.5f, -18.2f) };
+            var offsets = new[] { Vector2.zero, new Vector2(-0.85f, 0.2f),
+                new Vector2(0.7f, -0.12f), new Vector2(-1.05f, -0.28f),
+                new Vector2(0.1f, 0.62f), new Vector2(1.35f, 0.22f) };
+            for (var group = 0; group < centers.Length; group++)
+            for (var part = 0; part < offsets.Length; part++)
+            {
+                var leafy = part < 2;
+                var flip = group % 2 != 0;
+                var offset = offsets[part];
+                if (flip) offset.x = -offset.x;
+                var point = centers[group] + offset;
+                var height = leafy ? (part == 0 ? 2.15f : 1.45f) : 1.02f + (group + part) % 3 * 0.12f;
+                // Measured opaque bounds relative to the source contact. Include a margin and
+                // densely sample the entire silhouette, preserving all existing rejection buffers.
+                var left = (leafy ? -34f / 55f : -20f / 26f) * height;
+                var right = (leafy ? 22f / 55f : 13f / 26f) * height;
+                var minX = (flip ? -right : left) - 0.2f;
+                var maxX = (flip ? -left : right) + 0.2f;
+                var columns = Mathf.CeilToInt((maxX - minX) / 0.25f);
+                var rows = Mathf.CeilToInt((height + 0.4f) / 0.25f);
+                var safe = true;
+                for (var x = 0; x <= columns && safe; x++)
+                for (var y = 0; y <= rows && safe; y++)
+                {
+                    var sample = point + new Vector2(Mathf.Lerp(minX, maxX, (float)x / columns),
+                        Mathf.Lerp(-0.2f, height + 0.2f, (float)y / rows));
+                    if (FarmDecorationPlanner.IsForbiddenCell(sample) ||
+                        Vector2.Distance(sample, FarmSettlementPhysicsContract.WellClearingApproach) < 1.4f) safe = false;
+                }
+                if (!safe) continue;
+                Place(parent, "Visual_ClearingPlantMass_" + group + "_" + part,
+                    leafy ? bush : flowers, point, height, leafy ? 55f / 74f : 26f / 36f,
+                    leafy ? new Vector2(43f / 84f, 9f / 74f) : new Vector2(21f / 43f, 6f / 36f),
+                    flip, 5, Color.white);
+            }
+        }
+
+        private static Sprite CliffColumn(Sprite source, int column)
+        {
+            // Narrow source columns follow the concave physical edge instead of spanning its mouth.
+            var assetPath = "Assets/_Game/Art/Generated/World/props/cliff_keyart_column_" + column + ".asset";
+            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (existing != null) return existing;
+            var width = Mathf.Floor(source.rect.width / 4f);
+            var sprite = Sprite.Create(source.texture,
+                new Rect(source.rect.x + column * width, source.rect.y, width, source.rect.height),
+                new Vector2(0.5f, 0f), source.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+            sprite.name = "cliff_keyart_column_" + column;
+            AssetDatabase.CreateAsset(sprite, assetPath);
+            return sprite;
+        }
+
+        public static void ApplyCalmWater(Transform parent)
+        {
+            var tilemap = parent.Find("WorldGrid/Water").GetComponent<UnityEngine.Tilemaps.Tilemap>();
+            var atlas = FarmWaterAnimationAuthoring.BuildAtlas();
+            tilemap.animationFrameRate = 1f;
+            // Sixteen native source pixels per world cell retain readable waves. The previous
+            // full high-resolution texture was compressed into every cell and aliased into noise.
+            var scale = tilemap.layoutGrid.cellSize.x;
+            var matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+            tilemap.tileAnchor = new Vector3(0.5f, 0f, 0f);
+            tilemap.color = Color.white;
+            foreach (var cell in tilemap.cellBounds.allPositionsWithin)
+            {
+                if (!tilemap.HasTile(cell)) continue;
+                if (tilemap.GetCellCenterWorld(cell).y > 21.5f)
+                {
+                    tilemap.SetTile(cell, null);
+                    continue;
+                }
+                var atlasX = (cell.x % 4 + 4) % 4;
+                var atlasY = (cell.y % 4 + 4) % 4;
+                tilemap.SetTile(cell, atlas[atlasY * 4 + atlasX]);
+                tilemap.SetTileFlags(cell, UnityEngine.Tilemaps.TileFlags.None);
+                tilemap.SetTransformMatrix(cell, matrix);
+                // The northern river is hidden behind the cliff; its visible discharge is the waterfall.
+                tilemap.SetColor(cell, Color.white);
+            }
+        }
+
+        public static void CreateWaterBank(Transform parent, string footprintId)
+        {
+            if (!FarmSceneSpatialContract.TryGet(footprintId, out var footprint)) return;
+            CreateBoundaryStrips(parent, footprint.Polygon, footprintId, true);
+            CreateShorePebbleChain(parent, footprint);
+            if (footprintId == FarmSceneSpatialContract.Lake)
+            {
+                CreateLilyPads(parent);
+                CreateWaterReflections(parent);
+                CreateLakeGardens(parent, footprint);
+                CreateConfluenceCascade(parent);
+            }
+            var rock = WorldSpriteLibrary.Prop("rock_ore_0");
+            var reeds = WorldSpriteLibrary.Prop("reeds_keyart_v1");
+            for (var edge = 0; edge < footprint.Polygon.Count; edge++)
+            {
+                var from = footprint.Polygon[edge];
+                var to = footprint.Polygon[(edge + 1) % footprint.Polygon.Count];
+                var tangent = (to - from).normalized;
+                var groups = Mathf.Max(1, Mathf.FloorToInt(Vector2.Distance(from, to) / 3.1f));
+                for (var group = 0; group < groups; group++)
+                {
+                    var variation = (edge * 31 + group * 17) % 11;
+                    var center = Vector2.Lerp(from, to, (group + 0.2f + variation * 0.055f) / groups);
+                    if (IsApproach(center, footprintId)) continue;
+                    // A lake/river overlap is open water, not an exposed shore to dress with rocks.
+                    var normal = new Vector2(-tangent.y, tangent.x);
+                    if (InsideTerrain(center + normal * 0.6f, true) ==
+                        InsideTerrain(center - normal * 0.6f, true)) continue;
+                    var count = 2 + variation % 4;
+                    for (var stone = 0; stone < count; stone++)
+                    {
+                        var position = center + tangent * (stone - count * 0.4f) * 0.48f;
+                        position += new Vector2(tangent.y, -tangent.x) * Mathf.Sin(stone * 2.3f + variation) * 0.35f;
+                        Place(parent, "Visual_BankRock_" + footprintId + "_" + edge + "_" + group + "_" + stone,
+                            rock, position, 0.55f + ((variation + stone * 3) % 9) * 0.09f,
+                            1f, new Vector2(0.5f, 0f), stone % 2 == 0, 4, new Color(0.74f, 0.79f, 0.63f));
+                    }
+                    if ((edge + group) % 2 == 0)
+                    for (var reed = 0; reed < (footprintId == FarmSceneSpatialContract.Lake ? 3 : 1); reed++)
+                    {
+                        var reedFoot = center + tangent * (0.35f + reed * 0.55f);
+                        var reedHeight = 1.3f + (variation + reed) % 5 * 0.13f;
+                        if (IsApproach(reedFoot, footprintId) || (reedFoot.y < 4.5f && reedFoot.y + reedHeight > 1.5f)) continue;
+                        Place(parent, "Visual_Reeds_" + footprintId + "_" + edge + "_" + group + "_" + reed, reeds,
+                            reedFoot, reedHeight,
+                            899f / 1198f, new Vector2(713.5f / 1313f, 123f / 1198f), (group + reed) % 2 == 0, 5, Color.white);
+                    }
+                }
+            }
+        }
+
+        private static void CreateConfluenceCascade(Transform parent)
+        {
+            var sprite = WorldSpriteLibrary.Prop("river_cascade_keyart_v4");
+            // Measured source foam contact sits where both updated water footprints overlap.
+            Place(parent, "Visual_RiverConfluenceCascade", sprite, new Vector2(28.97f, -5.48f),
+                37f / 18.3f, 37f / 56f, new Vector2(31f / 68f, 18f / 56f), false, 5, Color.white);
+        }
+
+        private static void CreateLakeGardens(Transform parent, FarmSceneFootprint lake)
+        {
+            var flowers = WorldSpriteLibrary.Foliage("wildflowers_keyart_v4");
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            for (var edge = 0; edge < lake.Polygon.Count; edge++)
+            {
+                var from = lake.Polygon[edge];
+                var to = lake.Polygon[(edge + 1) % lake.Polygon.Count];
+                var tangent = (to - from).normalized;
+                var normal = new Vector2(-tangent.y, tangent.x);
+                var groups = Mathf.Max(1, Mathf.FloorToInt(Vector2.Distance(from, to) / 4.3f));
+                for (var group = 0; group < groups; group++)
+                {
+                    var center = Vector2.Lerp(from, to, (group + 0.45f) / groups);
+                    if (IsApproach(center, lake.Id)) continue;
+                    var leftInside = InsideTerrain(center + normal * 0.65f, true);
+                    if (leftInside == InsideTerrain(center - normal * 0.65f, true)) continue;
+                    var outward = leftInside ? -normal : normal;
+                    // Unequal clumps leave grass visible between tiny, source-derived flowers.
+                    for (var plant = 0; plant < 4; plant++)
+                    {
+                        var offset = plant == 0 ? -0.35f : plant == 1 ? 0.8f : plant == 2 ? -1.1f : 0.2f;
+                        var point = center + tangent * offset + outward * (1.45f + (plant * 7 + edge) % 4 * 0.16f);
+                        var leafy = plant == 0;
+                        var height = leafy ? 0.8f : 0.4f + (plant + edge) % 3 * 0.065f;
+                        var sprite = leafy ? bush : flowers;
+                        var alphaWidth = leafy ? 56f : 33f;
+                        var alphaHeight = leafy ? 55f : 26f;
+                        var width = height * alphaWidth / alphaHeight;
+                        var safe = true;
+                        for (var x = -1; x <= 1; x++)
+                        for (var y = 0; y <= 2; y++)
+                            if (FarmDecorationPlanner.IsForbiddenCell(point + new Vector2(x * width * 0.5f, y * height * 0.5f))) safe = false;
+                        if (!safe) continue;
+                        Place(parent, "Visual_LakeGarden_" + edge + "_" + group + "_" + plant,
+                            sprite, point, height, leafy ? 55f / 74f : 26f / 36f,
+                            leafy ? new Vector2(43f / 84f, 9f / 74f) : new Vector2(21f / 43f, 6f / 36f),
+                            plant % 2 == 0, 5, Color.white);
+                    }
+                }
+            }
+        }
+
+        private static void CreateShorePebbleChain(Transform parent, FarmSceneFootprint footprint)
+        {
+            var rock = WorldSpriteLibrary.Prop("rock_ore_0");
+            for (var edge = 0; edge < footprint.Polygon.Count; edge++)
+            {
+                var from = footprint.Polygon[edge];
+                var to = footprint.Polygon[(edge + 1) % footprint.Polygon.Count];
+                var length = Vector2.Distance(from, to);
+                var tangent = (to - from).normalized;
+                var normal = new Vector2(-tangent.y, tangent.x);
+                var distance = 0.2f;
+                for (var piece = 0; distance < length; piece++)
+                {
+                    var variation = (edge * 29 + piece * 17) % 13;
+                    var position = from + tangent * distance;
+                    distance += 0.58f + variation * 0.025f;
+                    if (position.y > 21.5f || IsApproach(position, footprint.Id)) continue;
+                    var leftInside = InsideTerrain(position + normal * 0.45f, true);
+                    if (leftInside == InsideTerrain(position - normal * 0.45f, true)) continue;
+                    var outward = leftInside ? -normal : normal;
+                    position += outward * (0.04f + variation * 0.016f);
+                    Place(parent, "Visual_ShorePebble_" + footprint.Id + "_" + edge + "_" + piece,
+                        rock, position, 0.43f + variation * 0.035f, 1f, new Vector2(0.5f, 0f),
+                        piece % 2 == 0, 4, new Color(0.74f, 0.79f, 0.63f));
+                }
+            }
+        }
+
+        public static void CreatePathBanks(Transform parent)
+        {
+            var sprite = WorldSpriteLibrary.Ground("ground_path_grass_edge_v1");
+            for (var i = 0; i < FarmDecorationPlanner.AuthoredPaths.Count; i++)
+            {
+                var polygon = FarmDecorationPlanner.AuthoredPaths[i];
+                for (var edge = 0; edge < polygon.Length; edge++)
+                {
+                    var from = polygon[edge];
+                    var to = polygon[(edge + 1) % polygon.Length];
+                    var length = Vector2.Distance(from, to);
+                    var tangent = (to - from).normalized;
+                    var normal = new Vector2(-tangent.y, tangent.x);
+                    var count = Mathf.Max(1, Mathf.CeilToInt(length / 0.25f));
+                    var runStart = -1;
+                    var runSide = 0;
+                    // Keep exposed runs instead of shrinking one strip at its original midpoint:
+                    // a T junction can hide the middle while leaving both ends exposed.
+                    for (var sample = 0; sample <= count; sample++)
+                    {
+                        var side = 0;
+                        if (sample < count)
+                        {
+                            var point = Vector2.Lerp(from, to, (sample + 0.5f) / count);
+                            if (!InsideTerrain(point, true))
+                            {
+                                var left = InsideTerrain(point + normal * 0.16f, false);
+                                var right = InsideTerrain(point - normal * 0.16f, false);
+                                if (left != right) side = left ? 1 : -1;
+                            }
+                        }
+                        if (runStart >= 0 && side != runSide)
+                        {
+                            CreatePathBankRun(parent, sprite, Vector2.Lerp(from, to, (float)runStart / count),
+                                tangent, (sample - runStart) * length / count, runSide > 0,
+                                i + "_" + edge + "_" + runStart);
+                            runStart = -1;
+                        }
+                        if (side != 0 && runStart < 0) { runStart = sample; runSide = side; }
+                    }
+                }
+            }
+        }
+
+        private static void CreatePathBankRun(Transform parent, Sprite sprite, Vector2 start,
+            Vector2 tangent, float length, bool leftInside, string id)
+        {
+            var count = Mathf.Max(1, Mathf.CeilToInt(length / 2f));
+            var width = length / count;
+            var rotation = Quaternion.Euler(0f, 0f,
+                Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg + (leftInside ? 180f : 0f));
+            var anchor = sprite.bounds.center;
+            for (var part = 0; part < count; part++)
+            {
+                var position = start + tangent * ((part + 0.5f) * width);
+                var scale = (width + 0.015f) / sprite.bounds.size.x;
+                var stripScale = new Vector3(scale, scale, 1f);
+                var strip = new GameObject("Visual_BankStrip_path_" + id + "_" + part);
+                strip.transform.SetParent(parent, false);
+                strip.transform.position = (Vector3)position - rotation * Vector3.Scale(anchor, stripScale);
+                strip.transform.rotation = rotation;
+                strip.transform.localScale = stripScale;
+                var renderer = strip.AddComponent<SpriteRenderer>();
+                renderer.sprite = sprite;
+                renderer.sortingLayerName = "Ground";
+                renderer.sortingOrder = 4;
+            }
+        }
+
+        private static void CreateBoundaryStrips(Transform parent, IReadOnlyList<Vector2> polygon, string id, bool water)
+        {
+            const string assetPath = "Assets/_Game/Art/Generated/World/props/shore_bank_keyart_v1.png";
+            if (AssetImporter.GetAtPath(assetPath) is TextureImporter importer && importer.maxTextureSize < 4096)
+            {
+                importer.maxTextureSize = 4096;
+                importer.SaveAndReimport();
+            }
+            var sprite = WorldSpriteLibrary.Prop("shore_bank_keyart_v1");
+            for (var edge = 0; edge < polygon.Count; edge++)
+            {
+                var from = polygon[edge];
+                var to = polygon[(edge + 1) % polygon.Count];
+                var tangent = (to - from).normalized;
+                var normal = new Vector2(-tangent.y, tangent.x);
+                var length = Vector2.Distance(from, to);
+                var count = Mathf.Max(1, Mathf.CeilToInt(length / 3.1f));
+                var preferredWidth = Mathf.Min(length / count / 0.7f, 4.8f);
+                for (var part = 0; part < count; part++)
+                {
+                    var position = Vector2.Lerp(from, to, (part + 0.5f) / count);
+                    if (water && (position.y > 21.5f || (position.y > 1.5f && position.y < 4.5f))) continue;
+                    var leftInside = InsideTerrain(position + normal * 0.55f, water);
+                    var rightInside = InsideTerrain(position - normal * 0.55f, water);
+                    if (leftInside == rightInside) continue; // union interior, not a land boundary
+                    var width = preferredWidth;
+                    while (width >= 0.35f && !IsBoundarySpan(position, tangent, normal, width, water, leftInside))
+                        width *= 0.75f;
+                    if (width < 0.35f) continue;
+                    var angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg + (leftInside ? 180f : 0f);
+                    var rotation = Quaternion.Euler(0f, 0f, angle);
+                    var scale = width / (sprite.bounds.size.x * (2065f / 2172f));
+                    var anchor = sprite.bounds.min + new Vector3(sprite.bounds.size.x * (1079.5f / 2172f),
+                        sprite.bounds.size.y * (359.5f / 724f), 0f);
+                    var strip = new GameObject("Visual_BankStrip_" + id + "_" + edge + "_" + part);
+                    strip.transform.SetParent(parent, false);
+                    var stripScale = new Vector3(scale, scale * (water ? 1.45f : 1f), 1f);
+                    strip.transform.position = (Vector3)position - rotation * Vector3.Scale(anchor, stripScale);
+                    strip.transform.rotation = rotation;
+                    strip.transform.localScale = stripScale;
+                    var renderer = strip.AddComponent<SpriteRenderer>();
+                    renderer.sprite = sprite;
+                    renderer.sortingLayerName = "Ground";
+                    renderer.sortingOrder = 4;
+                }
+            }
+        }
+
+        private static bool IsBoundarySpan(Vector2 center, Vector2 tangent, Vector2 normal,
+            float width, bool water, bool leftInside)
+        {
+            // Test the whole strip, not just its midpoint: an adjacent polygon can swallow either end.
+            for (var sample = -2; sample <= 2; sample++)
+            {
+                var point = center + tangent * (width * sample * 0.25f);
+                if (!water && InsideTerrain(point, true)) return false;
+                if (InsideTerrain(point + normal * 0.55f, water) != leftInside ||
+                    InsideTerrain(point - normal * 0.55f, water) == leftInside) return false;
+            }
+            return true;
+        }
+
+        private static bool InsideTerrain(Vector2 point, bool water)
+        {
+            if (water)
+            {
+                foreach (var footprint in FarmSceneSpatialContract.All)
+                    if (footprint.Use == FarmSpatialUse.Water && FarmSceneNavigationRaster.Contains(footprint, point)) return true;
+            }
+            else
+                foreach (var path in FarmDecorationPlanner.AuthoredPaths)
+                    if (FarmSceneNavigationRaster.Contains(new FarmSceneFootprint(string.Empty, FarmSpatialUse.Walkable, false, false, path), point)) return true;
+            return false;
+        }
+
+        private static void CreateWaterReflections(Transform parent)
+        {
+            var sprite = WorldSpriteLibrary.Prop("water_ripples_keyart_v4");
+            // The atlas supplies calm water. Extra reflected waves belong to the river mouth
+            // and the eastern shallows, with a broad quiet center around the fishing dock.
+            var centers = new[] { new Vector2(26.2f,-3.2f), new Vector2(26.2f,-4.8f),
+                new Vector2(25.5f,-6.4f), new Vector2(27.3f,-6.8f), new Vector2(24.2f,-7.7f),
+                new Vector2(30.3f,-9.7f), new Vector2(30f,-11.5f), new Vector2(28.2f,-13f),
+                new Vector2(26.2f,-14.2f), new Vector2(28.3f,15.5f), new Vector2(28.7f,18.8f) };
+            for (var i = 0; i < centers.Length; i++)
+            {
+                var width = i >= 9 ? 1.9f : i < 2 ? 2.1f : 3.5f + i % 3 * 0.2f;
+                var height = width * sprite.bounds.size.y / sprite.bounds.size.x;
+                var safe = true;
+                for (var x = -1; x <= 1; x++)
+                for (var y = -1; y <= 1; y++)
+                    if (!InsideTerrain(centers[i] + new Vector2(x * width * 0.5f, y * height * 0.5f), true)) safe = false;
+                if (!safe) continue;
+                Place(parent, "Visual_WaterReflection_" + i, sprite, centers[i], height, 1f,
+                    new Vector2(0.5f, 0.5f), i % 2 == 0, 4, Color.white);
+            }
+        }
+
+        private static void CreateLilyPads(Transform parent)
+        {
+            var sprite = WorldSpriteLibrary.Prop("lilies_keyart_v4");
+            var centers = new[] { new Vector2(22.2f, -6.9f), new Vector2(25.6f, -8.8f),
+                new Vector2(19.7f, -13.8f), new Vector2(29.2f, -12.4f), new Vector2(15.3f, -12.5f) };
+            for (var i = 0; i < centers.Length; i++)
+            for (var cluster = 0; cluster < (i == 4 ? 2 : 3); cluster++)
+            {
+                var point = centers[i] + new Vector2(cluster * 1.35f - 0.9f, Mathf.Sin(cluster * 2f + i) * 0.55f);
+                var height = 0.82f + (i + cluster) % 3 * 0.075f;
+                var safe = true;
+                for (var x = -1; x <= 1; x++)
+                for (var y = -1; y <= 1; y++)
+                    if (!InsideTerrain(point + new Vector2(x * height * 0.65f, y * height * 0.55f), true)) safe = false;
+                if (safe) Place(parent, "Visual_LilyPads_" + i + "_" + cluster, sprite, point, height,
+                    17f / 29f, new Vector2(18f / 38f, 15f / 29f), (i + cluster) % 2 == 0, 5, Color.white);
+            }
+        }
+
+        private static bool IsApproach(Vector2 point, string footprintId)
+        {
+            if (point.y > 1.5f && point.y < 4.5f) return true;
+            return footprintId == FarmSceneSpatialContract.Lake && point.x < 15f && point.y > -10f;
+        }
+
+        private static void Place(Transform parent, string name, Sprite sprite, Vector2 support,
+            float visibleHeight, float visibleHeightRatio, Vector2 normalizedSupport, bool flip, int order, Color color)
+        {
+            if (sprite == null) throw new System.InvalidOperationException("Missing landscape sprite: " + name);
+            var visual = new GameObject(name);
+            visual.transform.SetParent(parent, false);
+            var scale = visibleHeight / (sprite.bounds.size.y * visibleHeightRatio);
+            var supportLocal = sprite.bounds.min + new Vector3(sprite.bounds.size.x * normalizedSupport.x,
+                sprite.bounds.size.y * normalizedSupport.y, 0f);
+            if (flip) supportLocal.x = -supportLocal.x;
+            visual.transform.position = (Vector3)support - supportLocal * scale;
+            visual.transform.localScale = new Vector3(scale / parent.lossyScale.x, scale / parent.lossyScale.y, 1f);
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.flipX = flip;
+            renderer.color = color;
+            renderer.sortingLayerName = "Ground";
+            renderer.sortingOrder = order;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+        }
+    }
+}

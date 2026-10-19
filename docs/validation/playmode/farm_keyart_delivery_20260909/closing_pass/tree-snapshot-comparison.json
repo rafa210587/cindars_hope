@@ -1,0 +1,9 @@
+{
+  "before": "regen_02/FarmScene.unity.snapshot",
+  "after": "regen_03/FarmScene.unity.snapshot",
+  "beforeCount": 71,
+  "afterCount": 71,
+  "changedCount": 0,
+  "changes": [],
+  "note": "No regen_01 scene snapshot exists; this comparison does not reconstruct that missing evidence."
+}

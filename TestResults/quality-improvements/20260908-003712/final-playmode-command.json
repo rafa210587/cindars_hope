@@ -1,0 +1,15 @@
+[
+  "-batchmode",
+  "-nographics",
+  "-projectPath",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope",
+  "-runTests",
+  "-testPlatform",
+  "PlayMode",
+  "-testFilter",
+  "CindarsHope.Tests.PlayMode.Composition.GameRuntimeCompositionRootPlayModeTests",
+  "-testResults",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope\\TestResults\\quality-improvements\\20260908-003712\\final-playmode.xml",
+  "-logFile",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope\\TestResults\\quality-improvements\\20260908-003712\\final-playmode.log"
+]

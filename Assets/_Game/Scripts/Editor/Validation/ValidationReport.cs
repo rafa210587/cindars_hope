@@ -1,0 +1,81 @@
+#if UNITY_EDITOR
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace CindarsHope.EditorTools.Validation
+{
+    /// <summary>
+    /// Container for validation results with counters and summary generation.
+    /// </summary>
+    public class ValidationReport
+    {
+        public List<ValidationIssue> Issues { get; set; } = new List<ValidationIssue>();
+
+        /// <summary>
+        /// True when at least one validator actually ran. False when the runner had zero
+        /// validators to execute (e.g. RunValidators() called with no args) — this is a
+        /// NOT_CONFIGURED state and must never be treated as PASS. Defaults to true so
+        /// existing callers that already pass validators are unaffected.
+        /// </summary>
+        public bool IsConfigured { get; set; } = true;
+
+        public int ErrorCount => Issues.Count(i => i.Severity == ValidationSeverity.Error);
+        public int WarningCount => Issues.Count(i => i.Severity == ValidationSeverity.Warning);
+        public int InfoCount => Issues.Count(i => i.Severity == ValidationSeverity.Info);
+        public int TotalCount => Issues.Count;
+
+        public bool HasErrors => ErrorCount > 0;
+        public bool HasWarnings => WarningCount > 0;
+        public bool Passed => IsConfigured && !HasErrors;
+
+        public void AddIssue(ValidationIssue issue)
+        {
+            Issues.Add(issue);
+        }
+
+        public void AddIssue(string area, string code, ValidationSeverity severity, string message,
+            string assetPath = "", string objectName = "", string suggestedFix = "")
+        {
+            Issues.Add(new ValidationIssue(area, code, severity, message, assetPath, objectName, suggestedFix));
+        }
+
+        public string GetSummary(string validatorName)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"\n========== {validatorName} ==========");
+            sb.AppendLine($"Total Issues: {TotalCount} (Errors: {ErrorCount}, Warnings: {WarningCount}, Info: {InfoCount})");
+
+            foreach (var issue in Issues)
+            {
+                sb.AppendLine(issue.ToString());
+            }
+
+            if (!IsConfigured)
+            {
+                sb.AppendLine("Status: NOT_CONFIGURED");
+            }
+            else if (Issues.Count == 0)
+            {
+                sb.AppendLine("Status: PASS ✓");
+            }
+            else
+            {
+                if (HasErrors)
+                {
+                    sb.AppendLine($"Status: FAIL ({ErrorCount} error(s))");
+                }
+                else
+                {
+                    sb.AppendLine("Status: WARNING");
+                }
+            }
+
+            sb.AppendLine("==========================================");
+            return sb.ToString();
+        }
+    }
+}
+
+#endif

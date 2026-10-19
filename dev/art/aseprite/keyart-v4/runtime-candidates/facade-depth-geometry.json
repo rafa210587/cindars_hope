@@ -1,0 +1,15 @@
+{
+  "status": "STATIC_PASS",
+  "pixelCentersChecked": 43460,
+  "maximumWorldError": 3.552713678800501e-15,
+  "facadePivotWorld": [
+    15.3,
+    11.597033898305085
+  ],
+  "leafGroundY": 11.597033898305085,
+  "sourcePpuPreserved": true,
+  "scalePreserved": true,
+  "revealCodeUnchanged": true,
+  "leafThresholdCodeUnchanged": true,
+  "unity": "NOT RUN: candidate only"
+}

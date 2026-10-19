@@ -1,0 +1,230 @@
+ M .agents/skills/audit-harness/SKILL.md
+ M .agents/skills/bootstrap-wiring/SKILL.md
+ M .agents/skills/bugfix/SKILL.md
+ M .agents/skills/gameplay-test-scenario/SKILL.md
+ M .agents/skills/harness-audit/SKILL.md
+ M .agents/skills/harness-audit/references/audit-dimensions.md
+ M .agents/skills/harness-authoring/assets/templates/skill-entry.md
+ M .agents/skills/harness-authoring/references/examples/conditional-art-review.md
+ M .agents/skills/implementation-closeout/SKILL.md
+ M .agents/skills/localization-authoring/SKILL.md
+ M .agents/skills/quest-authoring/SKILL.md
+ M .agents/skills/runtime-bootstrap-pattern/SKILL.md
+ M .agents/skills/spec-authoring/SKILL.md
+ M .agents/skills/spec-execution/SKILL.md
+ M .agents/skills/time-calendar-weather/references/domain-contracts.md
+ M .agents/skills/visual-asset-review/SKILL.md
+ M .claude/HARNESS_AUTHORING_STANDARD.md
+ M .claude/HARNESS_INDEX.md
+ M .claude/agents/bugfix-investigator.md
+ M .claude/commands/audit-harness.md
+ M .claude/commands/bugfix.md
+ M .claude/rules/context-reading-policy.md
+ M .claude/skills/bootstrap-wiring/SKILL.md
+ M .claude/skills/gameplay-test-scenario/SKILL.md
+ M .claude/skills/harness-audit/SKILL.md
+ M .claude/skills/harness-audit/references/audit-dimensions.md
+ M .claude/skills/harness-authoring/assets/templates/skill-entry.md
+ M .claude/skills/harness-authoring/references/examples/conditional-art-review.md
+ M .claude/skills/implementation-closeout/SKILL.md
+ M .claude/skills/localization-authoring/SKILL.md
+ M .claude/skills/quest-authoring/SKILL.md
+ M .claude/skills/runtime-bootstrap-pattern/SKILL.md
+ M .claude/skills/spec-authoring/SKILL.md
+ M .claude/skills/spec-execution/SKILL.md
+ M .claude/skills/time-calendar-weather/references/domain-contracts.md
+ M .claude/skills/visual-asset-review/SKILL.md
+ M .codex/agents/bugfix-investigator.toml
+ M .codex/rules/context-reading-policy.md
+ M .specs/SPEC_INDEX.json
+ M .specs/SPEC_INDEX.md
+ M .specs/SPEC_REGISTRY_TO_IMPLEMENT.md
+ M .specs/SPEC_VALIDATION_MATRIX_MASTER.md
+ M .specs/a_implementar/spec_cave_visual_polish_runtime.md
+ M .specs/a_implementar/spec_cleanup_uac_serialization_6000_5_v1.md
+ M .specs/a_implementar/spec_enemy_attack_kits_v1.md
+ M .specs/a_implementar/spec_farm_boat_chicken_motion_v18.md
+ M .specs/a_implementar/spec_farm_clipped_props_v17.md
+ M .specs/a_implementar/spec_farm_contact_pixel_consistency_v16.md
+ M .specs/a_implementar/spec_farm_groundcover_v20.md
+ M .specs/a_implementar/spec_farm_herd_motion_v19.md
+ M .specs/a_implementar/spec_farm_pixelart_cohesion_and_ingame_review_v1.md
+ M .specs/a_implementar/spec_farm_scene_keyart_richness_completion_v1.md
+ M .specs/a_implementar/spec_farm_scene_keyart_scale_physics_correction_v1.md
+ M .specs/a_implementar/spec_farm_scene_keyart_visual_corrections_v1.md
+ M .specs/a_implementar/spec_farmer_animation_visual_revision_v1.md
+ M .specs/a_implementar/spec_skills_10_mechanics_data_rank_readiness_v1.md
+ M .specs/a_implementar/spec_skills_10b_action_timing_commit_v1.md
+ M .specs/a_implementar/spec_skills_11_melee_equipment_shapes_v1.md
+ M .specs/a_implementar/spec_skills_12_melee_movement_posture_v1.md
+ M .specs/a_implementar/spec_skills_13_ranged_identity_v1.md
+ M .specs/a_implementar/spec_skills_14_magic_shapes_v1.md
+ M .specs/a_implementar/spec_skills_15_survival_actions_v1.md
+ M .specs/a_implementar/spec_skills_16_crafting_actions_v1.md
+ M .specs/a_implementar/spec_skills_17_combat_survival_passives_v1.md
+ M .specs/a_implementar/spec_skills_18_crafting_economy_passives_v1.md
+ M .specs/a_implementar/spec_skills_19_combat_capstones_v1.md
+ M .specs/a_implementar/spec_skills_20_survival_crafting_capstones_v1.md
+ M .specs/a_implementar/spec_skills_22_skill_tree_canvas_v1.md
+ M .specs/a_implementar/spec_skills_23_skill_loadout_hud_v1.md
+ M .specs/a_implementar/spec_skills_24_ui_pixel_art_v1.md
+ M .specs/a_implementar/spec_skills_25_action_presentation_foundation_v1.md
+ M .specs/a_implementar/spec_skills_26_action_animation_catalog_v1.md
+ D .specs/a_implementar/spec_town_building_visuals.md
+ D .specs/a_implementar/spec_town_layout_v9_organic.md
+ M .specs/absorvidas/city_relayout_reconciliation/README.md
+ M AGENTS.md
+ M Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/floor_c.png.meta
+ M Assets/_Game/Data/Combat/Spells/spell_fireball.asset
+ M Assets/_Game/Data/Items/item_tool_pickaxe_iron.asset
+ M Assets/_Game/Data/Items/item_tool_pickaxe_steel.asset
+ M Assets/_Game/Scripts/Cave/Death/CaveDeathResolver.cs
+ M Assets/_Game/Scripts/Cave/Death/DeathSystemBootstrap.cs
+ M Assets/_Game/Scripts/Cave/Runtime/CaveTileMaterializer.cs
+ M Assets/_Game/Scripts/Cave/Runtime/CaveVignetteController.cs
+ M Assets/_Game/Scripts/Combat/PlayerAttackController.cs
+ M Assets/_Game/Scripts/Composition/GameRuntimeCompositionRoot.cs
+ M Assets/_Game/Scripts/Core/Events/UIEvents.cs
+ M Assets/_Game/Scripts/Core/MenuGuiStyle.cs
+ M Assets/_Game/Scripts/Craft/CraftingJob.cs
+ M Assets/_Game/Scripts/Craft/CraftingRuntime.cs
+ M Assets/_Game/Scripts/Craft/CraftingStation.cs
+ M Assets/_Game/Scripts/Editor/GeneratedSpriteImporter.cs
+ M Assets/_Game/Scripts/Editor/Items/CanonicalItemCatalog.cs
+ M Assets/_Game/Scripts/Editor/SceneCreation/City/TownKeyartGround.cs
+ M Assets/_Game/Scripts/Editor/SceneCreation/City/TownKeyartSceneArt.cs
+ M Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
+ M Assets/_Game/Scripts/Editor/Validation/ValidateFarmSceneLayoutV4.cs
+ M Assets/_Game/Scripts/Editor/Validation/ValidateSceneTransitions.cs
+ M Assets/_Game/Scripts/Enemy/EnemyLocalAvoidance.cs
+ M Assets/_Game/Scripts/Enemy/EnemyMovementExecutor.cs
+ M Assets/_Game/Scripts/Equipment/EquipmentManager.cs
+ M Assets/_Game/Scripts/Farm/Runtime/FarmSceneRuntimeBootstrap.cs
+ M Assets/_Game/Scripts/Farm/Watering/GreenhouseRuntimeHost.cs
+ M Assets/_Game/Scripts/Fonte/FonteInteractable.cs
+ M Assets/_Game/Scripts/Foundation/SceneId.cs
+ M Assets/_Game/Scripts/Localization/LocalizationStringTable.cs
+ M Assets/_Game/Scripts/Magic/SpellItemUseController.cs
+ M Assets/_Game/Scripts/NPC/NpcWanderer.cs
+ M Assets/_Game/Scripts/NPC/Runtime/NpcTownRouteGraph.cs
+ M Assets/_Game/Scripts/NPC/Schedule/NpcScheduleService.cs
+ M Assets/_Game/Scripts/Player/Death/AnyaFountainRespawnFlow.cs
+ M Assets/_Game/Scripts/Player/Death/AnyaRespawnService.cs
+ M Assets/_Game/Scripts/Player/Death/CorpseRecoveryManager.cs
+ M Assets/_Game/Scripts/Player/PlayerController.cs
+ M Assets/_Game/Scripts/Save/Migrations/InventoryOriginV5ToV6Migration.cs
+ M Assets/_Game/Scripts/Save/Providers/CraftingSectionProvider.cs
+ M Assets/_Game/Scripts/Save/SaveManager.Migration.cs
+ M Assets/_Game/Scripts/Save/SaveManager.cs
+ M Assets/_Game/Scripts/SceneManagement/TownSceneRuntimeReferenceInstaller.cs
+ M Assets/_Game/Scripts/UI/Character/CharacterEquipmentPanelController.cs
+ M Assets/_Game/Scripts/UI/Crafting/CraftingModal.cs
+ M Assets/_Game/Scripts/UI/Death/DeathScreenCanvasController.cs
+ M Assets/_Game/Scripts/UI/DebugHud.cs
+ M Assets/_Game/Scripts/UI/Dialogue/DialogueModal.cs
+ M Assets/_Game/Scripts/UI/HUD/GameplayHudTextOverlay.cs
+ M Assets/_Game/Scripts/UI/Input/GameplayInputRouter.cs
+ M Assets/_Game/Scripts/UI/InventoryPanelController.cs
+ M Assets/_Game/Scripts/UI/Quests/Runtime/QuestLogPanelController.cs
+ M Assets/_Game/Scripts/UI/Shop/BuyPanel.cs
+ M Assets/_Game/Scripts/UI/Shop/SellPanel.cs
+ M Assets/_Game/Scripts/UI/Shop/ShopPanelLayoutUtility.cs
+ M Assets/_Game/Scripts/UI/Skills/SkillTreeGameplayPanelController.cs
+ M Assets/_Game/Scripts/World/FarmHouseChestInteractable.cs
+ M Assets/_Game/Scripts/World/FishingSpot.cs
+ M Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs
+ M Assets/_Game/Tests/EditMode/Economy/CraftingStationJobTests.cs
+ M Assets/_Game/Tests/EditMode/Editor/SceneTransitionValidationTests.cs
+ M Assets/_Game/Tests/EditMode/Farm/FarmSceneCompositionContractTests.cs
+ M Assets/_Game/Tests/EditMode/Save/PurchasedOriginSavePreflightTests.cs
+ M Assets/_Game/Tests/PlayMode/Composition/GameRuntimeCompositionRootPlayModeTests.cs
+ M Assets/_Game/Tests/PlayMode/Composition/N1TownNavigationPlayModeTests.cs
+ M Assets/_Game/Tests/PlayMode/Composition/Phase21GraphicalSmokePlayModeTests.cs
+ M CLAUDE.md
+ M docs/project/CURRENT_STATE.md
+ M tools/codex/README.md
+ M tools/docs/validate_docs.ps1
+ M tools/generate_spec_index.ps1
+?? .specs/a_implementar/spec_playtest_cave_render_artifacts_v1.md
+?? .specs/a_implementar/spec_playtest_cave_wall_enemy_physics_v1.md
+?? .specs/a_implementar/spec_playtest_crafting_save_roundtrip_v1.md
+?? .specs/a_implementar/spec_playtest_death_recovery_v1.md
+?? .specs/a_implementar/spec_playtest_farm_town_prop_physics_v1.md
+?? .specs/a_implementar/spec_playtest_fishing_lifecycle_v1.md
+?? .specs/a_implementar/spec_playtest_integrated_coverage_v1.md
+?? .specs/a_implementar/spec_playtest_npc_enemy_navigation_v1.md
+?? .specs/a_implementar/spec_playtest_ui_access_feedback_v1.md
+?? .specs/a_implementar/spec_playtest_wiring_validation_v1.md
+?? .specs/a_implementar/spec_playtest_world_readability_v1.md
+?? .specs/absorvidas/city_relayout_reconciliation/spec_town_building_visuals.md
+?? .specs/absorvidas/city_relayout_reconciliation/spec_town_layout_v9_organic.md
+?? .specs/implementados/spec_harness_proportional_routing_and_discovery_v1.md
+?? Assets/_Game/Art/Generated/World/props/town_grass_harmony_v1.png
+?? Assets/_Game/Scripts/Core/Events/DeathDecisionReadyEvent.cs
+?? Assets/_Game/Scripts/Core/Events/DeathDecisionReadyEvent.cs.meta
+?? Assets/_Game/Scripts/Editor/SceneCreation/GreenhouseRevealWiring.cs
+?? Assets/_Game/Scripts/Editor/SceneCreation/GreenhouseRevealWiring.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/InspectCaveRenderComposition.cs
+?? Assets/_Game/Scripts/Editor/Validation/InspectCaveRenderComposition.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/RepairCaveFloorSpriteAlignment.cs
+?? Assets/_Game/Scripts/Editor/Validation/RepairCaveFloorSpriteAlignment.cs.meta
+?? Assets/_Game/Scripts/Editor/Validation/RepairPickaxeCatalogClassification.cs
+?? Assets/_Game/Scripts/Editor/Validation/RepairPickaxeCatalogClassification.cs.meta
+?? Assets/_Game/Scripts/Farm/Scene/FarmPropPhysicsInstaller.cs
+?? Assets/_Game/Scripts/Farm/Scene/FarmPropPhysicsInstaller.cs.meta
+?? Assets/_Game/Scripts/Farm/Watering/GreenhouseRevealRuntime.cs
+?? Assets/_Game/Scripts/Farm/Watering/GreenhouseRevealRuntime.cs.meta
+?? Assets/_Game/Scripts/Player/Death/DeathRevivalDecision.cs
+?? Assets/_Game/Scripts/Player/Death/DeathRevivalDecision.cs.meta
+?? Assets/_Game/Scripts/SceneManagement/TownPropPhysicsInstaller.cs
+?? Assets/_Game/Scripts/SceneManagement/TownPropPhysicsInstaller.cs.meta
+?? Assets/_Game/Scripts/UI/Input/PauseMenuController.cs
+?? Assets/_Game/Scripts/UI/Input/PauseMenuController.cs.meta
+?? Assets/_Game/Tests/EditMode/Cave/CaveLightShaftPresentationTests.cs
+?? Assets/_Game/Tests/EditMode/Cave/CaveLightShaftPresentationTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Enemy/EnemyPhysicalNavigationProbeTests.cs
+?? Assets/_Game/Tests/EditMode/Enemy/EnemyPhysicalNavigationProbeTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Localization/PlaytestUiLocalizationTests.cs
+?? Assets/_Game/Tests/EditMode/Localization/PlaytestUiLocalizationTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Player/DeathRecoveryRegressionTests.cs
+?? Assets/_Game/Tests/EditMode/Player/DeathRecoveryRegressionTests.cs.meta
+?? Assets/_Game/Tests/EditMode/Save/CraftingSaveRoundTripTests.cs
+?? Assets/_Game/Tests/EditMode/Save/CraftingSaveRoundTripTests.cs.meta
+?? Assets/_Game/Tests/EditMode/UI/DialogueOverflowTests.cs
+?? Assets/_Game/Tests/EditMode/UI/DialogueOverflowTests.cs.meta
+?? Assets/_Game/Tests/EditMode/UI/EquipmentToolInferenceTests.cs
+?? Assets/_Game/Tests/EditMode/UI/EquipmentToolInferenceTests.cs.meta
+?? Assets/_Game/Tests/EditMode/UI/PauseMenuControllerTests.cs
+?? Assets/_Game/Tests/EditMode/UI/PauseMenuControllerTests.cs.meta
+?? Assets/_Game/Tests/EditMode/World/FishingLifecycleTests.cs
+?? Assets/_Game/Tests/EditMode/World/FishingLifecycleTests.cs.meta
+?? Assets/_Game/Tests/EditMode/World/GreenhouseRevealWiringTests.cs
+?? Assets/_Game/Tests/EditMode/World/GreenhouseRevealWiringTests.cs.meta
+?? Assets/_Game/Tests/EditMode/World/PickaxeCatalogClassificationTests.cs
+?? Assets/_Game/Tests/EditMode/World/PickaxeCatalogClassificationTests.cs.meta
+?? Assets/_Game/Tests/EditMode/World/PlaytestPropPhysicsInstallerTests.cs
+?? Assets/_Game/Tests/EditMode/World/PlaytestPropPhysicsInstallerTests.cs.meta
+?? Assets/_Game/Tests/PlayMode/Composition/CaveEnemyNavigationLayerPlayModeTests.cs
+?? Assets/_Game/Tests/PlayMode/Composition/CaveEnemyNavigationLayerPlayModeTests.cs.meta
+?? Assets/_Game/Tests/PlayMode/Composition/PlaytestPropPhysicsScenePlayModeTests.cs
+?? Assets/_Game/Tests/PlayMode/Composition/PlaytestPropPhysicsScenePlayModeTests.cs.meta
+?? TestResults/exploratory-playtest/
+?? TestResults/farm-wiring-reconciliation/
+?? TestResults/playtest-cave-render/
+?? docs/refinements/a_implementar/ref_playtest_correcoes_e_experiencia_v1.md
+?? docs/validation/EXPLORATORY_MENUS_2026_09_27.md
+?? docs/validation/EXPLORATORY_PLAYTEST_2026_09_27.md
+?? docs/validation/FARM_WIRING_RECONCILIATION.md
+?? docs/validation/VISUAL_POLISH_AUDIT_2026_09_27.md
+?? docs/validation/WORLD_PHYSICS_MOVEMENT_AUDIT_2026_09_27.md
+?? docs/validation/spec_playtest_cave_render_artifacts_v1/
+?? docs/validation/spec_playtest_cave_wall_enemy_physics_v1/
+?? docs/validation/spec_playtest_farm_town_prop_physics_v1/
+?? docs/validation/spec_playtest_integrated_coverage_v1/
+?? docs/validation/spec_playtest_npc_enemy_navigation_v1/
+?? post-checkout
+?? post-commit
+?? post-merge
+?? pre-push
+?? tools/codex/Test-HarnessDiscovery.ps1
+?? tools/codex/Test-HarnessDiscoveryContracts.ps1

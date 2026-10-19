@@ -1,0 +1,43 @@
+{
+  "asset": "Assets/_Game/Art/Generated/World/props/bridge_keyart_v2.png",
+  "raw": "art/farm-pixelart-review/raw/bridge-keyart-v2.png",
+  "assetSha256": "E6F4C3081D6A3617D6BA4EE30E6C6B1519A406A839BB1E908887F1C7B7037999",
+  "rawSha256": "E6F4C3081D6A3617D6BA4EE30E6C6B1519A406A839BB1E908887F1C7B7037999",
+  "byteExact": true,
+  "metaSha256": "2EA37B26676E6CAEEA456D24821CAE18BE8069A51B1A965124EAF2B4FC118727",
+  "dimensions": [
+    2172,
+    724
+  ],
+  "mode": "RGBA",
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "filterMode": 0,
+  "enableMipMap": 0,
+  "pixelsPerUnit": 128,
+  "serializedLegacyRootMaxTextureSize": 2048,
+  "platforms": [
+    {
+      "target": "DefaultTexturePlatform",
+      "maxTextureSize": 4096,
+      "compression": 0,
+      "overridden": 0
+    },
+    {
+      "target": "Standalone",
+      "maxTextureSize": 2048,
+      "compression": 1,
+      "overridden": 0
+    },
+    {
+      "target": "WebGL",
+      "maxTextureSize": 2048,
+      "compression": 1,
+      "overridden": 0
+    }
+  ],
+  "scope": "Serialized importer + raw PNG verification. DefaultTexturePlatform max4096; legacy top-level max2048 retained by Unity. Generator explicitly sets TextureImporter.maxTextureSize=4096 then SaveAndReimport. Runtime imported texture width was not separately queried.",
+  "pass": true
+}

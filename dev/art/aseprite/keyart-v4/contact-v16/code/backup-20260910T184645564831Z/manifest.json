@@ -1,0 +1,62 @@
+[
+  {
+    "path": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+    "candidate": "CreateMvpFarmScene.cs.txt",
+    "before": "8af0a585167b141eb747a00974ac2146df3397be5b81d58b90b202695a2d7f16",
+    "after": "a451e6208270355410ca4f0d7623b48ee769cad2fe13d4e5ac487b4fdf8f5748"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs",
+    "candidate": "FarmSceneSpatialContract.cs.txt",
+    "before": "f27a0197dc59467c52c8eb13d75bf0b28150a3629213a267300cc7353094dc0b",
+    "after": "f357c7de5407f9592f3adf3bf0c79ae9cd396ea02860a841c2e8c8f4b7aa6f1e"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Scene/FarmSettlementPhysicsContract.cs",
+    "candidate": "FarmSettlementPhysicsContract.cs.txt",
+    "before": "ff994096ed2b8b1e33ad1c2330682d59f3a0ab8f081619ae1d9a9b059ddc411a",
+    "after": "769d7be4aa17d0b9cccbad29f735942ac2cc2a72b1cce624101d0d61a7c636a5"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Runtime/FarmSceneRuntimeBootstrap.cs",
+    "candidate": "FarmSceneRuntimeBootstrap.cs.txt",
+    "before": "8aad3d4b8681e4d39301aac9f4169fcf4767ede5341598978df7a25405172188",
+    "after": "b243d88cbd23384c618825ef3240614ba6b549c659dc6482828b45c83b86dca6"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmAmbientAnimationAuthoring.cs",
+    "candidate": "FarmAmbientAnimationAuthoring.cs.txt",
+    "before": "6f1089ad98689bea4721554d4835aaf610f7b96f62dfb38e6d3e03bda9cd3f8c",
+    "after": "c45ae82f47009d7ae785824cf6e38c1750861885f4516315563f8ef18ee0aa63"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Dev/FarmAmbientPlaybackCapture.cs",
+    "candidate": "FarmAmbientPlaybackCapture.cs.txt",
+    "before": "39154600d320009459d76aca00b3569e573a7c86b8337516be1e2f2a2912f17e",
+    "after": "f107fac50b3bbf08c89de49c7a2daa091aaa9fa0bb5451710c566de2a2ce6107"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Dev/FarmPlayModeCaptureSession.cs",
+    "candidate": "FarmPlayModeCaptureSession.cs.txt",
+    "before": "511d7e5f6e36eadd47b0bef5b4f9e33fce063a59b16ae86f81b61e7dfb5873ae",
+    "after": "9a151f8448d7cbfe8b6158065ebd5ddb137183690e024d02e2bcd7adcc217c13"
+  },
+  {
+    "path": "Assets/_Game/Scripts/World/FishingSpot.cs",
+    "candidate": "FishingSpot.cs.txt",
+    "before": "a45cd0f5ced6ff3d48de31468e0db78beb89d279fa2bb418cac192254efccd17",
+    "after": "c9ad5bb9e3a25228cc6b83530bf7a4ae8697359cae8a64a8ce7030f1d2f834b0"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/World/FishingStanceZoneTests.cs",
+    "candidate": "FishingStanceZoneTests.cs.txt",
+    "before": null,
+    "after": "fc939c68287f0b8832b80494a5b7564d00d867a9c9f2de8b333493518620100f"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Dev/FarmContactCapture.cs",
+    "candidate": "FarmContactCapture.cs.txt",
+    "before": null,
+    "after": "059e3ddfb6fbabc7fda49ef6cc21cba73c78138d0ac496a04d737d18f2c8e66b"
+  }
+]

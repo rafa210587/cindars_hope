@@ -1,0 +1,23 @@
+{
+  "_schema": {
+    "id": "id da entidade (igual ao slug do bestiary_*.asset ou npc_*)",
+    "w": "largura px (SizeClass: tiny 24, small 32, medium 32, large 48-64, huge 80-96)",
+    "h": "altura px",
+    "bodytype": "humanoid | flying | blob | quadruped | insect | dragon",
+    "body": "hex da cor base (mid) — luz/sombra derivados automaticamente",
+    "accent": "hex do detalhe (fenda, núcleo, faixa, marca de família)",
+    "eye": "hex dos olhos",
+    "outline": "hex do contorno (default 1A1620)",
+    "prompt": "descrição rica p/ a IA de imagem (1 parágrafo) — vem das descrições dos docs"
+  },
+  "sprites": [
+    { "id": "ninrorin_void_sentinel", "w": 32, "h": 48, "bodytype": "humanoid", "body": "C0C4C8", "accent": "6A2AA0", "eye": "E8E8F0", "outline": "1A1620",
+      "prompt": "Elfo cinzento alto e imóvel, armadura ritual cinza-prata, fissura negra-roxa do vazio pulsando no peito, postura de guarda com escudo." },
+    { "id": "cave_bat", "w": 32, "h": 32, "bodytype": "flying", "body": "5A4A6A", "accent": "2A2A40", "eye": "C0C0E0", "outline": "1A1620",
+      "prompt": "Morcego de fenda, asas largas pequenas, corpo escuro roxo-cinza com bordas azuladas, orelhas grandes, voo baixo." },
+    { "id": "translucent_sludge_cube", "w": 32, "h": 32, "bodytype": "blob", "body": "3A7A4A", "accent": "A8E060", "eye": "E0F0C0", "outline": "1A1620",
+      "prompt": "Cubo de lodo translúcido verde, brilho ácido, objetos/ossos visíveis dentro, avança lentamente." },
+    { "id": "stone_rat", "w": 32, "h": 32, "bodytype": "quadruped", "body": "6A6A6A", "accent": "8A5A30", "eye": "D4A020", "outline": "1A1620",
+      "prompt": "Rato de basalto baixo com dorso de pedra quebrada, focinho escuro, olhos âmbar, perseguidor simples." }
+  ]
+}

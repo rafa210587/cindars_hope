@@ -1,0 +1,6 @@
+{
+  "runnerExit": 0,
+  "startedUtc": "2026-09-09T02:32:13.2327411Z",
+  "filter": "CindarsHope.Tests.EditMode.Farm;CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests;CindarsHope.Tests.EditMode.Editor.FarmTerrainMaskTests",
+  "finishedUtc": "2026-09-09T02:32:26.4355779Z"
+}

@@ -1,0 +1,294 @@
+using CindarsHope.Core;
+using CindarsHope.Core.Data;
+using CindarsHope.Core.Events;
+using CindarsHope.Player.Data;
+using CindarsHope.Foundation;
+using UnityEngine;
+
+namespace CindarsHope.Player
+{
+    [DisallowMultipleComponent]
+    public class HungerManager : MonoBehaviour, CindarsHope.Foundation.IHungerRuntime
+    {
+        [SerializeField] private PlayerDataSO _playerData;
+        [SerializeField] private PlayerManager _playerManager;
+        [SerializeField] private Transform _playerTransform;
+        [SerializeField] private PlayerNeedsBalanceSO _playerNeedsBalance;
+        [SerializeField] private int _hpLossWhenHungerEmpty = 5;
+        [SerializeField] private Vector2 _respawnPosition = Vector2.zero;
+
+        private int _stepsPerHungerTick = 10;
+        private int _hungerLossPerTick = 1;
+        private int _hungerLossPerDay = 10;
+        private float _distanceAccumulator;
+        private bool _criticalEventPublished;
+        private bool _emptyEventPublished;
+        private float _fractionalDrainAccumulator;
+
+        public int CurrentHunger { get; private set; }
+        public int MaxHunger { get; private set; } = 1;
+        /// <summary>Crédito subunitário pendente; persiste para impedir perda por save/load.</summary>
+        public float FractionalDrainAccumulator => _fractionalDrainAccumulator;
+        public bool IsEmpty => CurrentHunger <= 0;
+        public bool IsCritical => CurrentHunger > 0 && CurrentHunger <= GetCriticalThreshold();
+
+        // arch: quebra do par mutuo Core|Player (2026-07-15) — implementacao explicita da porta
+        // IHungerRuntime.Initialize(object): o campo GameBootstrap._hungerManager virou MonoBehaviour
+        // (Core nao pode mais nomear HungerManager); Core resolve esta porta via cast local
+        // (_hungerManager as IHungerRuntime) so para a chamada de lifecycle.
+        void CindarsHope.Foundation.IHungerRuntime.Initialize(object playerData) => Initialize(playerData as PlayerDataSO);
+
+        public void Initialize(PlayerDataSO playerData)
+        {
+            _playerData = playerData;
+
+            if (_playerData == null)
+            {
+                Debug.LogWarning("HungerManager initialized without PlayerDataSO. Using safe fallback hunger values.", this);
+                MaxHunger = 100;
+                CurrentHunger = 100;
+                _stepsPerHungerTick = 10;
+                _hungerLossPerTick = 1;
+                _hungerLossPerDay = 10;
+                _distanceAccumulator = 0f;
+                _fractionalDrainAccumulator = 0f;
+                _criticalEventPublished = IsCritical;
+                _emptyEventPublished = IsEmpty;
+                return;
+            }
+
+            MaxHunger = Mathf.Max(1, _playerData.MaxHunger);
+            CurrentHunger = Mathf.Clamp(_playerData.StartingHunger, 0, MaxHunger);
+            _stepsPerHungerTick = Mathf.Max(1, _playerData.StepsPerHungerTick);
+            _hungerLossPerTick = Mathf.Max(1, _playerData.HungerLossPerTick);
+            _hungerLossPerDay = Mathf.Max(0, _playerData.HungerLossPerDay);
+            _distanceAccumulator = 0f;
+            _fractionalDrainAccumulator = 0f;
+            _criticalEventPublished = IsCritical;
+            _emptyEventPublished = IsEmpty;
+
+            GameEventBus.Publish(new HungerChangedEvent(CurrentHunger, CurrentHunger, MaxHunger));
+        }
+
+        public void RestoreHunger(int amount)
+        {
+            if (amount <= 0 || CurrentHunger >= MaxHunger)
+            {
+                return;
+            }
+
+            var previousHunger = CurrentHunger;
+            CurrentHunger = Mathf.Min(MaxHunger, CurrentHunger + amount);
+            var delta = CurrentHunger - previousHunger;
+            if (delta <= 0)
+            {
+                return;
+            }
+
+            if (!IsCritical)
+            {
+                _criticalEventPublished = false;
+            }
+
+            if (!IsEmpty)
+            {
+                _emptyEventPublished = false;
+            }
+
+            GameEventBus.Publish(new HungerChangedEvent(delta, CurrentHunger, MaxHunger));
+        }
+
+        public void RestoreFromSaveData(int currentHunger, int maxHunger,
+            float fractionalDrainAccumulator = 0f)
+        {
+            var previousHunger = CurrentHunger;
+            MaxHunger = Mathf.Max(1, maxHunger);
+            CurrentHunger = Mathf.Clamp(currentHunger, 0, MaxHunger);
+            _distanceAccumulator = 0f;
+            _fractionalDrainAccumulator = NormalizeFractionalDrainAccumulator(
+                fractionalDrainAccumulator);
+            _criticalEventPublished = IsCritical;
+            _emptyEventPublished = IsEmpty;
+
+            GameEventBus.Publish(new HungerChangedEvent(CurrentHunger - previousHunger, CurrentHunger, MaxHunger));
+        }
+
+        private void Awake()
+        {
+            Initialize(_playerData);
+        }
+
+        private void OnValidate()
+        {
+            _hpLossWhenHungerEmpty = Mathf.Max(0, _hpLossWhenHungerEmpty);
+        }
+
+        private void OnEnable()
+        {
+            GameEventBus.Subscribe<PlayerStepEvent>(OnPlayerStep);
+            GameEventBus.Subscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Subscribe<GameTimeTickEvent>(OnGameTimeTick);
+        }
+
+        private void OnDisable()
+        {
+            GameEventBus.Unsubscribe<PlayerStepEvent>(OnPlayerStep);
+            GameEventBus.Unsubscribe<DayStartedEvent>(OnDayStarted);
+            GameEventBus.Unsubscribe<GameTimeTickEvent>(OnGameTimeTick);
+        }
+
+        private void OnPlayerStep(PlayerStepEvent evt)
+        {
+            if (IsEmpty)
+            {
+                return;
+            }
+
+            _distanceAccumulator += Mathf.Max(0f, evt.DistanceSinceLastStep);
+            while (_distanceAccumulator >= _stepsPerHungerTick)
+            {
+                _distanceAccumulator -= _stepsPerHungerTick;
+                LoseHunger(_hungerLossPerTick);
+
+                if (IsEmpty)
+                {
+                    _distanceAccumulator = 0f;
+                    return;
+                }
+            }
+        }
+
+        private void OnDayStarted(DayStartedEvent evt)
+        {
+            if (IsEmpty || _hungerLossPerDay <= 0)
+            {
+                return;
+            }
+
+            LoseHunger(_hungerLossPerDay);
+        }
+
+        private void OnGameTimeTick(GameTimeTickEvent evt)
+        {
+            if (!IsEmpty)
+            {
+                return;
+            }
+
+            var starvationDamage = _playerNeedsBalance != null
+                ? Mathf.CeilToInt(Mathf.Max(0f, _playerNeedsBalance.ZeroHungerDamagePerSecond))
+                : 1;
+            ApplyHungerDamage(starvationDamage, "Starvation tick");
+        }
+
+        // F18: redução de drain derivada (passivas/equipment). 1 = sem redução; clamp 0.25.
+        public float DrainMultiplier { get; set; } = 1f;
+
+        private void LoseHunger(int amount)
+        {
+            if (amount <= 0 || CurrentHunger <= 0)
+            {
+                return;
+            }
+
+            var world = _playerTransform != null ? _playerTransform.position : transform.position;
+            float naturalMultiplier = NaturalSurvivalRateModifierProvider.Resolve(
+                NaturalSurvivalRateChannel.HungerDrain, world.x, world.y);
+            float finalMultiplier = ResolveFinalDrainMultiplier(
+                DrainMultiplier, naturalMultiplier);
+            float scaledAmount = amount * finalMultiplier;
+            _fractionalDrainAccumulator += Mathf.Max(0f, scaledAmount);
+            amount = Mathf.FloorToInt(_fractionalDrainAccumulator + .00001f);
+            _fractionalDrainAccumulator -= amount;
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            var previousHunger = CurrentHunger;
+            CurrentHunger = Mathf.Max(0, CurrentHunger - amount);
+            var delta = CurrentHunger - previousHunger;
+            if (delta == 0)
+            {
+                return;
+            }
+
+            GameEventBus.Publish(new HungerChangedEvent(delta, CurrentHunger, MaxHunger));
+
+            if (IsCritical && !_criticalEventPublished)
+            {
+                _criticalEventPublished = true;
+                GameEventBus.Publish(new HungerCriticalEvent(CurrentHunger, MaxHunger));
+            }
+
+            if (IsEmpty && !_emptyEventPublished)
+            {
+                _emptyEventPublished = true;
+                GameEventBus.Publish(new HungerEmptyEvent(CurrentHunger, MaxHunger));
+                ApplyHungerDamage(Mathf.Max(0, _hpLossWhenHungerEmpty), "Hunger reached zero");
+            }
+        }
+
+        public static float ResolveFinalDrainMultiplier(float passiveMultiplier,
+            float contextualMultiplier)
+            => Mathf.Clamp(Mathf.Clamp01(passiveMultiplier) *
+                Mathf.Max(0f, contextualMultiplier), .25f, 1f);
+
+        /// <summary>
+        /// O acumulador representa somente a parte fracionária [0,1). Valores legados ausentes
+        /// chegam como zero; dados inválidos não podem gerar drain negativo ou não finito.
+        /// </summary>
+        public static float NormalizeFractionalDrainAccumulator(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value) || value <= 0f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Min(value - Mathf.Floor(value), .999999f);
+        }
+
+        private void ApplyHungerDamage(int damage, string reason)
+        {
+            if (_playerManager == null)
+            {
+                Debug.LogWarning("HungerManager reached empty hunger without PlayerManager reference. HP consequence was skipped.", this);
+                return;
+            }
+
+            if (damage <= 0)
+            {
+                return;
+            }
+
+            _playerManager.DamageHP(damage);
+            Debug.Log($"{reason}. Player lost {damage} HP.", this);
+
+            if (_playerManager.CurrentHP > 0)
+            {
+                return;
+            }
+
+            _playerManager.SetHP(_playerManager.MaxHP);
+            RestoreFromSaveData(GetRespawnHunger(), MaxHunger);
+
+            if (_playerTransform != null)
+            {
+                _playerTransform.position = _respawnPosition;
+            }
+
+            GameEventBus.Publish(new PlayerRespawnedEvent(_respawnPosition, _playerManager.CurrentHP, 0));
+            Debug.Log("Player respawned after reaching 0 HP from hunger.", this);
+        }
+
+        private int GetRespawnHunger()
+        {
+            return Mathf.Max(1, Mathf.CeilToInt(MaxHunger * 0.2f));
+        }
+
+        private int GetCriticalThreshold()
+        {
+            return Mathf.Max(1, Mathf.CeilToInt(MaxHunger * 0.2f));
+        }
+    }
+}

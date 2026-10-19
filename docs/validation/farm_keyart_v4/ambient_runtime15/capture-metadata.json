@@ -1,0 +1,1480 @@
+{
+    "status": "PASS",
+    "stage": "exiting",
+    "failure": "",
+    "startedUtc": "2026-09-10T18:01:22.2891539Z",
+    "finishedUtc": "2026-09-10T18:02:08.1603741Z",
+    "playStartedUtc": "2026-09-10T18:01:26.0851508Z",
+    "scenePath": "Assets/_Game/Scenes/FarmScene.unity",
+    "sceneSha256Before": "797eeb8be3ed2efb31f8deac240c4a61c384709ba534bfbba4fa6722c2474fea",
+    "sceneSha256After": "797eeb8be3ed2efb31f8deac240c4a61c384709ba534bfbba4fa6722c2474fea",
+    "unityVersion": "6000.5.7f1",
+    "persistentRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope",
+    "saveRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\\saves",
+    "saveHashScope": "All files recursively under SaveManager's saves directory; Unity Editor Analytics is outside the player save directory.",
+    "saveIsolation": "Direct Farm bootstrap; SaveInput disabled in memory before Play Mode. No save/load calls. Scene reopened without saving on exit.",
+    "limitations": "Real native ambient playback; camera-only framing at gameplay zoom. No movement/input, interaction or route proof. Screen Space Overlay UI is absent from Camera.Render. Inspect ambient.method and timestamps.",
+    "disabledSaveInputs": 1,
+    "saveHashesBefore": [],
+    "saveHashesAfter": [],
+    "views": [],
+    "runtimeErrors": [],
+    "npcs": [],
+    "physicalRoutes": {
+        "status": "FAIL",
+        "reason": "",
+        "colliderType": "",
+        "method": "Cardinal BFS at 0.5 world units; actual player collider OverlapCollider and Cast with Physics2D layer collision mask; each route starts at captured spawn. No movement input, interaction or animation is simulated.",
+        "step": 0.5,
+        "approachTolerance": 1.25,
+        "visitedNodes": 0,
+        "nodeLimit": 12000,
+        "layerMask": 0,
+        "origin": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "colliderOffset": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "colliderWorldSize": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "colliderLossyScale": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "missingLandmarks": [],
+        "routes": [],
+        "dockWaterChecks": [],
+        "boundaryChecks": [],
+        "houseTillingChecks": [],
+        "landmarkTillingChecks": [],
+        "fenceTillingChecks": [],
+        "greenhouseTillingChecks": [],
+        "landmarkPhysicsChecks": [],
+        "authoredSolidChecks": [],
+        "authoredApproachChecks": [],
+        "authoredTillingChecks": []
+    },
+    "physicalRoutesEvaluated": false,
+    "interactionSelection": {
+        "status": "RUNNING",
+        "method": "Real InteractionSystem.GetCurrentInteractable after >=2 physics steps, from BFS endpoint or a collider-swept local position within 2u; no Interact or injected candidates. House door, three craft stations, exterior farm cave entrance FishingSpot and town portal; decorative well excluded. Selection never executes a scene transition or fishing action.",
+        "selections": []
+    },
+    "interactionSelectionStarted": false,
+    "interactionSelectionEvaluated": false,
+    "motionRequested": false,
+    "motionStarted": false,
+    "motionEvaluated": false,
+    "motionResultStatus": "NOT REQUESTED",
+    "motion": {
+        "status": "RUNNING",
+        "reason": "",
+        "traversalCaptureInterval": 0.09000000357627869,
+        "timing": "Every PNG carries its observed Time.time and fixedTime; preview timing must use consecutive timestamp deltas, never an invented constant playback rate. Moving-body snapshots target 0.09s intervals; stationary duplicates are omitted. Door poses are captured when observed to change. Water PNGs are sampled periodically regardless of frame changes and tagged after Camera.Render; identical frames are retained as evidence.",
+        "method": "Initial framing at the earlier physically validated house selection position. Thereafter actual Rigidbody2D.MovePosition in FixedUpdate with PlayerController temporarily disabled. PlayerWalkAnimator observes actual physical velocity. Live selector invokes only HouseDoorInteractable. No forced sprite, facing, alpha, door state, injected input, portal, save or load. Water reads actual Tilemap.GetAnimationFrame after rendering. This is controlled-body traversal, not a movement-input test or human playthrough.",
+        "originalPlayerPosition": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "preparedPlayerPosition": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "houseCameraPosition": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "lakeCameraPosition": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "cameraAspect": 0.0,
+        "orthographicSize": 0.0,
+        "width": 0,
+        "height": 0,
+        "waterAnimationFrameCount": 0,
+        "waterColliderStateBefore": "",
+        "waterColliderStateAfter": "",
+        "waterAnimationFlagsBefore": "",
+        "waterAdvancedObserved": false,
+        "waterWrapObserved": false,
+        "waterDistinctFrames": 0,
+        "waterSampleDuration": 0.0,
+        "checks": [],
+        "samples": []
+    },
+    "ambientOnlyRequested": true,
+    "ambientStarted": true,
+    "ambientEvaluated": true,
+    "ambient": {
+        "status": "PASS",
+        "reason": "",
+        "method": "41 seconds of real Play Mode. Native Animators run normally; no Animator.Update/Play, animation sampling, state seek, frame/alpha writes or time-scale changes. Camera keeps gameplay orthographic zoom/aspect; PNGs are unscaled pixel crops of its render. Fountain/cascade receive >=1.4s continuous observation each. Fish jump windows receive ~10fps and idle windows sparse captures. Use actual timestamps for playback. This is camera-only animation evidence, not movement/input, overlay UI or human acceptance.",
+        "startedTime": 0.0,
+        "endedTime": 41.000064849853519,
+        "startedRealtime": 3.0041699409484865,
+        "endedRealtime": 44.11494064331055,
+        "cameraAspect": 1.3333333730697632,
+        "orthographicSize": 8.5,
+        "fishPeriod": 20.0,
+        "fishActiveStart": 19.040000915527345,
+        "observedJumpSpacing": 20.00006103515625,
+        "renderWidth": 640,
+        "renderHeight": 480,
+        "fountainDistinctFrames": 5,
+        "cascadeDistinctFrames": 5,
+        "fishIdleSamples": 8,
+        "samples": [
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_000.png",
+                "time": 0.0,
+                "fixedTime": 0.0,
+                "realtime": 3.0223135948181154,
+                "normalizedTime": 0.0,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_001.png",
+                "time": 0.09038399159908295,
+                "fixedTime": 0.07999996840953827,
+                "realtime": 3.2052102088928224,
+                "normalizedTime": 0.0045192004181444649,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_002.png",
+                "time": 0.18061289191246034,
+                "fixedTime": 0.1799999326467514,
+                "realtime": 3.2954070568084719,
+                "normalizedTime": 0.009030642919242382,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_003.png",
+                "time": 0.2706584930419922,
+                "fixedTime": 0.2599999010562897,
+                "realtime": 3.388733386993408,
+                "normalizedTime": 0.38665515184402468,
+                "frame": 1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_004.png",
+                "time": 0.3607330918312073,
+                "fixedTime": 0.3599998652935028,
+                "realtime": 3.475569009780884,
+                "normalizedTime": 0.5153332352638245,
+                "frame": 2,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_005.png",
+                "time": 0.45074740052223208,
+                "fixedTime": 0.43999984860420229,
+                "realtime": 3.565690517425537,
+                "normalizedTime": 0.643925130367279,
+                "frame": 3,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_006.png",
+                "time": 0.5407919883728027,
+                "fixedTime": 0.539999783039093,
+                "realtime": 3.655489683151245,
+                "normalizedTime": 0.7725604772567749,
+                "frame": 3,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_007.png",
+                "time": 0.6309425234794617,
+                "fixedTime": 0.6199997663497925,
+                "realtime": 3.745736837387085,
+                "normalizedTime": 0.9013470411300659,
+                "frame": 4,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_008.png",
+                "time": 0.7210025191307068,
+                "fixedTime": 0.7199997305870056,
+                "realtime": 3.836291790008545,
+                "normalizedTime": 1.0300045013427735,
+                "frame": 0,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_009.png",
+                "time": 0.8113440871238709,
+                "fixedTime": 0.7999997138977051,
+                "realtime": 3.925952911376953,
+                "normalizedTime": 1.1590648889541627,
+                "frame": 0,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_010.png",
+                "time": 0.9013562798500061,
+                "fixedTime": 0.8999996781349182,
+                "realtime": 4.016121864318848,
+                "normalizedTime": 1.2876546382904053,
+                "frame": 1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_011.png",
+                "time": 0.9915226101875305,
+                "fixedTime": 0.9799996614456177,
+                "realtime": 4.10618782043457,
+                "normalizedTime": 1.416463017463684,
+                "frame": 2,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_012.png",
+                "time": 1.081692099571228,
+                "fixedTime": 1.079999566078186,
+                "realtime": 4.196467399597168,
+                "normalizedTime": 1.5452768802642823,
+                "frame": 2,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_013.png",
+                "time": 1.1719645261764527,
+                "fixedTime": 1.1599996089935303,
+                "realtime": 4.286934852600098,
+                "normalizedTime": 1.6742370128631592,
+                "frame": 3,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_014.png",
+                "time": 1.2623387575149537,
+                "fixedTime": 1.2599995136260987,
+                "realtime": 4.377058029174805,
+                "normalizedTime": 1.8033428192138672,
+                "frame": 4,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_015.png",
+                "time": 1.352583646774292,
+                "fixedTime": 1.3399995565414429,
+                "realtime": 4.467347621917725,
+                "normalizedTime": 1.9322638511657715,
+                "frame": 4,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_016.png",
+                "time": 1.4426374435424805,
+                "fixedTime": 1.4399994611740113,
+                "realtime": 4.557491779327393,
+                "normalizedTime": 2.0609118938446047,
+                "frame": 0,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_017.png",
+                "time": 1.53279447555542,
+                "fixedTime": 1.5199995040893555,
+                "realtime": 4.647403717041016,
+                "normalizedTime": 2.189706563949585,
+                "frame": 0,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_018.png",
+                "time": 1.6231976747512818,
+                "fixedTime": 1.6199994087219239,
+                "realtime": 4.738239765167236,
+                "normalizedTime": 2.3188557624816896,
+                "frame": 1,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "fountain",
+                "sprite": "fountain_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fountain_019.png",
+                "time": 1.713566541671753,
+                "fixedTime": 1.699999451637268,
+                "realtime": 4.828183174133301,
+                "normalizedTime": 2.447955369949341,
+                "frame": 2,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 181,
+                    "y": 109,
+                    "width": 278,
+                    "height": 262
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_020.png",
+                "time": 1.8038835525512696,
+                "fixedTime": 1.7999993562698365,
+                "realtime": 4.919170379638672,
+                "normalizedTime": 2.5769801139831545,
+                "frame": 2,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_021.png",
+                "time": 1.8938981294631959,
+                "fixedTime": 1.8799992799758912,
+                "realtime": 5.00865364074707,
+                "normalizedTime": 2.705573797225952,
+                "frame": 3,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_022.png",
+                "time": 1.983929991722107,
+                "fixedTime": 1.979999303817749,
+                "realtime": 5.098662376403809,
+                "normalizedTime": 2.8341917991638185,
+                "frame": 4,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_023.png",
+                "time": 2.073991298675537,
+                "fixedTime": 2.0599992275238039,
+                "realtime": 5.1887922286987309,
+                "normalizedTime": 2.96285080909729,
+                "frame": 4,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_024.png",
+                "time": 2.1641924381256105,
+                "fixedTime": 2.159999132156372,
+                "realtime": 5.278897762298584,
+                "normalizedTime": 3.0917088985443117,
+                "frame": 0,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_025.png",
+                "time": 2.2546169757843019,
+                "fixedTime": 2.239999294281006,
+                "realtime": 5.370199680328369,
+                "normalizedTime": 3.220886707305908,
+                "frame": 1,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_026.png",
+                "time": 2.344858169555664,
+                "fixedTime": 2.339999198913574,
+                "realtime": 5.459991455078125,
+                "normalizedTime": 3.3498032093048097,
+                "frame": 1,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_027.png",
+                "time": 2.4351022243499758,
+                "fixedTime": 2.419999122619629,
+                "realtime": 5.549709796905518,
+                "normalizedTime": 3.4787216186523439,
+                "frame": 2,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_028.png",
+                "time": 2.5252506732940676,
+                "fixedTime": 2.5199990272521974,
+                "realtime": 5.640132904052734,
+                "normalizedTime": 3.607503652572632,
+                "frame": 3,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_029.png",
+                "time": 2.615522861480713,
+                "fixedTime": 2.599999189376831,
+                "realtime": 5.730165004730225,
+                "normalizedTime": 3.736464738845825,
+                "frame": 3,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_030.png",
+                "time": 2.7059502601623537,
+                "fixedTime": 2.6999990940093996,
+                "realtime": 5.820975303649902,
+                "normalizedTime": 3.8656468391418459,
+                "frame": 4,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_031.png",
+                "time": 2.7962491512298586,
+                "fixedTime": 2.779999017715454,
+                "realtime": 5.910793781280518,
+                "normalizedTime": 3.994645357131958,
+                "frame": 4,
+                "cycle": 3,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_032.png",
+                "time": 2.8865323066711427,
+                "fixedTime": 2.8799989223480226,
+                "realtime": 6.0012288093566898,
+                "normalizedTime": 4.123622417449951,
+                "frame": 0,
+                "cycle": 4,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_033.png",
+                "time": 2.9766340255737306,
+                "fixedTime": 2.959998846054077,
+                "realtime": 6.091400146484375,
+                "normalizedTime": 4.2523369789123539,
+                "frame": 1,
+                "cycle": 4,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_034.png",
+                "time": 3.0673952102661135,
+                "fixedTime": 3.0599989891052248,
+                "realtime": 6.183292865753174,
+                "normalizedTime": 4.381993770599365,
+                "frame": 1,
+                "cycle": 4,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_035.png",
+                "time": 3.1575675010681154,
+                "fixedTime": 3.1399989128112795,
+                "realtime": 6.272431373596191,
+                "normalizedTime": 4.510810852050781,
+                "frame": 2,
+                "cycle": 4,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "cascade",
+                "sprite": "cascade_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\cascade_036.png",
+                "time": 3.2476017475128176,
+                "fixedTime": 3.2399988174438478,
+                "realtime": 6.36221981048584,
+                "normalizedTime": 4.63943338394165,
+                "frame": 3,
+                "cycle": 4,
+                "cropPixels": {
+                    "x": 251,
+                    "y": 180,
+                    "width": 138,
+                    "height": 120
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_037.png",
+                "time": 3.337876796722412,
+                "fixedTime": 3.3199987411499025,
+                "realtime": 6.452817916870117,
+                "normalizedTime": 0.16689370572566987,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_038.png",
+                "time": 8.338193893432618,
+                "fixedTime": 8.31999683380127,
+                "realtime": 11.452926635742188,
+                "normalizedTime": 0.4169102609157562,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_039.png",
+                "time": 13.33824348449707,
+                "fixedTime": 13.319994926452637,
+                "realtime": 16.45294761657715,
+                "normalizedTime": 0.6669094562530518,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_040.png",
+                "time": 18.33831787109375,
+                "fixedTime": 18.31999397277832,
+                "realtime": 21.45304298400879,
+                "normalizedTime": 0.9169130921363831,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_041.png",
+                "time": 18.840476989746095,
+                "fixedTime": 18.83999252319336,
+                "realtime": 21.955322265625,
+                "normalizedTime": 0.9420214891433716,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_042.png",
+                "time": 18.930513381958009,
+                "fixedTime": 18.919992446899415,
+                "realtime": 22.045331954956056,
+                "normalizedTime": 0.9465236663818359,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_043.png",
+                "time": 19.020620346069337,
+                "fixedTime": 19.01999282836914,
+                "realtime": 22.135452270507814,
+                "normalizedTime": 0.9510291814804077,
+                "frame": -1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_044.png",
+                "time": 19.110740661621095,
+                "fixedTime": 19.099992752075197,
+                "realtime": 22.225610733032228,
+                "normalizedTime": 0.9555350542068481,
+                "frame": 0,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_045.png",
+                "time": 19.201034545898439,
+                "fixedTime": 19.199993133544923,
+                "realtime": 22.315959930419923,
+                "normalizedTime": 0.9600499868392944,
+                "frame": 1,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_046.png",
+                "time": 19.291072845458986,
+                "fixedTime": 19.279993057250978,
+                "realtime": 22.405921936035158,
+                "normalizedTime": 0.9645516872406006,
+                "frame": 2,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_047.png",
+                "time": 19.381385803222658,
+                "fixedTime": 19.379993438720704,
+                "realtime": 22.496057510375978,
+                "normalizedTime": 0.9690669775009155,
+                "frame": 2,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_048.png",
+                "time": 19.47149658203125,
+                "fixedTime": 19.459993362426759,
+                "realtime": 22.58650779724121,
+                "normalizedTime": 0.973572313785553,
+                "frame": 3,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_049.png",
+                "time": 19.561857223510743,
+                "fixedTime": 19.559993743896486,
+                "realtime": 22.67692756652832,
+                "normalizedTime": 0.978090226650238,
+                "frame": 4,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_05",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_050.png",
+                "time": 19.65206527709961,
+                "fixedTime": 19.63999366760254,
+                "realtime": 22.766950607299806,
+                "normalizedTime": 0.9826006889343262,
+                "frame": 5,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_05",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_051.png",
+                "time": 19.742284774780275,
+                "fixedTime": 19.739992141723634,
+                "realtime": 22.857336044311525,
+                "normalizedTime": 0.9871115684509277,
+                "frame": 5,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_06",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_052.png",
+                "time": 19.83235740661621,
+                "fixedTime": 19.819992065429689,
+                "realtime": 22.947044372558595,
+                "normalizedTime": 0.9916151165962219,
+                "frame": 6,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_07",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_053.png",
+                "time": 19.92259407043457,
+                "fixedTime": 19.919992446899415,
+                "realtime": 23.03757667541504,
+                "normalizedTime": 0.9961270689964294,
+                "frame": 7,
+                "cycle": 0,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_054.png",
+                "time": 20.012788772583009,
+                "fixedTime": 19.99999237060547,
+                "realtime": 23.127513885498048,
+                "normalizedTime": 1.0006365776062012,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_055.png",
+                "time": 20.10304832458496,
+                "fixedTime": 20.099992752075197,
+                "realtime": 23.217844009399415,
+                "normalizedTime": 1.005149245262146,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_056.png",
+                "time": 20.193225860595704,
+                "fixedTime": 20.17999267578125,
+                "realtime": 23.30795669555664,
+                "normalizedTime": 1.009658932685852,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_057.png",
+                "time": 23.33868980407715,
+                "fixedTime": 23.319992065429689,
+                "realtime": 26.453601837158204,
+                "normalizedTime": 1.166927695274353,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_058.png",
+                "time": 28.33881187438965,
+                "fixedTime": 28.319990158081056,
+                "realtime": 31.45354461669922,
+                "normalizedTime": 1.41694176197052,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_059.png",
+                "time": 33.339168548583987,
+                "fixedTime": 33.31998825073242,
+                "realtime": 36.45396423339844,
+                "normalizedTime": 1.6669576168060303,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_060.png",
+                "time": 38.33937072753906,
+                "fixedTime": 38.31998825073242,
+                "realtime": 41.45417404174805,
+                "normalizedTime": 1.9169738292694092,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_061.png",
+                "time": 38.84025573730469,
+                "fixedTime": 38.83998489379883,
+                "realtime": 41.955047607421878,
+                "normalizedTime": 1.9420192241668702,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_062.png",
+                "time": 38.930572509765628,
+                "fixedTime": 38.919986724853519,
+                "realtime": 42.045448303222659,
+                "normalizedTime": 1.9465354681015015,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_063.png",
+                "time": 39.02072525024414,
+                "fixedTime": 39.01998519897461,
+                "realtime": 42.13552474975586,
+                "normalizedTime": 1.9510430097579957,
+                "frame": -1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_00",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_064.png",
+                "time": 39.110801696777347,
+                "fixedTime": 39.0999870300293,
+                "realtime": 42.22544860839844,
+                "normalizedTime": 1.9555467367172242,
+                "frame": 0,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_01",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_065.png",
+                "time": 39.201175689697269,
+                "fixedTime": 39.19998550415039,
+                "realtime": 42.315887451171878,
+                "normalizedTime": 1.9600658416748047,
+                "frame": 1,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_066.png",
+                "time": 39.29140090942383,
+                "fixedTime": 39.27998733520508,
+                "realtime": 42.40615463256836,
+                "normalizedTime": 1.9645776748657227,
+                "frame": 2,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_02",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_067.png",
+                "time": 39.381526947021487,
+                "fixedTime": 39.37998580932617,
+                "realtime": 42.49623489379883,
+                "normalizedTime": 1.969083309173584,
+                "frame": 2,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_03",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_068.png",
+                "time": 39.47187423706055,
+                "fixedTime": 39.45998764038086,
+                "realtime": 42.586666107177737,
+                "normalizedTime": 1.9736000299453736,
+                "frame": 3,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_04",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_069.png",
+                "time": 39.56221008300781,
+                "fixedTime": 39.55998611450195,
+                "realtime": 42.67686462402344,
+                "normalizedTime": 1.97811758518219,
+                "frame": 4,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_05",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_070.png",
+                "time": 39.65249252319336,
+                "fixedTime": 39.639984130859378,
+                "realtime": 42.76755142211914,
+                "normalizedTime": 1.9826302528381348,
+                "frame": 5,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_05",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_071.png",
+                "time": 39.742523193359378,
+                "fixedTime": 39.739986419677737,
+                "realtime": 42.857582092285159,
+                "normalizedTime": 1.9871323108673096,
+                "frame": 5,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_06",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_072.png",
+                "time": 39.83282470703125,
+                "fixedTime": 39.819984436035159,
+                "realtime": 42.947566986083987,
+                "normalizedTime": 1.9916476011276246,
+                "frame": 6,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "fish_v15_frame_07",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_073.png",
+                "time": 39.92302322387695,
+                "fixedTime": 39.919986724853519,
+                "realtime": 43.03803634643555,
+                "normalizedTime": 1.9961576461791993,
+                "frame": 7,
+                "cycle": 1,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_074.png",
+                "time": 40.013301849365237,
+                "fixedTime": 39.99998474121094,
+                "realtime": 43.12809753417969,
+                "normalizedTime": 2.000671148300171,
+                "frame": -1,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_075.png",
+                "time": 40.1034049987793,
+                "fixedTime": 40.0999870300293,
+                "realtime": 43.218597412109378,
+                "normalizedTime": 2.0051755905151369,
+                "frame": -1,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            },
+            {
+                "source": "fish",
+                "sprite": "null",
+                "path": "D:/Projetos/Cindars_Hope/cindars_hope/docs/validation/farm_keyart_v4/ambient_runtime15\\ambient-playback\\fish_076.png",
+                "time": 40.19345474243164,
+                "fixedTime": 40.17998504638672,
+                "realtime": 43.30809783935547,
+                "normalizedTime": 2.009676694869995,
+                "frame": -1,
+                "cycle": 2,
+                "cropPixels": {
+                    "x": 266,
+                    "y": 186,
+                    "width": 108,
+                    "height": 108
+                }
+            }
+        ],
+        "jumps": [
+            {
+                "cycle": 0,
+                "observedStart": 19.110740661621095,
+                "observedEnd": 19.92259407043457,
+                "frames": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                ]
+            },
+            {
+                "cycle": 1,
+                "observedStart": 39.110801696777347,
+                "observedEnd": 39.92302322387695,
+                "frames": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                ]
+            }
+        ]
+    }
+}

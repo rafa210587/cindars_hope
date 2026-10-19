@@ -1,0 +1,73 @@
+ERROR: Implemented spec without spec_ prefix: D:\Projetos\Cindars_Hope\cindars_hope\.specs\implementados\04_spec_ui_dialogue_choice_runtime.md
+ERROR: Implemented spec without spec_ prefix: D:\Projetos\Cindars_Hope\cindars_hope\.specs\implementados\04_spec_ui_hud_main_gameplay_runtime.md
+ERROR: Implemented spec without spec_ prefix: D:\Projetos\Cindars_Hope\cindars_hope\.specs\implementados\04_spec_ui_quest_log_screen_runtime.md
+ERROR: Implemented spec without spec_ prefix: D:\Projetos\Cindars_Hope\cindars_hope\.specs\implementados\04_spec_ui_shop_buy_sell_runtime.md
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_cave_visual_polish_runtime.md (missing: Ordem de execucao)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_cleanup_uac_serialization_6000_5_v1.md (missing: # /speckit.specify)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_cleanup_uac_serialization_6000_5_v1.md (missing: # /speckit.plan)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_cleanup_uac_serialization_6000_5_v1.md (missing: # /speckit.tasks)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_cleanup_uac_serialization_6000_5_v1.md (missing: Ordem de execucao)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_enemy_attack_kits_v1.md (missing: Ordem de execucao)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_enemy_attack_kits_v1.md (missing: Depende de)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_enemy_attack_kits_v1.md (missing: Bloqueia)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md (missing: # /speckit.specify)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md (missing: # /speckit.plan)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md (missing: # /speckit.tasks)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md (missing: Ordem de execucao)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md (missing: Depende de)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md (missing: Bloqueia)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_scale_physics_correction_v1.md (missing: Ordem de execucao)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_scale_physics_correction_v1.md (missing: Depende de)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_scale_physics_correction_v1.md (missing: Bloqueia)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_visual_corrections_v1.md (missing: # /speckit.specify)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_visual_corrections_v1.md (missing: # /speckit.plan)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_visual_corrections_v1.md (missing: # /speckit.tasks)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_visual_corrections_v1.md (missing: Ordem de execucao)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md (missing: # /speckit.specify)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md (missing: # /speckit.plan)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md (missing: # /speckit.tasks)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md (missing: Ordem de execucao)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md (missing: Depende de)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md (missing: Bloqueia)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md (missing: # /speckit.specify)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md (missing: # /speckit.plan)
+ERROR: Future spec missing marker: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md (missing: # /speckit.tasks)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md (missing: Ordem de execucao)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md (missing: Depende de)
+ERROR: Future spec missing dependency header: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md (missing: Bloqueia)
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\docs\architecture\MODULARIZATION_PHASE3_FOUNDATION_REPORT.md:94: `$sourceModule` no scanner novo foi eliminado; nenhum arquivo da Fase 3 aparece no resultado final.
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\architecture\Get-ModularizationDependencySnapshot.ps1:216:     $referenceText = [regex]::Replace($text, '(?m)^\s*namespace\s+CindarsHope\.[^\r\n{]+', '')
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\architecture\Get-ModularizationDependencySnapshot.ps1:217:     foreach ($match in [regex]::Matches($referenceText, '\bCindarsHope\.([A-Za-z_][A-Za-z0-9_]*)\b')) {
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:92:     $srcFile = Join-Path $dir.FullName "SKILL.md"
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:93:     if (-not (Test-Path $srcFile)) {
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:98:     $destDir = Join-Path $AgentsSkillsOut $dir.Name
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:99:     $destFile = Join-Path $destDir "SKILL.md"
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:101:     $srcText = $null
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:102:     try { $srcText = Read-Utf8 $srcFile } catch { $srcText = $null }
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:105:     if (($null -eq $srcText) -or ($srcText -match "[\x00-\x08\x0e-\x1f]")) {
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:109:             New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:110:             Write-Utf8NoBom -Path $destFile -Content $ph
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:118:     if ($srcText -notmatch '(?m)^\s*name\s*:' -or $srcText -notmatch '(?m)^\s*description\s*:') {
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:119:         $lines = $srcText -split "`r?`n"
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:131:             New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:132:             Write-Utf8NoBom -Path $destFile -Content ($fm + $srcText)
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:141:         New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:142:         Copy-Item -Path $srcFile -Destination $destFile -Force
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:154:     $destDir = Join-Path $AgentsSkillsOut $cmdName
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:183:             New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:184:             Write-Utf8NoBom -Path (Join-Path $destDir "SKILL.md") -Content $ph
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:198:         New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:199:         Write-Utf8NoBom -Path (Join-Path $destDir "SKILL.md") -Content $synthesized
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:458:     $srcFile = Join-Path $dir.FullName "SKILL.md"
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:460:     if (Test-Path $srcFile) {
+ERROR: Placeholder found: D:\Projetos\Cindars_Hope\cindars_hope\tools\codex\Generate-CodexHarness.ps1:462:             $t = Read-Utf8 $srcFile
+ERROR: Active spec missing required_adrs field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_cleanup_uac_serialization_6000_5_v1.md
+ERROR: Active spec missing required_game_rules field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_cleanup_uac_serialization_6000_5_v1.md
+ERROR: Active spec missing required_adrs field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md
+ERROR: Active spec missing required_game_rules field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_richness_completion_v1.md
+ERROR: Active spec missing required_adrs field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_visual_corrections_v1.md
+ERROR: Active spec missing required_game_rules field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_farm_scene_keyart_visual_corrections_v1.md
+ERROR: Active spec missing required_adrs field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md
+ERROR: Active spec missing required_game_rules field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_building_visuals.md
+ERROR: Active spec missing required_adrs field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md
+ERROR: Active spec missing required_game_rules field or improper format: D:\Projetos\Cindars_Hope\cindars_hope\.specs\a_implementar\spec_town_layout_v9_organic.md

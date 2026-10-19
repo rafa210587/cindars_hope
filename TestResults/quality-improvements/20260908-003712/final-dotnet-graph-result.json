@@ -1,0 +1,5 @@
+{
+  "wallSeconds": 13.287595,
+  "exitCode": 0,
+  "command": "pwsh -NoProfile -File tools/unity/Invoke-UnityGeneratedProjectsBuild.ps1 -ProjectRoot D:\\Projetos\\Cindars_Hope\\cindars_hope"
+}

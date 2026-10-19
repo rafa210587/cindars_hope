@@ -1,0 +1,121 @@
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Economy;
+using CindarsHope.Interaction;
+using CindarsHope.Inventory;
+using CindarsHope.Save;
+using CindarsHope.UI;
+using UnityEngine;
+
+namespace CindarsHope.SceneManagement
+{
+    // arch: quebra do par mutuo Cave|SceneManagement (2026-07-16) — este installer nao nomeia mais
+    // tipos concretos de Cave (CaveRunManager/CaveLevelRuntimeController/CaveDebugLevelSkipController/
+    // CaveRuntimeMaterializer). Os campos de cena continuam wireados via Inspector como
+    // MonoBehaviour, e o cast concreto + as chamadas Cave-especificas (materializer combat rebind,
+    // fallback do CaveDebugLevelSkipController) migraram para SaveManager e DebugHud, que ja tem a
+    // aresta Save->Cave / UI->Cave existente (nao-mutua). _bossGateRegistry foi removido: era
+    // carregado via Resources.Load mas nunca consumido (dead code).
+    [DisallowMultipleComponent]
+    public sealed class CaveSceneRuntimeReferenceInstaller : MonoBehaviour
+    {
+        [SerializeField] private Transform _playerTransform;
+        [SerializeField] private MonoBehaviour _caveRunManager;
+        [SerializeField] private MonoBehaviour _caveLevelRuntimeController;
+        [SerializeField] private MonoBehaviour _caveDebugLevelSkipController;
+
+        private void Start()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            if (bootstrap == null)
+            {
+                Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: GameBootstrap.Instance is null, cannot rebind references.", this);
+                return;
+            }
+
+            // arch: quebra do par mutuo Core|Save (2026-07-15) — bootstrap.SaveManager agora retorna
+            // a porta ISaveRuntime; este installer (SceneManagement, fora do par cortado) resolve o
+            // tipo concreto por cast local para os Rebind* cross-modulo (nao portaveis).
+            var saveManager = bootstrap.SaveManager as SaveManager;
+            if (saveManager == null)
+            {
+                Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: SaveManager is null, cannot rebind player transform.", this);
+                return;
+            }
+
+            saveManager.RebindPlayerTransform(_playerTransform);
+            saveManager.RebindCaveRuntime(_caveRunManager);
+
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — bootstrap.PlayerManager/
+            // HungerManager/StaminaManager/PlayerProgressionManager/StatusEffectManager agora
+            // retornam MonoBehaviour. arch: quebra do par mutuo Player|SceneManagement (2026-07-15) —
+            // este installer NAO faz cast para o tipo concreto (reintroduziria a aresta
+            // SceneManagement->Player, formando par novo com a aresta existente
+            // Player->SceneManagement via AnyaFountainRespawnFlow); repassa os MonoBehaviour direto
+            // para os Rebind* (PlayerAttackController/SaveManager/DebugHud), que fazem o cast
+            // internamente.
+            var playerManager = bootstrap.PlayerManager;
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — bootstrap.InventoryManager agora
+            // retorna a porta IInventoryRuntime; este installer (SceneManagement, fora do par cortado)
+            // resolve o tipo concreto por cast local para os Rebind* cross-modulo (nao portaveis).
+            var inventoryManager = bootstrap.InventoryManager as InventoryManager;
+            var hungerManager = bootstrap.HungerManager;
+            var staminaManager = bootstrap.StaminaManager;
+            var progressionManager = bootstrap.PlayerProgressionManager;
+            var statusEffectManager = bootstrap.StatusEffectManager;
+            var timeManager = bootstrap.TimeManager;
+
+            if (playerManager != null && inventoryManager != null && hungerManager != null && timeManager != null)
+            {
+                saveManager.RebindRuntimeManagers(playerManager, inventoryManager, hungerManager, timeManager);
+                // arch: Core|Economy (spec_arch_core_economy_cycle_reduction_v33) — ShopManager
+                // self-registra via static Instance; GameBootstrap nao segura mais essa ref.
+                // arch: Core|Equipment (spec_arch_core_equipment_cycle_reduction_v35) — idem para
+                // EquipmentManager, via EquipmentManager.Instance.
+                saveManager.RebindOptionalRuntimeManagers(CindarsHope.Equipment.EquipmentManager.Instance, progressionManager, bootstrap.GameTimeManager, staminaManager, statusEffectManager, CindarsHope.Skills.SkillTreeManager.Instance, ShopManager.Instance);
+            }
+            else
+            {
+                Debug.LogWarning("CaveSceneRuntimeReferenceInstaller: one or more runtime managers are missing during SaveManager rebind.", this);
+            }
+
+            var attackController = _playerTransform != null ? _playerTransform.GetComponent<CindarsHope.Combat.PlayerAttackController>() : null;
+            if (attackController != null)
+            {
+                attackController.RebindStaminaManager(staminaManager);
+            }
+
+            // SPEC 14A-FIX10: rebind combat databases on every cave-scene load from the single
+            // Resources-loaded registry, so wiring can't drift when the scene gets re-saved.
+            var combatRegistry = Resources.Load<CindarsHope.Core.Data.CombatRuntimeDatabasesRegistrySO>("CombatRuntimeDatabasesRegistry");
+            if (combatRegistry == null)
+            {
+                Debug.LogError("CaveSceneRuntimeReferenceInstaller: CombatRuntimeDatabasesRegistry not found at Resources/CombatRuntimeDatabasesRegistry. Enemy profiles and player weapon resolution will rely solely on inspector wiring.", this);
+            }
+            else
+            {
+                saveManager.RebindCaveMaterializerCombatDatabases(_caveRunManager, combatRegistry);
+                if (attackController != null)
+                {
+                    attackController.RebindCombatData(combatRegistry.ItemDatabase, combatRegistry.WeaponDatabase, combatRegistry.SpellDatabase);
+                }
+            }
+
+            // SPEC 14A-FIX7: bootstrap floating damage numbers if the scene didn't include the component.
+            // Self-creating instance auto-builds its world-space Canvas in OnEnable.
+            CindarsHope.Combat.FloatingDamageNumberDisplayer.EnsureExists(transform);
+
+            // SPEC 14A-FIX10: ensure the player has a DamagePopupAnchor so EnemyContactDamage
+            // can show numbers above the player's head instead of guessing.
+            if (_playerTransform != null && _playerTransform.GetComponent<CindarsHope.Combat.DamagePopupAnchor>() == null)
+            {
+                _playerTransform.gameObject.AddComponent<CindarsHope.Combat.DamagePopupAnchor>();
+            }
+
+            var interactionSystem = _playerTransform != null ? _playerTransform.GetComponent<InteractionSystem>() : null;
+            DebugHud.RebindExisting(playerManager, inventoryManager, hungerManager, staminaManager, statusEffectManager, interactionSystem, timeManager, saveManager);
+            DebugHud.RebindExistingCaveRuntime(_caveRunManager, _caveLevelRuntimeController, _caveDebugLevelSkipController);
+
+            Debug.Log("CaveSceneRuntimeReferenceInstaller rebound runtime refs.", this);
+        }
+    }
+}

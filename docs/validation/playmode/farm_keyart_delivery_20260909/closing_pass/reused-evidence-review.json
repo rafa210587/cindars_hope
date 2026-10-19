@@ -1,0 +1,41 @@
+{
+  "checkedUtc": "2026-09-09T13:09:17.8329573Z",
+  "testInputs": [
+    {
+      "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneCompositionContractTests.cs",
+      "evidenceSha": "C0DAFB69E2A929AE4D1B1B48BC003620FCC5D1610489A68F6B82F2D55714833C",
+      "currentSha": "C0DAFB69E2A929AE4D1B1B48BC003620FCC5D1610489A68F6B82F2D55714833C"
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/World/TreeNodeVisualTests.cs",
+      "evidenceSha": "0ACEF38084FF1B4F7A6B8E6C8C99267931B29B37DA82E629416F3B1E4CD16948",
+      "currentSha": "0ACEF38084FF1B4F7A6B8E6C8C99267931B29B37DA82E629416F3B1E4CD16948"
+    },
+    {
+      "path": "Assets/_Game/Scripts/World/TreeNode.cs",
+      "evidenceSha": "80C51108369EA930E980DEC38F2302963D25B9D4A7EB583310B612160C5420E9",
+      "currentSha": "80C51108369EA930E980DEC38F2302963D25B9D4A7EB583310B612160C5420E9"
+    },
+    {
+      "path": "Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs",
+      "evidenceSha": "C190A2D6CB63A8A7FFC99F0FFF48C7BBFC2372563E7F3F84C69545B5AE1DA552",
+      "currentSha": "C190A2D6CB63A8A7FFC99F0FFF48C7BBFC2372563E7F3F84C69545B5AE1DA552"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+      "evidenceSha": "0D99F9FB9F632FDF77DED1239ED00E5EF4F538DAB06DEF765D6FBE35174B850E",
+      "currentSha": "0D99F9FB9F632FDF77DED1239ED00E5EF4F538DAB06DEF765D6FBE35174B850E"
+    },
+    {
+      "path": "Assets/_Game/Tests/EditMode/Editor/FarmDecorationPlannerTests.cs",
+      "evidenceSha": "2AF7E528C820CF45978230F8DE6921BDC51087476F59FCE91CCD0625B70754A6",
+      "currentSha": "2AF7E528C820CF45978230F8DE6921BDC51087476F59FCE91CCD0625B70754A6"
+    }
+  ],
+  "testInputDrift": 0,
+  "importEvidence": "../continuation_art_01/import-validation.json",
+  "imports": 6,
+  "importDrift": 0,
+  "baselinePngCount": 149,
+  "baselinePngDrift": 0
+}

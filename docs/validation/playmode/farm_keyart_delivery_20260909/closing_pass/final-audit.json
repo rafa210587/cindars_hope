@@ -1,0 +1,14 @@
+{
+  "checkedUtc": "2026-09-09T13:51:40.6971857Z",
+  "sceneSha256": "8E68982B60724243FBEF52823CF6B1C9343797788C4237B03166B9C3F940AB6C",
+  "captureStatus": "PASS",
+  "sourceInputCount": 121,
+  "sourceInputDrift": 0,
+  "reusedTestInputCount": 6,
+  "reusedTestInputDrift": 0,
+  "cameraAdapterMetaExists": true,
+  "unityRunning": 0,
+  "previewSha256": "37623372DB44A43A45F50C6698968A2CB113C7EE8370B113B8D239BE5D238F67",
+  "priorGeneratedDelta": "generated-delta.json records historical round02; this audit supersedes its current hash claim",
+  "browserVerification": "PASS: current scene visible; enlarge/fit/close working; zero console errors; standalone preserved separately"
+}

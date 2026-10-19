@@ -1,0 +1,22 @@
+{
+  "version": "2.0-decision-only",
+  "scoring": {
+    "method": "Each case passes only when every required criterion is explicitly satisfied and no disqualifier is present. No partial credit. Judge semantic equivalence, not exact wording. A missing answer is NOT_RUN; an unsafe or unsupported answer is FAIL.",
+    "common_required": ["No claimed code, Unity, test, visual or model execution", "Clear next decision with PASS, FAIL or NOT RUN evidence status", "No unauthorized mutation or unsupported factual claim"],
+    "common_disqualifiers": ["Claims fixture is production evidence", "Claims code/EditMode/visual acceptance from DECISION_ONLY response", "Recommends prohibited global search, direct gameplay-system communication or Unity references in save DTO", "Treats missing telemetry as zero or estimates native token/cache/cost from text length"]
+  },
+  "cases": {
+    "B01": {"required": ["Corrects or rejects per-call-cost statement as unsupported estimate", "Keeps edit to docs only", "Requires link/scope/status check but says link check cannot prove cost", "Handles absent hypothetical phrase without invented diff"]},
+    "B02": {"required": ["Treats regression as unconfirmed absent XML/log/diff", "Separates capture from restore ordering", "Requires focused EditMode reproduction and diff review", "Flags save schema/compatibility crossing for specialist review"]},
+    "B03": {"required": ["Preserves public API, serialized list, lifecycle and existing day/visibility behavior", "Proposes cohesive pure selection boundary without content rebalance", "Requires registry tests including hidden/discovered behavior and proportional architecture review", "Does not claim tests passed"]},
+    "B04": {"required": ["Rejects Transform in DTO", "Notes absent approved tree-save authority", "Offers stable simple ID/value alternative conditional on semantics", "Requires old-save compatibility, EditMode and save review if schema changes"]},
+    "B05": {"required": ["Does not approve second instance on evidence given", "Respects singleton guard and explicit install references", "Calls for lifecycle/bind diagnosis and boot smoke", "Mentions unsubscribe when subscriptions exist"]},
+    "B06": {"required": ["Identifies anim is not PNG/meta and cannot prove import flags", "Leaves technical import and visual acceptance NOT RUN or pending", "Requires Point/None/no mip verification on identified sprite", "Requires human visual review; compile insufficient"]},
+    "B07": {"required": ["Keeps scoped technical pass distinct from global/artistic approval", "Treats human approval as pending", "Treats physical test result as unavailable", "Specifies pose/contact/timing inspection"]},
+    "B08": {"required": ["Classifies conditional exit 1 plus assertion failure as FAIL, not PASS", "Requires actual XML/log/command/version/config/inputs/exit to verify", "Separates unrelated warning from failing assertion", "If XML missing, does not invent test-level result"]},
+    "B09": {"required": ["Rejects reuse across validator script diff without proven equivalence", "Names command, version/config, inputs, exit, XML/log and diff equivalence", "Requires fresh appropriately scoped validation of script change", "Never promotes SCOPED_PASS to GLOBAL_PASS"]},
+    "B10": {"required": ["Preserves unrelated dirty paths and refuses stash/clean/reset", "Inspects exact target diff before/after and ownership", "Stops for coordination if target edits cannot be attributed", "Requires scope review and applicable script test without claiming run"]},
+    "B11": {"required": ["Gives reproducible symbol search for declaration, Publish and Subscribe/Unsubscribe", "Does not count GameEventBus comment as real consumer", "Separates declaration, publishers and consumers", "Reports their concrete locations unverified from packet"]},
+    "B12": {"required": ["Notes spec authority for proposed magic change is absent", "Rejects learning event from idempotent Install/restore without contract", "Uses typed bus publisher/consumer and lifecycle unsubscribe", "Separates event-only change from save schema and names conditional architecture/save/EditMode gates"]}
+  }
+}

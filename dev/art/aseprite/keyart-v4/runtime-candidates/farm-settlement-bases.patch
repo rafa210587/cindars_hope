@@ -1,0 +1,42 @@
+--- a/Assets/_Game/Scripts/Editor/Art/FarmSettlementVisualComposer.cs
++++ b/Assets/_Game/Scripts/Editor/Art/FarmSettlementVisualComposer.cs
+@@ -226,6 +226,8 @@
+             renderer.sprite = sprite;
+             renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+             renderer.sortingLayerName = "World";
++            // Reviewed barrel21x25 opaque silhouette; contact base excludes its upper rim.
++            CreateMeasuredPropBase(parent, name, foot, new Vector2(19f / 25f, 7f / 25f) * height, height * 0.02f);
+         }
+ 
+         private static void CreateGardenPatch(Transform parent, string name, Vector2 foot, float mirror)
+@@ -428,6 +430,30 @@
+         private static void Prop(Transform parent, string name, string asset, Vector2 foot, float height)
+         {
+             Place(parent, name, WorldSpriteLibrary.Prop(asset), foot, height, false);
++            // Only reviewed solid objects receive bases; plant/stone/fence calls remain unchanged.
++            Vector2 size;
++            switch (asset)
++            {
++                case "crate": size = new Vector2(50f / 64f, 20f / 64f) * height; break;
++                case "feeding_trough": size = new Vector2(90f / 64f, 16f / 64f) * height; break;
++                case "hay_bale": size = new Vector2(48f / 64f, 23f / 64f) * height; break;
++                default: return;
++            }
++            CreateMeasuredPropBase(parent, name, foot, size, height * 0.02f);
++        }
++
++        private static void CreateMeasuredPropBase(Transform parent, string name, Vector2 foot,
++            Vector2 size, float bottomInset)
++        {
++            var solid = new GameObject("Solid_" + name);
++            solid.transform.SetParent(parent, false);
++            solid.transform.position = foot;
++            solid.transform.localScale = new Vector3(1f / parent.lossyScale.x, 1f / parent.lossyScale.y, 1f);
++            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
++                solid, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
++            var collider = solid.AddComponent<BoxCollider2D>();
++            collider.size = size;
++            collider.offset = new Vector2(0f, bottomInset + size.y * 0.5f);
+         }
+ 
+         private static void Foliage(Transform parent, string name, string asset, Vector2 foot, float height)

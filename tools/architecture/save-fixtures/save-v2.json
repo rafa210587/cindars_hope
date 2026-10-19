@@ -1,0 +1,24 @@
+{
+  "SchemaVersion": 2,
+  "CurrentDay": 4,
+  "CurrentSceneName": "TownScene",
+  "Player": {
+    "CurrentHP": 90,
+    "MaxHP": 100,
+    "Gold": 250,
+    "CurrentHunger": 60,
+    "MaxHunger": 100
+  },
+  "Inventory": {
+    "Capacity": 24,
+    "Slots": [
+      {
+        "SlotIndex": 0,
+        "ItemId": "item_material_stone",
+        "Amount": 12,
+        "IsEquipped": false,
+        "EquipmentBindingId": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "CindarsHope.Tests.PlayMode.Composition",
+    "rootNamespace": "CindarsHope.Tests.PlayMode.Composition",
+    "references": [
+        "CindarsHope.Foundation",
+        "CindarsHope.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

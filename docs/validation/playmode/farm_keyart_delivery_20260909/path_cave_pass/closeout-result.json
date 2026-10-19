@@ -1,0 +1,18 @@
+{
+  "status": "SCOPED_PASS",
+  "sceneSha256": "1C6311A582901D2F69A60A3D3E90E43940E95C3D18E8D1485CA3C7944F764844",
+  "generation": "regen_04",
+  "play": "gameplay_02",
+  "focalDistinctPassed": 31,
+  "views": 8,
+  "physicalRoutes": 16,
+  "realSelections": 5,
+  "customAxisYViews": 8,
+  "runtimeErrors": 0,
+  "docsScoped": "PASS diff,quality; exit0;183 exact paths",
+  "changedHLinks": "11 checked,0 missing",
+  "rootVisualReview": "Root confirmed overview and all8finalPlayframes; cave preview matches final PNG",
+  "humanAcceptance": "NOT RUN / pending for H",
+  "unityActive": 0,
+  "historicalFailures": "regen_01 Tree43;focal-tests_01 Meadow11;visual path raster02 preserved"
+}

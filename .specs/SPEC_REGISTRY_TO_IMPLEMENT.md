@@ -1,0 +1,558 @@
+# Registry de specs a implementar
+
+## Town — interiores híbridos — execução autorizada em 2026-09-12
+
+[Quatro specs com catálogo das24 construções, Spec/Plan/Tasks](a_implementar/town_interiors_hybrid_v1/README.md)
+aprovadas pelo humano para execução delegada e validação proporcional: **S01 UNITY_VALIDATED (dados)**.
+S02 PARTIAL: contratos/FSM6/6PASS, integração de transição/save pendente; S03/S04 mantêm dependências.
+Ordem local: catálogo → transição/save → NPC/comércio → três pilotos → demais interiores.
+Sem mudança de prioridade ou ordem das macro-waves.
+
+## Manutenção de eficiência — 2026-09-12
+
+| Spec | Status | Dependência / escopo |
+|---|---|---|
+| [spec_serena_unity_readonly_integration_v1.md](a_implementar/spec_serena_unity_readonly_integration_v1.md) | CODE_COMPLETE — MCP local habilitado | Consultas reais e guards PASS; novas tarefas; sem gameplay. Closeout em docs/validation/serena_unity_20260912/ORCHESTRATOR_REVIEW.md; sem aceite global. |
+| [spec_semantic_navigation_pilot_v1.md](a_implementar/spec_semantic_navigation_pilot_v1.md) | PARTIAL — experimental, não adotado | 13 casos locais PASS; Runtime INCOMPLETE; sem runtime/Assets. [Fila e evidência](../docs/validation/efficiency_20260912/QUEUE.md). |
+
+Não altera a ordem de execução das waves nem autoriza instalar dependências externas.
+
+## Lote SKILLS_SDD_V1 — planejamento de 2026-09-09
+
+[Nove rascunhos com Spec/Plan/Tasks](features_futuras/skills_sdd_v1/README.md) ficam fora da fila executável.
+Incluem fundação de runtime/save, dados/ranks, mecânicas, Canvas, pixel art e aceitação de equilíbrio.
+Não há promoção ou aprovação de implementação nesta entrada; cada documento registra suas pendências.
+
+## Reconciliação canônica de 2026-07-05
+
+O estado executável foi re-auditado e registrado em
+`.specs/implementados/spec_runtime_canon_reconciliation_2026_07_05.md`. Código e assets validados são
+a fonte de verdade para quantidades e decisões já implementadas. Em particular: universo de 178
+criaturas, Town v9 120x90, Farm v7 64x44, 28 NPCs canônicos e 23 cadeias/69 etapas.
+
+`spec_town_layout_v9_organic.md` foi absorvida em
+`.specs/absorvidas/city_relayout_reconciliation/` após a sucessora de 2026-09-10.
+`spec_farm_scene_relayout_v4.md` não deve ser executada para reverter o estado atual;
+permanece referência histórica até promoção, absorção ou reescrita como delta residual explícito.
+
+Fonte unica de specs executaveis: `.specs/a_implementar/`.
+
+Specs futuras/future mapped ficam fora da fila executavel em `.specs/a_implementar/features_futuras/` e devem ser ignoradas por automacoes de implementacao.
+
+A pasta raiz `specs/` foi removida e nao deve ser recriada.
+
+A antiga spec 00 de reconciliacao documental foi reclassificada como implementada/parcial em `.specs/implementados/spec_docs_001_single_source_specs_refinements_reconciliation_parcial.md`. Ela nao deve ser executada novamente.
+
+Documentos canônicos de governança que não são specs executáveis:
+
+```text
+.specs/SPEC_WAVE_EXECUTION_PROTOCOL.md
+.specs/SPEC_VALIDATION_MATRIX_MASTER.md
+.specs/SPEC_IMPLEMENTABLE_TEMPLATE.md
+docs/validation/FINAL_HUMAN_VALIDATION_BY_WAVE.md
+```
+
+| Ordem | Spec | Status | Dependencia | Observacao |
+|---|---|---|---|---|
+| 00.04 | [00_spec_existing_implementation_audit.md](a_implementar/00_spec_existing_implementation_audit.md) | A implementar - auditoria/governanca | 00 docs canonicos | Audita o estado real implementado/parcial/faltante do repo antes de gerar specs runtime para evitar duplicacao e definir residual/hardening/future. |
+| 01.01 | [01_spec_stable_ids_registry_runtime.md](a_implementar/01_spec_stable_ids_registry_runtime.md) | A implementar - hardening/residual | 00.04 audit + spec_data_001 implementada | Audita e endurece IDs/registries existentes sem recriar arquitetura; bloqueia specs que persistem/referenciam IDs. |
+| 01.02 | [01_spec_game_event_contracts_runtime.md](a_implementar/01_spec_game_event_contracts_runtime.md) | A implementar - hardening/residual | 01.01 + spec_core_001 implementada | Audita e endurece GameEventBus/event contracts existentes sem recriar barramento; define catálogo, payload rules e unsubscribe lifecycle. |
+| 01.03 | [01_spec_save_restore_order_contract_runtime.md](a_implementar/01_spec_save_restore_order_contract_runtime.md) | A implementar - hardening/residual | 01.01 + 01.02 + save specs implementadas | Audita e endurece restore order/save sections existentes sem reescrever SaveManager; produz matriz de sections, defaults, dependencies e post-restore notifications. |
+| 01.04 | [01_spec_save_section_ownership_registry.md](a_implementar/01_spec_save_section_ownership_registry.md) | A implementar - hardening/residual | 01.03 + save specs implementadas | Cria ou consolida ownership registry de save sections, owners, defaults, dependencies e migration responsibility sem migrar tudo para providers. |
+| 01.05 | [01_spec_save_provider_architecture_runtime.md](a_implementar/01_spec_save_provider_architecture_runtime.md) | A implementar - gradual/residual | 01.04 + save ownership registry | Consolida arquitetura incremental de save providers sem substituir SaveManager, sem schema change e sem migração massiva de sections. |
+| 01Q | [spec_test_harness_editmode_playmode_quality_gate.md](a_implementar/spec_test_harness_editmode_playmode_quality_gate.md) | A implementar - quality gate fundacional | 01 validacao Unity + rules/skills atuais | Deve ser executada antes das novas waves runtime para exigir EditMode tests, PlayMode/manual scenarios, regression tests e evidencia de risco residual. |
+| CITY.P0 | [spec_city_preservation_first_coherent_relayout.md](a_implementar/spec_city_preservation_first_coherent_relayout.md) | BUILD_VALIDATED_PENDING_HUMAN_PLAYMODE | TownScene materializada pós F40 + contratos atuais | Implementada com manifesto before/after: 24 casas, 29 barracas, 497 árvores, 84 anchors e IDs preservados; 22/22 tests e 21/21 validator. Play Mode humano pendente. |
+| TOWN.P0 | [spec_town_spatial_expansion_and_access_v1.md](a_implementar/spec_town_spatial_expansion_and_access_v1.md) | DEFERRED_TO_FINAL_HUMAN_VALIDATION | Unity/PlayMode/AC12 independente PASS; cenário humano final pendente | Expande a Town para160×112 preservando escala1,20, conteúdo, IDs e contratos verificáveis de circulação/entrada. |
+| TOWN.V1 | [spec_town_keyart_fidelity_v1.md](a_implementar/spec_town_keyart_fidelity_v1.md) | A implementar | TOWN.P0 | Corrige macrocomposição, praça, caminhos, água, muralha, curral, vegetação e densidade narrativa. |
+| TOWN.A1 | [spec_town_native_architecture_v1.md](a_implementar/spec_town_native_architecture_v1.md) | A implementar | TOWN.P0 + contrato visual TOWN.V1 | Reconstrói famílias arquitetônicas em pixels nativos; sucede `spec_town_building_visuals`. |
+| TOWN.C1 | [spec_town_components_doors_and_collision_v1.md](a_implementar/spec_town_components_doors_and_collision_v1.md) | A implementar | TOWN.V1 + TOWN.A1 | Fecha portas, interiores, colisão censitária e feedback audiovisual. |
+| TOWN.N1 | [spec_town_npc_visuals_navigation_v1.md](a_implementar/spec_town_npc_visuals_navigation_v1.md) | A implementar | TOWN.V1 + TOWN.A1 + TOWN.C1 | Remove placeholders e valida agenda/circulação por rotas e portas reais. |
+| TOWN.G1 | [spec_town_integrated_acceptance_v1.md](a_implementar/spec_town_integrated_acceptance_v1.md) | A implementar — gate | TOWN.V1 + TOWN.A1 + TOWN.C1 + TOWN.N1 | Gate visual >=80, funcional, transições, ambiente e performance; não implementa correções. |
+
+> `CITY.P0` foi registrada como spec concreta aprovada. Esta inclusão **não altera** `SPEC_EXECUTION_ORDER.md` e não autoriza execução automática.
+
+---
+
+## Specs Geradas Pós-Refinamento — Registry Reconciliado
+
+Após geração da batch 36 (154 specs) e limpeza de legacy (7 specs absorvidas), o registry foi reconciliado.
+- **Specs antes da limpeza:** 154 em `.specs/a_implementar/` (146 wave-based + 7 legacy + 1 README)
+- **Specs legacy absorvidas:** 7 movidas para `.specs/absorvidas/legacy_pre_wave_reconciliation/` (2026-06-07)
+- **Fila ativa após limpeza:** 94 specs executaveis em `.specs/a_implementar/` (future specs movidas para `features_futuras/`)
+- **Review required:** 0
+- **Nenhuma spec movida para `implementados/`**
+
+### WAVE 00 — Governança & Auditoria
+
+| Ordem | Spec | Status | Wave | Observacao |
+|---|---|---|---|---|
+| 00.04 | `00_spec_existing_implementation_audit.md` | **BUILD_VALIDATED** | 00 | ✓ Auditoria completa; commit ee1c0fb+ |
+
+### WAVE 01 — Hardening & Quality Gate
+
+| Ordem | Spec | Status | Wave | Observacao |
+|---|---|---|---|---|
+| 01.01 | `01_spec_stable_ids_registry_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ IDs estabilizados; commit WAVE 01 |
+| 01.02 | `01_spec_game_event_contracts_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ Event contracts; commit WAVE 01 |
+| 01.03 | `01_spec_save_restore_order_contract_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ Restore order; commit WAVE 01 |
+| 01.04 | `01_spec_save_section_ownership_registry.md` | **BUILD_VALIDATED** | 01 | ✓ Ownership registry; commit WAVE 01 |
+| 01.05 | `01_spec_save_provider_architecture_runtime.md` | **BUILD_VALIDATED** | 01 | ✓ Providers; commit WAVE 01 |
+| 01.06 | `01_spec_invalid_id_fallback_rules.md` | **BUILD_VALIDATED** | 01 | ✓ ID fallback; commit WAVE 01 |
+| 01.07 | `01_spec_playmode_validation_baseline.md` | **BUILD_VALIDATED** | 01 | ✓ Play Mode baseline; commit WAVE 01 |
+| 01Q | `spec_test_harness_editmode_playmode_quality_gate.md` | **BUILD_VALIDATED** | 01 | ✓ Quality gate fundacional; commit WAVE 01 |
+
+**Total WAVE 01:** 8 specs BUILD_VALIDATED — WAVE 02+ desbloqueado
+
+### WAVE 02-10 — Core Runtime
+
+| Wave | Specs | Contagem | Status | Observacao |
+|---|---|---|---|---|
+| 02 | Time/Calendar/Weather/Lunar | 8 | **BUILD_VALIDATED** | ✓ 7/8 BUILD_VALIDATED; 1 UI deferred; closeout WAVE_02 |
+| 03 | Quest/Objective/Event | 10 | **BUILD_VALIDATED** | ✓ 8/8 runtime BUILD_VALIDATED; 4 future blocked; closeout WAVE_03 |
+| 04 | UI Foundation | 21 | **BUILD_VALIDATED** | ✓ 14/14 reports; 3 BUILD_VALIDATED, 11 CONTRACT_ONLY; closeout WAVE_04 |
+| 05 | Farm/Inventory/Companion | 23 | **BUILD_VALIDATED** | ✓ 20/20 BUILD_VALIDATED; ~123 EditMode tests; closeout WAVE_05 |
+| 06 | Economy/Loot/Crafting | 8 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~75 EditMode tests; closeout WAVE_06 |
+| 07 | Playable Scene Integration | 5 integration gates executed | **WAVE_INTEGRATION_05_BUILD_VALIDATED_CODE_READY_SCENE_REVERTED** | 01 baseline + 02 architecture/manager audit + 03 player/camera/movement + 04 FarmScene foundation zones + 05 crop code ready; direct scene wiring reverted after FarmScene YAML corruption; WAVE_INTEGRATION_06 blocked until safe Unity scene wiring + Play Mode validation |
+| 08 | City/NPC/Dialogue | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~61 EditMode tests; closeout WAVE_08 |
+| 09 | Quest/Player/Skills (duplicate 03) | 7 | **BUILD_VALIDATED** | ✓ 8/8 BUILD_VALIDATED; ~107 EditMode tests; closeout WAVE_09 |
+| 10 | Endgame/Memory/Fonte | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~72 EditMode tests; closeout WAVE_10 |
+| 11 | UI Projections/HUD | 4 | **BUILD_VALIDATED** | ✓ 4/4 BUILD_VALIDATED; ~96 EditMode tests; closeout WAVE_11 |
+| 12 | Docs/Consolidation | 2 | **BUILD_VALIDATED** | ✓ 2/2 BUILD_VALIDATED; closeout WAVE_12 |
+| 13 | Bestiary | 4 | **BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS** | All 4 specs moved to `a_implementar/features_futuras/`; do not execute without explicit human decision |
+
+**Total WAVE 02-12:** 93 specs core/runtime
+**WAVE 07:** WAVE_INTEGRATION_05_BUILD_VALIDATED_CODE_READY_SCENE_REVERTED (WAVE_INTEGRATION_06 is blocked until WAVE05 scene wiring is reapplied safely in Unity and Play Mode passes)
+**Future specs moved out of active queue:** 53 files in `a_implementar/features_futuras/`
+
+### Features futuras / Future mapped
+
+Specs futuras foram movidas para:
+
+`.specs/a_implementar/features_futuras/`
+
+Elas nao fazem parte da fila executavel atual. Loop/batch execution must ignore `features_futuras`.
+
+| Spec |
+|---|
+| `03_spec_quest_anti_softlock_validation_future.md` |
+| `03_spec_quest_bestiary_discovery_objectives_future.md` |
+| `03_spec_quest_debug_validation_tools_future.md` |
+| `03_spec_quest_fonte_main_progression_hooks_future.md` |
+| `04_spec_ui_menu_gamepad_navigation_future.md` |
+| `04_spec_ui_social_npc_detail_future_runtime.md` |
+| `13_spec_bestiary_knowledge_state_save_load_future_runtime.md` |
+| `13_spec_bestiary_knowledge_ui_projection_future_runtime.md` |
+| `13_spec_knowledge_discovery_event_runtime_future.md` |
+| `13_spec_knowledge_research_npc_books_ruins_services_future_runtime.md` |
+| `14_spec_companion_cave_assist_brain_balance_future_runtime.md` |
+| `14_spec_companion_eligibility_recruitment_state_save_future_runtime.md` |
+| `14_spec_companion_farm_jobs_board_automation_future_runtime.md` |
+| `14_spec_companion_ui_hud_invite_visit_dialogue_hooks_future_runtime.md` |
+| `15_spec_calendar_public_board_forecast_secret_visibility_future_runtime.md` |
+| `15_spec_festival_event_minigames_seasonal_activities_future_runtime.md` |
+| `15_spec_seasonal_economy_restock_demand_modifiers_future_runtime.md` |
+| `15_spec_weather_lunar_cave_deep_modifiers_future_runtime.md` |
+| `16_spec_cave_final_save_restriction_policy_future_runtime.md` |
+| `16_spec_cave_snapshot_save_provider_restore_order_future_runtime.md` |
+| `16_spec_final_choice_cinematic_presentation_future_runtime.md` |
+| `16_spec_postgame_world_state_modifiers_endings_future_runtime.md` |
+| `17_spec_partner_helper_companion_bridge_future_runtime.md` |
+| `17_spec_social_dialogue_visits_personal_quest_hooks_future_runtime.md` |
+| `17_spec_social_gifts_preferences_limits_future_runtime.md` |
+| `17_spec_social_relationship_state_save_future_runtime.md` |
+| `18_spec_ui_dialogue_choice_confirmation_advanced_future_runtime.md` |
+| `18_spec_ui_localization_text_keys_icon_conventions_future_runtime.md` |
+| `18_spec_ui_notification_journal_feedback_history_future_runtime.md` |
+| `18_spec_ui_system_menu_options_accessibility_hooks_future_runtime.md` |
+| `19_spec_level_100_boss_gate_preconditions_future_runtime.md` |
+| `19_spec_level_101_encounters_rewards_anti_farm_future_runtime.md` |
+| `19_spec_level_101_fixed_sequence_chamber_runtime_future.md` |
+| `19_spec_level_101_ui_save_portal_handoff_future_runtime.md` |
+| `20_spec_dormant_mana_root_endgame_farm_future_runtime.md` |
+| `20_spec_living_water_mana_growth_conditions_future_runtime.md` |
+| `20_spec_mana_economy_crafting_magic_anti_exploit_future_runtime.md` |
+| `20_spec_mana_lunar_events_corruption_risk_future_runtime.md` |
+| `21_spec_farm_automation_plan_blueprint_scheduling_future_runtime.md` |
+| `21_spec_farm_automation_reports_risk_cost_balance_future_runtime.md` |
+| `21_spec_farm_automation_storage_io_idempotency_future_runtime.md` |
+| `21_spec_farm_full_automation_governor_future_runtime.md` |
+| `22_spec_bestiary_combat_hud_known_weakness_overlay_future_runtime.md` |
+| `22_spec_bestiary_compendium_knowledge_log_ui_future_runtime.md` |
+| `22_spec_knowledge_books_collections_documentation_achievements_future_runtime.md` |
+| `22_spec_research_service_npc_laboratory_knowledge_unlock_future_runtime.md` |
+| `23_spec_pet_cave_alerts_treasure_trap_light_support_future_runtime.md` |
+| `23_spec_pet_core_identity_bond_routine_save_future_runtime.md` |
+| `23_spec_pet_home_area_feeding_items_farm_hints_future_runtime.md` |
+| `23_spec_pet_hud_feedback_data_assets_economy_future_runtime.md` |
+| `24_spec_cave_weather_lunar_deep_modifiers_future_runtime.md` |
+| `24_spec_companion_advanced_party_equipment_tactical_ai_future_runtime.md` |
+| `24_spec_festival_minigames_event_framework_future_runtime.md` |
+
+**Total future moved:** 53 specs
+**Pets:** WAVE 23 remains HOLD / BLOCKED_SCOPE
+
+### Resumo (Atualizado 2026-06-07 pós-limpeza legacy)
+
+- ✓ **Specs antes da limpeza:** 154 em `.specs/a_implementar/`
+- ✓ **Legacy specs absorvidas:** 7 em `.specs/absorvidas/legacy_pre_wave_reconciliation/`
+- ✓ **Fila ativa após limpeza:** 94 specs executaveis em `.specs/a_implementar/` (future specs movidas para `features_futuras/`)
+- ✓ **Governança:** 1 spec (00.04)
+- ✓ **Hardening/Quality gate:** 8 specs (01.01-01Q)
+- ✓ **Core runtime:** 93 specs (02-12)
+- ✓ **Documentação/consolidação:** 2 specs (12)
+- ✓ **Future/mapeado:** 53 specs movidas para `.specs/a_implementar/features_futuras/`
+- ✓ **Pets bloqueados:** 4 (WAVE 23)
+- ✓ **Review required:** 0
+- ✓ **Nenhuma spec ativa obsoleta**
+- ✓ **Status:** ACTIVE_QUEUE_RECONCILED_FUTURE_MOVED
+
+---
+
+## Specs Antigas Absorvidas — Legacy Pre-Wave Cleanup (2026-06-07)
+
+Após a reconciliação das 154 specs novas wave-based, 7 specs antigas da era pré-wave (SPEC_10-17 MVP) foram movidas para histórico:
+
+### Moved to .specs/absorvidas/legacy_pre_wave_reconciliation/
+
+| Spec antiga | Status | Motivo | Specs novas que cobrem | Decisão |
+|---|---|---|---|---|
+| `spec_14a_cave_enemy_spawnplan_materialization_run_stability.md` | MOVED_ABSORBED | Cobertura completa por WAVE 06 (loot/drops) e WAVE 10 (bosses) | WAVE 06, WAVE 10 | Não executar |
+| `spec_14a_fix2_spawn_density_combat_feedback_damage_numbers.md` | MOVED_ABSORBED | Tuning de combat; coberto por WAVE 06 e WAVE 11 (UI hotbar) | WAVE 06, WAVE 11 | Não executar |
+| `spec_14b_cave_snapshot_replay_enemy_plan.md` | MOVED_ABSORBED | Snapshot/replay movido integralmente para WAVE 06 | WAVE 06 | Não executar |
+| `spec_cave_runtime_generation_checkpoints_boss_gates.md` | MOVED_ABSORBED | Cave runtime fatiado em WAVE 06 (procedural) e WAVE 10 (gates/bosses) | WAVE 06, WAVE 10 | Não executar |
+| `spec_combat_movement_projectiles_melee_visuals_runtime.md` | MOVED_ABSORBED | Combat movement/projectiles distribuído; WAVE 06/10 covers bosses; movimento pode ser gap em WAVE 25+ | WAVE 06, WAVE 10, (possível WAVE 25+) | Candidato a legacy gap se gap confirmado |
+| `spec_enemy_ai_roster_bestiary_faction_locks_runtime.md` | MOVED_ABSORBED | AI/roster/bestiary distribuído em WAVE 06 (AI), WAVE 22 (bestiary UI), WAVE 23 (pets); faction locks podem ser gap | WAVE 06, WAVE 22, WAVE 23 | Candidato a legacy gap se gap confirmado |
+| `spec_ui_ux_full_gameplay_inventory_hotbar_menus.md` | MOVED_ABSORBED | Cobertura completa por WAVE 04 (21 UI specs) e WAVE 11 (HUD/projections) | WAVE 04, WAVE 11 | Não executar |
+
+**Total absorvido:** 7 specs  
+**Crosswalk:** `.specs/absorvidas/legacy_pre_wave_reconciliation/LEGACY_SPECS_CROSSWALK.md`  
+**Review required:** 0 specs — todos têm cobertura clara
+
+### Contagem Atualizada Após Cleanup
+
+- ✓ **Specs antes de limpeza:** 154 em `a_implementar/` (154 novas wave-based + 7 antigas)
+- ✓ **Specs após limpeza:** 147 em `a_implementar/` (todas new wave-based)
+- ✓ **Specs absorvidas:** 7 em `absorvidas/legacy_pre_wave_reconciliation/`
+- ✓ **Fila ativa:** 94 specs executaveis (future specs movidas para `features_futuras/`)
+
+### Status de Execução (Atualizado 2026-06-08)
+
+**Waves executadas e BUILD_VALIDATED:**
+- ✓ WAVE 00 — Auditoria existente
+- ✓ WAVE 01 — Hardening/Quality Gate (8 specs)
+- ✓ WAVE 02 — Time/Calendar/Weather/Lunar (7/8 BUILD_VALIDATED)
+- ✓ WAVE 03 — Quest/Objective/Event (8/8 runtime BUILD_VALIDATED)
+- ✓ WAVE 04 — UI Foundation (14/14 reports; BUILD_VALIDATED + CONTRACT_ONLY)
+- ✓ WAVE 05 — Farm Gameplay Core (20/20 BUILD_VALIDATED; ~123 EditMode tests)
+- ✓ WAVE 06 — Economy/Loot/Crafting/Shop/Cave (8/8 BUILD_VALIDATED; ~75 EditMode tests)
+- WAVE 07.01 - Unity Clean Baseline + Scene Inventory (BUILD_VALIDATED; attached spec authorized by human; no scene/prefab/asset changes)
+- WAVE_INTEGRATION_02 - Scene Architecture e Persistent Managers (BUILD_VALIDATED; manager audit and architecture decision complete)
+- WAVE_INTEGRATION_03 - Player Spawn, Camera, and Movement Baseline (BUILD_VALIDATED_SCENE_WIRED; FarmScene structural wiring validated, Play Mode pending human Unity action)
+- WAVE_INTEGRATION_04 - FarmScene Rebuild Foundation (BUILD_VALIDATED_SCENE_WIRED; FarmScene foundation zone markers added, Play Mode pending human Unity action)
+- WAVE_INTEGRATION_05 - Farm Interactables/Crops/Soil/Water/Harvest (BUILD_VALIDATED_CODE_READY_SCENE_REVERTED; existing FarmPlot runtime reused, code ready, direct scene wiring reverted after FarmScene YAML corruption; WAVE_INTEGRATION_06 blocked pending safe Unity wiring and Play Mode)
+- ✓ WAVE 08 — City/NPC/Dialogue/Services (4/4 BUILD_VALIDATED; ~61 EditMode tests)
+- ✓ WAVE 09 — Quest System (8/8 BUILD_VALIDATED; ~107 EditMode tests)
+- ✓ WAVE 10 — Main Progression/Fonte/Endgame (4/4 BUILD_VALIDATED; ~72 EditMode tests)
+- ✓ WAVE 11 — UI Projections/HUD/Input/Inventory/Menus (4/4 BUILD_VALIDATED; ~96 EditMode tests)
+
+**Concluídas:**
+- ✓ WAVE 12 — Docs/Consolidation (2 specs, BUILD_VALIDATED 2026-06-08)
+
+**Bloqueadas (requerem autorização humana explícita):**
+- WAVE 13 — Bestiary (4 specs — BLOCKED_BY_FUTURE_SCOPE_MOVED_TO_FEATURES_FUTURAS)
+- Features futuras / Future mapped em `.specs/a_implementar/features_futuras/` (somente quando autorizado)
+
+**Permanentemente bloqueado:**
+- WAVE 23 (pets) — HOLD/BLOCKED_SCOPE
+- Specs com sufixo _future em `features_futuras/` — NÃO EXECUTAR
+- Future/mapped (WAVE 17-24) bloqueado por política
+- Pets (WAVE 23) bloqueado como HOLD/BLOCKED_SCOPE
+
+---
+
+## Lote FABLE — Gap Closure (gerado 2026-06-12)
+
+Specs densas geradas por gap analysis completa de `docs/design/**` (42 directions) contra o
+código real. Local: `.specs/a_implementar/fable/` (subpasta — fora da fila executável
+automática até promoção humana). Índice e análise: `fable/fable_00_index_gap_analysis.md`.
+
+| Ordem | Spec | Bloco | Prioridade | Lacuna que fecha |
+|---|---|---|---|---|
+| F01 | `fable/fable_01_spec_status_effects_canonical_set_runtime.md` | A combate | P1 | 6 status canônicos faltantes + aplicação em skills/spells |
+| F02 | `fable/fable_02_spec_combat_weapon_actions_derived_stats_runtime.md` | A combate | P1 | light/heavy/charged + stagger + DerivedStats no dano real |
+| F03 | `fable/fable_03_spec_equipment_mechanical_baselines_runtime.md` | A combate | P1 | ASPD/scaling/charged por arma + armadura reduzindo dano |
+| F04 | `fable/fable_04_spec_enemy_threat_pack_coordination_runtime.md` | B inimigos | P2 | threat memory + pack alert + leash coletivo |
+| F05 | `fable/fable_05_spec_cave_boss_phase_ai_runtime.md` | B inimigos | P2 | IA de fases de boss (thresholds/action sets/adds) |
+| F06 | `fable/fable_06_spec_enemy_loot_tables_vulnerability_tags_runtime.md` | A/B | P2 | loot tables por família + matching de vulnerabilidade |
+| F07 | `fable/fable_07_spec_magic_learning_unlock_sources_runtime.md` | C magia | P2 | knownSpellIds + scrolls/tomes/wands (seção de save) |
+| F08 | `fable/fable_08_spec_magic_spell_shapes_targeting_runtime.md` | C magia | P2 | spell shapes (cone/nova/self/barrier) + cast time |
+| F09 | `fable/fable_09_spec_cave_biome_layout_variety_runtime.md` | D mundo | P2 | layout por bioma + hazards + salas de tesouro (ADR-0005) |
+| F10 | `fable/fable_10_spec_main_quest_act1_playable_runtime.md` | E conteúdo | P1 | Ato 1 da main quest jogável (Fragmento da Água) |
+| F11 | `fable/fable_11_spec_city_interiors_doors_schedule_anchors_scene.md` | D mundo | P2 | TIME_BLOCK_DEBT + SCENE_WIRING_DEBT (WI-25) + portas/interiores |
+| F12 | `fable/fable_12_spec_farm_animals_runtime_scene_integration.md` | D mundo | P2 | animais de fazenda ponta a ponta (seção de save) |
+| F13 | `fable/fable_13_spec_save_debt_closure_runtime.md` | F fundação | P1 | CAVE_ENEMY_HP + DAILY_GOALS + CAVE_RUN save debts |
+| F14 | `fable/fable_14_spec_ui_canvas_screens_integration_runtime.md` | F fundação | P1 | 4 telas IMGUI → Canvas (destrava specs 04_ CONTRACT_ONLY) |
+
+Regras do lote: F13 e specs com seção de save (F07/F12) nunca em paralelo entre si;
+F02/F03/F05/F06/F08/F14 sem paralelismo (locks centrais). Directions cobertas por
+`features_futuras/` (bestiary, companions, pets, social, nível 100/101, mana, automação,
+festivais) NÃO foram duplicadas — ver tabela no índice fable_00.
+
+### Corretivas de Aderência (auditoria fable_00B, 2026-06-12)
+
+Auditoria de código real revelou sistemas das WAVES 02-11 **órfãos** (testados, jamais
+instanciados). Specs corretivas de wiring:
+
+| # | Spec | Fecha |
+|---|---|---|
+| F15 | `fable/fable_15_spec_world_weather_farm_orphan_systems_wiring.md` | P0 — clima/chuva/refresh/qualidade/fertilizante ligados |
+| F16 | `fable/fable_16_spec_player_fatigue_sleep_collapse_wiring.md` | P0 — fadiga/sono/colapso 02:00 + cama |
+| F17 | `fable/fable_17_spec_fonte_anya_physical_interactable_runtime.md` | P0 — Fonte física + respawn + Água Viva |
+| F18 | `fable/fable_18_spec_derived_stats_vitals_application_runtime.md` | P1 — vitals/resistências derivados aplicados |
+| F19 | `fable/fable_19_spec_city_services_schedule_reconciliation.md` | P1 — dedup schedule (City/ vs NPC/) + licenças vivas |
+| F20 | `fable/fable_20_spec_calendar_clock_hud_day_detail_ui.md` | P2 — refatoração da 02_spec_calendar_ui (absorvida) |
+
+### Triagem da fila (2026-06-12)
+
+- **102 specs executadas/absorvidas** movidas do nível raiz para
+  `a_implementar/executadas_build_validated/` (README com estado e crosswalks). NÃO reexecutar.
+- Fila executável atual = `fable/` (F01-F20, após promoção humana) + `features_futuras/` (bloqueadas).
+- Análise completa: `fable/fable_00B_adherence_audit_queue_triage.md`.
+- Docs validation: **exit 0, zero erros** (10 reports retro-preenchidos; 2 citações de
+  amendment marcadas archived; FIX_001/test_harness fora do nível raiz).
+
+
+### Expansão F21-F42 + Plano Mestre de Execução (2026-06-12)
+
+Pós-canonização dos 6 catálogos FABLE, geradas 22 specs novas e o plano mestre
+`fable/fable_00C_master_execution_plan.md` (revisão F01-F20 com 9 emendas vinculantes,
+ordem global em 9 batches, matriz de paralelismo, protocolo por spec, checkpoints M1-M4).
+
+| # | Spec | Fecha |
+|---|---|---|
+| F21 | `fable/fable_21_spec_bestiary_knowledge_runtime.md` | conhecimento por descoberta + save |
+| F22 | `fable/fable_22_spec_essence_tempering_forge.md` | têmpera elemental permanente (Brumdar) |
+| F23 | `fable/fable_23_spec_accessories_relics_runtime.md` | 3 slots + 12 acessórios + 4 relíquias |
+| F24 | `fable/fable_24_spec_enemy_moves_elite_affixes_runtime.md` | 12 Moves canônicos faltantes + elites |
+| F25 | `fable/fable_25_spec_npc_unique_services_runtime.md` | 8 serviços únicos por NPC |
+| F26 | `fable/fable_26_spec_friendship_state_contract.md` | amizade níveis 0-5 + save |
+| F27 | `fable/fable_27_spec_perfect_block_posture_runtime.md` | perfect block + CoreExposed |
+| F28 | `fable/fable_28_spec_dialogue_conditions_pools.md` | falas condicionais (estação/clima/amizade) |
+| F29 | `fable/fable_29_spec_canonical_skill_catalog_migration.md` | ~70 skills canônicas + migração (SOLO) |
+| F30 | `fable/fable_30_spec_catalog_consistency_validator.md` | validador editor de catálogos |
+| F31 | `fable/fable_31_spec_magic_items_unidentified_runtime.md` | itens mágicos não-identificados |
+| F32 | `fable/fable_32_spec_item_catalog_data_expansion.md` | ItemDatabase = catálogo (~118) |
+| F33 | `fable/fable_33_spec_bestiary_data_expansion_60_creatures.md` | 60 criaturas + 4 bosses finais |
+| F34 | `fable/fable_34_spec_quest_sources_infrastructure.md` | 5 fontes de quest + XP escalado |
+| F35 | `fable/fable_35_spec_npc_side_quest_chains.md` | 12 cadeias de side quest |
+| F36 | `fable/fable_36_spec_main_quest_acts_2_4.md` | main quest atos 2-4 |
+| F37 | `fable/fable_37_spec_festivals_lunar_events_runtime.md` | festivais + picos lunares + eventos |
+| F38 | `fable/fable_38_spec_minimap_v1_runtime.md` | minimapa v1 (fog-of-war na caverna) |
+| F39 | `fable/fable_39_spec_inferred_player_class_runtime.md` | classe inferida + títulos |
+| F40 | `fable/fable_40_spec_town_48x42_relayout.md` | cidade 48×42 distritos canônicos |
+| F41 | `fable/fable_41_spec_farm_lot_expansions.md` | lotes compráveis da fazenda |
+| F42 | `fable/fable_42_spec_progression_cap100_xp_curve.md` | cap 100 + curva XP (SOLO, P0) |
+
+Ordem linear de execução (fable_00C PARTE C):
+`F15 F16 F17 | F13 F42 | F01 F02 F03 F18 F27 | F04 F24 F05 | F07 F08 F31 |
+F30 F32 F06 F33 F22 F23 | F19 F11 F09 F40 F41 F12 F37 |
+F29 F39 F25 F28 F26 F34 F35 F10 F36 | F14 F20 F38` — 42 specs.
+### Specs finais F43-F47 + enumeração de execução (2026-06-12)
+
+Fechamento da geração: 5 specs finais para os gaps aprovados que estavam anotados como
+"futuros" + todas as F21-F42 expandidas ao formato SpecKit denso (≈300 linhas cada).
+
+| # | Spec | Fecha |
+|---|---|---|
+| F43 | `fable/fable_43_spec_endgame_act5_final_bosses_choice.md` | endgame: Ato 5, 4 bosses finais, escolha Proteger/Selar/Usar |
+| F44 | `fable/fable_44_spec_cave_save_completion_policy.md` | snapshot multi-nível no save + política de save em boss |
+| F45 | `fable/fable_45_spec_bestiary_ui_full_codex.md` | aba Bestiário completa (codex com fichas/spoiler tiers) |
+| F46 | `fable/fable_46_spec_romance_foundation_runtime.md` | romance: candidatos canônicos, bi, poliamor 2, gates |
+| F47 | `fable/fable_47_spec_derived_stats_followups_closeout.md` | PlayerSpeedComposer + craft/repair hooks + duração por resistência |
+
+ORDEM DE EXECUÇÃO OFICIAL: `fable/fable_00C_master_execution_plan.md` PARTE E —
+enumeração E01-E47 (E01-E10 já BUILD_VALIDATED), grupos paralelos P1-P5, save specs
+nunca simultâneas, E33 (skills) solo total.
+### Auditorias de reconstrutibilidade/completude → F48-F60 + retro-specs (2026-06-12)
+
+3 auditorias paralelas (código↔specs; design↔specs ×2) acharam gaps. Gerados:
+
+| # | Spec | Fecha |
+|---|---|---|
+| F48 | `fable/fable_48_spec_bow_ammo_elemental_arrows_runtime.md` | munição de arco + flechas elementais (GAP-ALTA) |
+| F49 | `fable/fable_49_spec_high_tier_gear_crafting_upgrades.md` | craft Mithril+ / upgrades +1..+3 (GAP-ALTA) |
+| F50 | `fable/fable_50_spec_fishing_v2_lakes_tables.md` | pesca v2: tabelas bioma/estação/clima (GAP-ALTA) |
+| F51 | `fable/fable_51_spec_zrix_cave_contracts.md` | contratos do Zrix cc_* (GAP-ALTA) |
+| F52 | `fable/fable_52_spec_cave_secret_quests_goblin_visitor.md` | 8 scq_* + goblin visitante (GAP-ALTA) |
+| F53 | `fable/fable_53_spec_festival_quests.md` | 8 fq_* (GAP-ALTA) |
+| F54 | `fable/fable_54_spec_forage_shipping_overnight_runtime.md` | forrageio sazonal + shipping noturno |
+| F55 | `fable/fable_55_spec_farm_processing_greenhouse.md` | queijaria/barril + estufa mínima |
+| F56 | `fable/fable_56_spec_system_tab_title_flow.md` | aba Sistema + título/new game |
+| F57 | `fable/fable_57_spec_living_city_birthdays_inn_reputation_adr.md` | aniversários + estalagem + ADR reputação |
+| F58 | `fable/fable_58_spec_audio_sfx_hooks.md` | AudioManager + hooks por evento |
+| F59 | `fable/fable_59_spec_combat_telemetry_playmode.md` | telemetria TTK/stamina vs BALANCE parte G |
+| F60 | `fable/fable_60_spec_cave_traps_by_biome_tier.md` | armadilhas determinísticas por bioma/tier |
+
+Emendas: F21 (+1 skill point por 10 entradas Estudadas, máx 5) e F34 (QuestSource.CaveContract).
+Retro-specs: `implementados/spec_retro_01..09` documentam o código sem spec (slice 2026-06-12
++ WI-17..26) para reconstrutibilidade. Ordem/janelas: fable_00C PARTE F. Placar: 60 funcionais
+(10 executadas), 9 retro, fundação+legado migrados para .specs/.
+### Auditorias de MVP/shipping → F61-F67 + Refinamento v2 (2026-06-12)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F61 | `fable/fable_61_spec_build_standalone_windows.md` | build standalone + cenas no EditorBuildSettings (BLOQUEADOR) |
+| F62 | `fable/fable_62_spec_onboarding_control_hints.md` | hints contextuais de controles + tutorial de combate (BLOQUEIA MVP) |
+| F63 | `fable/fable_63_spec_new_game_intro_hook.md` | intro do New Game + carta→Corvus (texto gated por lore) |
+| F64 | `fable/fable_64_spec_death_screen_canvas_corpse_messaging.md` | tela de morte Canvas explicando corpse recovery |
+| F65 | `fable/fable_65_spec_daily_goals_closeout_reward_hud.md` | recompensa + HUD de metas (fecha débitos WI-24) |
+| F66 | `fable/fable_66_spec_code_debt_cleanup_slice_mode.md` | slice mode, CaveDeathResolver TODOs, PlayerHitEvent, STAMINA_BLOCK_DEBT |
+| F67 | `fable/fable_67_spec_canonical_governance_input_map_adr.md` | input map game_rule + ADR densidade + re-mapa refinamentos |
+
+Emendas: F34-C (PREREQUISITE_UI_DEBT), F20-C (widget XP/nível + toast level up).
+
+### Refinamento v2 RESPONDIDO → F68-F70 + 18 emendas EMENDA-D (2026-06-12)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F68 | `fable/fable_68_spec_world_god_marks_altars.md` | Marcas dos Deuses: 11 altares com bônus diário em caverna/cidade/fazenda (decisão 3.4; catálogo no apêndice A.5 do doc de decisões) |
+| F69 | `fable/fable_69_spec_combat_sprint_runtime.md` | sprint em combate 3.8-4.2 tiles/s a 8 stamina/s (decisão 6.5-A; após F47) |
+| F70 | `fable/fable_70_spec_npc_side_quest_chains_wave2.md` | 2ª leva de cadeias side: 11 NPCs, ~33 quests (decisão 8.3; após F35) |
+
+Decisões vinculantes: `docs/design/FABLE_DECISOES_RESPOSTAS_v2.0.md` (+ APÊNDICE LORE A.1-A.5).
+Emendas EMENDA-D: F08/F11/F12/F14/F20/F21/F37/F41/F43/F45/F46/F49/F50/F56/F61/F63/F66.
+MVP = LOTE INTEIRO (decisão 7.6). Placar: 70 funcionais (10 executadas) + 9 retro.
+
+### Refinamento v3 RESPONDIDO → fable_71 + ADR-0010..0014 + emendas EMENDA-V3 (2026-06-13)
+
+| # | Spec/Artefato | Fecha |
+|---|---|---|
+| F71 | `fable/fable_71_spec_combat_feel_pass.md` | hit-stop + screen shake + HudSuppressionChangedEvent (números de dano já existem) |
+
+Decisões vinculantes: `docs/design/FABLE_DECISOES_RESPOSTAS_v3.0.md` (skills/itens/companions/boas práticas).
+ADRs novos: ADR-0010 (reconcilia skill_tree_rules+inventory_equipment_rules com código FABLE), ADR-0011
+(arte 32px/tile), ADR-0012 (localização P4), ADR-0013 (input teclado/mouse v1), ADR-0014 (dificuldade única).
+Novos docs de design: SKILL_NUMERIC_ADDENDUM_v1.0, NPC_GIFT_TASTE_MATRIX_v1.0, COMPANION_ROLES_CATALOG_v1.0.
+Emendas EMENDA-V3: F03/F14/F26/F29/F32/F42/F43/F56/F58 + COMPANIONS_DIRECTION + 4 specs 14_companion spec-ready.
+Placar: 71 funcionais (10 executadas, 61 a executar E11-E71) + 9 retro. Ordem: fable_00C PARTE I.
+
+### Cobertura de design v3 → fable_72/73 + companions densas (2026-06-13)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F72 | `fable/fable_72_spec_npc_gift_giving_taste_runtime.md` | dar presente + reação por gosto por NPC (reusa F26 + NPC_GIFT_TASTE_MATRIX) |
+| F73 | `fable/fable_73_spec_localization_string_table_runtime.md` | tabela id→string desde a P4 (ADR-0012) |
+
+Companions: as 4 specs `features_futuras/14_spec_companion_*` foram ELEVADAS de esqueleto a SpecKit
+denso (cave-assist/brain, eligibility/recruitment/save+provider, farm-jobs/board, ui/hud) refletindo
+o COMPANION_ROLES_CATALOG e as decisões v3 bloco 3 — seguem WAVE 14 (gated), fora do lote v1.
+Game_rules NÃO viram spec (regras consumidas; domínios já cobertos). Placar lote v1: 73 funcionais
+(10 executadas, 63 a executar E11-E73) + 9 retro. Ordem: fable_00C PARTE J.
+Ordem/janelas: fable_00C PARTE H e .specs/README.md.
+
+### Caverna Viva → fable_78 (pedido humano direto, 2026-06-23)
+
+| # | Spec | Fecha |
+|---|---|---|
+| F78 | `fable/fable_78_spec_cave_ecosystem_population_runtime.md` | povoamento da caverna procedural: elementos ambientais temáticos por bioma (pedras/minério/fungos/lagos/cristais/lava/destroços), mapas escalando com profundidade, threat budget por nível, ecossistema de conflito inter-monstro (re-roll por entrada 5%→0,5% após o 1º, dano 1/10, 2 espécies distintas, aggro dividido), mercadores errantes enriquecidos |
+
+F78 é P1 / Runtime+Data+Editor / NO-parallel (lock em Cave/Enemy/Combat). Depende de F33/F24/F06/F32/F09/F13
+e do GAMEPLAY_EXPANSION_SLICE. Regida por stable-run (ADR-0005). Decisões de direção do humano vinculadas na
+spec: tamanho escala com profundidade; elementos temáticos por bioma; uma spec densa multi-fase.
+
+### Lote CODEX_CONVERGENCE — Honestidade de Validação (gerado 2026-07-03)
+
+CX01-CX08 (8 specs) foram implementadas, re-verificadas em disco e baixadas para
+`.specs/implementados/` em 2026-08-12 (docs-migration) — ver
+`.specs/SPEC_REGISTRY_IMPLEMENTED.md`. Nenhuma pendente neste lote.
+
+### Lote CODEX_CONVERGENCE — Lote 2 (gerado 2026-07-03)
+
+Continuação da auditoria de convergência: 5 gaps adicionais achados por Grep/leitura direta —
+hash de seed instável (`string.GetHashCode()`) em 3 pontos de cave/enemy, escrita de save
+não-atômica com janela de perda entre delete e move, debug tooling sem guard de build (overlay
+de colisão + skip de nível da cave), 15 arquivos + 4 eventos de código morto adicionais
+re-verificados nesta sessão, e ausência de physics layers/ContactFilter2D em queries de combate
+(mask 0 no obstacle avoidance de inimigo, alocação por ataque).
+
+CX09, CX10, CX11 e CX13 foram implementadas, re-verificadas em disco e baixadas para
+`.specs/implementados/` em 2026-08-12 (docs-migration) — ver `.specs/SPEC_REGISTRY_IMPLEMENTED.md`.
+
+| # | Spec | Fecha |
+|---|---|---|
+| CX12 | `spec_codex_12_dead_code_removal_batch2.md` | Remove 15 arquivos + 4 eventos mortos (lote 2, re-verificados); ajusta ValidateSpec11Damage.cs (StatusTickedEvent). **PARTIAL**: 14/15 arquivos ja deletados em sessao anterior; `RewardTableDefinition.cs` NAO pode ser deletado (arquivo tambem define `RewardGrantResult`, em uso real por `LootTableContractTests.cs`) — re-confirmado em 2026-08-12 (docs-migration), permanece na fila. |
+
+CX12 permanece `Parallelizable: YES` (arquivo remanescente não se sobrepõe a outras specs).
+Nenhuma spec deste lote 2 foi promovida a `SPEC_EXECUTION_ORDER.md` — aguardam autorização humana
+explícita para execução.
+
+### Lote CAVE_VISUALS (gerado 2026-07-03)
+
+Camada de apresentacao visual por bioma da cave, derivada da direcao validada em
+`docs/design/gameplay/cave/CAVE_BIOME_VISUAL_REFERENCE.md` (8 biomas, keyarts e folhas de guia
+em `art/world_gpt/raw/cave_guides/`). Mecanica dos biomas ja existe; esta spec cria o contrato
+de dados para a arte do lote 2 ser plugada sem codigo novo.
+
+| # | Spec | Fecha |
+|---|---|---|
+| CV01 | `spec_cave_biome_art_profiles_runtime.md` | 8 CaveBiomeArtProfileSO + resolver deterministico (FNV-1a) nos materializers com fallback aos placeholders atuais; Tilemap floor/wall condicional a auditoria; RunStep gerador+validator nos 3 comandos canonicos; CaveBiomeChangedEvent p/ musica futura |
+
+CV01 e `Parallelizable: NO` (lock em Assets/_Game/Scripts/Cave/** e CindarsHopeMenu.cs).
+Nao promovida a SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana explicita para execucao.
+
+### Lote ENEMY_ATTACK_KITS (gerado 2026-07-03)
+
+Design canonico de ataques de inimigo derivado de `ENEMY_ATTACK_CATALOG_DIRECTION_v1.0.md` (v1.1,
+universo completo de 178 IDs: 117 fichas canonicas + 60 IDs do Roster + 1 boss legado) e seu par
+`ENEMY_ATTACK_IMPLEMENTATION_DIRECTION_v1.0.md`. fable_83 ja implementou a base de 5
+EnemyActionType signature (ComboStrike/TelegraphedAoE/SummonAdds/MultiHitCharge/DebuffStrike) com
+EnemyActionExecution puro — esta spec autora o CONTEUDO (kits por criatura) e fecha as 4
+primitivas P2 do catalogo §5 que ainda faltam no runtime (Rise-once, AllyHeal/AllyBuff,
+HazardZone, Pull).
+
+| # | Spec | Fecha |
+|---|---|---|
+| EAK01 | `spec_enemy_attack_kits_v1.md` | 4 primitivas P2 (Rise-once/AllyHeal-Buff/HazardZone/Pull) + generator idempotente de EnemyActionSO/EnemyActionSetSO para os ~121 donos de kit do universo (113 canonicas + 7 novas do Roster + enemy_meteor_ooze_king) + wiring das 53 variancias do Roster para a mae + validator read-only |
+
+EAK01 e `Parallelizable: NO` (lock em EnemyBrain.cs, EnemyActionSO.cs, EnemyActionExecution.cs,
+CindarsHopeMenu.cs, e nas pastas Assets/_Game/Data/Enemies/Actions|ActionSets/**). Fora de escopo:
+EnemyAttackAnimator/sprites, primitivas P3/P4, mecanicas do The Four. Nao promovida a
+SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana explicita para execucao.
+
+### Lote CAVE_VISUALS - fatia de decor (gerado 2026-07-04)
+
+| # | Spec | Fecha |
+|---|---|---|
+| CV02 | `spec_cave_decor_placement_runtime.md` | Colocacao deterministica + materializacao de decor por bioma (props nao-bloqueantes/bloqueantes) usando os sprites reais da CV01, persistido no snapshot stable-run. Subconjunto EXPLICITO da fable_78 (mesmos nomes/DTOs) - a fable_78 completa o absorve (adiciona lago/mineravel/conflito/threat/mercador). Povoar bioma 1 = objetivo da keyart. |
+
+CV02 e Parallelizable: NO (mesmo lock scope da fable_78 e de Cave/**; nunca rodar as duas juntas).
+Nao promovida a SPEC_EXECUTION_ORDER.md - aguarda autorizacao humana.
+
+### Lote CAVE_VISUALS - polimento p/ keyart (gerado 2026-07-10)
+
+| # | Spec | Fecha |
+|---|---|---|
+| CV04 | `spec_cave_visual_polish_runtime.md` | Aproxima a cave da keyart sem trocar o gerador: borda de rocha arredondada (overlay determinístico das wall_edge_*), cascalho denso no chão (scatter das litter_*), musgo/vegetação nas bases de parede, e luz FAKE (vinheta + feixe light_shaft). Toda a arte já no disco. Luz dinâmica real (URP 2D) e stamps de sala-heroi ficam de fora. |
+
+CV04 e Parallelizable: NO (lock Cave/**). Aguarda autorizacao humana.
+
+### Lote ARCH_RESIDUAL — Modularizacao residual + rede de validacao (gerado 2026-07-13)
+
+Specs geradas a partir do handoff do Codex `docs/architecture/CLAUDE_SPEC_AUTHORING_REMAINING_WORK_20260713.md`,
+transformando os 25 pares mutuos restantes (`Get-ModularizationDependencySnapshot.ps1`:
+`RuntimeModuleEdges=241`, `MutualModulePairs=25`) em specs por familia de risco, mais a rede de
+smoke humano.
+
+**Atualizacao 2026-07-16:** as 7 specs de corte (AR-A a AR-G, exceto AR-H) foram implementadas e
+movidas para `.specs/implementados/` — `Get-ModularizationDependencySnapshot.ps1` confirma
+`MutualModulePairs=0` (HEAD `a4203461`). Ver `docs/architecture/CLAUDE_MODULARIZATION_REMAINING_PLAN.md`
+e `docs/architecture/MODULARIZATION_PAIR_BREAK_MAP.md` para o estado final por par. Apenas AR-H
+(`spec_validation_human_playmode_smoke_v1.md` — validacao humana de Play Mode) permanece pendente
+nesta fila.
+
+| # | Spec | Fecha |
+|---|---|---|
+| AR-H | `spec_validation_human_playmode_smoke_v1.md` | Rede de validacao humana final: checklist unico de smoke (Town/Farm/Cave, inventario, crafting, loja, NPC, quest offer/turn-in, combate, morte/respawn, save/load) + path de relatorio `docs/validation/playmode/`. Docs-only, Parallelizable: YES. |
+
+Ordem recomendada de execucao (do handoff, secao 6): AR-H → AR-A → AR-B → AR-C → AR-G → AR-D → AR-E → AR-F.
+AR-A a AR-G ja implementadas (ver `.specs/implementados/`); AR-H segue aguardando execucao/autorizacao humana.

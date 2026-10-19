@@ -1,0 +1,1093 @@
+{
+  "method": "o200k_base reference tokenizer; normalized LF; catalog reconstructed with 110-character description cap and r8 paths, not actual serialized prompts",
+  "project_skill_count": 94,
+  "project_catalog_110": {
+    "characters": 16099,
+    "o200k_base": 4044
+  },
+  "project_catalog_full_descriptions": {
+    "characters": 26498,
+    "o200k_base": 6283
+  },
+  "two_new_catalog_110": {
+    "characters": 365,
+    "o200k_base": 84
+  },
+  "files": {
+    "AGENTS.md": {
+      "characters": 5500,
+      "o200k_base": 1417
+    },
+    "CLAUDE.md": {
+      "characters": 3180,
+      "o200k_base": 636
+    },
+    "docs/project/CURRENT_STATE.md": {
+      "characters": 6219,
+      "o200k_base": 1522
+    },
+    ".claude/HARNESS_INDEX.md": {
+      "characters": 12226,
+      "o200k_base": 2894
+    }
+  },
+  "all_skill_entries_NOT_automatic": {
+    "characters": 356765,
+    "o200k_base": 86039
+  },
+  "scenarios_additional_reads": {
+    "mcp_operation": {
+      "paths": [
+        "unity-mcp-operations/SKILL.md"
+      ],
+      "characters": 3366,
+      "o200k_base": 647
+    },
+    "mcp_validation": {
+      "paths": [
+        "unity-mcp-operations/SKILL.md",
+        "unity-validation/SKILL.md"
+      ],
+      "characters": 8662,
+      "o200k_base": 1731
+    },
+    "aseprite_edit": {
+      "paths": [
+        "aseprite-authoring/SKILL.md",
+        "aseprite-authoring/references/cli-lua.md",
+        "aseprite-authoring/references/acceptance.md"
+      ],
+      "characters": 10771,
+      "o200k_base": 2268
+    },
+    "animation_extra": {
+      "paths": [
+        "pixel-art-animator/SKILL.md",
+        "pixel-art-animator/references/operations.md",
+        "sprite-animation-review/SKILL.md",
+        "sprite-animation-review/references/motion-diagnostics.md"
+      ],
+      "characters": 9293,
+      "o200k_base": 1947
+    },
+    "hud_binding": {
+      "paths": [
+        "hud-canvas-binding/SKILL.md"
+      ],
+      "characters": 3360,
+      "o200k_base": 679
+    },
+    "profiling": {
+      "paths": [
+        "unity-performance-profiling/SKILL.md"
+      ],
+      "characters": 2796,
+      "o200k_base": 543
+    }
+  },
+  "skill_entries": [
+    {
+      "name": "ability-effect-composition",
+      "path": ".agents/skills/ability-effect-composition/SKILL.md",
+      "full_entry": {
+        "characters": 3487,
+        "o200k_base": 837
+      },
+      "description_characters": 340
+    },
+    {
+      "name": "action-feedback-pipeline",
+      "path": ".agents/skills/action-feedback-pipeline/SKILL.md",
+      "full_entry": {
+        "characters": 5639,
+        "o200k_base": 1358
+      },
+      "description_characters": 266
+    },
+    {
+      "name": "aseprite-authoring",
+      "path": ".agents/skills/aseprite-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 3186,
+        "o200k_base": 626
+      },
+      "description_characters": 248
+    },
+    {
+      "name": "audio-event-wiring",
+      "path": ".agents/skills/audio-event-wiring/SKILL.md",
+      "full_entry": {
+        "characters": 5574,
+        "o200k_base": 1465
+      },
+      "description_characters": 227
+    },
+    {
+      "name": "audit-harness",
+      "path": ".agents/skills/audit-harness/SKILL.md",
+      "full_entry": {
+        "characters": 1569,
+        "o200k_base": 355
+      },
+      "description_characters": 100
+    },
+    {
+      "name": "audit-spec",
+      "path": ".agents/skills/audit-spec/SKILL.md",
+      "full_entry": {
+        "characters": 2295,
+        "o200k_base": 596
+      },
+      "description_characters": 119
+    },
+    {
+      "name": "boot-integration-smoke",
+      "path": ".agents/skills/boot-integration-smoke/SKILL.md",
+      "full_entry": {
+        "characters": 4847,
+        "o200k_base": 1202
+      },
+      "description_characters": 331
+    },
+    {
+      "name": "bootstrap-wiring",
+      "path": ".agents/skills/bootstrap-wiring/SKILL.md",
+      "full_entry": {
+        "characters": 6593,
+        "o200k_base": 1560
+      },
+      "description_characters": 447
+    },
+    {
+      "name": "bugfix",
+      "path": ".agents/skills/bugfix/SKILL.md",
+      "full_entry": {
+        "characters": 2038,
+        "o200k_base": 521
+      },
+      "description_characters": 94
+    },
+    {
+      "name": "cave-stable-run-guard",
+      "path": ".agents/skills/cave-stable-run-guard/SKILL.md",
+      "full_entry": {
+        "characters": 2596,
+        "o200k_base": 656
+      },
+      "description_characters": 235
+    },
+    {
+      "name": "chatgpt-web-sprite-gen",
+      "path": ".agents/skills/chatgpt-web-sprite-gen/SKILL.md",
+      "full_entry": {
+        "characters": 2108,
+        "o200k_base": 468
+      },
+      "description_characters": 195
+    },
+    {
+      "name": "combat-data-wiring",
+      "path": ".agents/skills/combat-data-wiring/SKILL.md",
+      "full_entry": {
+        "characters": 3539,
+        "o200k_base": 858
+      },
+      "description_characters": 232
+    },
+    {
+      "name": "crafting-recipe-authoring",
+      "path": ".agents/skills/crafting-recipe-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 6724,
+        "o200k_base": 1730
+      },
+      "description_characters": 277
+    },
+    {
+      "name": "crop-farming-systems",
+      "path": ".agents/skills/crop-farming-systems/SKILL.md",
+      "full_entry": {
+        "characters": 1464,
+        "o200k_base": 290
+      },
+      "description_characters": 180
+    },
+    {
+      "name": "data-catalog-authoring",
+      "path": ".agents/skills/data-catalog-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 2896,
+        "o200k_base": 682
+      },
+      "description_characters": 302
+    },
+    {
+      "name": "decision-rule-extraction",
+      "path": ".agents/skills/decision-rule-extraction/SKILL.md",
+      "full_entry": {
+        "characters": 4001,
+        "o200k_base": 1027
+      },
+      "description_characters": 324
+    },
+    {
+      "name": "delegated-execution",
+      "path": ".agents/skills/delegated-execution/SKILL.md",
+      "full_entry": {
+        "characters": 2433,
+        "o200k_base": 499
+      },
+      "description_characters": 126
+    },
+    {
+      "name": "docs-governance",
+      "path": ".agents/skills/docs-governance/SKILL.md",
+      "full_entry": {
+        "characters": 3054,
+        "o200k_base": 737
+      },
+      "description_characters": 259
+    },
+    {
+      "name": "docs-health",
+      "path": ".agents/skills/docs-health/SKILL.md",
+      "full_entry": {
+        "characters": 4808,
+        "o200k_base": 1243
+      },
+      "description_characters": 52
+    },
+    {
+      "name": "docs-migration",
+      "path": ".agents/skills/docs-migration/SKILL.md",
+      "full_entry": {
+        "characters": 7021,
+        "o200k_base": 1896
+      },
+      "description_characters": 238
+    },
+    {
+      "name": "economy-balance-tuning",
+      "path": ".agents/skills/economy-balance-tuning/SKILL.md",
+      "full_entry": {
+        "characters": 2874,
+        "o200k_base": 663
+      },
+      "description_characters": 241
+    },
+    {
+      "name": "editmode-test-authoring",
+      "path": ".agents/skills/editmode-test-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 3072,
+        "o200k_base": 743
+      },
+      "description_characters": 285
+    },
+    {
+      "name": "editor-tooling-orchestration",
+      "path": ".agents/skills/editor-tooling-orchestration/SKILL.md",
+      "full_entry": {
+        "characters": 5574,
+        "o200k_base": 1501
+      },
+      "description_characters": 334
+    },
+    {
+      "name": "editor-validator-authoring",
+      "path": ".agents/skills/editor-validator-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 3350,
+        "o200k_base": 744
+      },
+      "description_characters": 245
+    },
+    {
+      "name": "enemy-ai-authoring",
+      "path": ".agents/skills/enemy-ai-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 4083,
+        "o200k_base": 1032
+      },
+      "description_characters": 287
+    },
+    {
+      "name": "equipment-durability-repair",
+      "path": ".agents/skills/equipment-durability-repair/SKILL.md",
+      "full_entry": {
+        "characters": 8152,
+        "o200k_base": 2107
+      },
+      "description_characters": 428
+    },
+    {
+      "name": "event-bus-pattern",
+      "path": ".agents/skills/event-bus-pattern/SKILL.md",
+      "full_entry": {
+        "characters": 4381,
+        "o200k_base": 1065
+      },
+      "description_characters": 236
+    },
+    {
+      "name": "event-catalog-and-tracing",
+      "path": ".agents/skills/event-catalog-and-tracing/SKILL.md",
+      "full_entry": {
+        "characters": 5240,
+        "o200k_base": 1350
+      },
+      "description_characters": 323
+    },
+    {
+      "name": "execute-spec-strict",
+      "path": ".agents/skills/execute-spec-strict/SKILL.md",
+      "full_entry": {
+        "characters": 2269,
+        "o200k_base": 517
+      },
+      "description_characters": 65
+    },
+    {
+      "name": "fail-state-recovery-design",
+      "path": ".agents/skills/fail-state-recovery-design/SKILL.md",
+      "full_entry": {
+        "characters": 5402,
+        "o200k_base": 1402
+      },
+      "description_characters": 276
+    },
+    {
+      "name": "finish-spec",
+      "path": ".agents/skills/finish-spec/SKILL.md",
+      "full_entry": {
+        "characters": 1844,
+        "o200k_base": 415
+      },
+      "description_characters": 62
+    },
+    {
+      "name": "game-feel-checklist",
+      "path": ".agents/skills/game-feel-checklist/SKILL.md",
+      "full_entry": {
+        "characters": 4004,
+        "o200k_base": 956
+      },
+      "description_characters": 289
+    },
+    {
+      "name": "gameplay-test-scenario",
+      "path": ".agents/skills/gameplay-test-scenario/SKILL.md",
+      "full_entry": {
+        "characters": 6686,
+        "o200k_base": 1705
+      },
+      "description_characters": 247
+    },
+    {
+      "name": "harness-audit",
+      "path": ".agents/skills/harness-audit/SKILL.md",
+      "full_entry": {
+        "characters": 2283,
+        "o200k_base": 525
+      },
+      "description_characters": 195
+    },
+    {
+      "name": "harness-authoring",
+      "path": ".agents/skills/harness-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 2907,
+        "o200k_base": 582
+      },
+      "description_characters": 170
+    },
+    {
+      "name": "hud-canvas-binding",
+      "path": ".agents/skills/hud-canvas-binding/SKILL.md",
+      "full_entry": {
+        "characters": 3360,
+        "o200k_base": 679
+      },
+      "description_characters": 168
+    },
+    {
+      "name": "implement-spec",
+      "path": ".agents/skills/implement-spec/SKILL.md",
+      "full_entry": {
+        "characters": 1065,
+        "o200k_base": 252
+      },
+      "description_characters": 85
+    },
+    {
+      "name": "implementation-closeout",
+      "path": ".agents/skills/implementation-closeout/SKILL.md",
+      "full_entry": {
+        "characters": 2549,
+        "o200k_base": 556
+      },
+      "description_characters": 107
+    },
+    {
+      "name": "input-gamepad-routing",
+      "path": ".agents/skills/input-gamepad-routing/SKILL.md",
+      "full_entry": {
+        "characters": 6522,
+        "o200k_base": 1624
+      },
+      "description_characters": 287
+    },
+    {
+      "name": "inventory-transactions",
+      "path": ".agents/skills/inventory-transactions/SKILL.md",
+      "full_entry": {
+        "characters": 1494,
+        "o200k_base": 288
+      },
+      "description_characters": 150
+    },
+    {
+      "name": "localization-authoring",
+      "path": ".agents/skills/localization-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 1493,
+        "o200k_base": 293
+      },
+      "description_characters": 189
+    },
+    {
+      "name": "loop-hierarchy-design",
+      "path": ".agents/skills/loop-hierarchy-design/SKILL.md",
+      "full_entry": {
+        "characters": 6296,
+        "o200k_base": 1597
+      },
+      "description_characters": 255
+    },
+    {
+      "name": "loop-spec-batch-strict",
+      "path": ".agents/skills/loop-spec-batch-strict/SKILL.md",
+      "full_entry": {
+        "characters": 1772,
+        "o200k_base": 386
+      },
+      "description_characters": 84
+    },
+    {
+      "name": "loot-table-authoring",
+      "path": ".agents/skills/loot-table-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 6685,
+        "o200k_base": 1754
+      },
+      "description_characters": 417
+    },
+    {
+      "name": "monobehaviour-decomposition",
+      "path": ".agents/skills/monobehaviour-decomposition/SKILL.md",
+      "full_entry": {
+        "characters": 3087,
+        "o200k_base": 671
+      },
+      "description_characters": 202
+    },
+    {
+      "name": "non-regression-review",
+      "path": ".agents/skills/non-regression-review/SKILL.md",
+      "full_entry": {
+        "characters": 1687,
+        "o200k_base": 338
+      },
+      "description_characters": 164
+    },
+    {
+      "name": "npc-dialogue-authoring",
+      "path": ".agents/skills/npc-dialogue-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 5343,
+        "o200k_base": 1435
+      },
+      "description_characters": 214
+    },
+    {
+      "name": "npc-walk-animation",
+      "path": ".agents/skills/npc-walk-animation/SKILL.md",
+      "full_entry": {
+        "characters": 2479,
+        "o200k_base": 601
+      },
+      "description_characters": 164
+    },
+    {
+      "name": "object-pooling-pattern",
+      "path": ".agents/skills/object-pooling-pattern/SKILL.md",
+      "full_entry": {
+        "characters": 3152,
+        "o200k_base": 735
+      },
+      "description_characters": 300
+    },
+    {
+      "name": "observability-and-logging",
+      "path": ".agents/skills/observability-and-logging/SKILL.md",
+      "full_entry": {
+        "characters": 6445,
+        "o200k_base": 1668
+      },
+      "description_characters": 369
+    },
+    {
+      "name": "pixel-art-animator",
+      "path": ".agents/skills/pixel-art-animator/SKILL.md",
+      "full_entry": {
+        "characters": 2112,
+        "o200k_base": 443
+      },
+      "description_characters": 173
+    },
+    {
+      "name": "pixel-art-direction",
+      "path": ".agents/skills/pixel-art-direction/SKILL.md",
+      "full_entry": {
+        "characters": 2394,
+        "o200k_base": 487
+      },
+      "description_characters": 161
+    },
+    {
+      "name": "pixel-art-prompt-authoring",
+      "path": ".agents/skills/pixel-art-prompt-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 2337,
+        "o200k_base": 485
+      },
+      "description_characters": 205
+    },
+    {
+      "name": "plan-wave",
+      "path": ".agents/skills/plan-wave/SKILL.md",
+      "full_entry": {
+        "characters": 3046,
+        "o200k_base": 779
+      },
+      "description_characters": 104
+    },
+    {
+      "name": "player-ability-runtime",
+      "path": ".agents/skills/player-ability-runtime/SKILL.md",
+      "full_entry": {
+        "characters": 5444,
+        "o200k_base": 1329
+      },
+      "description_characters": 249
+    },
+    {
+      "name": "player-needs-survival",
+      "path": ".agents/skills/player-needs-survival/SKILL.md",
+      "full_entry": {
+        "characters": 7422,
+        "o200k_base": 1929
+      },
+      "description_characters": 298
+    },
+    {
+      "name": "progression-curve-design",
+      "path": ".agents/skills/progression-curve-design/SKILL.md",
+      "full_entry": {
+        "characters": 2645,
+        "o200k_base": 667
+      },
+      "description_characters": 239
+    },
+    {
+      "name": "quest-authoring",
+      "path": ".agents/skills/quest-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 8001,
+        "o200k_base": 1954
+      },
+      "description_characters": 457
+    },
+    {
+      "name": "reconcile-status",
+      "path": ".agents/skills/reconcile-status/SKILL.md",
+      "full_entry": {
+        "characters": 2441,
+        "o200k_base": 606
+      },
+      "description_characters": 149
+    },
+    {
+      "name": "refinement-authoring",
+      "path": ".agents/skills/refinement-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 1912,
+        "o200k_base": 365
+      },
+      "description_characters": 237
+    },
+    {
+      "name": "registry-catalog-pattern",
+      "path": ".agents/skills/registry-catalog-pattern/SKILL.md",
+      "full_entry": {
+        "characters": 6222,
+        "o200k_base": 1570
+      },
+      "description_characters": 254
+    },
+    {
+      "name": "resolve-spec-dependency-chain",
+      "path": ".agents/skills/resolve-spec-dependency-chain/SKILL.md",
+      "full_entry": {
+        "characters": 5320,
+        "o200k_base": 1328
+      },
+      "description_characters": 92
+    },
+    {
+      "name": "review-non-regression",
+      "path": ".agents/skills/review-non-regression/SKILL.md",
+      "full_entry": {
+        "characters": 6089,
+        "o200k_base": 1559
+      },
+      "description_characters": 92
+    },
+    {
+      "name": "rng-and-determinism",
+      "path": ".agents/skills/rng-and-determinism/SKILL.md",
+      "full_entry": {
+        "characters": 2766,
+        "o200k_base": 663
+      },
+      "description_characters": 256
+    },
+    {
+      "name": "run-editmode-tests",
+      "path": ".agents/skills/run-editmode-tests/SKILL.md",
+      "full_entry": {
+        "characters": 1450,
+        "o200k_base": 330
+      },
+      "description_characters": 84
+    },
+    {
+      "name": "runtime-bootstrap-pattern",
+      "path": ".agents/skills/runtime-bootstrap-pattern/SKILL.md",
+      "full_entry": {
+        "characters": 2824,
+        "o200k_base": 671
+      },
+      "description_characters": 220
+    },
+    {
+      "name": "save-load-pattern",
+      "path": ".agents/skills/save-load-pattern/SKILL.md",
+      "full_entry": {
+        "characters": 6030,
+        "o200k_base": 1401
+      },
+      "description_characters": 159
+    },
+    {
+      "name": "save-section-provider",
+      "path": ".agents/skills/save-section-provider/SKILL.md",
+      "full_entry": {
+        "characters": 2697,
+        "o200k_base": 637
+      },
+      "description_characters": 223
+    },
+    {
+      "name": "scene-interactable-wiring",
+      "path": ".agents/skills/scene-interactable-wiring/SKILL.md",
+      "full_entry": {
+        "characters": 7396,
+        "o200k_base": 1809
+      },
+      "description_characters": 263
+    },
+    {
+      "name": "skill-tree-authoring",
+      "path": ".agents/skills/skill-tree-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 6412,
+        "o200k_base": 1672
+      },
+      "description_characters": 210
+    },
+    {
+      "name": "solid-refactoring",
+      "path": ".agents/skills/solid-refactoring/SKILL.md",
+      "full_entry": {
+        "characters": 5597,
+        "o200k_base": 1150
+      },
+      "description_characters": 201
+    },
+    {
+      "name": "spec-authoring",
+      "path": ".agents/skills/spec-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 7625,
+        "o200k_base": 1783
+      },
+      "description_characters": 235
+    },
+    {
+      "name": "spec-execution",
+      "path": ".agents/skills/spec-execution/SKILL.md",
+      "full_entry": {
+        "characters": 5462,
+        "o200k_base": 1229
+      },
+      "description_characters": 111
+    },
+    {
+      "name": "spec-planning",
+      "path": ".agents/skills/spec-planning/SKILL.md",
+      "full_entry": {
+        "characters": 2104,
+        "o200k_base": 383
+      },
+      "description_characters": 264
+    },
+    {
+      "name": "spec-task-authoring",
+      "path": ".agents/skills/spec-task-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 2130,
+        "o200k_base": 404
+      },
+      "description_characters": 237
+    },
+    {
+      "name": "sprite-animation-review",
+      "path": ".agents/skills/sprite-animation-review/SKILL.md",
+      "full_entry": {
+        "characters": 2450,
+        "o200k_base": 505
+      },
+      "description_characters": 185
+    },
+    {
+      "name": "sprite-generation-pipeline",
+      "path": ".agents/skills/sprite-generation-pipeline/SKILL.md",
+      "full_entry": {
+        "characters": 6643,
+        "o200k_base": 2013
+      },
+      "description_characters": 254
+    },
+    {
+      "name": "sprite-scene-integration",
+      "path": ".agents/skills/sprite-scene-integration/SKILL.md",
+      "full_entry": {
+        "characters": 2551,
+        "o200k_base": 534
+      },
+      "description_characters": 194
+    },
+    {
+      "name": "start-spec",
+      "path": ".agents/skills/start-spec/SKILL.md",
+      "full_entry": {
+        "characters": 2869,
+        "o200k_base": 755
+      },
+      "description_characters": 94
+    },
+    {
+      "name": "state-machine-design",
+      "path": ".agents/skills/state-machine-design/SKILL.md",
+      "full_entry": {
+        "characters": 3217,
+        "o200k_base": 806
+      },
+      "description_characters": 345
+    },
+    {
+      "name": "system-reuse-audit",
+      "path": ".agents/skills/system-reuse-audit/SKILL.md",
+      "full_entry": {
+        "characters": 2396,
+        "o200k_base": 627
+      },
+      "description_characters": 243
+    },
+    {
+      "name": "tilemap-world-rendering",
+      "path": ".agents/skills/tilemap-world-rendering/SKILL.md",
+      "full_entry": {
+        "characters": 1577,
+        "o200k_base": 321
+      },
+      "description_characters": 178
+    },
+    {
+      "name": "time-calendar-weather",
+      "path": ".agents/skills/time-calendar-weather/SKILL.md",
+      "full_entry": {
+        "characters": 1414,
+        "o200k_base": 286
+      },
+      "description_characters": 167
+    },
+    {
+      "name": "ui-modal-stack",
+      "path": ".agents/skills/ui-modal-stack/SKILL.md",
+      "full_entry": {
+        "characters": 2712,
+        "o200k_base": 672
+      },
+      "description_characters": 227
+    },
+    {
+      "name": "ui-projection-pattern",
+      "path": ".agents/skills/ui-projection-pattern/SKILL.md",
+      "full_entry": {
+        "characters": 3453,
+        "o200k_base": 836
+      },
+      "description_characters": 305
+    },
+    {
+      "name": "unity-asset-generation",
+      "path": ".agents/skills/unity-asset-generation/SKILL.md",
+      "full_entry": {
+        "characters": 2897,
+        "o200k_base": 678
+      },
+      "description_characters": 218
+    },
+    {
+      "name": "unity-mcp-operations",
+      "path": ".agents/skills/unity-mcp-operations/SKILL.md",
+      "full_entry": {
+        "characters": 3366,
+        "o200k_base": 647
+      },
+      "description_characters": 216
+    },
+    {
+      "name": "unity-performance-profiling",
+      "path": ".agents/skills/unity-performance-profiling/SKILL.md",
+      "full_entry": {
+        "characters": 2796,
+        "o200k_base": 543
+      },
+      "description_characters": 214
+    },
+    {
+      "name": "unity-validation",
+      "path": ".agents/skills/unity-validation/SKILL.md",
+      "full_entry": {
+        "characters": 5295,
+        "o200k_base": 1084
+      },
+      "description_characters": 127
+    },
+    {
+      "name": "unity-validation-triage",
+      "path": ".agents/skills/unity-validation-triage/SKILL.md",
+      "full_entry": {
+        "characters": 3370,
+        "o200k_base": 833
+      },
+      "description_characters": 174
+    },
+    {
+      "name": "validate-spec",
+      "path": ".agents/skills/validate-spec/SKILL.md",
+      "full_entry": {
+        "characters": 1819,
+        "o200k_base": 418
+      },
+      "description_characters": 76
+    },
+    {
+      "name": "validate-unity",
+      "path": ".agents/skills/validate-unity/SKILL.md",
+      "full_entry": {
+        "characters": 1202,
+        "o200k_base": 279
+      },
+      "description_characters": 61
+    },
+    {
+      "name": "visual-asset-review",
+      "path": ".agents/skills/visual-asset-review/SKILL.md",
+      "full_entry": {
+        "characters": 2368,
+        "o200k_base": 479
+      },
+      "description_characters": 189
+    },
+    {
+      "name": "wave-integration-slice",
+      "path": ".agents/skills/wave-integration-slice/SKILL.md",
+      "full_entry": {
+        "characters": 4977,
+        "o200k_base": 1299
+      },
+      "description_characters": 271
+    }
+  ],
+  "largest_entries": [
+    {
+      "name": "equipment-durability-repair",
+      "path": ".agents/skills/equipment-durability-repair/SKILL.md",
+      "full_entry": {
+        "characters": 8152,
+        "o200k_base": 2107
+      },
+      "description_characters": 428
+    },
+    {
+      "name": "sprite-generation-pipeline",
+      "path": ".agents/skills/sprite-generation-pipeline/SKILL.md",
+      "full_entry": {
+        "characters": 6643,
+        "o200k_base": 2013
+      },
+      "description_characters": 254
+    },
+    {
+      "name": "quest-authoring",
+      "path": ".agents/skills/quest-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 8001,
+        "o200k_base": 1954
+      },
+      "description_characters": 457
+    },
+    {
+      "name": "player-needs-survival",
+      "path": ".agents/skills/player-needs-survival/SKILL.md",
+      "full_entry": {
+        "characters": 7422,
+        "o200k_base": 1929
+      },
+      "description_characters": 298
+    },
+    {
+      "name": "docs-migration",
+      "path": ".agents/skills/docs-migration/SKILL.md",
+      "full_entry": {
+        "characters": 7021,
+        "o200k_base": 1896
+      },
+      "description_characters": 238
+    },
+    {
+      "name": "scene-interactable-wiring",
+      "path": ".agents/skills/scene-interactable-wiring/SKILL.md",
+      "full_entry": {
+        "characters": 7396,
+        "o200k_base": 1809
+      },
+      "description_characters": 263
+    },
+    {
+      "name": "spec-authoring",
+      "path": ".agents/skills/spec-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 7625,
+        "o200k_base": 1783
+      },
+      "description_characters": 235
+    },
+    {
+      "name": "loot-table-authoring",
+      "path": ".agents/skills/loot-table-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 6685,
+        "o200k_base": 1754
+      },
+      "description_characters": 417
+    },
+    {
+      "name": "crafting-recipe-authoring",
+      "path": ".agents/skills/crafting-recipe-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 6724,
+        "o200k_base": 1730
+      },
+      "description_characters": 277
+    },
+    {
+      "name": "gameplay-test-scenario",
+      "path": ".agents/skills/gameplay-test-scenario/SKILL.md",
+      "full_entry": {
+        "characters": 6686,
+        "o200k_base": 1705
+      },
+      "description_characters": 247
+    },
+    {
+      "name": "skill-tree-authoring",
+      "path": ".agents/skills/skill-tree-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 6412,
+        "o200k_base": 1672
+      },
+      "description_characters": 210
+    },
+    {
+      "name": "observability-and-logging",
+      "path": ".agents/skills/observability-and-logging/SKILL.md",
+      "full_entry": {
+        "characters": 6445,
+        "o200k_base": 1668
+      },
+      "description_characters": 369
+    }
+  ],
+  "legacy_command_entries": [
+    {
+      "name": "audit-spec",
+      "path": ".agents/skills/audit-spec/SKILL.md",
+      "full_entry": {
+        "characters": 2295,
+        "o200k_base": 596
+      },
+      "description_characters": 119
+    },
+    {
+      "name": "implement-spec",
+      "path": ".agents/skills/implement-spec/SKILL.md",
+      "full_entry": {
+        "characters": 1065,
+        "o200k_base": 252
+      },
+      "description_characters": 85
+    },
+    {
+      "name": "resolve-spec-dependency-chain",
+      "path": ".agents/skills/resolve-spec-dependency-chain/SKILL.md",
+      "full_entry": {
+        "characters": 5320,
+        "o200k_base": 1328
+      },
+      "description_characters": 92
+    },
+    {
+      "name": "start-spec",
+      "path": ".agents/skills/start-spec/SKILL.md",
+      "full_entry": {
+        "characters": 2869,
+        "o200k_base": 755
+      },
+      "description_characters": 94
+    }
+  ],
+  "agent_metadata_reconstruction": {
+    "characters": 2503,
+    "o200k_base": 530
+  },
+  "external_catalog_reconstruction": {
+    "entries": 24,
+    "characters": 4080,
+    "o200k_base": 1026
+  }
+}

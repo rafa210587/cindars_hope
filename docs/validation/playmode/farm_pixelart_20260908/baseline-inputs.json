@@ -1,0 +1,28 @@
+{
+  "startedUtc": "2026-09-09T01:47:58.2203184Z",
+  "scope": "SCOPED: saved FarmScene Edit Mode baseline only",
+  "scenePath": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\Assets\\_Game\\Scenes\\FarmScene.unity",
+  "sceneBeforeSha256": "DCD8BED38BE0A7A07BDBF958F00A2136563AE5DE1655819D03AF83D18073036B",
+  "historicalCaptures": [
+    {
+      "name": "farm_capture_animals.png",
+      "sha256": "9322C65C81D2A7FB3D025A60E3E8F3E79836D3DF327CA6E7BEE1CE7399AE5449",
+      "lastWriteUtc": "2026-08-18T14:43:30.7950286Z"
+    },
+    {
+      "name": "farm_capture_closeup.png",
+      "sha256": "BCA0D81D25A9A9E0C8A949C503085313ECC0974E196BFD8D100A86106B4C6E77",
+      "lastWriteUtc": "2026-08-18T14:43:30.7251911Z"
+    },
+    {
+      "name": "farm_capture_colliders.png",
+      "sha256": "DFD359A634E91C4CC9F1FDF7053AA0C2488578F041795AE6348D1743A349525F",
+      "lastWriteUtc": "2026-08-16T19:52:48.1667599Z"
+    },
+    {
+      "name": "farm_capture.png",
+      "sha256": "BD8FCB937A1A19AF5D7C07EF9EFDDB54C5C2C93124F237F2BC15C54F7D490B25",
+      "lastWriteUtc": "2026-08-18T14:43:30.6333563Z"
+    }
+  ]
+}

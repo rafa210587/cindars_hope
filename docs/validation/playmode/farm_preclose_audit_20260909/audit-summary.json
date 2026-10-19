@@ -1,0 +1,13 @@
+{
+  "auditResult": "NOT_READY_FOR_CLOSEOUT",
+  "sceneHashNow": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803",
+  "sceneMatchesBefore": true,
+  "sceneMatchesMetadata": true,
+  "playModeStatus": "PASS",
+  "routeCount": 16,
+  "routeFailures": 0,
+  "selectionCount": 6,
+  "runtimeErrorCount": 0,
+  "humanTraversal": "NOT RUN",
+  "npcDialogue": "NOT RUN"
+}

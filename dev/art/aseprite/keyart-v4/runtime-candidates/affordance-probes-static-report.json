@@ -1,0 +1,39 @@
+{
+  "status": "STATIC_PASS",
+  "checks": [
+    "Exact19 unique props (9crates/6barrels/2troughs/2hay)",
+    "Each prop has a current authoring call",
+    "Specific collider identity is required",
+    "Missing/disabled/trigger/masked colliders fail",
+    "Local evidence obtained before exterior BFS",
+    "Exterior BFS targets unchanged",
+    "Expected counts feed overall result",
+    "Live tile grid covers every touched solid tile",
+    "No non-arable mutation in probe",
+    "Actual collider/filter used for casts and overlap",
+    "Furniture trigger distance is bounded",
+    "Bed offline full-body front clearance",
+    "Bed offline trigger selection distance",
+    "Chest offline full-body front clearance",
+    "Chest offline trigger selection distance"
+  ],
+  "geometry": [
+    {
+      "name": "Bed",
+      "approachY": 12.8,
+      "bodyTop": 13.925,
+      "baseBottom": 14.08,
+      "gap": 0.155,
+      "triggerDistance": 0.3
+    },
+    {
+      "name": "Chest",
+      "approachY": 13.85,
+      "bodyTop": 14.975,
+      "baseBottom": 15.14,
+      "gap": 0.165,
+      "triggerDistance": 0.35
+    }
+  ],
+  "unity": "NOT RUN: candidate only; root owns Unity"
+}

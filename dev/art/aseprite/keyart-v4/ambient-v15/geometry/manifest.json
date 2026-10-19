@@ -1,0 +1,32 @@
+[
+  {
+    "path": "Assets/_Game/Scripts/Farm/FarmLevel1LayoutContract.cs",
+    "originalSha256": "d745a40cb24c975d38e877a4794188a994ad958beda50c007aafcec98b52886a",
+    "candidate": "FarmLevel1LayoutContract.cs.txt"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Farm/Scene/FarmSceneSpatialContract.cs",
+    "originalSha256": "29556fc55dc4cce4e898b3490bac6815f9ab0a01291282e75ded3c4aa7fdb07a",
+    "candidate": "FarmSceneSpatialContract.cs.txt"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+    "originalSha256": "708e8632cb80ce987559b84463752ba0deeac02048a92afab41953e75f8dffe3",
+    "candidate": "CreateMvpFarmScene.cs.txt"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Farm/FarmSceneNavigationContractTests.cs",
+    "originalSha256": "59fadc8f6323e99a7fa2a3287702c03a9833f4539d1d7de2eb057aac700ca637",
+    "candidate": "FarmSceneNavigationContractTests.cs.txt"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Validation/FarmPhysicalRouteProbe.cs",
+    "originalSha256": "7f2c61eacf495abba92c87736e2f4a6301c45ce5ac84ee1022576c0592eb653f",
+    "candidate": "FarmPhysicalRouteProbe.cs.txt"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Art/FarmSettlementVisualComposer.cs",
+    "originalSha256": "1e872641b1126178cd6e8c5d1216553305988e6b7b663f3b0776fe31422f425b",
+    "candidate": "FarmSettlementVisualComposer.cs.txt"
+  }
+]

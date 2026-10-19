@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "views": 8,
+  "runtimeErrors": 0,
+  "sceneUnchanged": true,
+  "sceneMatchesCurrent": true,
+  "sceneSha256": "c9796a69045c3c27cafa23128db14fed74b01701a6ec184b66c09256bce1df6e",
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "physicalProbeActuallyExecuted": true,
+  "physicalStatus": "PASS",
+  "visitedNodes": 6833,
+  "routeCount": 16,
+  "failedRoutes": 0,
+  "reason": "All requested approaches connected by collider sweeps."
+}

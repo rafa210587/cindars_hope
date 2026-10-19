@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2,210166">
+  <test-suite type="TestSuite" id="1017" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.210166" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1010" name="CindarsHope.Tests.PlayMode.Composition.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.PlayMode.Composition.dll" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.203838" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="43352" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1011" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.203070" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1012" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.202689" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1013" name="PlayMode" fullname="CindarsHope.Tests.PlayMode" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.202316" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1014" name="Composition" fullname="CindarsHope.Tests.PlayMode.Composition" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.201914" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1004" name="SkillExecutionFoundationPlayModeTests" fullname="CindarsHope.Tests.PlayMode.Composition.SkillExecutionFoundationPlayModeTests" classname="CindarsHope.Tests.PlayMode.Composition.SkillExecutionFoundationPlayModeTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.200917" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1008" name="CatalogStatusEffects_ApplyAllFourUsingSceneDatabaseAndRealCollision" fullname="CindarsHope.Tests.PlayMode.Composition.SkillExecutionFoundationPlayModeTests.CatalogStatusEffects_ApplyAllFourUsingSceneDatabaseAndRealCollision" methodname="CatalogStatusEffects_ApplyAllFourUsingSceneDatabaseAndRealCollision" classname="CindarsHope.Tests.PlayMode.Composition.SkillExecutionFoundationPlayModeTests" runstate="Runnable" seed="490153750" result="Passed" start-time="2026-09-10 03:21:41Z" end-time="2026-09-10 03:21:43Z" duration="2.191143" asserts="0">
+                  <properties>
+                    <property name="_JOINTYPE" value="UnityCombinatorial" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[DebugHud: initialized as primary instance.
+GameTimeManager initialized.
+GameBootstrap: loadout inicial equipado (arco 'item_weapon_bow_wood' RightHand, flecha 'item_ammo_arrow_basic' LeftHand).
+CombatRuntimeInstaller: Install completed. ItemDb=ItemDatabase, WeaponDb=WeaponDatabase, SpellDb=SpellDatabase, StatusEffectDb=StatusEffectDatabase, EquipmentRuntime=ok
+[Music] Cena ativa='FarmScene' -> ambiente=Fazenda.
+[Music] PlayMusic(Fazenda) (antes=Calmo, cena=InitTestScene908ea805-21c0-44cf-9668-16dd98363cea).
+[CraftingStationRuntimeBootstrap] Bound CraftingRuntime '_Bootstrap' to InventoryManager and StaminaManager.
+[PlayerMovementActionRuntimeBootstrap] Resolved PlayerController 'Player' and attached movement action controllers.
+[Music] Cena ativa='FarmScene' -> ambiente=Fazenda.
+[FarmTillingInputController] Inicializado. Pressione [F] sobre um tile para arar.
+PlayerAttackController: created runtime UnarmedAttackDataSO fallback (no asset wired).
+[FarmSceneRuntimeBootstrap] FarmTileGrid configurado: bounds 76x50, worldOrigin (-40,-25), zonas nao-araveis v7 registradas (construcoes borda+agua borda+montanha+3 areas expansao), miolo x[-18,16] y[-15,16] totalmente aravel, interior da estufa aravel.
+DebugHud: runtime references rebound.
+FarmSceneRuntimeReferenceInstaller: rebound 0 plots, 68 trees. State cache restored: False.
+[Music] Cena ativa='FarmScene' -> ambiente=Fazenda.
+[ConsumableItemRuntimeBootstrap] 37 handlers de consumivel registrados.
+[ConsumableItemRuntimeBootstrap] Consumable food handlers registrados.
+[MagicItemRuntimeBootstrap] Magic items wired (use handler + passive tracker).
+[CraftingStationRuntimeBootstrap] Bound CraftingRuntime '_Bootstrap' to InventoryManager and StaminaManager.
+[DeathSystemBootstrap] Death system initialized
+[QuestProgressEventBridge] Subscribed to gameplay events (WAVE15 + WAVE26 objective variety).
+[QuestRuntimeBootstrap] Quest runtime initialized. Registry quests: 30. Inventory adapter: WIRED. Gold adapter: WIRED. Progression adapter: WIRED.
+[NarrativeRuntimeBootstrap] Narrativa inicializada. FlagStore WIRED; hook da mq_act1_00 assinado ao DayStarted.
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Physical, RequestSourcePos=(2300.00, 2300.00), SpawnPos=(2300.50, 2300.00), ProjectilePos=(2300.50, 2300.00), Scale=(0.32, 0.32, 0.32), Direction=(1.00, 0.00), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.850, 0.800, 0.700, 1.000), sortLayer=-1153374643, sortOrder=5]
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Ice, RequestSourcePos=(2300.00, 2305.00), SpawnPos=(2300.50, 2305.00), ProjectilePos=(2300.50, 2305.00), Scale=(0.32, 0.32, 0.32), Direction=(1.00, 0.00), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.450, 0.800, 1.000, 1.000), sortLayer=-1153374643, sortOrder=5]
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Toxic, RequestSourcePos=(2300.00, 2310.00), SpawnPos=(2300.47, 2309.83), ProjectilePos=(2300.47, 2309.83), Scale=(0.32, 0.32, 0.32), Direction=(0.94, -0.34), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.450, 0.850, 0.300, 1.000), sortLayer=-1153374643, sortOrder=5]
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Toxic, RequestSourcePos=(2300.00, 2310.00), SpawnPos=(2300.50, 2310.00), ProjectilePos=(2300.50, 2310.00), Scale=(0.32, 0.32, 0.32), Direction=(1.00, 0.00), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.450, 0.850, 0.300, 1.000), sortLayer=-1153374643, sortOrder=5]
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Toxic, RequestSourcePos=(2300.00, 2310.00), SpawnPos=(2300.47, 2310.17), ProjectilePos=(2300.47, 2310.17), Scale=(0.32, 0.32, 0.32), Direction=(0.94, 0.34), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.450, 0.850, 0.300, 1.000), sortLayer=-1153374643, sortOrder=5]
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Ice, RequestSourcePos=(2300.00, 2315.00), SpawnPos=(2300.48, 2314.87), ProjectilePos=(2300.48, 2314.87), Scale=(0.32, 0.32, 0.32), Direction=(0.97, -0.26), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.450, 0.800, 1.000, 1.000), sortLayer=-1153374643, sortOrder=5]
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Ice, RequestSourcePos=(2300.00, 2315.00), SpawnPos=(2300.50, 2315.00), ProjectilePos=(2300.50, 2315.00), Scale=(0.32, 0.32, 0.32), Direction=(1.00, 0.00), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.450, 0.800, 1.000, 1.000), sortLayer=-1153374643, sortOrder=5]
+CombatLog: ProjectileSpawned. Success=True, Path=RuntimeFactory, VisualStyle=SkillBolt, DamageType=Ice, RequestSourcePos=(2300.00, 2315.00), SpawnPos=(2300.48, 2315.13), ProjectilePos=(2300.48, 2315.13), Scale=(0.32, 0.32, 0.32), Direction=(0.97, 0.26), Renderer[enabled=True, sprite='', tex='ProceduralProjectileCircle', mat='Sprites-Default', color=RGBA(0.450, 0.800, 1.000, 1.000), sortLayer=-1153374643, sortOrder=5]
+Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

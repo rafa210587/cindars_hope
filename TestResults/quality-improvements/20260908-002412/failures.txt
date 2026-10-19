@@ -1,0 +1,45 @@
+CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.ComponentsInAnotherLoadedScene_DoNotSatisfySelectedScene
+SetUp : System.InvalidOperationException : Cannot create a new scene additively with an untitled scene unsaved.
+--SetUp
+  at (wrapper managed-to-native) UnityEditor.SceneManagement.EditorSceneManager.NewScene_Injected(UnityEditor.SceneManagement.NewSceneSetup,UnityEditor.SceneManagement.NewSceneMode,UnityEngine.SceneManagement.Scene&)
+  at UnityEditor.SceneManagement.EditorSceneManager.NewScene (UnityEditor.SceneManagement.NewSceneSetup setup, UnityEditor.SceneManagement.NewSceneMode mode) [0x00000] in <b35a5782b5d34eadbc5d7ed7c774d90f>:0 
+  at CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.SetUp () [0x0000b] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Editor\SceneTransitionValidationTests.cs:23 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 
+
+CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.DuplicateGateOrEmptyDestination_IsNotAValidConfiguration
+SetUp : System.InvalidOperationException : Cannot create a new scene additively with an untitled scene unsaved.
+--SetUp
+  at (wrapper managed-to-native) UnityEditor.SceneManagement.EditorSceneManager.NewScene_Injected(UnityEditor.SceneManagement.NewSceneSetup,UnityEditor.SceneManagement.NewSceneMode,UnityEngine.SceneManagement.Scene&)
+  at UnityEditor.SceneManagement.EditorSceneManager.NewScene (UnityEditor.SceneManagement.NewSceneSetup setup, UnityEditor.SceneManagement.NewSceneMode mode) [0x00000] in <b35a5782b5d34eadbc5d7ed7c774d90f>:0 
+  at CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.SetUp () [0x0000b] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Editor\SceneTransitionValidationTests.cs:23 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 
+
+CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.InactiveSerializedComponents_AreInspectedWithoutMutatingScene
+SetUp : System.InvalidOperationException : Cannot create a new scene additively with an untitled scene unsaved.
+--SetUp
+  at (wrapper managed-to-native) UnityEditor.SceneManagement.EditorSceneManager.NewScene_Injected(UnityEditor.SceneManagement.NewSceneSetup,UnityEditor.SceneManagement.NewSceneMode,UnityEngine.SceneManagement.Scene&)
+  at UnityEditor.SceneManagement.EditorSceneManager.NewScene (UnityEditor.SceneManagement.NewSceneSetup setup, UnityEditor.SceneManagement.NewSceneMode mode) [0x00000] in <b35a5782b5d34eadbc5d7ed7c774d90f>:0 
+  at CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.SetUp () [0x0000b] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Editor\SceneTransitionValidationTests.cs:23 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 
+
+CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.MissingScene_FailsWithoutChangingActiveDirtyScene
+SetUp : System.InvalidOperationException : Cannot create a new scene additively with an untitled scene unsaved.
+--SetUp
+  at (wrapper managed-to-native) UnityEditor.SceneManagement.EditorSceneManager.NewScene_Injected(UnityEditor.SceneManagement.NewSceneSetup,UnityEditor.SceneManagement.NewSceneMode,UnityEngine.SceneManagement.Scene&)
+  at UnityEditor.SceneManagement.EditorSceneManager.NewScene (UnityEditor.SceneManagement.NewSceneSetup setup, UnityEditor.SceneManagement.NewSceneMode mode) [0x00000] in <b35a5782b5d34eadbc5d7ed7c774d90f>:0 
+  at CindarsHope.Tests.EditMode.Editor.SceneTransitionValidationTests.SetUp () [0x0000b] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\Editor\SceneTransitionValidationTests.cs:23 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 
+
+CindarsHope.Tests.EditMode.UI.InventoryItemActionTests.UseLastUnit_PreservesIdInFeedback_AndPublishesInventoryBeforeUsed
+  Expected string length 24 but was 6. Strings differ at index 5.
+  Expected: "Used fixture_consumable."
+  But was:  "Used ."
+  ----------------^
+
+at CindarsHope.Tests.EditMode.UI.InventoryItemActionTests.UseLastUnit_PreservesIdInFeedback_AndPublishesInventoryBeforeUsed () [0x000e2] in D:\Projetos\Cindars_Hope\cindars_hope\Assets\_Game\Tests\EditMode\UI\InventoryItemActionTests.cs:87
+
+

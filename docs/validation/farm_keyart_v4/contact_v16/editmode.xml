@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="53" result="Passed" total="53" passed="53" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="1,3133055">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="3292" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="1.313306" total="53" passed="53" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="4644" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="3292" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="1.282263" total="53" passed="53" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="54940" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="4645" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="3292" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="1.255928" total="53" passed="53" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="4650" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="3189" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="1.227508" total="53" passed="53" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="4652" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="3172" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="1.201342" total="53" passed="53" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="4675" name="Editor" fullname="CindarsHope.Tests.EditMode.Editor" runstate="Runnable" testcasecount="25" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="0.869666" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="3490" name="FarmDecorationPlannerTests" fullname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests" classname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="0.862362" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3491" name="DistributedTrees_PreserveIdsAndKeepNewGroupsClear" fullname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests.DistributedTrees_PreserveIdsAndKeepNewGroupsClear" methodname="DistributedTrees_PreserveIdsAndKeepNewGroupsClear" classname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests" runstate="Runnable" seed="1623558970" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:55Z" duration="0.309486" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3492" name="ForestPositions_PreserveStableOrderingAndClearGameplayAreas" fullname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests.ForestPositions_PreserveStableOrderingAndClearGameplayAreas" methodname="ForestPositions_PreserveStableOrderingAndClearGameplayAreas" classname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests" runstate="Runnable" seed="1500040684" result="Passed" start-time="2026-09-10 21:06:55Z" end-time="2026-09-10 21:06:56Z" duration="0.200961" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3495" name="Plan_AllBiomesAreWithinDeclaredRanges" fullname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests.Plan_AllBiomesAreWithinDeclaredRanges" methodname="Plan_AllBiomesAreWithinDeclaredRanges" classname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests" runstate="Runnable" seed="18716073" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.085003" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3494" name="Plan_HasNoForbiddenCells" fullname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests.Plan_HasNoForbiddenCells" methodname="Plan_HasNoForbiddenCells" classname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests" runstate="Runnable" seed="825699705" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.085789" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3493" name="SameSeed_ProducesIdenticalPlan" fullname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests.SameSeed_ProducesIdenticalPlan" methodname="SameSeed_ProducesIdenticalPlan" classname="CindarsHope.Tests.EditMode.Editor.FarmDecorationPlannerTests" runstate="Runnable" seed="980680939" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.167100" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="4673" name="Farm" fullname="CindarsHope.Tests.EditMode.Farm" runstate="Runnable" testcasecount="339" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.090658" total="23" passed="23" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="3200" name="FarmForageFishingTests" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.012608" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3209" name="Fishing_HappyPath_ReturnsFish" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Fishing_HappyPath_ReturnsFish" methodname="Fishing_HappyPath_ReturnsFish" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="1185040627" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.002592" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3212" name="Fishing_LoreProtected_Fails" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Fishing_LoreProtected_Fails" methodname="Fishing_LoreProtected_Fails" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="1171038608" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000237" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3210" name="Fishing_NoEndgameFish_OnFarmLake" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Fishing_NoEndgameFish_OnFarmLake" methodname="Fishing_NoEndgameFish_OnFarmLake" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="1470240050" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000301" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3211" name="Fishing_SoftLimit_BlocksAfterLimit" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Fishing_SoftLimit_BlocksAfterLimit" methodname="Fishing_SoftLimit_BlocksAfterLimit" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="67150772" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000215" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3201" name="Forage_Collect_HappyPath" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_Collect_HappyPath" methodname="Forage_Collect_HappyPath" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="957583323" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000449" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3202" name="Forage_Collect_SecondCall_Fails" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_Collect_SecondCall_Fails" methodname="Forage_Collect_SecondCall_Fails" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="1515010979" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000215" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3206" name="Forage_EndgameReserved_Fails" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_EndgameReserved_Fails" methodname="Forage_EndgameReserved_Fails" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="801102338" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000158" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3204" name="Forage_ForbiddenZone_Fails" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_ForbiddenZone_Fails" methodname="Forage_ForbiddenZone_Fails" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="591975842" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000124" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3205" name="Forage_LoreProtected_Fails" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_LoreProtected_Fails" methodname="Forage_LoreProtected_Fails" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="1870624607" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000175" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3207" name="Forage_Respawn_AfterEligibleDay" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_Respawn_AfterEligibleDay" methodname="Forage_Respawn_AfterEligibleDay" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="1188306058" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000255" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3208" name="Forage_Respawn_BeforeEligibleDay_NoOp" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_Respawn_BeforeEligibleDay_NoOp" methodname="Forage_Respawn_BeforeEligibleDay_NoOp" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="303591407" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000128" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3203" name="Forage_WrongSeason_Fails" fullname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests.Forage_WrongSeason_Fails" methodname="Forage_WrongSeason_Fails" classname="CindarsHope.Tests.EditMode.Farm.FarmForageFishingTests" runstate="Runnable" seed="2040487107" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000177" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="3225" name="FarmLandmarkCompositionTests" fullname="CindarsHope.Tests.EditMode.Farm.FarmLandmarkCompositionTests" classname="CindarsHope.Tests.EditMode.Farm.FarmLandmarkCompositionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.006555" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3227" name="CentralField_RequiresFourApproachesWithoutPermanentFakeCrops" fullname="CindarsHope.Tests.EditMode.Farm.FarmLandmarkCompositionTests.CentralField_RequiresFourApproachesWithoutPermanentFakeCrops" methodname="CentralField_RequiresFourApproachesWithoutPermanentFakeCrops" classname="CindarsHope.Tests.EditMode.Farm.FarmLandmarkCompositionTests" runstate="Runnable" seed="829941335" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000665" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3226" name="EveryLandmark_HasNamedRequiredObjectsAndInBounds" fullname="CindarsHope.Tests.EditMode.Farm.FarmLandmarkCompositionTests.EveryLandmark_HasNamedRequiredObjectsAndInBounds" methodname="EveryLandmark_HasNamedRequiredObjectsAndInBounds" classname="CindarsHope.Tests.EditMode.Farm.FarmLandmarkCompositionTests" runstate="Runnable" seed="1399942790" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.003355" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="3311" name="FarmSceneNavigationContractTests" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.011275" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="3312" name="Dock_OpensGangwayAndDeck_WithoutOpeningBoatOrSurroundingLake" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.Dock_OpensGangwayAndDeck_WithoutOpeningBoatOrSurroundingLake" methodname="Dock_OpensGangwayAndDeck_WithoutOpeningBoatOrSurroundingLake" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="439943666" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000780" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3319" name="OnlyTerrainGeometry_RequiresMaterializedCollision" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.OnlyTerrainGeometry_RequiresMaterializedCollision" methodname="OnlyTerrainGeometry_RequiresMaterializedCollision" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="1390604004" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000586" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3316" name="RiverBend_OverlapsLakeAcrossMouth_AndClearsWesternYard" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.RiverBend_OverlapsLakeAcrossMouth_AndClearsWesternYard" methodname="RiverBend_OverlapsLakeAcrossMouth_AndClearsWesternYard" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="1922485667" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000302" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3318" name="SolidFootprints_RequireNamedCollision_AndWalkableFootprintsDoNot" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.SolidFootprints_RequireNamedCollision_AndWalkableFootprintsDoNot" methodname="SolidFootprints_RequireNamedCollision_AndWalkableFootprintsDoNot" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="297241851" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000188" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3317" name="WaterAndMountain_BlockMovement_BridgeDoesNot" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.WaterAndMountain_BlockMovement_BridgeDoesNot" methodname="WaterAndMountain_BlockMovement_BridgeDoesNot" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="126182262" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000153" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="3320" name="WaterAndMountain_UseNonRectangularCanonicalPolygons" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.WaterAndMountain_UseNonRectangularCanonicalPolygons" methodname="WaterAndMountain_UseNonRectangularCanonicalPolygons" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="875888232" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000312" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="3315" name="WaterBoundaries_HaveNoCrossingNonAdjacentEdges" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.WaterBoundaries_HaveNoCrossingNonAdjacentEdges" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.002517" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="3313" name="WaterBoundaries_HaveNoCrossingNonAdjacentEdges(False)" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.WaterBoundaries_HaveNoCrossingNonAdjacentEdges(False)" methodname="WaterBoundaries_HaveNoCrossingNonAdjacentEdges" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="1605325569" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000558" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="3314" name="WaterBoundaries_HaveNoCrossingNonAdjacentEdges(True)" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.WaterBoundaries_HaveNoCrossingNonAdjacentEdges(True)" methodname="WaterBoundaries_HaveNoCrossingNonAdjacentEdges" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="694510776" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000135" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="3321" name="WaterOutsideCanonicalContour_IsNotBlocked" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests.WaterOutsideCanonicalContour_IsNotBlocked" methodname="WaterOutsideCanonicalContour_IsNotBlocked" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneNavigationContractTests" runstate="Runnable" seed="305902292" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000155" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="4653" name="World" fullname="CindarsHope.Tests.EditMode.World" runstate="Runnable" testcasecount="234" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.127794" total="25" passed="25" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1260" name="FishingStanceZoneTests" fullname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" classname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.009711" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1262" name="AuthoredZone_UsesWorldFeetUnderScaledParent" fullname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests.AuthoredZone_UsesWorldFeetUnderScaledParent" methodname="AuthoredZone_UsesWorldFeetUnderScaledParent" classname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" runstate="Runnable" seed="243314011" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.004097" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1263" name="BodyOverlapWithoutFeetInside_DoesNotEnableFishing" fullname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests.BodyOverlapWithoutFeetInside_DoesNotEnableFishing" methodname="BodyOverlapWithoutFeetInside_DoesNotEnableFishing" classname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" runstate="Runnable" seed="902469251" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000732" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1266" name="DirectCastOutsideZone_ReturnsBeforeToolFeedbackOrFishingState" fullname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests.DirectCastOutsideZone_ReturnsBeforeToolFeedbackOrFishingState" methodname="DirectCastOutsideZone_ReturnsBeforeToolFeedbackOrFishingState" classname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" runstate="Runnable" seed="1734178150" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.001084" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1264" name="DisabledOrDestroyedAuthoredZone_FailsClosed" fullname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests.DisabledOrDestroyedAuthoredZone_FailsClosed" methodname="DisabledOrDestroyedAuthoredZone_FailsClosed" classname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" runstate="Runnable" seed="2028439231" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000746" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1265" name="InvalidZone_IsRejectedAndNullRestoresLegacy" fullname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests.InvalidZone_IsRejectedAndNullRestoresLegacy" methodname="InvalidZone_IsRejectedAndNullRestoresLegacy" classname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" runstate="Runnable" seed="2090768614" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.001172" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1261" name="LegacyUnset_KeepsRingAndRequireEdgeBehavior" fullname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests.LegacyUnset_KeepsRingAndRequireEdgeBehavior" methodname="LegacyUnset_KeepsRingAndRequireEdgeBehavior" classname="CindarsHope.Tests.EditMode.World.FishingStanceZoneTests" runstate="Runnable" seed="1042438192" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000433" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1267" name="FishingV2Tests" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.073171" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1276" name="Amendment_FarmPond_MirrorfinAndPale_OnlyAtNight" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.Amendment_FarmPond_MirrorfinAndPale_OnlyAtNight" methodname="Amendment_FarmPond_MirrorfinAndPale_OnlyAtNight" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1201841957" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.022728" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1277" name="Amendment_RareNightEvent_IsApproximatelyHalfPercent" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.Amendment_RareNightEvent_IsApproximatelyHalfPercent" methodname="Amendment_RareNightEvent_IsApproximatelyHalfPercent" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1824347527" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.031130" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1269" name="CA1_CaveIceBand_CanYieldMirrorfin" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA1_CaveIceBand_CanYieldMirrorfin" methodname="CA1_CaveIceBand_CanYieldMirrorfin" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="779044439" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000709" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1268" name="CA1_DifferentTables_SameSeed_GiveDifferentCatches" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA1_DifferentTables_SameSeed_GiveDifferentCatches" methodname="CA1_DifferentTables_SameSeed_GiveDifferentCatches" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="131147899" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000162" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1272" name="CA2_CaveFishingSpotHook_Is_Deterministic_And_RespectsTenPercent" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA2_CaveFishingSpotHook_Is_Deterministic_And_RespectsTenPercent" methodname="CA2_CaveFishingSpotHook_Is_Deterministic_And_RespectsTenPercent" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1352905313" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.006789" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1271" name="CA2_DifferentCastIndex_CanChangeResult" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA2_DifferentCastIndex_CanChangeResult" methodname="CA2_DifferentCastIndex_CanChangeResult" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="717506514" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000328" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1270" name="CA2_SameContext_SameCatch_Twice" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA2_SameContext_SameCatch_Twice" methodname="CA2_SameContext_SameCatch_Twice" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1047464098" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000221" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1274" name="CA3_SeasonIncompatibleEntry_NeverDrawn" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA3_SeasonIncompatibleEntry_NeverDrawn" methodname="CA3_SeasonIncompatibleEntry_NeverDrawn" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1684033412" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000988" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1275" name="CA3_Storm_NoEligibleEntry_Returns_NoCatch_NotException" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA3_Storm_NoEligibleEntry_Returns_NoCatch_NotException" methodname="CA3_Storm_NoEligibleEntry_Returns_NoCatch_NotException" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="8352664" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000430" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1273" name="CA3_Winter_Uses_WinterTable_Frostfin" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA3_Winter_Uses_WinterTable_Frostfin" methodname="CA3_Winter_Uses_WinterTable_Frostfin" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1570069288" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000572" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1281" name="CA4_Minigame_GradeForCursor_CenterIsPerfect_EdgeIsMiss" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA4_Minigame_GradeForCursor_CenterIsPerfect_EdgeIsMiss" methodname="CA4_Minigame_GradeForCursor_CenterIsPerfect_EdgeIsMiss" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1303999710" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000170" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1282" name="CA4_Minigame_Timeout_ResolvesToMiss" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA4_Minigame_Timeout_ResolvesToMiss" methodname="CA4_Minigame_Timeout_ResolvesToMiss" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1587080315" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000223" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1278" name="CA4_Miss_NoCatch" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA4_Miss_NoCatch" methodname="CA4_Miss_NoCatch" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1670313636" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000102" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1280" name="CA4_Perfect_ClampsAtMax" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA4_Perfect_ClampsAtMax" methodname="CA4_Perfect_ClampsAtMax" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1142620984" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000185" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1279" name="CA4_Perfect_ImprovesRarityAndQuality_OneStep" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA4_Perfect_ImprovesRarityAndQuality_OneStep" methodname="CA4_Perfect_ImprovesRarityAndQuality_OneStep" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="125157360" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000215" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1286" name="CA5_FarmService_LegacyContracts_Preserved_NoTable" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA5_FarmService_LegacyContracts_Preserved_NoTable" methodname="CA5_FarmService_LegacyContracts_Preserved_NoTable" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1478338367" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000181" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1285" name="CA5_FarmService_Miss_DoesNotConsumeDailyCatch" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA5_FarmService_Miss_DoesNotConsumeDailyCatch" methodname="CA5_FarmService_Miss_DoesNotConsumeDailyCatch" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="328767240" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000163" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1284" name="CA5_FarmService_UsesResolver_WhenTableRegistered" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.CA5_FarmService_UsesResolver_WhenTableRegistered" methodname="CA5_FarmService_UsesResolver_WhenTableRegistered" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="330673683" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000408" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1283" name="Selector_ResolvesTableId_ByBandAndBiome" fullname="CindarsHope.Tests.EditMode.World.FishingV2Tests.Selector_ResolvesTableId_ByBandAndBiome" methodname="Selector_ResolvesTableId_ByBandAndBiome" classname="CindarsHope.Tests.EditMode.World.FishingV2Tests" runstate="Runnable" seed="1950232047" result="Passed" start-time="2026-09-10 21:06:56Z" end-time="2026-09-10 21:06:56Z" duration="0.000232" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

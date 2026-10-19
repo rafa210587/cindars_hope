@@ -1,0 +1,5 @@
+Raw rule/skill copies: PASS
+Config bytes: unchanged
+AGENTS manual prefix/suffix bytes: unchanged
+Generator exit: 0
+Backup: C:\Users\Rafa\AppData\Local\Temp\cindars-parity-before-2456f484f1854e849b92f7b002ad3bd8

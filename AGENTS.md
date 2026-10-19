@@ -1,166 +1,142 @@
-# CLAUDE.md — Cindar's Hope
+# AGENTS.md — Cindar's Hope
+
+> Common rules for all agents. For routing, commands, and skills see `CLAUDE.md`.
 
 ## Contexto do projeto
-Jogo 2D pixel art RPG + farm sim desenvolvido em Unity LTS com C#.
-Mundo: Vaalara, cidade Cindar's Hope, região Dornecia.
-Arte: Aseprite como ferramenta principal; Pixelorama/LibreSprite como fallback, sprites 32x32px, resolução 1280x720.
-IA de arte: ChatGPT/DALL-E para conceito e ícones simples; PixelLab/Scenario opcionais para sprites/tilesets; Aseprite obrigatório para acabamento final.
-Geração de código: Codex (VS Code) + Claude.
-Spec: GitHub SpecKit com fluxo Specify → Plan → Tasks → Implement.
 
-## Documentos de referência (ler antes de qualquer tarefa)
-- docs/GDD_v2.6.md           — design completo do jogo
-- docs/ARCH_fase4_v2.2.md    — arquitetura técnica, padrões, eventos
-- docs/FASE5_ambiente_v1.2.md — setup micro do ambiente
-- specs/                      — specs por sistema (geradas na Fase 7)
+Jogo 2D pixel art RPG + farm sim em Unity LTS / C#.
+Mundo: Vaalara, cidade Cindar's Hope, regiao Dornecia.
+Spec source: `.specs/`. Pasta raiz `specs/` e `spec/` removidas — nao recriar.
 
-## Modelo de LLM padrão
-claude-sonnet-4-6
+## Context Reading Policy
 
-## Regras INVIOLÁVEIS de código
+Para tarefas de implementacao, ler somente:
 
-1. NUNCA usar GameObject.Find() ou FindObjectOfType()
-   → Usar injeção via [SerializeField] no Inspector ou eventos
-2. NUNCA criar comunicação direta entre sistemas
-   → Sempre via GameEventBus.Publish() e Subscribe()
-3. NUNCA hardcodar dados de jogo (HP, dano, preços, nomes)
-   → Sempre em ScriptableObject no Assets/_Game/Data/
-4. SEMPRE fazer Unsubscribe em OnDisable ou OnDestroy
-   → void OnDisable() => GameEventBus.Unsubscribe<XEvent>(OnX);
-5. NUNCA escrever lógica de negócio em MonoBehaviour
-   → MonoBehaviour só faz ponte entre Unity e classes C# puras
-6. SEMPRE prefixar ScriptableObjects: ItemDataSO, SeedDataSO, etc.
-7. SEMPRE prefixar eventos: DayStartedEvent, PlayerDiedEvent, etc.
-8. SEMPRE commits em português
-9. NUNCA implementar feature sem spec aprovada (Fase 7+)
-10. Sprites: SEMPRE importar com Filter Mode Point + Compression None
-11. Direção visual: cozy farm pixel art inspirado por Harvest Moon/Stardew Valley, mas com identidade própria; não copiar assets, personagens, UI ou paleta proprietária
+1. `AGENTS.md` ou `CLAUDE.md`
+2. `docs/project/CURRENT_STATE.md` — contexto de execucao primario (~80 linhas)
+3. A spec alvo quando executando uma spec; correção pontual segue `/bugfix`
+4. Arquivos citados pela spec ou diretamente relacionados à correção
+5. O relatorio de validacao imediatamente anterior, somente se listado como dependencia
 
-## Convenções de nomenclatura
+Nao ler por padrao:
 
-| Tipo | Convenção | Exemplo |
-|---|---|---|
-| Classes | PascalCase | PlayerController, FarmSystem |
-| Eventos | [Acao][Substantivo]Event | DayStartedEvent, ItemCraftedEvent |
-| ScriptableObjects | [Tipo]DataSO | ItemDataSO, SeedDataSO |
-| Prefabs | [Categoria]_[Nome] | Creature_Slime, NPC_Brumdar |
-| Sprites | [Cat]_[Nome]_[Tamanho].png | Item_SwordIron_32x32.png |
-| Variáveis private | _camelCase | _currentHP, _isGrounded |
-| Variáveis public/[SerializeField] | PascalCase | MaxHP, MoveSpeed |
-| Constantes | UPPER_SNAKE | MAX_COMPANIONS, BASE_HUNGER_RATE |
-| Cenas | PascalCase | FarmScene, TownScene, CaveScene |
+- `PROJECT_LOG.md` — somente para: auditoria, reconciliacao, investigacao de regressao, pedido humano explicito
+- `ROADMAP.md` — somente para: planejamento de novas waves, criacao de specs, repriorizacao
+- GDD completo
+- refinements antigos
+- specs arquivadas ou superseded
+- relatorios de validacao nao relacionados
+- `docs_old/**`
 
-## Estrutura de pastas
+### Resolucao de conflitos
 
-```
-Assets/_Game/
-├── Data/           ← ScriptableObjects (nunca .cs aqui)
-├── Scripts/
-│   ├── Core/       ← GameEventBus, TimeManager, SaveManager, Events/
-│   ├── Player/
-│   ├── Farm/
-│   ├── Cave/
-│   ├── Combat/
-│   ├── Craft/
-│   ├── Companion/
-│   ├── NPC/
-│   ├── UI/
-│   ├── Save/
-│   └── Utils/
-├── Scenes/
-├── Prefabs/
-├── Sprites/
-│   └── Placeholders/  ← retângulos coloridos para MVP
-├── Animations/
-├── Tilemaps/
-└── Audio/             ← vazio até Fase 10 (polish)
+- Spec vs. roadmap → seguir a spec.
+- Spec vs. refinement → seguir a spec.
+- Spec vs. CURRENT_STATE → parar e reportar a inconsistencia ao humano.
+- PROJECT_LOG vs. CURRENT_STATE → preferir CURRENT_STATE e reportar a divergencia.
+
+---
+
+## Fluxo operacional
+
+Leitura minima para qualquer tarefa de implementacao:
+
+1. `AGENTS.md` ou `CLAUDE.md`
+2. `docs/project/CURRENT_STATE.md`
+3. Spec ativa quando aplicável; bugfix restaura contrato existente sem exigir nova spec
+4. Arquivos citados pela spec ou diretamente relacionados à correção
+
+Uma feature nova continua exigindo spec aprovada. Correções de save/IDs, lifecycle ou comunicação
+entre sistemas preservam análise e testes de risco, mesmo quando o diff é pequeno.
+
+Para detalhes de workflow: `.claude/commands/` e `.claude/skills/`.
+
+Ao finalizar implementacao de spec, usar `/finish-spec` para closeout completo com evidencia.
+
+Se a validacao Unity nao puder rodar, registrar:
+
+```text
+Unity validation: NOT RUN
+Reason: <motivo>
+Command attempted: <comando>
+Residual risk: Unity compile not validated locally
 ```
 
-## Padrão de MonoBehaviour
+## Regras inviolaveis de codigo
 
-```csharp
-public class NomeDoSistema : MonoBehaviour
-{
-    [SerializeField] private NomeDataSO _data;
+1. NUNCA usar `GameObject.Find()` ou `FindObjectOfType()`.
+2. NUNCA criar comunicacao direta entre sistemas quando a comunicacao for de gameplay; usar `GameEventBus.Publish()` e `Subscribe()`.
+3. NUNCA hardcodar dados de jogo em `MonoBehaviour` quando forem dados de balanceamento/conteudo; usar ScriptableObject em `Assets/_Game/Data/`.
+4. SEMPRE fazer unsubscribe em `OnDisable` ou `OnDestroy`.
+5. NUNCA escrever logica de negocio pesada em `MonoBehaviour`; `MonoBehaviour` deve ser ponte Unity/runtime.
+6. SEMPRE prefixar ScriptableObjects: `ItemDataSO`, `SeedDataSO`, `ToolDataSO`, `WeaponDataSO`, etc.
+7. SEMPRE prefixar eventos: `DayStartedEvent`, `ItemCraftedEvent`, `ToolEquippedEvent`, etc.
+8. SEMPRE commits em portugues.
+9. NUNCA implementar feature sem spec aprovada em `.specs/a_implementar/`.
+10. Sprites: SEMPRE importar com Filter Mode `Point`, Compression `None`, Generate Mip Maps `false`.
+11. Save deve persistir IDs e tipos simples, nunca referencias Unity.
+12. Nao usar `StreamingAssets` para save editavel; usar `Application.persistentDataPath`.
+13. Nao serializar `ScriptableObject`, `GameObject`, `Transform`, `MonoBehaviour`, `Sprite`, `Collider` ou `Rigidbody` em DTOs de save.
 
-    void OnEnable() => GameEventBus.Subscribe<XEvent>(OnX);
-    void OnDisable() => GameEventBus.Unsubscribe<XEvent>(OnX);
+## Git
 
-    private void OnX(XEvent e)
-    {
-        // reagir ao evento
-    }
-}
-```
+Permitido ao agente:
 
-## Padrão de ScriptableObject
+- criar ou usar branch local indicada pelo humano;
+- alterar somente arquivos explicitamente permitidos no escopo da tarefa;
+- criar commits locais em portugues;
+- atualizar `PROJECT_LOG.md` ao final de tarefa relevante;
+- atualizar `docs/IMPLEMENTATION_STATUS.md` ao final de tarefa relevante;
+- entregar ao humano a lista de commits, arquivos alterados, testes executados e testes pendentes.
 
-```csharp
-[CreateAssetMenu(fileName = "X_NomeDoItem", menuName = "CindarsHope/Categoria/Tipo")]
-public class TipoDataSO : ScriptableObject
-{
-    public string Id;
-    public string DisplayName;
-    [TextArea] public string Description;
-    public Sprite Icon;
-}
-```
+Proibido sem autorizacao explicita:
 
-## Paleta de cores (hex)
+- executar `git push`;
+- abrir PR/MR;
+- fazer merge;
+- deletar branches locais ou remotas;
+- executar `git stash`;
+- executar `git clean`;
+- executar `git reset --hard`;
+- commitar arquivos fora do escopo permitido.
 
-| Ambiente | Cor | Hex |
-|---|---|---|
-| Fazenda | Laranja | #D4832A |
-| Fazenda | Bronze | #8B6914 |
-| Fazenda | Terra | #6B3A2A |
-| Fazenda | Verde musgo | #4A6741 |
-| Cidade | Azul ardósia | #4A5E7A |
-| Cidade | Pedra | #7A8A9A |
-| Cidade | Âmbar lanterna | #D4A850 |
-| Caverna | Cinza carvão | #2A2A2A |
-| Caverna | Roxo escuro | #3A1F4A |
-| Caverna | Cinza úmido | #4A4A5A |
-| Global | Outline personagens | #0A0A0A |
+## Namespace Debug proibido
 
-## Placeholders do MVP (Fase 8)
+NUNCA criar namespace chamado `Debug` dentro de `CindarsHope.*`.
 
-Retângulos coloridos em Assets/_Game/Sprites/Placeholders/:
-- Jogador: cubo azul 32x48
-- Inimigo: cubo vermelho 32x32
-- Planta estágio 0: cubo verde escuro 32x32
-- Planta estágio final: cubo verde claro 32x32
-- Tile chão fazenda: #C8A464 (areia laranja)
-- Tile chão caverna: #555555
-- Tile parede caverna: #333333
-- Item dropado: cubo amarelo 16x16
-- NPC: cubo branco 32x48
-- Workshop: retângulo cinza 64x64
+Usar alternativas:
 
+- `Runtime`
+- `DebugTools`
+- `Diagnostics`
+- `Editor`
 
-## Regras adicionais para Codex — Fase 8
+## Regra FASE9F - Cave Stable Run
 
-1. Implementar em PRs pequenos, seguindo `FASE8_EXECUTION_PLAN_CODEX_v1.0.md`.
-2. Nunca implementar mais de um PR por tarefa, salvo pedido explícito.
-3. Todo PR deve declarar arquivos alterados e teste manual.
-4. Nunca trocar arquitetura por conveniência.
-5. Nunca usar `StreamingAssets` para save editável; usar `Application.persistentDataPath`.
-6. Nunca serializar `ScriptableObject`, `GameObject`, `Transform`, `MonoBehaviour` ou referência Unity em JSON de save.
-7. Persistência sempre por IDs estáveis.
-8. Não usar `FindObjectsByType` em runtime para montar sistemas; preferir `[SerializeField]`, installer de cena ou Editor script.
-9. Se a tarefa exigir configuração manual pesada no Unity, criar Editor script reproduzível.
-10. Se houver dúvida entre MVP e V2/FULL, escolher MVP e registrar pendência.
+Antes de qualquer alteracao em Cave procedural/stable run, ler:
 
-## Documentos operacionais adicionais
+- `docs/amendments/FASE9F_CAVE_STABLE_RUN_AND_REPLAY_AMENDMENT_v1.0.md`
+- `docs/refinements/implementados/ref_pr170_192_cave_stable_run_pre_implementation_audit.md`
 
-- `docs/FASE8_EXECUTION_PLAN_CODEX_v1.0.md` — plano de execução por PR.
-- `docs/CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md` — contratos de eventos, IDs, registries e save.
-- `docs/SPRITE_PIPELINE_AI_ASEPRITE_v1.0.md` — pipeline de arte com IA + Aseprite.
+Regra central:
 
-## Regras de arte com IA
+- `CaveLevel` ja visitado dentro da mesma `CaveRunSeed` deve ser carregado por snapshot.
+- `ForwardExit` e `BackExit` nao podem regenerar layout, inimigos ou resource nodes.
+- Procedural so muda em novo jogo, KO/morte/derrota do personagem ou comando debug explicito.
+- Save de cave deve persistir snapshots com tipos simples e sem Unity refs.
 
-1. Não copiar assets, paleta proprietária, UI, personagens ou sprites de Stardew Valley/Harvest Moon.
-2. Usar referências apenas como direção de gênero: legibilidade, câmera, conforto visual.
-3. IA pode gerar conceito, variações e rascunhos.
-4. Aseprite é a etapa final obrigatória para limpar pixels, paleta, outline e export.
-5. Todo sprite aprovado deve ter `.aseprite/.ase` fonte quando houver edição manual relevante.
-6. PNG final entra em `Assets/_Game/Sprites/...` com import `Point`, `Compression None`, `Generate Mip Maps false`.
+<!-- BEGIN CODEX-HARNESS (generated) -->
+
+<!-- Generated by tools/codex/Generate-CodexHarness.ps1; do not hand-edit. -->
+## Codex Harness
+
+Leia CLAUDE.md para roteamento proporcional e .claude/HARNESS_INDEX.md para descoberta sob demanda.
+As invariantes acima continuam vinculantes. Leia apenas skills/rules/referencias aplicaveis ao escopo.
+Skills e commands: .agents/skills/<id>/SKILL.md; agentes: .codex/agents/<id>.toml;
+rules: .codex/rules/. Fontes canonicas: .claude/. Referencias das skills sao copiadas recursivamente.
+Tarefa pequena e seu teste podem ficar com o implementador. Delegue fatias independentes ou por risco.
+Revisores sao read-only; unity-validator escreve apenas evidencia e executa runners, sem corrigir runtime.
+Modelos seguem a configuracao do provedor/usuario; reasoning effort nao equivale a modelo barato.
+Hooks .codex/hooks.json reutilizam .claude/hooks/. Consulte tools/codex/README.md quando necessario.
+
+<!-- END CODEX-HARNESS (generated) -->

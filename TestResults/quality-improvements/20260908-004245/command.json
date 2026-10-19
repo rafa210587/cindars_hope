@@ -1,0 +1,11 @@
+[
+  "-batchmode",
+  "-quit",
+  "-nographics",
+  "-projectPath",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope",
+  "-executeMethod",
+  "CindarsHope.Editor.CindarsHopeMenu.ValidateProjectBatch",
+  "-logFile",
+  "D:\\Projetos\\Cindars_Hope\\cindars_hope\\TestResults\\quality-improvements\\20260908-004245\\validators21.log"
+]

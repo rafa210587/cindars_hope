@@ -1,0 +1,13 @@
+{
+  "worldPngUnchanged": true,
+  "worldPngCount": 140,
+  "changedExisting": [
+    {
+      "path": "Assets/_Game/Scenes/FarmScene.unity",
+      "beforeSha256": "DCD8BED38BE0A7A07BDBF958F00A2136563AE5DE1655819D03AF83D18073036B",
+      "afterSha256": "1036E1D21A5B501218F86D1937D66D34C77D155525A2B78CFE2E4202402EDC74",
+      "kind": "MODIFIED"
+    }
+  ],
+  "created": []
+}

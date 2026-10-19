@@ -1,0 +1,1 @@
+PASS boat76x68,3layers,1frame; pivot top35,44/bottom35,24; only stern x1..12 y35..55 changed: 106pixels

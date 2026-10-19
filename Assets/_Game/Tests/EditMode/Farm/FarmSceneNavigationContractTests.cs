@@ -1,0 +1,134 @@
+using CindarsHope.Farm;
+using CindarsHope.Farm.Scene;
+using NUnit.Framework;
+using UnityEngine;
+
+namespace CindarsHope.Tests.EditMode.Farm
+{
+    public class FarmSceneNavigationContractTests
+    {
+        [Test]
+        public void ConfluenceWestRock_BlocksObservedFootContact_AndKeepsAdjacentGroundClear()
+        {
+            var observedFeet = new Vector2(26.957706f, -4.438724f);
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(observedFeet), Is.True,
+                "Contact v16 gameplay_d/confluence_1_0125 feet were standing on the gray bank rock.");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(26.3f, -4.44f)), Is.False,
+                "Dry approach beside the rock remains walkable.");
+            Assert.That(FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.River, out var water), Is.True);
+            Assert.That(FarmSceneNavigationRaster.Contains(water, observedFeet), Is.False,
+                "Extending stone support must not repaint water or move its authored bank art.");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(26f, -3f)), Is.False,
+                "The existing western yard approach remains clear.");
+        }
+
+        [Test]
+        public void Dock_OpensGangwayAndDeck_WithoutOpeningBoatOrSurroundingLake()
+        {
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(15.1f, -10.55f)), Is.False, "v15 enlarged deck");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(15.45f, -10.55f)), Is.True, "water beyond v15 deck");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(FarmLevel1LayoutContract.FishingSpotX, FarmLevel1LayoutContract.FishingSpotY + 1.5f)), Is.False, "gangway");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(FarmLevel1LayoutContract.FishingSpotX, FarmLevel1LayoutContract.FishingSpotY - 0.5f)), Is.False, "deck");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(FarmLevel1LayoutContract.FishingSpotX + 1.8f, FarmLevel1LayoutContract.FishingSpotY - 0.7f)), Is.True, "boat remains over blocked water");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(FarmLevel1LayoutContract.FishingSpotX, FarmLevel1LayoutContract.FishingSpotY - 2.4f)), Is.True, "water beyond the enlarged reference deck");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(FarmLevel1LayoutContract.FishingSpotX + 1.25f, FarmLevel1LayoutContract.FishingSpotY - 1.3f)), Is.False, "new visible deck corner");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(15.4f, -7.1f)), Is.True, "water beside gangway");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(14.6f, -7.75f)), Is.False, "visible upper-right deck");
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void WaterBoundaries_HaveNoCrossingNonAdjacentEdges(bool belowBridge)
+        {
+            var polygon = belowBridge ? FarmSceneSpatialContract.RiverBelowBridgeCollisionPath
+                : FarmSceneSpatialContract.LakeCollisionPath;
+            for (var i = 0; i < polygon.Count; i++)
+            for (var j = i + 1; j < polygon.Count; j++)
+            {
+                var nextI = (i + 1) % polygon.Count;
+                var nextJ = (j + 1) % polygon.Count;
+                if (j == nextI || nextJ == i) continue;
+                var a = polygon[i]; var b = polygon[nextI];
+                var c = polygon[j]; var d = polygon[nextJ];
+                var crosses = Side(a, b, c) * Side(a, b, d) < 0f &&
+                    Side(c, d, a) * Side(c, d, b) < 0f;
+                Assert.That(crosses, Is.False, $"Water edges {i} and {j} cross; river={belowBridge}.");
+            }
+        }
+
+        private static float Side(Vector2 a, Vector2 b, Vector2 p) =>
+            (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+
+        [Test]
+        public void RiverBend_OverlapsLakeAcrossMouth_AndClearsWesternYard()
+        {
+            Assert.That(FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.River, out var river), Is.True);
+            Assert.That(FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.Lake, out var lake), Is.True);
+            foreach (var x in new[] { 27.5f, 29f, 30.2f })
+            {
+                var mouth = new Vector2(x, -6.5f);
+                Assert.That(FarmSceneNavigationRaster.Contains(river, mouth), Is.True, "River reaches mouth.");
+                Assert.That(FarmSceneNavigationRaster.Contains(lake, mouth), Is.True, "No dry gap at mouth.");
+            }
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(26f, -3f)), Is.False,
+                "Old straight water footprint must not remain beside the yard.");
+        }
+
+        [Test]
+        public void WaterAndMountain_BlockMovement_BridgeDoesNot()
+        {
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(18f, -13f)), Is.True);
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(0f, FarmLevel1LayoutContract.MaxY - 1f)), Is.True);
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(FarmLevel1LayoutContract.BridgeCenterX, FarmLevel1LayoutContract.BridgeCenterY)), Is.False);
+        }
+
+        [Test]
+        public void SolidFootprints_RequireNamedCollision_AndWalkableFootprintsDoNot()
+        {
+            foreach (var footprint in FarmSceneSpatialContract.All)
+            {
+                if (footprint.Id == FarmSceneSpatialContract.Bridge)
+                    Assert.That(FarmSceneNavigationPolicy.RequiresSolidCollider(footprint), Is.False);
+                if (footprint.Use == FarmSpatialUse.Water || footprint.Use == FarmSpatialUse.Solid || footprint.Use == FarmSpatialUse.Building)
+                    Assert.That(FarmSceneNavigationPolicy.RequiresSolidCollider(footprint), Is.True, footprint.Id);
+            }
+        }
+
+        [Test]
+        public void OnlyTerrainGeometry_RequiresMaterializedCollision()
+        {
+            foreach (var footprint in FarmSceneSpatialContract.All)
+            {
+                var isTerrain = footprint.Id == FarmSceneSpatialContract.Lake ||
+                                footprint.Id == FarmSceneSpatialContract.River ||
+                                footprint.Id == FarmSceneSpatialContract.Mountain;
+                Assert.That(FarmSceneNavigationPolicy.RequiresMaterializedTerrainCollider(footprint), Is.EqualTo(isTerrain), footprint.Id);
+            }
+
+            Assert.That(FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.House, out var house), Is.True);
+            Assert.That(FarmSceneNavigationPolicy.RequiresExistingSolidCollider(house), Is.True);
+            Assert.That(FarmSceneNavigationPolicy.RequiresReachableApproach(house), Is.True);
+        }
+
+        [Test]
+        public void WaterAndMountain_UseNonRectangularCanonicalPolygons()
+        {
+            Assert.That(FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.Lake, out var lake), Is.True);
+            Assert.That(FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.River, out var river), Is.True);
+            Assert.That(FarmSceneSpatialContract.TryGet(FarmSceneSpatialContract.Mountain, out var mountain), Is.True);
+            Assert.That(lake.Polygon.Count, Is.GreaterThan(4));
+            Assert.That(river.Polygon.Count, Is.GreaterThan(4));
+            Assert.That(mountain.Polygon.Count, Is.GreaterThan(4));
+            Assert.That(FarmSceneNavigationPolicy.RequiresPolygonCollider(lake), Is.True);
+            Assert.That(FarmSceneNavigationPolicy.RequiresPolygonCollider(river), Is.True);
+            Assert.That(FarmSceneNavigationPolicy.RequiresPolygonCollider(mountain), Is.True);
+        }
+
+        [Test]
+        public void WaterOutsideCanonicalContour_IsNotBlocked()
+        {
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(5.5f, -7f)), Is.False, "lake bounding-box corner");
+            Assert.That(FarmSceneNavigationRaster.IsBlocked(new Vector2(FarmLevel1LayoutContract.SpawnFromTownX, FarmLevel1LayoutContract.SpawnFromTownY)), Is.False, "river bounding-box side beside bridge");
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+  "baselinePngCount": 145,
+  "baselinePngChanges": [],
+  "baselineFileChanges": [
+    {
+      "path": "Assets/_Game/Scenes/FarmScene.unity",
+      "before": "C9796A69045C3C27CAFA23128DB14FED74B01701A6EC184B66C09256BCE1DF6E",
+      "after": "7E2FFD6919591E634444D943AE8EB26D1EFF4AECA886A8F03F0B8CBE60A2EA2C"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Art/FarmDecorationPlanner.cs",
+      "before": "C24A4B2C061ED2D3ED45B20D8FB5169254120B33586CA7250CE94503B1C6C689",
+      "after": "0D99F9FB9F632FDF77DED1239ED00E5EF4F538DAB06DEF765D6FBE35174B850E"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Dev/FarmSceneCapture.cs",
+      "before": "EF19483D90BBAAD1FB9D089738B13CB3891974D39E5AA2E4962045369C3C9393",
+      "after": "731842599B173E4028ED2E640DBE7908558ABE8893CAD82E15819774CAD8FCBA"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+      "before": "BCA75ADC4456B10109624A74D001F1925C7F0A6301780FE233E7CF51D89650D5",
+      "after": "EED7948D4E58E5275256885FBAD8564474C36EE79067FEE4C484503FE7704C6E"
+    }
+  ],
+  "newWorldFiles": [
+    "Assets/_Game/Art/Generated/World/props/cliff_keyart_v1.png.meta",
+    "Assets/_Game/Art/Generated/World/props/lily_pads_keyart_v1.png",
+    "Assets/_Game/Art/Generated/World/props/lily_pads_keyart_v1.png.meta",
+    "Assets/_Game/Art/Generated/World/props/reeds_keyart_v1.png.meta",
+    "Assets/_Game/Art/Generated/World/props/shore_bank_keyart_v1.png",
+    "Assets/_Game/Art/Generated/World/props/shore_bank_keyart_v1.png.meta",
+    "Assets/_Game/Art/Generated/World/tiles/ground_grass_keyart_v2.png",
+    "Assets/_Game/Art/Generated/World/tiles/ground_grass_keyart_v2.png.meta",
+    "Assets/_Game/Art/Generated/World/tiles/ground_water_keyart_v1.png",
+    "Assets/_Game/Art/Generated/World/tiles/ground_water_keyart_v1.png.meta",
+    "Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_grass_keyart_v2.asset",
+    "Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_grass_keyart_v2.asset.meta",
+    "Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_water_keyart_v1.asset",
+    "Assets/_Game/Art/Generated/World/_TileAssets/tile_ground_water_keyart_v1.asset.meta"
+  ],
+  "sceneSha256": "7E2FFD6919591E634444D943AE8EB26D1EFF4AECA886A8F03F0B8CBE60A2EA2C"
+}

@@ -1,0 +1,84 @@
+{
+  "kind": "Static math only, exact authored ribbon polygon vs feet-collider Minkowski rectangles",
+  "player": {
+    "width": 0.640625,
+    "height": 1.125
+  },
+  "well": {
+    "north": {
+      "bounds": [
+        -5.550000000000001,
+        14.16,
+        -2.85,
+        14.440000000000001
+      ],
+      "roadPlayerSweepOverlapArea": 0
+    },
+    "east": {
+      "bounds": [
+        -1.94,
+        12.575,
+        -1.6600000000000001,
+        13.625
+      ],
+      "roadPlayerSweepOverlapArea": 0
+    }
+  },
+  "cave": {
+    "pixel": 0.016109785202863963,
+    "west": [
+      -26.833830548926016,
+      20.792720763723153,
+      -23.80519093078759,
+      23.402505966587114
+    ],
+    "east": [
+      -21.598150357995227,
+      20.792720763723153,
+      -18.730608591885442,
+      23.402505966587114
+    ],
+    "openingWidth": 2.207040572792362,
+    "openingFeet": [
+      -23.48487843078759,
+      -21.918462857995227
+    ],
+    "trigger": [
+      -23.80519093078759,
+      18.35,
+      -21.598150357995227,
+      21.95262529832936
+    ],
+    "centerlineOverlaps": [],
+    "caveRoadShoulderOverlap": 0.23671682102119007,
+    "thresholdSourceBottomLeft": [
+      265.5,
+      43
+    ],
+    "thresholdWorld": [
+      -22.75,
+      20.792720763723153
+    ]
+  },
+  "town": {
+    "barrier": [
+      36,
+      1.5,
+      36.349999999999994,
+      4.5
+    ],
+    "trigger": [
+      33.6,
+      2.1,
+      35.4,
+      3.9
+    ],
+    "contact": [
+      35.6796875,
+      3
+    ],
+    "selectionDistance": 0.2796875000000014,
+    "nativePostWidth": 0.32812500512695325,
+    "nativeRailThickness": 0.16406250256347663
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "UnityExitCode": 1,
+  "AggregateWarningReports": 3,
+  "AdditionalFocusedTests": "NOT RUN: 13 relevant fixtures already passed and their implementation/test inputs unchanged; batch compiled and exercised two changed Editor validators",
+  "ResidualRisk": "Four preexisting farm tests remain failing; asset validation errors exposed; active scene state restoration in memory not independently instrumented",
+  "ValidationSteps": 21,
+  "WallSeconds": 10.7285872,
+  "UnityProcessesRemaining": 0,
+  "Status": "FAIL",
+  "FingerprintChanges": 0,
+  "AggregateErrorReports": 3
+}

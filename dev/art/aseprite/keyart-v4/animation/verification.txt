@@ -1,0 +1,8 @@
+PASS water frame 0: 4096 exact RGBA source pixels
+Water frame 0 -> 1: 2533 changed pixels; native palette and opaque PASS
+Water frame 1 -> 2: 2276 changed pixels; native palette and opaque PASS
+Water frame 2 -> 3: 2537 changed pixels; native palette and opaque PASS
+Water frame 3 -> 4: 2533 changed pixels; native palette and opaque PASS
+Water frame 4 -> 5: 2276 changed pixels; native palette and opaque PASS
+Water frame 5 -> 0: 2537 changed pixels; native palette and opaque PASS
+PASS closed leaf: 399 exact source RGBA pixels; threshold opaque only inside 21x19 aperture

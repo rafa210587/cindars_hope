@@ -1,0 +1,78 @@
+{
+  "_doc": "Descricao curada por criatura, AGRUPADA por familia: cada familia (orc, drow, duergar, ninrorin, gnome, goblin, abyssal, dragon) abre com a MESMA clausula-base (mesma raca/cor/traco D&D), mudando so o papel/equipamento. Isso garante coesao visual entre criaturas de nome similar. Identidade D&D primeiro, tema Vaalara depois; o bioma NAO sobrescreve a especie. Usado por build_prompts.py.",
+  "overrides": {
+    "cave_mite": "small cave mite, a tiny crawling insect with a gray-brown chitinous carapace, six legs and small mandibles, dungeons and dragons vermin",
+    "stone_rat": "a dire rat with a rough cracked-stone shell on its back, gray basalt fur and amber eyes, a four-legged rodent animal, dungeons and dragons beast, NOT a humanoid, NOT a girl, NOT a person",
+    "cave_bat": "a giant cave bat with dark purple-gray fur, large leathery wings and big ears, a flying animal beast, dungeons and dragons beast, NOT a humanoid, NOT a girl, NOT a person",
+    "frost_gnawer": "a small frost rodent with spiky frozen fur and sharp icy-blue teeth, dungeons and dragons beast",
+    "ash_crawler": "a low ash-covered quadruped beast with a dark gray hide trailing soot and faint orange embers, dungeons and dragons beast",
+    "crystal_leaper": "an angular pale-blue ice-crystal beast with long thin legs in a leaping pose, a crystal creature animal, dungeons and dragons elemental, NOT a humanoid, NOT a girl, NOT a person",
+    "ember_tick": "a small tick insect with a glowing molten-orange abdomen and a dark charred shell, dungeons and dragons vermin",
+    "nyx_moth": "a giant moth insect with large dark-blue wings bearing glowing eye patterns, silver and deep purple, a flying insect animal, dungeons and dragons beast, NOT a humanoid, NOT a girl, NOT a person",
+    "hollow_stagling": "an undead hollow stag, a gaunt gray deer with an empty hollow chest cavity, pale crooked antlers and an eerie green inner glow, dungeons and dragons undead",
+
+    "goblin_grashnaar_scavenger": "a small hunched UGLY goblin with warty green-gray skin, large pointed ears, a big crooked hooked nose, sharp jagged teeth, beady malicious yellow eyes and a nasty evil snarl, mean vicious and grotesque, dungeons and dragons goblin, wearing scrap-metal armor and holding a rusty short knife, carrying a junk sack",
+    "goblin_urudakh_trapper": "a small hunched UGLY goblin with warty green-gray skin, large pointed ears, a big crooked nose, sharp jagged teeth, beady malicious eyes and a cruel evil sneer, mean vicious and grotesque, dungeons and dragons goblin, wearing dark leather and a partial bone mask, bundled traps strapped to its back",
+    "kobold_scout": "a small kobold, a copper-brown scaled reptilian humanoid with a long snout, yellow eyes, leather straps and a short spear, dungeons and dragons kobold",
+
+    "orc_kaand_berserker": "a muscular green-skinned orc with prominent lower tusks, dungeons and dragons orc, a barbarian berserker with red war paint, wielding a large two-handed battle axe, fur and bone armor, ash and ember motifs",
+    "orc_kaand_ashcaller": "a muscular green-skinned orc with prominent lower tusks, dungeons and dragons orc, a shaman draped in burned bones and totems, swirling ash and embers in raised hands, tribal robes, fire magic",
+    "orc_nyx_stalker": "a muscular green-skinned orc with prominent lower tusks, dungeons and dragons orc, a stalker in a dark hooded cloak with glowing dark-blue moon markings, crouched stealthy pose",
+
+    "mossling": "a small mossy goblin-like creature with a round face, two arms and two legs, mossy green skin, tufts of moss and yellow spores on its back, a living monster, NOT a plant, NOT a bush, NOT a tree",
+    "spore_imp": "a small fungal imp with green skin, a mushroom-cap head, thin limbs and lilac-yellow spore clouds, dungeons and dragons fey",
+    "rootsnare": "a menacing monster trap shaped like a giant grasping clawed hand rising up, made of gnarled dark-brown twisted roots with long sharp talon-like root fingers and dripping black sap, an aggressive root-claw creature, NOT a tree, NOT a bush, NOT a shrub, NOT foliage, NOT a potted plant, NOT a bear, NOT a furry animal, NOT a humanoid, no soil, no grass, no pot",
+    "mycobulwark": "a large living shield-shaped mushroom creature with thick stalk legs, a dirty-white and moss-green cap and brown plates, a monster, not scenery",
+    "blackroot_sprout": "a small animated blackroot creature, a twisted dark-brown clawing root body with purple sap and dead leaves, dungeons and dragons plant monster",
+    "thorn_archer": "a gaunt dark-green plant humanoid archer wielding a bow of black thorns, yellow eyes, thorny arrows, dungeons and dragons plant creature",
+
+    "cracked_bone": "a skeletal undead, an incomplete worn yellowed skeleton with a crooked lopsided posture and cold glowing eyes, dungeons and dragons undead",
+    "glassbone": "a skeletal undead made of translucent crystalline glass with sharp broken shards and a faint pale glow, dungeons and dragons undead",
+    "frost_wailer": "a floating tattered frost wraith with a wide open screaming wailing mouth, pale icy-blue, trailing cold vapor, a horrifying ghostly undead spirit, dungeons and dragons undead, NOT a cute girl, NOT a person, NOT anime",
+    "corrupted_lich_shard": "a lich, a gaunt skeletal undead sorcerer in tattered dark robes clutching a shard of black corrupted crystal, glowing purple eye sockets, dungeons and dragons lich",
+    "corrupted_bone_knight": "an armored skeletal undead knight, cracked dark plate over yellowed bones, black-stone corruption veins, glowing purple eyes, a heavy sword, dungeons and dragons undead",
+    "oathless_shade": "an oathless shade, a dark ghostly humanoid spirit trailing into smoke with remnants of broken knightly armor, dungeons and dragons undead",
+
+    "cold_cult_acolyte": "a hooded human cultist in frost-stiffened blue robes with frozen runic symbols and icy-blue magic in cupped hands, dungeons and dragons cultist",
+    "scorched_cultist": "a hooded human cultist with burned blistered skin, torn smoldering robes, a glowing fire sigil and drifting embers, dungeons and dragons cultist",
+
+    "icebound_sentinel": "a construct of ice and dark metal with a glowing blue core in its chest and a rigid heavy frame, dungeons and dragons construct",
+    "furnace_warden": "a forge construct golem with heavy iron arms and a chest like a roaring furnace, glowing orange vents, dungeons and dragons construct",
+    "clockwork_guard": "a humanoid clockwork construct of brass and iron exposed gears, stiff mechanical stance, a simple bladed arm, dungeons and dragons construct",
+    "sealed_knight": "an animated empty suit of ancient plate armor with a closed faceless helm and a glowing sigil on the breastplate, hollow, dungeons and dragons construct",
+    "puzzle_golem": "a large humanoid golem of shifting carved stone blocks with a glowing exposed core in its torso, dungeons and dragons construct",
+    "mirror_adept": "an elegant humanoid mage covered in reflective mirror-shard fragments, a half-light half-dark robe, dungeons and dragons construct",
+    "lava_bulwark": "a large lava elemental of cracked black volcanic rock with glowing molten-orange fissures, dungeons and dragons elemental",
+    "cinder_spitter": "a medium hunched fire beast with an inflated glowing throat, charred ash plates and a burning open mouth, dungeons and dragons beast",
+
+    "duergar_frostdelver": "an EXTREMELY SHORT and very stocky dwarf, tiny short legs and a big head, squat and low to the ground (NOT tall, dwarf height only), SLATE-GRAY gray skin, gray face and gray hands (NOT human skin, NOT pink, NOT tan), a bald head, a dark braided beard and red eyes, dungeons and dragons duergar gray dwarf, DARK BLACKENED IRON armor, dark steel plate (NOT pink, NOT rose, NOT bright), holding a heavy pickaxe",
+    "duergar_shieldbreaker": "an EXTREMELY SHORT and very stocky dwarf, tiny short legs and a big head, squat and low to the ground (NOT tall, dwarf height only), SLATE-GRAY gray skin, gray face and gray hands (NOT human skin, NOT pink, NOT tan), a bald head, a dark beard and red eyes, dungeons and dragons duergar gray dwarf, DARK BLACKENED IRON armor, dark steel plate (NOT pink, NOT rose, NOT bright), a cracked iron tower shield and a short warhammer",
+
+    "gnome_gem_madcap": "a tiny dungeons and dragons gnome, a very short humanoid with a large round nose, pointy ears and wild hair, oversized gem-magnifying goggles, a small beard, tinker tools and a crazed grin, NOT a human, NOT a dwarf",
+    "gnomorin_rune_tinker": "a SINISTER MALIGN gnomorin tinkerer, a small grayish-skinned gnome-kin with an EVIL cruel grin, sunken glowing eyes, sharp teeth and a grim creepy menacing face, hunched posture, dark grimy clothing, a bulky backpack of parts, crooked glowing runes, oversized gloves and dark goggles, gray skin, malevolent, NOT cute, NOT friendly, NOT a happy gnome",
+
+    "rune_shard": "a single small floating fragment of carved gray stone etched with glowing blue arcane runes, levitating, no wings, not a creature, no face",
+
+    "drow_shadowblade": "a drow dark elf with charcoal-gray skin, long white hair and cold red eyes, dungeons and dragons drow, dark leather armor and a curved shadow-edged blade, assassin",
+    "drow_arcane_adept": "a drow dark elf with charcoal-gray skin, long white hair and red eyes, dungeons and dragons drow, a dark blue and silver robe and a glowing lunar focus crystal, casting pose",
+    "drow_shadow_warden": "a drow dark elf with charcoal-gray skin, long white hair and red eyes, dungeons and dragons drow, heavy dark armor, a dark shield and a spiked mace, defensive stance",
+
+    "ninrorin_void_sentinel": "a void-touched gray elf with very pale ashen-gray skin and long silver-gray hair, githyanki-like, glowing purple void corruption, a sentinel in silver-gray ritual armor holding a lance and a cracked rift-stone shield with a pulsing void fissure in its chest",
+    "ninrorin_void_knight": "a void-touched gray elf with very pale ashen-gray skin and long silver-gray hair, githyanki-like, glowing purple void corruption, a knight in full silver lunar armor with a long jagged rift sword and a tattered cape",
+    "ninrorin_void_acolyte": "a void-touched gray elf with very pale ashen-gray skin and long silver-gray hair, githyanki-like, glowing purple void corruption, a slender acolyte in a hooded ritual robe conjuring void energy with blank glowing white eyes",
+    "ninrorin_phasewalker": "a void-touched gray elf with very pale ashen-gray skin and long silver-gray hair, githyanki-like, glowing purple void corruption, a translucent flickering phasewalker with a doubled silver outline, mid-blink",
+    "ninrorin_echo_shade": "a void-touched gray elf with very pale ashen-gray skin and long silver-gray hair, githyanki-like, glowing purple void corruption, a near-incorporeal echo wraith with a floating tattered ritual veil and a cold blue inner core",
+
+    "void_spitter": "an eldritch aberration of black and deep-purple void energy, dungeons and dragons aberration, a bloated low creature with a single huge vertical maw spitting glowing void bile",
+    "void_tick": "an eldritch aberration of black and deep-purple void energy, dungeons and dragons aberration, a tiny black six-legged tick with a glowing purple fissure on its back",
+    "abyssal_riftstalker": "an eldritch aberration of black and deep-purple void energy, dungeons and dragons aberration, a slender pitch-black predator with long limbs and a glowing purple outline, eyeless",
+    "abyssal_void_reaver": "an eldritch aberration of black and deep-purple void energy, dungeons and dragons aberration, a large imposing horror with two arms ending in blades of black-purple energy and void fissures across its torso",
+    "shadow_sentinel": "an eldritch aberration of black and deep-purple void energy, dungeons and dragons aberration, a tall faceless guardian of solid shadow with a dark glowing core in its chest",
+
+    "draconic_elder_kin": "a dragon with dark scales, dungeons and dragons dragon, a huge ancient elder dragon with dark heavy scales sheened in purple mana, long swept-back horns, thick chest plates, breathing corrupted energy",
+    "draconic_ashspitter": "a dragon with dark scales, dungeons and dragons dragon, an agile young dragon with a glowing ember throat spitting ash and embers, smoldering wings",
+    "draconic_void_wyrm": "a dragon with dark scales, dungeons and dragons dragon, a long serpentine abyssal wyrm with black-and-purple scales and crackling void energy",
+    "corrupted_draconic_spawn": "a dragon with dark scales, dungeons and dragons dragon, a small FOUR-LEGGED quadruped baby wyrmling lizard with black-and-purple scales, a long reptile neck and tail, small torn bat wings and clawed feet, black-stone corruption, just a small reptilian dragon beast on all fours, NO female body, NO breasts, NOT a humanoid, NOT a girl, NOT a person at all",
+    "blackstone_wyvern": "a dragon with dark scales, dungeons and dragons dragon, a large wyvern armored in black-stone plates with torn wounded wings, glowing purple light in the cracks and a barbed tail"
+  }
+}

@@ -1,0 +1,54 @@
+--- a/Assets/_Game/Scripts/Editor/Art/FarmLandscapeVisualComposer.cs
++++ b/Assets/_Game/Scripts/Editor/Art/FarmLandscapeVisualComposer.cs
+@@ -55,7 +55,8 @@
+         public static void ApplyCalmWater(Transform parent)
+         {
+             var tilemap = parent.Find("WorldGrid/Water").GetComponent<UnityEngine.Tilemaps.Tilemap>();
+-            var atlas = WaterAtlas();
++            var atlas = FarmWaterAnimationAuthoring.BuildAtlas();
++            tilemap.animationFrameRate = 1f;
+             // Sixteen native source pixels per world cell retain readable waves. The previous
+             // full high-resolution texture was compressed into every cell and aliased into noise.
+             var scale = tilemap.layoutGrid.cellSize.x;
+@@ -78,41 +79,6 @@
+                 // The northern river is hidden behind the cliff; its visible discharge is the waterfall.
+                 tilemap.SetColor(cell, Color.white);
+             }
+-        }
+-
+-        private static UnityEngine.Tilemaps.Tile[] waterAtlas;
+-
+-        private static UnityEngine.Tilemaps.Tile[] WaterAtlas()
+-        {
+-            if (waterAtlas != null) return waterAtlas;
+-            var source = WorldSpriteLibrary.Ground("ground_water_keyart_v4");
+-            if (source == null || source.texture.width != 64 || source.texture.height != 64)
+-                throw new System.InvalidOperationException("Farm water atlas must be the approved 64x64 sample.");
+-            waterAtlas = new UnityEngine.Tilemaps.Tile[16];
+-            for (var y = 0; y < 4; y++)
+-            for (var x = 0; x < 4; x++)
+-            {
+-                var path = "Assets/_Game/Art/Generated/World/_TileAssets/farm_water_v4_" + x + "_" + y + ".asset";
+-                var tile = AssetDatabase.LoadAssetAtPath<UnityEngine.Tilemaps.Tile>(path);
+-                if (tile == null)
+-                {
+-                    tile = ScriptableObject.CreateInstance<UnityEngine.Tilemaps.Tile>();
+-                    AssetDatabase.CreateAsset(tile, path);
+-                }
+-                if (tile.sprite == null)
+-                {
+-                    var sprite = Sprite.Create(source.texture, new Rect(x * 16, y * 16, 16, 16),
+-                        new Vector2(0.5f, 0f), 16f, 0, SpriteMeshType.FullRect);
+-                    sprite.name = "WaterCell_" + x + "_" + y;
+-                    AssetDatabase.AddObjectToAsset(sprite, tile);
+-                    tile.sprite = sprite;
+-                }
+-                tile.colliderType = UnityEngine.Tilemaps.Tile.ColliderType.None;
+-                EditorUtility.SetDirty(tile);
+-                waterAtlas[y * 4 + x] = tile;
+-            }
+-            AssetDatabase.SaveAssets();
+-            return waterAtlas;
+         }
+ 
+         public static void CreateWaterBank(Transform parent, string footprintId)

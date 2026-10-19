@@ -1,0 +1,132 @@
+using System.Collections.Generic;
+using CindarsHope.Equipment;
+using CindarsHope.Foundation;
+
+namespace CindarsHope.Player
+{
+    public class DerivedStatsCalculator
+    {
+        public class DerivedStats
+        {
+            public int MaxHP;
+            public int Attack;
+            public int Defense;
+            public float MoveSpeed;
+            public int MaxStamina;
+            public float StaminaRegen;
+            public float AttackSpeed;
+            public int ToxicResistance;
+            public int ColdResistance;
+            public int HeatResistance;
+            public int MaxMana;
+            public float ManaRegen;
+            public float BowRange;
+            public float BowDamageBonus;
+            public float CraftTimeReduction;
+            public float RepairEfficiencyBonus;
+            public float HungerDrainReduction;
+            // fable_29 (emenda V3 item 8): consumption sinks for the formerly-dead modifiers.
+            public float BowProjectileSpeed;       // BowProjectileSpeedFlat
+            public float DodgeCostReduction;        // DodgeCostReduction (0.10 == -10% dodge stamina)
+            public float StatusDurationReduction;   // StatusDurationReduction (0.10 == -10% status time)
+            public float MeleeAttackBonus;
+            public float MagicAttackBonus;
+            public float ArcaneBoltDamageBonus;
+            public float DualWieldRecoverySpeed;
+            public float BowRecoverySpeed;
+            public float ManaRegenBasePercent;
+            public float TerrainPenaltyRecovery;
+            public float KitingMoveSpeedBonus;
+            public float GuardedDefenseBonus;
+            public float TwoHandedDamageBonus;
+            public float StationCommonMaterialReduction;
+        }
+
+        public static DerivedStats Calculate(
+            int baseMaxHP,
+            int baseAttack,
+            int baseDefense,
+            float baseMoveSpeed,
+            int baseMaxStamina,
+            float baseStaminaRegen,
+            float baseAttackSpeed,
+            Dictionary<EquipmentSlot, EquipmentDataSO> equippedItems,
+            IList<SkillPassiveModifier> passiveModifiers = null)
+        {
+            var stats = new DerivedStats
+            {
+                MaxHP = baseMaxHP,
+                Attack = baseAttack,
+                Defense = baseDefense,
+                MoveSpeed = baseMoveSpeed,
+                MaxStamina = baseMaxStamina,
+                StaminaRegen = baseStaminaRegen,
+                AttackSpeed = baseAttackSpeed,
+                ToxicResistance = 0,
+                ColdResistance = 0,
+                HeatResistance = 0,
+                MaxMana = 0,
+                ManaRegen = 0f,
+                BowRange = 0f,
+                BowDamageBonus = 0f
+            };
+
+            if (equippedItems != null)
+            {
+                foreach (var equipment in equippedItems.Values)
+                {
+                    if (equipment == null) continue;
+                    stats.Attack += equipment.StrengthBonus;
+                    stats.Defense += equipment.BaseDefense;
+                    stats.ToxicResistance += equipment.BreathBonus;
+                    stats.ColdResistance += equipment.ColdResistance;
+                    stats.HeatResistance += equipment.HeatResistance;
+                }
+            }
+
+            if (passiveModifiers != null)
+            {
+                foreach (var mod in passiveModifiers)
+                {
+                    switch (mod.ModifierType)
+                    {
+                        case SkillModifierType.AttackFlat:          stats.Attack += (int)mod.Value; break;
+                        case SkillModifierType.DefenseFlat:         stats.Defense += (int)mod.Value; break;
+                        case SkillModifierType.MaxHPFlat:           stats.MaxHP += (int)mod.Value; break;
+                        case SkillModifierType.MaxStaminaFlat:      stats.MaxStamina += (int)mod.Value; break;
+                        case SkillModifierType.MaxManaFlat:         stats.MaxMana += (int)mod.Value; break;
+                        case SkillModifierType.ManaRegenFlat:       stats.ManaRegen += mod.Value; break;
+                        case SkillModifierType.BowRangeFlat:        stats.BowRange += mod.Value; break;
+                        case SkillModifierType.BowDamageFlat:       stats.BowDamageBonus += mod.Value; break;
+                        case SkillModifierType.ToxicResistanceBonus: stats.ToxicResistance += (int)mod.Value; break;
+                        case SkillModifierType.ColdResistanceBonus:  stats.ColdResistance += (int)mod.Value; break;
+                        case SkillModifierType.HeatResistanceBonus:  stats.HeatResistance += (int)mod.Value; break;
+                        case SkillModifierType.MoveSpeedBonus:       stats.MoveSpeed += mod.Value; break;
+                        case SkillModifierType.AttackSpeedBonus:     stats.AttackSpeed += mod.Value; break;
+                        case SkillModifierType.CraftTimeReductionPercent: stats.CraftTimeReduction += mod.Value; break;
+                        case SkillModifierType.RepairEfficiencyBonus:     stats.RepairEfficiencyBonus += mod.Value; break;
+                        case SkillModifierType.HungerDrainReduction:      stats.HungerDrainReduction += mod.Value; break;
+                        // fable_29 (emenda V3 item 8): the five formerly-dead modifiers, now consumed.
+                        case SkillModifierType.BowProjectileSpeedFlat:    stats.BowProjectileSpeed += mod.Value; break;
+                        case SkillModifierType.DualWieldAttackSpeedBonus: stats.AttackSpeed += mod.Value; break;
+                        case SkillModifierType.TwoHandedDamageBonus:      stats.TwoHandedDamageBonus += mod.Value; break;
+                        case SkillModifierType.DodgeCostReduction:        stats.DodgeCostReduction += mod.Value; break;
+                        case SkillModifierType.StatusDurationReduction:   stats.StatusDurationReduction += mod.Value; break;
+                        case SkillModifierType.MeleeAttackFlat:           stats.MeleeAttackBonus += mod.Value; break;
+                        case SkillModifierType.MagicAttackFlat:           stats.MagicAttackBonus += mod.Value; break;
+                        case SkillModifierType.ArcaneBoltDamageFlat:      stats.ArcaneBoltDamageBonus += mod.Value; break;
+                        case SkillModifierType.DualWieldRecoverySpeed:    stats.DualWieldRecoverySpeed += mod.Value; break;
+                        case SkillModifierType.BowRecoverySpeed:          stats.BowRecoverySpeed += mod.Value; break;
+                        case SkillModifierType.ManaRegenBasePercent:      stats.ManaRegenBasePercent += mod.Value; break;
+                        case SkillModifierType.TerrainPenaltyRecovery:    stats.TerrainPenaltyRecovery += mod.Value; break;
+                        case SkillModifierType.KitingMoveSpeedBonus:      stats.KitingMoveSpeedBonus += mod.Value; break;
+                        case SkillModifierType.GuardedDefenseFlat:        stats.GuardedDefenseBonus += mod.Value; break;
+                        case SkillModifierType.StationCommonMaterialReduction: stats.StationCommonMaterialReduction += mod.Value; break;
+                    }
+                }
+            }
+
+            return stats;
+        }
+    }
+}

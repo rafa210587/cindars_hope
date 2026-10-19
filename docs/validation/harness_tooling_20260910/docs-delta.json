@@ -1,0 +1,62 @@
+[
+  {
+    "InputObject": "ERROR: Future spec missing marker: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_01_avatar_execucao_v1.md (missing: # /speckit.specify)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing marker: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_01_avatar_execucao_v1.md (missing: # /speckit.plan)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing marker: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_01_avatar_execucao_v1.md (missing: # /speckit.tasks)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing dependency header: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_01_avatar_execucao_v1.md (missing: Ordem de execucao)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing dependency header: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_01_avatar_execucao_v1.md (missing: Bloqueia)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing marker: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md (missing: # /speckit.specify)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing marker: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md (missing: # /speckit.plan)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing marker: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md (missing: # /speckit.tasks)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing dependency header: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md (missing: Ordem de execucao)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing dependency header: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md (missing: Depende de)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Future spec missing dependency header: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md (missing: Bloqueia)",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Active spec missing required_adrs field or improper format: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_01_avatar_execucao_v1.md",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Active spec missing required_game_rules field or improper format: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_01_avatar_execucao_v1.md",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Active spec missing required_adrs field or improper format: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md",
+    "SideIndicator": "<="
+  },
+  {
+    "InputObject": "ERROR: Active spec missing required_game_rules field or improper format: D:\\Projetos\\Cindars_Hope\\cindars_hope\\.specs\\a_implementar\\spec_skills_02_pontos_respec_save_v1.md",
+    "SideIndicator": "<="
+  }
+]

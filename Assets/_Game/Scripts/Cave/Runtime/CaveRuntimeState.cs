@@ -1,0 +1,18 @@
+using System.Collections.Generic;
+
+namespace CindarsHope.Cave.Runtime
+{
+    public sealed class CaveRuntimeState
+    {
+        public bool HasActiveRun = true;
+        public int CurrentCaveLevel = 1;
+        public int DeepestLayerReached = 1;
+        public string CaveWorldSeed;
+        public string CaveRunSeed;
+        public string CaveRunId;
+        public HashSet<int> UnlockedCheckpoints = new HashSet<int>();
+        public HashSet<string> DepletedNodeIds = new HashSet<string>();
+        public Dictionary<int, VisitedLevelSnapshot> VisitedLevelSnapshots = new Dictionary<int, VisitedLevelSnapshot>();
+        public Dictionary<string, CaveBossDefeatState> BossDefeatStates = new Dictionary<string, CaveBossDefeatState>();
+    }
+}

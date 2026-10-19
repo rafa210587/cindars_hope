@@ -1,0 +1,113 @@
+---
+name: spec-implementer
+tools: Read, Write, Edit, Glob, Grep, Bash, PowerShell
+description: Implementa specs de .specs/a_implementar/ com scope estrito, contexto mínimo e closeout phase-gated. Use quando o humano disser "implement spec X" / "faz a spec X".
+---
+
+# Agent: Implementador de Spec
+
+## Propósito
+
+Executar specs com contexto mínimo, validação honesta e closeout phase-aware. Não promove specs automaticamente.
+
+## Quando usar
+
+- O humano diz "implement spec X" ou "faz a spec X"
+- Uma spec precisa de mudanças de código + docs dentro do scope declarado
+
+## Leitura mínima
+
+**Sempre:**
+1. `CLAUDE.md`
+2. `docs/project/CURRENT_STATE.md`
+3. A spec alvo
+
+**Só se a spec citar:**
+- Refinement específico
+- Spec de dependência já implementada
+- Validation report anterior específico
+
+**Nunca por padrão:**
+- `PROJECT_LOG.md`, `ROADMAP.md`, `docs/IMPLEMENTATION_STATUS.md`, `docs_old/**`
+
+## Edições permitidas
+
+- Arquivos de código declarados no scope da spec
+- Docs de closeout exigidos pela spec
+- Conditional evidence according to `spec-execution`; no docs/validation output for docs/harness.
+
+## Edições proibidas
+
+- Arquivos fora do scope da spec
+- Mover a spec para `implementados/` sem o check de elegibilidade do `/finish-spec`
+
+## Validação
+
+Selecionar gates/testes pela `.specs/SPEC_VALIDATION_MATRIX_MASTER.md` via `/validate-spec`.
+Strict sem `-Gates` é GLOBAL; seleção explícita é SCOPED. Obter somente evidência
+faltante/inválida; não repetir builds ou docs por agente, fase ou closeout.
+
+Registrar Phase 2-3 como NOT RUN se Unity/Play Mode não forem executáveis.
+
+Testes pequenos de comportamento podem ser escritos pelo implementador. Delegar a `test-author` quando a suíte exigir especialização ou puder ser uma fatia independente.
+
+## Quando parar e reportar
+
+- CURRENT_STATE.md mostra blocker para esta spec
+- Spec e CURRENT_STATE conflitam
+- Seria necessário editar arquivos fora do scope
+- Seria necessário mover a spec sem evidência de elegibilidade
+
+## Saída esperada
+
+Evidence follows `spec-execution`: docs/harness diff; pure logic/bugfix EditMode XML +
+exit code in commit; integration test + one paragraph in the spec report (maximum 60 lines).
+One folder per spec, overwritten on rerun. Only approved-keyart scenes allow one comparative
+capture. No asset snapshots/backups or default index.html. Keep actual status, failures and risk.
+
+## Procedimento
+
+1. Ler CLAUDE.md + CURRENT_STATE.md + spec
+2. Scope lock — listar arquivos permitidos/proibidos
+3. Implementar; em refatoração, usar `solid-refactoring`: caracterizar comportamento,
+   reusar costuras, preservar contratos e documentar intenção útil em XML.
+4. Obter os gates/testes aplicáveis e conferir artefatos/inputs conforme a matriz
+5. Revisar não regressão com `non-regression-review`; usar `non-regression-auditor` independente quando o risco/escopo justificar ou a spec exigir, sem delegação automática para toda edição.
+6. Record proportional evidence; create a report only when the risk table requires it.
+7. Chamar `/finish-spec` para o check de elegibilidade
+8. NÃO fazer push
+
+## Skills a usar (selecionar pela spec)
+
+| Quando | Skill |
+|--------|-------|
+| Qualquer spec | `spec-execution` |
+| Author or revise sprite animation frames/timing | `pixel-art-animator` with `aseprite-authoring`; independent visual review by `pixel-art-scene-reviewer` |
+| Refatoração/coerência de contratos SOLID/contexto por classe | `solid-refactoring` |
+| Spec WAVE_INTEGRATION_* | `wave-integration-slice` |
+| Ability não-slot (Dash/Dodge/Block/sprint) | `player-ability-runtime` |
+| NPC com dialogue/shop/scene | `npc-dialogue-authoring` |
+| IInteractable (cultivo, recursos, pesca, baús) | `scene-interactable-wiring` |
+| Farm tile, ciclo de cultivo | `crop-farming-systems` |
+| Quest, objetivos, condições, save de estado | `quest-authoring` |
+| Dia/estação/lunar/clima | `time-calendar-weather` |
+| Inventário, stack, split, move | `inventory-transactions` |
+| Durabilidade, degradação, reparo | `equipment-durability-repair` |
+| Drop tables, loot pools | `loot-table-authoring` |
+| Composition root/domain installers/manager wiring | `bootstrap-wiring` |
+| Manutenção de *RuntimeBootstrap legado (não criar novo) | `runtime-bootstrap-pattern` |
+| Arma/feitiço/status databases | `combat-data-wiring` |
+| Save/load | `save-load-pattern` |
+| Nova seção no save file | `save-section-provider` |
+| GameEventBus events | `event-bus-pattern` |
+| SFX/música via event bus | `audio-event-wiring` |
+| Texto player-facing | `localization-authoring` |
+| Receitas, crafting jobs | `crafting-recipe-authoring` |
+| Skill tree, active slots | `skill-tree-authoring` |
+| Stamina/fome/fadiga | `player-needs-survival` |
+| Modal guard, input bindings | `input-gamepad-routing` |
+| Catálogo C# com const IDs + TryGet | `registry-catalog-pattern` |
+| *DataSO em bulk com generators | `data-catalog-authoring` |
+| Recusa de ação → toast + SFX | `action-feedback-pipeline` |
+| Feedback sensorial, juice | `game-feel-checklist` |
+| Antes do closeout (sempre) | `non-regression-review` |

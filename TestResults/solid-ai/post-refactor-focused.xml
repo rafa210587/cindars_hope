@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="36" result="Passed" total="36" passed="36" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0,358676">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="2904" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.358676" total="36" passed="36" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="4184" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2904" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.318653" total="36" passed="36" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="2272" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="4185" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2904" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.252580" total="36" passed="36" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="4188" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2816" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.227274" total="36" passed="36" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="4190" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2799" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.200442" total="36" passed="36" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="4201" name="Save" fullname="CindarsHope.Tests.EditMode.Save" runstate="Runnable" testcasecount="72" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.106454" total="17" passed="17" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1846" name="SaveAtomicWriteTests" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.084841" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1854" name="RecoverFromBackup_MainCorrupted_BackupValid_RestoresFromBackup" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.RecoverFromBackup_MainCorrupted_BackupValid_RestoresFromBackup" methodname="RecoverFromBackup_MainCorrupted_BackupValid_RestoresFromBackup" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="693656549" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.032594" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Save restored from backup C:\Users\Rafa\AppData\Local\Temp\cindars_hope_save_atomic_write_tests_c4229894d3574dcb9985c8699fed0bae\slot_1.json.backup.
+Save file at C:\Users\Rafa\AppData\Local\Temp\cindars_hope_save_atomic_write_tests_c4229894d3574dcb9985c8699fed0bae\slot_1.json was missing or corrupted. Recovered from backup at C:\Users\Rafa\AppData\Local\Temp\cindars_hope_save_atomic_write_tests_c4229894d3574dcb9985c8699fed0bae\slot_1.json.backup.
+]]></output>
+                </test-case>
+                <test-case id="1857" name="RecoverFromBackup_MainMissing_BackupAlsoCorrupted_ReturnsFalse" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.RecoverFromBackup_MainMissing_BackupAlsoCorrupted_ReturnsFalse" methodname="RecoverFromBackup_MainMissing_BackupAlsoCorrupted_ReturnsFalse" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1290707047" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.003265" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1853" name="RecoverFromBackup_MainMissing_BackupValid_RestoresFromBackup" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.RecoverFromBackup_MainMissing_BackupValid_RestoresFromBackup" methodname="RecoverFromBackup_MainMissing_BackupValid_RestoresFromBackup" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="842911712" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.003893" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Save restored from backup C:\Users\Rafa\AppData\Local\Temp\cindars_hope_save_atomic_write_tests_7500c65b80734ea392f1b1cc509f7e51\slot_1.json.backup.
+Save file at C:\Users\Rafa\AppData\Local\Temp\cindars_hope_save_atomic_write_tests_7500c65b80734ea392f1b1cc509f7e51\slot_1.json was missing or corrupted. Recovered from backup at C:\Users\Rafa\AppData\Local\Temp\cindars_hope_save_atomic_write_tests_7500c65b80734ea392f1b1cc509f7e51\slot_1.json.backup.
+]]></output>
+                </test-case>
+                <test-case id="1855" name="RecoverFromBackup_MainMissing_NoBackup_ReturnsFalse_NoRegression" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.RecoverFromBackup_MainMissing_NoBackup_ReturnsFalse_NoRegression" methodname="RecoverFromBackup_MainMissing_NoBackup_ReturnsFalse_NoRegression" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1068978857" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000628" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1856" name="RecoverFromBackup_MainValid_DoesNotTouchBackupOrOverwrite" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.RecoverFromBackup_MainValid_DoesNotTouchBackupOrOverwrite" methodname="RecoverFromBackup_MainValid_DoesNotTouchBackupOrOverwrite" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1147442313" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.001997" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1850" name="WriteTextSafely_CreatesParentAndPreservesUnicodeContents" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.WriteTextSafely_CreatesParentAndPreservesUnicodeContents" methodname="WriteTextSafely_CreatesParentAndPreservesUnicodeContents" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1039652081" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.002850" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1849" name="WriteTextSafely_ExistingFile_NeverLeavesPathMissing" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.WriteTextSafely_ExistingFile_NeverLeavesPathMissing" methodname="WriteTextSafely_ExistingFile_NeverLeavesPathMissing" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1048793324" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.008923" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1848" name="WriteTextSafely_ExistingFile_ReplacesContentAndCreatesBackupOfOldContent" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.WriteTextSafely_ExistingFile_ReplacesContentAndCreatesBackupOfOldContent" methodname="WriteTextSafely_ExistingFile_ReplacesContentAndCreatesBackupOfOldContent" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1945330062" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.003647" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1847" name="WriteTextSafely_NoExistingFile_CreatesFileDirectly" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.WriteTextSafely_NoExistingFile_CreatesFileDirectly" methodname="WriteTextSafely_NoExistingFile_CreatesFileDirectly" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1338265170" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.001625" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1851" name="WriteTextSafely_RepeatedReplacementBacksUpImmediatelyPreviousContent" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.WriteTextSafely_RepeatedReplacementBacksUpImmediatelyPreviousContent" methodname="WriteTextSafely_RepeatedReplacementBacksUpImmediatelyPreviousContent" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1360107021" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.007073" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1852" name="WriteTextSafely_TemporaryWriteFailurePreservesMainAndExistingBackup" fullname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests.WriteTextSafely_TemporaryWriteFailurePreservesMainAndExistingBackup" methodname="WriteTextSafely_TemporaryWriteFailurePreservesMainAndExistingBackup" classname="CindarsHope.Tests.EditMode.Save.SaveAtomicWriteTests" runstate="Runnable" seed="1834731005" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.004432" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1835" name="SaveCompatibilityFixtureTests" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.016627" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1842" name="CurrentFixture_RoundTripsWithoutMigration" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.CurrentFixture_RoundTripsWithoutMigration" methodname="CurrentFixture_RoundTripsWithoutMigration" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="647955362" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.004939" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1840" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.008725" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1836" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(1)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(1)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1330582347" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.004913" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1837" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(2)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(2)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1397834499" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.001175" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1838" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(3)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(3)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="216636595" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000826" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1839" name="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(4)" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.LegacyFixture_MigratesToCurrentSchemaAndRoundTrips(4)" methodname="LegacyFixture_MigratesToCurrentSchemaAndRoundTrips" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="1458778692" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000596" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1841" name="VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" fullname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests.VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" methodname="VersionOneFixture_PreservesLegacyInventoryAmountAcrossSlotMigration" classname="CindarsHope.Tests.EditMode.Save.SaveCompatibilityFixtureTests" runstate="Runnable" seed="613271546" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.001568" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="4193" name="UI" fullname="CindarsHope.Tests.EditMode.UI" runstate="Runnable" testcasecount="402" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.034795" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1536" name="InventorySlotMoveMergeTests" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.014928" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1542" name="InvalidDestination_FailsWithoutMutatingSource" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.InvalidDestination_FailsWithoutMutatingSource" methodname="InvalidDestination_FailsWithoutMutatingSource" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="279061994" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.007030" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1544" name="Merge_PublishesOnceAndRejectedRetryPublishesNothing" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.Merge_PublishesOnceAndRejectedRetryPublishesNothing" methodname="Merge_PublishesOnceAndRejectedRetryPublishesNothing" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="6435021" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.001500" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1539" name="MergeFullStack_FailsWithoutMutatingEitherSlot" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.MergeFullStack_FailsWithoutMutatingEitherSlot" methodname="MergeFullStack_FailsWithoutMutatingEitherSlot" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="1536964295" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000359" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1538" name="MergeSameItem_TransfersOnlyAvailableCapacityAndConservesTotal" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.MergeSameItem_TransfersOnlyAvailableCapacityAndConservesTotal" methodname="MergeSameItem_TransfersOnlyAvailableCapacityAndConservesTotal" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="864728357" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000331" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1537" name="MoveToEmptySlot_MovesWholeStackAndClearsSource" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.MoveToEmptySlot_MovesWholeStackAndClearsSource" methodname="MoveToEmptySlot_MovesWholeStackAndClearsSource" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="1073091472" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000329" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1541" name="MoveWithEquippedSlot_FailsWithoutMutatingSlots" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.MoveWithEquippedSlot_FailsWithoutMutatingSlots" methodname="MoveWithEquippedSlot_FailsWithoutMutatingSlots" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="1046087781" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000313" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1545" name="SplitOddStack_PreservesTotalAndPublishesOneRefresh" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.SplitOddStack_PreservesTotalAndPublishesOneRefresh" methodname="SplitOddStack_PreservesTotalAndPublishesOneRefresh" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="1380580894" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000640" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1543" name="Swap_PublishesSourceThenDestinationWithConsistentAggregate" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.Swap_PublishesSourceThenDestinationWithConsistentAggregate" methodname="Swap_PublishesSourceThenDestinationWithConsistentAggregate" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="475516802" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.001863" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1540" name="SwapDifferentItems_SwapsBothSlotsWithoutChangingTotals" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests.SwapDifferentItems_SwapsBothSlotsWithoutChangingTotals" methodname="SwapDifferentItems_SwapsBothSlotsWithoutChangingTotals" classname="CindarsHope.Tests.EditMode.UI.InventorySlotMoveMergeTests" runstate="Runnable" seed="606989137" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000535" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1546" name="InventorySlotOperationsTests" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.005788" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-suite type="ParameterizedMethod" id="1555" name="EquippedSlot_RejectsMoveWithoutMutation" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.EquippedSlot_RejectsMoveWithoutMutation" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000993" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1553" name="EquippedSlot_RejectsMoveWithoutMutation(True)" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.EquippedSlot_RejectsMoveWithoutMutation(True)" methodname="EquippedSlot_RejectsMoveWithoutMutation" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="618355023" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000473" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1554" name="EquippedSlot_RejectsMoveWithoutMutation(False)" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.EquippedSlot_RejectsMoveWithoutMutation(False)" methodname="EquippedSlot_RejectsMoveWithoutMutation" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="1735374204" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000074" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1551" name="Merge_ConservesTotalAndHonorsStackLimit" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.Merge_ConservesTotalAndHonorsStackLimit" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.001481" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1548" name="Merge_ConservesTotalAndHonorsStackLimit(6,8,10,4,10)" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.Merge_ConservesTotalAndHonorsStackLimit(6,8,10,4,10)" methodname="Merge_ConservesTotalAndHonorsStackLimit" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="2100371046" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000335" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1549" name="Merge_ConservesTotalAndHonorsStackLimit(2,3,10,0,5)" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.Merge_ConservesTotalAndHonorsStackLimit(2,3,10,0,5)" methodname="Merge_ConservesTotalAndHonorsStackLimit" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="2022173006" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000068" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1550" name="Merge_ConservesTotalAndHonorsStackLimit(1,1,0,1,1)" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.Merge_ConservesTotalAndHonorsStackLimit(1,1,0,1,1)" methodname="Merge_ConservesTotalAndHonorsStackLimit" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="848945118" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000048" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1547" name="Move_PreservesSlotIdentityAndMovesBindingWithContents" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.Move_PreservesSlotIdentityAndMovesBindingWithContents" methodname="Move_PreservesSlotIdentityAndMovesBindingWithContents" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="510201701" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000457" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1556" name="SameSlotOrMissingDestination_RejectsWithoutMutation" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.SameSlotOrMissingDestination_RejectsWithoutMutation" methodname="SameSlotOrMissingDestination_RejectsWithoutMutation" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="1609468405" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000264" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1558" name="SplitIntoOccupiedSlotOrSingleItem_RejectsWithoutMutation" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.SplitIntoOccupiedSlotOrSingleItem_RejectsWithoutMutation" methodname="SplitIntoOccupiedSlotOrSingleItem_RejectsWithoutMutation" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="2137693826" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000195" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1557" name="SplitOddEquippedStack_PreservesLegacySourceBindingAndTotal" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.SplitOddEquippedStack_PreservesLegacySourceBindingAndTotal" methodname="SplitOddEquippedStack_PreservesLegacySourceBindingAndTotal" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="1429622118" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000217" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1552" name="Swap_KeepsPositionIdentityAndExchangesAllContentMetadata" fullname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests.Swap_KeepsPositionIdentityAndExchangesAllContentMetadata" methodname="Swap_KeepsPositionIdentityAndExchangesAllContentMetadata" classname="CindarsHope.Tests.EditMode.UI.InventorySlotOperationsTests" runstate="Runnable" seed="726913706" result="Passed" start-time="2026-09-08 02:17:41Z" end-time="2026-09-08 02:17:41Z" duration="0.000203" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

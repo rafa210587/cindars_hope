@@ -1,0 +1,21 @@
+{
+  "SchemaVersion": 1,
+  "CurrentDay": 3,
+  "CurrentSceneName": "FarmScene",
+  "Player": {
+    "CurrentHP": 80,
+    "MaxHP": 100,
+    "Gold": 125,
+    "CurrentHunger": 70,
+    "MaxHunger": 100
+  },
+  "Inventory": {
+    "Capacity": 24,
+    "Items": [
+      {
+        "ItemId": "item_material_wood",
+        "Amount": 120
+      }
+    ]
+  }
+}

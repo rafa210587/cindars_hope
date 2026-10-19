@@ -1,0 +1,47 @@
+using System.Collections.Generic;
+
+namespace CindarsHope.NPC.Friendship
+{
+    /// <summary>
+    /// fable_26 — DTO de save da amizade (seção aditiva padrão WI-18). Apenas tipos simples
+    /// (string/int) + IDs estáveis; sem referências Unity (ADR-0006). Compatível com JsonUtility.
+    /// Ausente em save legado ⇒ lista vazia ⇒ todos os NPCs nível 0 (Unknown). Sem migration.
+    /// </summary>
+    [System.Serializable]
+    public class FriendshipSaveData
+    {
+        public List<FriendshipEntrySaveData> Entries = new List<FriendshipEntrySaveData>();
+    }
+
+    /// <summary>
+    /// Estado persistido de amizade por NPC: pontos + marcadores de dia dos caps.
+    /// lastTalkDay/lastPurchaseDay/lastGiftDay = -1 significa "nunca" (default).
+    /// </summary>
+    [System.Serializable]
+    public class FriendshipEntrySaveData
+    {
+        public string NpcId;
+        public int Points;
+        public int LastTalkDay = -1;
+        public int LastGiftDay = -1;
+        public int LastPurchaseDay = -1;
+
+        // ── Afinidade signed (opinião) — campo ADITIVO (mesma seção; sem migration). ──
+        // Escala -100..+100, neutro 0 (default). Distinta dos Points (0-150, só positivo): mede o
+        // quanto o NPC GOSTA/DESGOSTA do jogador (ódio..amor), exibida no painel de retrato.
+        // Save legado (sem o campo) desserializa para 0 ⇒ todos neutros.
+        public int Opinion;
+
+        // ── fable_46 — campos ADITIVOS de romance (mesma seção de amizade; sem migration). ──
+        // Save legado (sem estes campos) desserializa para os defaults abaixo ⇒ romance None.
+        // Apenas tipos simples + id estável; sem refs Unity (ADR-0006).
+        /// <summary>Estágio de romance (RomanceStage: 0 None, 1 Interesse, 2 Namoro, 3 Compromisso).</summary>
+        public int RomanceStage;
+        /// <summary>Interações de parceiro acumuladas no estágio atual (marco de progressão).</summary>
+        public int RomanceStageProgress;
+        /// <summary>Presentes de parceiro acumulados no estágio atual (marco de progressão).</summary>
+        public int RomanceStageGifts;
+        /// <summary>Dia da confissão; -1 = nunca confessou (default legado).</summary>
+        public int RomanceConfessedDay = -1;
+    }
+}

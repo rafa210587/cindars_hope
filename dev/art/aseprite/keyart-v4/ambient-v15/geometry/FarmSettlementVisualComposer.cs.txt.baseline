@@ -1,0 +1,513 @@
+using System;
+using CindarsHope.Farm;
+using CindarsHope.Farm.Scene;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace CindarsHope.Editor.Art
+{
+    /// <summary>
+    /// Authored, visual-only settlement groups for the farm keyart reconstruction.
+    /// Building doors, arable cells, resource IDs and physical enclosures remain owned by the scene generator.
+    /// </summary>
+    public static class FarmSettlementVisualComposer
+    {
+        private static readonly Vector2[] PlantPatchOffsets =
+        {
+            new Vector2(-0.62f, 0.18f), new Vector2(0.35f, -0.17f),
+            new Vector2(0.95f, 0.42f), new Vector2(-0.15f, 0.64f), new Vector2(-1.05f, -0.3f)
+        };
+        public static void Create(Transform parent)
+        {
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            var group = new GameObject("FarmSettlementDetails");
+            group.transform.SetParent(parent, false);
+            CreateEnclosureFences(group.transform);
+            CreateOrchard(group.transform);
+            CreatePasture(group.transform);
+            CreateHomestead(group.transform);
+            CreateFountainGarden(group.transform);
+            CreateFieldSupports(group.transform);
+            CreateToolRack(group.transform);
+            Prop(group.transform, "PottingSupplies", "crate", new Vector2(24.6f, 6.1f), 0.85f);
+            var benchBody = new GameObject("SolidPottingBench");
+            benchBody.transform.SetParent(group.transform, false);
+            benchBody.transform.position = FarmSettlementPhysicsContract.PottingBench.Center;
+            benchBody.AddComponent<BoxCollider2D>().size = FarmSettlementPhysicsContract.PottingBench.Size;
+            CreateSouthernCourtyards(group.transform);
+            CreatePathsideGardens(group.transform);
+            CreateNorthernKeyartGardens(group.transform);
+        }
+
+        private static void CreateNorthernKeyartGardens(Transform parent)
+        {
+            // Same-frame calibration:18.2857 pixels/unit gives26px flowers=1.42u and
+            //55px undergrowth=3u. These specific regional supports retain that source scale;
+            // the older small accents elsewhere are deliberately outside this correction.
+            var bushes = new[]
+            {
+                new Vector3(-16.9f,18.55f,2.8f), new Vector3(-13.1f,17.4f,2.6f),
+                new Vector3(3.2f,13.8f,3f), new Vector3(6.7f,14.6f,3.1f),
+                new Vector3(-32f,-1.3f,2.6f)
+            };
+            var flowers = new[]
+            {
+                // Two irregular groups at the western cliff foot, interrupted by the cave trail.
+                new Vector3(-17.1f,18.45f,1.42f), new Vector3(-15.2f,18.1f,1.35f),
+                new Vector3(-14.1f,17.75f,1.48f), new Vector3(-12f,17.05f,1.42f),
+                new Vector3(-10.6f,16.9f,1.36f), new Vector3(-9.1f,16.65f,1.32f),
+                // Low flowering islands within the well clearing; no large canopy across its gate.
+                new Vector3(-10.1f,13.4f,1.4f), new Vector3(-9.5f,14f,1.42f),
+                new Vector3(-4.9f,13f,1.35f), new Vector3(-3f,11.85f,1.42f),
+                new Vector3(-2.6f,13f,1.25f),
+                // Eastern cliff shoulder: a larger leafy core with uneven flower edges.
+                new Vector3(0.4f,15f,1.35f), new Vector3(2.2f,14.9f,1.42f),
+                new Vector3(3.8f,15f,1.48f), new Vector3(4.7f,13.2f,1.35f),
+                new Vector3(6.2f,16f,1.42f), new Vector3(7.5f,13.9f,1.4f),
+                new Vector3(8.3f,16.2f,1.42f), new Vector3(8.1f,12.2f,1.3f),
+                // Fountain's western margin has room for native-size plants outside the clear disk.
+                new Vector3(-32.4f,2f,1.42f), new Vector3(-32f,0.2f,1.35f),
+                new Vector3(-31f,-0.9f,1.42f), new Vector3(-30.5f,-2.3f,1.36f)
+            };
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            var flower = WorldSpriteLibrary.Foliage("wildflowers_keyart_v4");
+            var placedBushes = 0;
+            var placedFlowers = 0;
+            for (var i = 0; i < bushes.Length; i++)
+                if (TryRegionalPlant(parent, "NorthRegionalBush_" + i, bush, bushes[i], bushes[i].z)) placedBushes++;
+            for (var i = 0; i < flowers.Length; i++)
+                if (TryRegionalPlant(parent, "NorthRegionalFlowers_" + i, flower, flowers[i], flowers[i].z)) placedFlowers++;
+            Debug.Log("[FarmSettlementVisualComposer] Native-scale regional gardens: " + placedBushes + "/" +
+                bushes.Length + " bushes; " + placedFlowers + "/" + flowers.Length + " flower patches after footprint guards.");
+        }
+
+        private static bool TryRegionalPlant(Transform parent, string name, Sprite sprite, Vector2 foot, float height)
+        {
+            if (sprite == null || !TryGetKeyartPlantGeometry(sprite, out var bounds, out var support))
+                throw new InvalidOperationException("Missing measured regional plant: " + name);
+            var scale = height / bounds.size.y;
+            // Guard the actual opaque rectangle in world space, including its asymmetric support.
+            // Transparent padding is not a plant footprint; every opaque region still obeys the
+            // existing road, cliff, water, door, field, orchard and fountain-clearance masks.
+            var minimum = foot + ((Vector2)bounds.min - support) * scale - Vector2.one * 0.08f;
+            var area = new Rect(minimum, (Vector2)bounds.size * scale + Vector2.one * 0.16f);
+            var approach = FarmSettlementPhysicsContract.WellClearingApproach;
+            if (area.Overlaps(new Rect(approach - Vector2.one * 0.6f, Vector2.one * 1.2f))) return false;
+            if (area.Overlaps(FarmSettlementPhysicsContract.CentralWell.Bounds) ||
+                area.Overlaps(FarmSettlementPhysicsContract.FountainBasin.Bounds)) return false;
+            foreach (var segment in FarmSettlementPhysicsContract.AllFenceSegments)
+                if (area.Overlaps(segment.Bounds)) return false;
+            var columns = Mathf.CeilToInt(area.width / 0.25f);
+            var rows = Mathf.CeilToInt(area.height / 0.25f);
+            for (var y = 0; y <= rows; y++)
+            for (var x = 0; x <= columns; x++)
+                if (FarmDecorationPlanner.IsForbiddenCell(new Vector2(
+                    Mathf.Lerp(area.xMin, area.xMax, x / (float)columns),
+                    Mathf.Lerp(area.yMin, area.yMax, y / (float)rows)))) return false;
+            Place(parent, name, sprite, foot, height, true);
+            return true;
+        }
+
+        private static void CreatePathsideGardens(Transform parent)
+        {
+            var centers = new[] { new Vector2(-4f, 12f), new Vector2(9f, 8f), new Vector2(-15f, -3.5f),
+                new Vector2(8.5f, -4f), new Vector2(-5f, -9f), new Vector2(1f, -9f),
+                new Vector2(-14.6f, 17.8f), new Vector2(-8.7f, 17.7f), new Vector2(-0.8f, 16.1f),
+                new Vector2(4.8f, 16.8f), new Vector2(6.5f, 13.8f), new Vector2(-12.7f, 8.7f),
+                new Vector2(-25.3f, -1.6f), new Vector2(-18.7f, -5.6f), new Vector2(-14.4f, -9.3f),
+                new Vector2(-12.2f, -18f), new Vector2(-3.1f, -18.3f), new Vector2(5.6f, -17.8f),
+                new Vector2(8.5f, -11.8f), new Vector2(12.6f, -3.3f), new Vector2(20.6f, -2.7f) };
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            var flowers = WorldSpriteLibrary.Foliage("wildflowers_keyart_v4");
+            var sapling = WorldSpriteLibrary.Tree("tree_sapling");
+            for (var i = 0; i < centers.Length; i++)
+            {
+                var mirror = i % 2 == 0 ? 1f : -1f;
+                TryPathsidePlant(parent, "PathGardenBush_" + i, bush, centers[i] + new Vector2(-0.55f * mirror, 0.05f), 0.78f + i % 3 * 0.08f);
+                // Small unequal islands, rather than a repeated arc of identical flower heads.
+                for (var patch = 0; patch < 2 + i % 3; patch++)
+                {
+                    var sample = PlantPatchOffsets[(patch + i) % PlantPatchOffsets.Length];
+                    var offset = new Vector2(sample.x * mirror, sample.y);
+                    TryPathsidePlant(parent, "PathGardenFlowers_" + i + "_" + patch, flowers,
+                        centers[i] + offset, 0.48f + (i + patch) % 3 * 0.07f);
+                }
+                if (i % 2 == 0)
+                    TryPathsidePlant(parent, "PathGardenSapling_" + i, sapling, centers[i] + new Vector2(0.6f, 0.08f), 0.78f);
+            }
+        }
+
+        private static void TryPathsidePlant(Transform parent, string name, Sprite sprite, Vector2 foot, float height)
+        {
+            if (sprite == null) throw new InvalidOperationException("Missing pathside sprite: " + name);
+            var opaque = TryGetKeyartPlantGeometry(sprite, out var measured, out _) ? measured : sprite.bounds;
+            var size = sprite.bounds.size * (height / opaque.size.y);
+            const float margin = 0.2f;
+            var area = new Rect(foot.x - size.x * 0.5f - margin, foot.y - margin,
+                size.x + margin * 2f, size.y + margin * 2f);
+            if (area.Overlaps(new Rect(-26f, 12f, 10f, 8f))) return;
+            // Reuse the live authoring mask, including new roads and interaction clearances.
+            // Full sprite rectangle plus margin is conservative even when the art has transparency.
+            for (var x = 0; x < 3; x++)
+            for (var y = 0; y < 3; y++)
+                if (FarmDecorationPlanner.IsForbiddenCell(new Vector2(area.xMin + area.width * x * 0.5f,
+                    area.yMin + area.height * y * 0.5f))) return;
+            // Saplings are low decoration as requested, not solid/collectable tree silhouettes.
+            Place(parent, name, sprite, foot, height, true);
+        }
+
+        private static void CreateHomestead(Transform parent)
+        {
+            var house = new Vector2(FarmLevel1LayoutContract.HouseStartX, FarmLevel1LayoutContract.HouseStartY);
+            // Side gardens leave the central door/spawn and the shipping-bin approach unobscured.
+            Foliage(parent, "HouseGardenWest", "undergrowth_keyart_v4", house + new Vector2(-4.2f, -1.8f), 0.85f);
+            Foliage(parent, "HouseGardenWestFlowers", "wildflowers_keyart_v4", house + new Vector2(-4.8f, -2.5f), 0.45f);
+            Foliage(parent, "HouseGardenEast", "undergrowth_keyart_v4", house + new Vector2(3.9f, -1.4f), 0.8f);
+            Foliage(parent, "HouseGardenEastFlowers", "wildflowers_keyart_v4", house + new Vector2(3.7f, -2.1f), 0.5f);
+            Prop(parent, "HouseSupplies", "crate", house + new Vector2(-2.7f, -3.15f), 0.75f);
+            Prop(parent, "HouseSuppliesSmall", "crate", house + new Vector2(-3.45f, -3.5f), 0.5f);
+            // The existing bench and compost bin form the other end of this frontage.
+            Foliage(parent, "GreenhouseGarden", "wildflowers_keyart_v4", new Vector2(21.2f, 8.5f), 0.65f);
+            Prop(parent, "GreenhouseSupplies", "crate", new Vector2(21f, 7.8f), 0.65f);
+            // Paired facade gardens frame the steps; the middle approach stays fully exposed.
+            var doorstep = house.y - FarmLevel1LayoutContract.HouseHeight * 0.5f;
+            CreateGardenPatch(parent, "HouseWest", new Vector2(house.x - 5.1f, doorstep + 0.25f), 1f);
+            CreateGardenPatch(parent, "HouseEast", new Vector2(house.x + 3.7f, doorstep + 0.12f), -1f);
+            PlaceKeyartBarrel(parent, "HouseWestBarrel_A", new Vector2(house.x - 6.7f, doorstep + 0.85f), 1.05f);
+            PlaceKeyartBarrel(parent, "HouseWestBarrel_B", new Vector2(house.x - 5.8f, doorstep + 0.45f), 0.95f);
+            PlaceKeyartBarrel(parent, "HouseEastBarrel_A", new Vector2(house.x + 2.6f, doorstep + 0.12f), 1.1f);
+            PlaceKeyartBarrel(parent, "HouseEastBarrel_B", new Vector2(house.x + 3.55f, doorstep + 0.25f), 0.95f);
+        }
+
+        private static void CreateToolRack(Transform parent)
+        {
+            var sprite = WorldSpriteLibrary.Prop("tool_rack_keyart_v4");
+            if (sprite == null) throw new InvalidOperationException("Missing measured farm tool rack.");
+            var visual = new GameObject("Visual_PottingWorkbench");
+            visual.transform.SetParent(parent, false);
+            var scale = 2.65f / (sprite.bounds.size.y * (48f / 67f));
+            var support = sprite.bounds.min + new Vector3(41f, 11f, 0f) / sprite.pixelsPerUnit;
+            visual.transform.position = new Vector3(23.5f, 6f, 0f) - support * scale;
+            visual.transform.localScale = new Vector3(scale, scale, 1f);
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = "World";
+        }
+
+        private static void CreateFountainGarden(Transform parent)
+        {
+            var fountain = new Vector2(FarmLevel1LayoutContract.FonteAnchorX, FarmLevel1LayoutContract.FonteAnchorY);
+            // Side clusters are below the basin's sides, outside its physical footprint and the
+            // central southern interaction route. Ground flowers never overlap the magical jets.
+            CreateGardenPatch(parent, "FountainWest", fountain + new Vector2(-3.1f, 0.1f), 1f);
+            CreateGardenPatch(parent, "FountainEast", fountain + new Vector2(3.1f, 0.15f), -1f);
+            Prop(parent, "FountainWestStone", "rock_ore_0", fountain + new Vector2(-2.95f, -0.6f), 0.38f);
+            Prop(parent, "FountainEastStone", "rock_ore_0", fountain + new Vector2(3f, -0.55f), 0.32f);
+            PlaceKeyartBarrel(parent, "FountainWestBarrel", fountain + new Vector2(-3.05f, -1.1f), 0.95f);
+            PlaceKeyartBarrel(parent, "FountainEastBarrel", fountain + new Vector2(2.6f, -1.1f), 1f);
+        }
+
+        private static void PlaceKeyartBarrel(Transform parent, string name, Vector2 foot, float height)
+        {
+            // Reviewed33x37 alpha canvas: opaque21x25, support(17,32) from top-left.
+            // Explicit measured support avoids the unreadable-texture/full-rectangle fallback.
+            var sprite = WorldSpriteLibrary.Prop("barrel_keyart_v4");
+            if (sprite == null) throw new InvalidOperationException("Missing keyart barrel sprite.");
+            var scale = height / (sprite.bounds.size.y * (25f / 37f));
+            var anchor = sprite.bounds.min + new Vector3(sprite.bounds.size.x * (17f / 33f),
+                sprite.bounds.size.y * (5f / 37f), 0f);
+            var visual = new GameObject("Visual_" + name);
+            visual.transform.SetParent(parent, false);
+            visual.transform.position = (Vector3)foot - anchor * scale;
+            visual.transform.localScale = new Vector3(scale / parent.lossyScale.x, scale / parent.lossyScale.y, 1f);
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = "World";
+            // Reviewed barrel21x25 opaque silhouette; contact base excludes its upper rim.
+            CreateMeasuredPropBase(parent, name, foot, new Vector2(19f / 25f, 7f / 25f) * height, height * 0.02f);
+        }
+
+        private static void CreateGardenPatch(Transform parent, string name, Vector2 foot, float mirror)
+        {
+            Foliage(parent, name + "LowBush", "undergrowth_keyart_v4", foot + new Vector2(-0.45f * mirror, 0.4f), 0.88f);
+            for (var i = 0; i < 3; i++)
+                Foliage(parent, name + "Flowers_" + i, "wildflowers_keyart_v4",
+                    foot + new Vector2(PlantPatchOffsets[i].x * mirror, PlantPatchOffsets[i].y), 0.5f + i * 0.07f);
+        }
+
+        private static void CreateFieldSupports(Transform parent)
+        {
+            var left = FarmLevel1LayoutContract.CropFieldMinX;
+            var right = left + FarmLevel1LayoutContract.CropFieldWidth;
+            var bottom = FarmLevel1LayoutContract.CropFieldMinY;
+            var top = bottom + FarmLevel1LayoutContract.CropFieldHeight;
+            // Small work groups sit beyond the north/south ends, never on the two arable blocks.
+            Prop(parent, "FieldNorthCrate", "crate", new Vector2(right - 0.8f, top + 3f), 0.7f);
+            Prop(parent, "FieldNorthSmallCrate", "crate", new Vector2(right - 1.5f, top + 2.8f), 0.45f);
+            Prop(parent, "FieldSouthCrate", "crate", new Vector2(left + 0.9f, bottom - 1.3f), 0.65f);
+            Foliage(parent, "FieldSouthFlowers", "wildflowers_keyart_v4", new Vector2(left + 1.7f, bottom - 1.1f), 0.4f);
+        }
+
+        private static void CreateOrchard(Transform parent)
+        {
+            var x = FarmLevel1LayoutContract.OrchardMinX;
+            var y = FarmLevel1LayoutContract.OrchardMinY;
+            // Static scenery only: no apple drops, resource registry entry or implicit ownership.
+            var offsets = new[] { new Vector2(-0.35f,0.1f), new Vector2(0.2f,0.4f), new Vector2(0.2f,-0.25f),
+                new Vector2(0.15f,0.15f), new Vector2(-0.3f,-0.3f), new Vector2(0.1f,0.1f),
+                new Vector2(-0.1f,-0.1f), new Vector2(0.35f,0.1f), new Vector2(-0.2f,0.4f) };
+            for (var row = 0; row < 3; row++)
+            for (var column = 0; column < 3; column++)
+            {
+                var i = row * 3 + column;
+                Place(parent, "OrchardApple_" + row + "_" + column,
+                    WorldSpriteLibrary.Tree("tree_apple"), new Vector2(x + 2f + column * 4f, y + 1.5f + row * 3f) + offsets[i],
+                    3.9f + i % 4 * 0.2f, false);
+            }
+            Marker(parent, "Visual_OrchardGate", FarmSettlementPhysicsContract.OrchardGate);
+        }
+
+        private static void CreatePasture(Transform parent)
+        {
+            var x = FarmLevel1LayoutContract.PastureMinX;
+            var y = FarmLevel1LayoutContract.PastureMinY;
+            // Match the reference's two cows on the west and sheep on the east after widening.
+            PlaceKeyartAnimal(parent, "PastureCow_A", "cow_keyart_v4_01", new Vector2(x + 8.55f, y + 6.5f), 1.6f, 29f / 46f, new Vector2(0.4746f, 0.2174f));
+            PlaceKeyartAnimal(parent, "PastureCow_B", "cow_keyart_v4_01", new Vector2(x + 7.95f, y + 3.5f), 1.5f, 29f / 46f, new Vector2(0.4746f, 0.2174f));
+            PlaceKeyartAnimal(parent, "PastureSheep_A", "sheep_keyart_v4_01", new Vector2(x + 15.05f, y + 5.3f), 1.4f, 26f / 39f, new Vector2(0.56f, 0.1795f));
+            PlaceKeyartAnimal(parent, "PastureSheep_B", "sheep_keyart_v4_01", new Vector2(x + 13.65f, y + 2.8f), 1.3f, 26f / 39f, new Vector2(0.56f, 0.1795f));
+            Prop(parent, "PastureTrough", "feeding_trough", new Vector2(x + 16.9f, y + 0.3f), 1.2f);
+            Marker(parent, "Visual_PastureGate", FarmSettlementPhysicsContract.PastureGate);
+        }
+
+        private static void PlaceKeyartAnimal(Transform parent, string name, string asset, Vector2 foot,
+            float visibleHeight, float opaqueRatio, Vector2 support)
+        {
+            var sprite = WorldSpriteLibrary.Animal(asset);
+            var visual = new GameObject("Visual_" + name);
+            visual.transform.SetParent(parent, false);
+            var scale = visibleHeight / (sprite.bounds.size.y * opaqueRatio);
+            var anchor = sprite.bounds.min + Vector3.Scale(sprite.bounds.size, support);
+            visual.transform.position = (Vector3)foot - anchor * scale;
+            visual.transform.localScale = new Vector3(scale / parent.lossyScale.x, scale / parent.lossyScale.y, 1f);
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = "World";
+        }
+
+        private static void CreateEnclosureFences(Transform parent)
+        {
+            foreach (var segment in FarmSettlementPhysicsContract.AllFenceSegments)
+                CreateFenceRun(parent, segment);
+        }
+
+        internal static void CreateFenceRun(Transform parent, FarmSolidRect segment)
+        {
+            var source = WorldSpriteLibrary.Prop("fence_rail_keyart_v4");
+            if (source == null) throw new InvalidOperationException("Missing settlement fence sprite.");
+            // Reviewed45x39 source at the reference camera's native density. Uprights retain
+            // their irregular alpha, cap and ground contact; clean3px timber retains its thickness.
+            var post = FencePart(source, "fence_post", new Rect(5, 13, 6, 20), new Vector2(0.5f, 0f));
+            var alternatePost = FencePart(source, "fence_post_right_keyart_v4", new Rect(32, 12, 6, 21), new Vector2(0.5f, 0f));
+            var rail = FencePart(source, "fence_rail", new Rect(11, 25, 21, 3), new Vector2(0.5f, 0.5f));
+            var lowerRail = FencePart(source, "fence_rail_lower_keyart_v4", new Rect(11, 17, 21, 3), new Vector2(0.5f, 0.5f));
+            const float pixelScale = 1f / 18.285714f;
+            var postWidth = post.rect.width * pixelScale;
+            var horizontal = segment.Size.x > segment.Size.y;
+            var length = horizontal ? segment.Size.x : segment.Size.y;
+            // Horizontal extents include post width; vertical extents describe post feet.
+            var run = horizontal ? length - postWidth : length;
+            var direction = horizontal ? Vector2.right : Vector2.up;
+            var start = segment.Center - direction * (run * 0.5f);
+            var intervals = Mathf.Max(1, Mathf.CeilToInt(run / (27f * pixelScale)));
+            for (var i = 0; i <= intervals; i++)
+            {
+                var upright = i % 2 == 0 ? post : alternatePost;
+                Place(parent, segment.Id + "Post_" + i, upright,
+                    start + direction * (run * i / intervals), upright.rect.height * pixelScale, false);
+            }
+            // Each pair sorts from its local ground midpoint, not the whole enclosure center.
+            for (var span = 0; span < intervals; span++)
+            {
+                var anchor = new GameObject("Visual_" + segment.Id + "RailSpan_" + span);
+                anchor.transform.SetParent(parent, false);
+                anchor.transform.position = start + direction * (run * (span + 0.5f) / intervals);
+                var sorting = anchor.AddComponent<SortingGroup>();
+                sorting.sortingLayerName = "World";
+                for (var i = 0; i < 2; i++)
+                {
+                    var visual = new GameObject("Rail_" + i);
+                    visual.transform.SetParent(anchor.transform, false);
+                    visual.transform.position = anchor.transform.position
+                        + Vector3.up * ((i == 0 ? 5.5f : 13.5f) * pixelScale)
+                        + (horizontal ? Vector3.zero : Vector3.right * (i == 0 ? -0.09f : 0.09f));
+                    // Rotate only the timber crop; upright posts keep their authored perspective.
+                    visual.transform.rotation = Quaternion.Euler(0f, 0f, horizontal ? 0f : 90f);
+                    var renderer = visual.AddComponent<SpriteRenderer>();
+                    var timber = i == 0 ? lowerRail : rail;
+                    renderer.sprite = timber;
+                    renderer.drawMode = SpriteDrawMode.Tiled;
+                    renderer.tileMode = SpriteTileMode.Continuous;
+                    var scale = pixelScale * timber.pixelsPerUnit;
+                    visual.transform.localScale = new Vector3(scale / parent.lossyScale.x,
+                        scale / parent.lossyScale.y, 1f);
+                    renderer.size = new Vector2(run / intervals / scale, timber.bounds.size.y);
+                    renderer.sortingLayerName = "World";
+                    renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                }
+            }
+        }
+
+        private static Sprite FencePart(Sprite source, string name, Rect crop, Vector2 pivot)
+        {
+            var path = "Assets/_Game/Art/Generated/World/props/" + name + ".asset";
+            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (existing != null && existing.texture == source.texture && existing.rect == crop
+                && existing.pivot == Vector2.Scale(pivot, crop.size)) return existing;
+            var part = Sprite.Create(source.texture, crop, pivot,
+                source.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+            part.name = name;
+            if (existing != null)
+            {
+                // Keep the asset GUID and local file ID referenced by previously generated scenes.
+                EditorUtility.CopySerialized(part, existing);
+                UnityEngine.Object.DestroyImmediate(part);
+                EditorUtility.SetDirty(existing);
+                AssetDatabase.SaveAssetIfDirty(existing);
+                return existing;
+            }
+            AssetDatabase.CreateAsset(part, path);
+            return part;
+        }
+
+        private static void Marker(Transform parent, string name, Vector2 position)
+        {
+            var marker = new GameObject(name);
+            marker.transform.SetParent(parent, false);
+            marker.transform.position = position;
+        }
+
+        private static void CreateSouthernCourtyards(Transform parent)
+        {
+            var frontageY = FarmLevel1LayoutContract.BarnY - 2.2f;
+
+            // One shared yard makes the row read as a farm complex. Sparse end posts frame it
+            // without drawing fence fragments across doors or splitting each building into an island.
+            Prop(parent, "SouthYardWestPost", "fence",
+                new Vector2(FarmLevel1LayoutContract.CoopX - 2.15f, frontageY), 0.72f);
+            Prop(parent, "SouthYardEastPost", "fence",
+                new Vector2(FarmLevel1LayoutContract.ProcessingBX + 2.45f, frontageY), 0.72f);
+
+            Prop(parent, "CoopTrough", "feeding_trough",
+                new Vector2(FarmLevel1LayoutContract.CoopX - 1.8f, frontageY - 0.45f), 0.62f);
+            Prop(parent, "BarnHayStack", "hay_bale",
+                new Vector2(FarmLevel1LayoutContract.BarnX + 2.05f, frontageY - 0.45f), 0.9f);
+            Prop(parent, "BarnHayStackSmall", "hay_bale",
+                new Vector2(FarmLevel1LayoutContract.BarnX + 2.75f, frontageY - 0.35f), 0.58f);
+            Prop(parent, "CheeseSupplies", "crate",
+                new Vector2(FarmLevel1LayoutContract.ProcessingAX - 2f, frontageY - 0.5f), 0.7f);
+            Prop(parent, "ShedSupplies", "crate",
+                new Vector2(FarmLevel1LayoutContract.ProcessingBX + 2f, frontageY - 0.5f), 0.7f);
+            // Planted shoulders tie the yard to its outer banks, leaving each door center bare.
+            var flowers = WorldSpriteLibrary.Foliage("wildflowers_keyart_v4");
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            var gardens = new[]
+            {
+                new Vector2(FarmLevel1LayoutContract.CoopX - 2.8f, frontageY - 0.15f),
+                new Vector2(FarmLevel1LayoutContract.ProcessingBX + 3f, frontageY - 0.1f),
+                new Vector2(FarmLevel1LayoutContract.BarnX + 2.4f, frontageY - 1.3f)
+            };
+            for (var garden = 0; garden < gardens.Length; garden++)
+            {
+                TryPathsidePlant(parent, "SouthCourtBush_" + garden, bush, gardens[garden], 0.92f);
+                for (var plant = 0; plant < 3 + garden % 2; plant++)
+                    TryPathsidePlant(parent, "SouthCourtFlowers_" + garden + "_" + plant, flowers,
+                        gardens[garden] + PlantPatchOffsets[(plant + garden) % PlantPatchOffsets.Length],
+                        0.48f + plant % 3 * 0.07f);
+            }
+        }
+        private static void Prop(Transform parent, string name, string asset, Vector2 foot, float height)
+        {
+            Place(parent, name, WorldSpriteLibrary.Prop(asset), foot, height, false);
+            // Only reviewed solid objects receive bases; plant/stone/fence calls remain unchanged.
+            Vector2 size;
+            switch (asset)
+            {
+                case "crate": size = new Vector2(50f / 64f, 20f / 64f) * height; break;
+                case "feeding_trough": size = new Vector2(90f / 64f, 16f / 64f) * height; break;
+                case "hay_bale": size = new Vector2(48f / 64f, 23f / 64f) * height; break;
+                default: return;
+            }
+            CreateMeasuredPropBase(parent, name, foot, size, height * 0.02f);
+        }
+
+        private static void CreateMeasuredPropBase(Transform parent, string name, Vector2 foot,
+            Vector2 size, float bottomInset)
+        {
+            var solid = new GameObject("Solid_" + name);
+            solid.transform.SetParent(parent, false);
+            solid.transform.position = foot;
+            solid.transform.localScale = new Vector3(1f / parent.lossyScale.x, 1f / parent.lossyScale.y, 1f);
+            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
+                solid, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
+            var collider = solid.AddComponent<BoxCollider2D>();
+            collider.size = size;
+            collider.offset = new Vector2(0f, bottomInset + size.y * 0.5f);
+        }
+
+        private static void Foliage(Transform parent, string name, string asset, Vector2 foot, float height)
+        {
+            Place(parent, name, WorldSpriteLibrary.Foliage(asset), foot, height, true);
+        }
+
+        internal static bool TryGetKeyartPlantGeometry(Sprite sprite, out Bounds bounds, out Vector2 support)
+        {
+            // Exact alpha/support measurements from the reviewed source crops; never require
+            // importer Read/Write or substitute the transparent canvas for visible plant size.
+            Rect rect;
+            Vector2 pixelSupport;
+            switch (sprite.name)
+            {
+                case "undergrowth_keyart_v4":
+                    rect = new Rect(9f, 9f, 56f, 55f);
+                    pixelSupport = new Vector2(43f, 9f);
+                    break;
+                case "wildflowers_keyart_v4":
+                    rect = new Rect(1f, 6f, 33f, 26f);
+                    pixelSupport = new Vector2(21f, 6f);
+                    break;
+                default:
+                    bounds = default;
+                    support = default;
+                    return false;
+            }
+            var scale = 1f / sprite.pixelsPerUnit;
+            bounds = new Bounds((Vector3)((rect.center - sprite.pivot) * scale), (Vector3)(rect.size * scale));
+            support = (pixelSupport - sprite.pivot) * scale;
+            return true;
+        }
+
+        private static void Place(Transform parent, string name, Sprite sprite, Vector2 foot, float height, bool groundCover)
+        {
+            if (sprite == null) throw new InvalidOperationException("Missing settlement sprite: " + name);
+            var visual = new GameObject("Visual_" + name);
+            visual.transform.SetParent(parent, false);
+            var isMeasuredPlant = TryGetKeyartPlantGeometry(sprite, out var bounds, out var plantSupport);
+            if (!isMeasuredPlant) bounds = sprite.bounds;
+            var scale = height / bounds.size.y;
+            var bottomCenter = isMeasuredPlant ? (Vector3)plantSupport : new Vector3(bounds.center.x, bounds.min.y, 0f);
+            visual.transform.position = (Vector3)foot - bottomCenter * scale;
+            visual.transform.localScale = new Vector3(scale / parent.lossyScale.x, scale / parent.lossyScale.y, 1f);
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.color = Color.white;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = groundCover ? "Ground" : "World";
+            renderer.sortingOrder = groundCover ? 4 : 0;
+        }
+    }
+}

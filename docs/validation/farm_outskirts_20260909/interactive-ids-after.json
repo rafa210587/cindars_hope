@@ -1,0 +1,347 @@
+[
+  {
+    "path": "_Bootstrap",
+    "ids": [
+      "_equippedToolId:"
+    ]
+  },
+  {
+    "path": "Board_Zrix",
+    "ids": [
+      "_boardId: board_zrix_cave_contracts",
+      "_postedQuestIds:"
+    ]
+  },
+  {
+    "path": "CaveEntrance",
+    "ids": [
+      "_transitionGateId: gate_farm_cave_entrance",
+      "_fromSceneId: FarmScene",
+      "_targetSpawnId: cave_from_farm"
+    ]
+  },
+  {
+    "path": "CraftingStation_CookingStation",
+    "ids": [
+      "_stationInstanceId: farm_cooking_01"
+    ]
+  },
+  {
+    "path": "CraftingStation_Forge",
+    "ids": [
+      "_stationInstanceId: farm_forge_01"
+    ]
+  },
+  {
+    "path": "CraftingStation_Workbench",
+    "ids": [
+      "_stationInstanceId: farm_workbench_01"
+    ]
+  },
+  {
+    "path": "FarmAnimalHousings/Barn_01",
+    "ids": [
+      "_housingId: barn_01"
+    ]
+  },
+  {
+    "path": "FarmAnimalHousings/Coop_01",
+    "ids": [
+      "_housingId: coop_01"
+    ]
+  },
+  {
+    "path": "FarmForagePoints/ForagePoint_farm_forage_01",
+    "ids": [
+      "_spawnId: farm_forage_01",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "FarmForagePoints/ForagePoint_farm_forage_02",
+    "ids": [
+      "_spawnId: farm_forage_02",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "FarmForagePoints/ForagePoint_farm_forage_03",
+    "ids": [
+      "_spawnId: farm_forage_03",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "FarmForagePoints/ForagePoint_farm_forage_04",
+    "ids": [
+      "_spawnId: farm_forage_04",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "FarmForagePoints/ForagePoint_farm_forage_05",
+    "ids": [
+      "_spawnId: farm_forage_05",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "FarmForagePoints/ForagePoint_farm_forage_06",
+    "ids": [
+      "_spawnId: farm_forage_06",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "FarmProcessing/Greenhouse/FarmPlot_200",
+    "ids": [
+      "_temporarySequentialSeedId: seed_carrot"
+    ]
+  },
+  {
+    "path": "FarmProcessing/Greenhouse/FarmPlot_201",
+    "ids": [
+      "_temporarySequentialSeedId: seed_carrot"
+    ]
+  },
+  {
+    "path": "FarmProcessing/Greenhouse/FarmPlot_202",
+    "ids": [
+      "_temporarySequentialSeedId: seed_carrot"
+    ]
+  },
+  {
+    "path": "FarmProcessing/Greenhouse/FarmPlot_203",
+    "ids": [
+      "_temporarySequentialSeedId: seed_carrot"
+    ]
+  },
+  {
+    "path": "FarmProcessing/Greenhouse/GreenhouseRuntimeHost",
+    "ids": [
+      "_greenhousePlotIds:"
+    ]
+  },
+  {
+    "path": "FarmProcessing/Station_CheesePress",
+    "ids": [
+      "_stationId: station_cheese_press_01"
+    ]
+  },
+  {
+    "path": "FarmProcessing/Station_WineBarrel",
+    "ids": [
+      "_stationId: station_wine_barrel_01"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_CaveEntrance",
+    "ids": [
+      "stableId: farm_zone_cave_entrance"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_Construction",
+    "ids": [
+      "stableId: farm_zone_construction"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_CropField",
+    "ids": [
+      "stableId: farm_zone_crop_field"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_Forage",
+    "ids": [
+      "stableId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_HouseEntrance",
+    "ids": [
+      "stableId: farm_zone_house_entrance"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_LakeFishing",
+    "ids": [
+      "stableId: farm_zone_lake_fishing"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_PlayerSpawn",
+    "ids": [
+      "stableId: farm_zone_player_spawn"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_ResourceRocks",
+    "ids": [
+      "stableId: farm_zone_resource_rocks"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_ResourceTrees",
+    "ids": [
+      "stableId: farm_zone_resource_trees"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_ShippingSellpoint",
+    "ids": [
+      "stableId: farm_zone_shipping_sellpoint"
+    ]
+  },
+  {
+    "path": "FarmSceneFoundationZones/Zone_TownExit",
+    "ids": [
+      "stableId: farm_zone_town_exit"
+    ]
+  },
+  {
+    "path": "FishingSpot",
+    "ids": [
+      "_requiredToolId: item_tool_fishing_rod_basic",
+      "_fishItemId: item_fish_common",
+      "_fishingSpotId: farm_spot_7_-10"
+    ]
+  },
+  {
+    "path": "FonteAnya",
+    "ids": [
+      "FountainId: anya_fountain_farm"
+    ]
+  },
+  {
+    "path": "ItemPickups/DebugCarrotSeedPickup",
+    "ids": [
+      "_itemId: seed_carrot"
+    ]
+  },
+  {
+    "path": "LockedOreNodes/OreNode_ore_node_farm_01",
+    "ids": [
+      "_nodeId: ore_node_farm_01"
+    ]
+  },
+  {
+    "path": "LockedOreNodes/OreNode_ore_node_farm_02",
+    "ids": [
+      "_nodeId: ore_node_farm_02"
+    ]
+  },
+  {
+    "path": "LockedOreNodes/OreNode_ore_node_farm_03",
+    "ids": [
+      "_nodeId: ore_node_farm_03"
+    ]
+  },
+  {
+    "path": "LockedOreNodes/OreNode_ore_node_farm_04",
+    "ids": [
+      "_nodeId: ore_node_farm_04"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_07",
+    "ids": [
+      "_spawnId: farm_forage_07",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_08",
+    "ids": [
+      "_spawnId: farm_forage_08",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_09",
+    "ids": [
+      "_spawnId: farm_forage_09",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_10",
+    "ids": [
+      "_spawnId: farm_forage_10",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_11",
+    "ids": [
+      "_spawnId: farm_forage_11",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_12",
+    "ids": [
+      "_spawnId: farm_forage_12",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_13",
+    "ids": [
+      "_spawnId: farm_forage_13",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_14",
+    "ids": [
+      "_spawnId: farm_forage_14",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_15",
+    "ids": [
+      "_spawnId: farm_forage_15",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "MioloDebris_Moitas/ForagePoint_farm_forage_16",
+    "ids": [
+      "_spawnId: farm_forage_16",
+      "_zoneId: farm_zone_forage"
+    ]
+  },
+  {
+    "path": "Portals/Portal_Farm_To_Town",
+    "ids": [
+      "_targetSpawnId: town_from_farm"
+    ]
+  },
+  {
+    "path": "SpawnPoints",
+    "ids": [
+      "_defaultSpawnId: farm_default"
+    ]
+  },
+  {
+    "path": "SpawnPoints/Spawn_farm_default",
+    "ids": [
+      "_spawnId: farm_default"
+    ]
+  },
+  {
+    "path": "SpawnPoints/Spawn_farm_from_cave",
+    "ids": [
+      "_spawnId: farm_from_cave"
+    ]
+  },
+  {
+    "path": "SpawnPoints/Spawn_farm_from_town",
+    "ids": [
+      "_spawnId: farm_from_town"
+    ]
+  }
+]

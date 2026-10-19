@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Failed(Child)" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0,2075352">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="2918" result="Failed" site="Child" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.207535" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="4206" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2918" result="Failed" site="Child" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.145234" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="47156" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="4207" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2918" result="Failed" site="Child" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.113969" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="4210" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2830" result="Failed" site="Child" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.083715" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="4212" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2813" result="Failed" site="Child" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.053911" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestSuite" id="4213" name="World" fullname="CindarsHope.Tests.EditMode.World" runstate="Runnable" testcasecount="213" result="Failed" site="Child" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.032249" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1294" name="RoofRevealControllerTests" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.029074" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1296" name="LegacyConfiguration_StillControlsOnlyTheRoof" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.LegacyConfiguration_StillControlsOnlyTheRoof" methodname="LegacyConfiguration_StillControlsOnlyTheRoof" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="1381168100" result="Passed" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.010789" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1295" name="PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" methodname="PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="1616443733" result="Failed" start-time="2026-09-09 02:43:04Z" end-time="2026-09-09 02:43:04Z" duration="0.007203" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Unhandled log message: '[Assert] Assertion failed on expression: 'ShouldRunBehaviour()''. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                    <stack-trace><![CDATA[UnityEngine.GameObject:SendMessage (string,object)
+CindarsHope.Tests.EditMode.World.RoofRevealControllerTests:PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor () (at Assets/_Game/Tests/EditMode/World/RoofRevealControllerTests.cs:28)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+]]></stack-trace>
+                  </failure>
+                  <output><![CDATA[Assertion failed on expression: 'ShouldRunBehaviour()'
+Assertion failed on expression: 'ShouldRunBehaviour()'
+Assertion failed on expression: 'ShouldRunBehaviour()'
+Assertion failed on expression: 'ShouldRunBehaviour()'
+Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -1,0 +1,33 @@
+{
+  "sceneSha256": "833DBF551A4A139FB26E818944AECF4E984EDFB45533EA5A0E46C6CD2FD634A7",
+  "sceneMatchesMetadataBefore": true,
+  "sceneMatchesMetadataAfter": true,
+  "sceneMatchesSnapshot": true,
+  "status": "PASS",
+  "views": 8,
+  "customAxisYViews": 8,
+  "routeCount": 16,
+  "routePass": 16,
+  "visitedNodes": 6559,
+  "selectionPass": 4,
+  "runtimeErrors": 0,
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "sourceDrift": [],
+  "treeNodeTestReuse": [
+    {
+      "path": "Assets/_Game/Tests/EditMode/World/TreeNodeVisualTests.cs",
+      "evidenceSha": "0ACEF38084FF1B4F7A6B8E6C8C99267931B29B37DA82E629416F3B1E4CD16948",
+      "currentSha": "0ACEF38084FF1B4F7A6B8E6C8C99267931B29B37DA82E629416F3B1E4CD16948",
+      "same": true
+    },
+    {
+      "path": "Assets/_Game/Scripts/World/TreeNode.cs",
+      "evidenceSha": "80C51108369EA930E980DEC38F2302963D25B9D4A7EB583310B612160C5420E9",
+      "currentSha": "80C51108369EA930E980DEC38F2302963D25B9D4A7EB583310B612160C5420E9",
+      "same": true
+    }
+  ],
+  "oldPngCount": 149,
+  "oldPngDrift": []
+}

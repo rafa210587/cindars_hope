@@ -1,0 +1,8 @@
+{
+  "exitCode": 0,
+  "completedUtc": "2026-09-09T01:48:44.8253573Z",
+  "sceneAfterSha256": "DCD8BED38BE0A7A07BDBF958F00A2136563AE5DE1655819D03AF83D18073036B",
+  "scenePreserved": true,
+  "command": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.7f1\\Editor\\Unity.exe \"-batchmode\" \"-quit\" \"-projectPath\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\" \"-executeMethod\" \"CindarsHope.Editor.Dev.FarmSceneCapture.CaptureFarmTopDown\" \"-logFile\" \"D:\\Projetos\\Cindars_Hope\\cindars_hope\\docs\\validation\\playmode\\farm_pixelart_20260908\\baseline-capture-unity.log\"",
+  "logPath": "D:\\Projetos\\Cindars_Hope\\cindars_hope\\docs\\validation\\playmode\\farm_pixelart_20260908\\baseline-capture-unity.log"
+}

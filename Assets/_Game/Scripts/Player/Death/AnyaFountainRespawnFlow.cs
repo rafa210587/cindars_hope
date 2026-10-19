@@ -1,0 +1,191 @@
+using System.Collections;
+using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Events;
+using CindarsHope.Core.Respawn;
+using CindarsHope.Foundation;
+using CindarsHope.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+namespace CindarsHope.Player.Death
+{
+    /// <summary>
+    /// Fluxo de respawn na Fonte da Anya, com suporte CROSS-CENA.
+    ///
+    /// - Se a AnyaFountain existe na cena ATIVA: restaura vitais + teleporta para o RespawnPoint
+    ///   imediatamente (caso da FarmScene).
+    /// - Se NAO existe (ex.: morte na caverna): carrega a cena da Fonte (FarmScene) via
+    ///   SceneTransitionRouter e, quando a cena terminar de carregar, re-resolve a Fonte e completa
+    ///   o respawn ali. Anti-softlock: se mesmo apos o load nao houver Fonte, restaura o HP cheio
+    ///   no lugar para o jogador nunca ficar preso morto.
+    ///
+        /// Nasce sozinho via self-bootstrap estatico (idiom *RuntimeBootstrap do projeto): GameObject
+        /// DontDestroyOnLoad + singleton guard. Re-resolve a âncora de respawn da Fonte por contrato
+        /// apos load; isso e wiring de SETUP do fluxo de respawn, NAO comunicacao de gameplay.
+    /// </summary>
+    [DisallowMultipleComponent]
+    public sealed class AnyaFountainRespawnFlow : MonoBehaviour
+    {
+        private static AnyaFountainRespawnFlow _instance;
+
+        // Cena que contem a Fonte da Anya (a Fonte vive na FarmScene; ver CreateMvpFarmScene).
+        private const string FountainSceneName = SceneNames.Farm;
+        // Must match SceneSpawnPoint._spawnId in the serialized FarmScene.
+        private const string FountainSpawnAnchorId = SceneId.SpawnFarmFromCave;
+        private const string RespawnGateId = "gate_death_respawn_anya_fountain";
+
+        // True enquanto esperamos a cena da Fonte carregar para completar um respawn cross-cena.
+        private bool _awaitingFountainScene;
+
+        public static AnyaFountainRespawnFlow Instance => _instance;
+
+        public static void Install(Transform owner)
+        {
+            if (_instance != null)
+            {
+                return;
+            }
+
+            var go = new GameObject("AnyaFountainRespawnFlow");
+            go.transform.SetParent(owner);
+            if (owner == null) DontDestroyOnLoad(go);
+            _instance = go.AddComponent<AnyaFountainRespawnFlow>();
+        }
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this;
+        }
+
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            StopAllCoroutines();
+            _awaitingFountainScene = false;
+        }
+
+        /// <summary>
+        /// Inicia o respawn na Fonte da Anya. Retorna imediatamente; o respawn cross-cena completa
+        /// de forma assincrona quando a cena da Fonte termina de carregar.
+        /// </summary>
+        public void Respawn()
+        {
+            if (_awaitingFountainScene) return;
+            var fountain = FindActiveFountainRespawnPoint();
+            if (fountain != null && fountain.RespawnPoint != null)
+            {
+                CompleteRespawnAtFountain(fountain);
+                return;
+            }
+
+            // Sem Fonte na cena atual: carrega a cena da Fonte e completa apos o load.
+            _awaitingFountainScene = true;
+            Debug.Log($"[AnyaFountainRespawnFlow] Sem Fonte na cena atual; carregando '{FountainSceneName}' para respawn cross-cena.");
+
+            var succeeded = SceneTransitionRouterAdapter.Execute(
+                SceneManager.GetActiveScene().name,
+                FountainSceneName,
+                FountainSpawnAnchorId,
+                RespawnGateId,
+                out var reason);
+
+            if (!succeeded)
+            {
+                // O router recusou (ex.: outra transicao em andamento). Anti-softlock: revive no lugar.
+                _awaitingFountainScene = false;
+                Debug.LogWarning($"[AnyaFountainRespawnFlow] Falha ao carregar cena da Fonte: {reason}. Revivendo no lugar (anti-softlock).");
+                ReviveInPlaceFallback();
+            }
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (!_awaitingFountainScene || scene.name != FountainSceneName)
+            {
+                return;
+            }
+
+            StartCoroutine(CompleteAfterSceneSpawn(scene));
+        }
+
+        private IEnumerator CompleteAfterSceneSpawn(Scene scene)
+        {
+            // SceneSpawnInstaller/PlayerSpawnResolver apply their placement in Start.
+            yield return null;
+            _awaitingFountainScene = false;
+
+            var fountain = FindActiveFountainRespawnPoint();
+            if (fountain != null && fountain.RespawnPoint != null)
+            {
+                CompleteRespawnAtFountain(fountain);
+                yield break;
+            }
+
+            Debug.LogWarning(
+                $"[AnyaFountainRespawnFlow] Cena '{scene.name}' carregou mas nenhuma AnyaFountain foi encontrada. " +
+                "Revivendo no lugar (anti-softlock).");
+            ReviveInPlaceFallback();
+        }
+
+        private void CompleteRespawnAtFountain(IAnyaFountainRespawnPoint fountain)
+        {
+            var bootstrap = GameBootstrap.Instance;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
+            if (playerManager == null)
+            {
+                Debug.LogError("[AnyaFountainRespawnFlow] PlayerManager indisponivel; respawn na Fonte abortado.");
+                return;
+            }
+
+            var respawnService = new AnyaRespawnService(
+                playerManager,
+                bootstrap.StaminaManager as CindarsHope.Player.StaminaManager,
+                bootstrap.ManaManager as CindarsHope.Player.ManaManager,
+                fountain.RespawnPoint);
+
+            respawnService.RespawnAtAnyaFountain();
+            Debug.Log("[AnyaFountainRespawnFlow] Jogador respawnado na Fonte da Anya.");
+        }
+
+        // Le do registro estatico de AnyaFountain.ActiveInstances (auto-registrado via OnEnable/OnDisable)
+        // em vez de varrer todos os MonoBehaviours da cena (rule unity-architecture #1).
+        private static IAnyaFountainRespawnPoint FindActiveFountainRespawnPoint()
+        {
+            var instances = AnyaFountain.ActiveInstances;
+            for (var i = 0; i < instances.Count; i++)
+            {
+                var fountain = instances[i];
+                if (fountain != null && fountain.RespawnPoint != null
+                    && fountain.RespawnPoint.gameObject.scene == SceneManager.GetActiveScene())
+                {
+                    return fountain;
+                }
+            }
+
+            return null;
+        }
+
+        private static void ReviveInPlaceFallback()
+        {
+            var bootstrap = GameBootstrap.Instance;
+            var playerManager = bootstrap != null ? bootstrap.PlayerManager as CindarsHope.Player.PlayerManager : null;
+            if (playerManager != null)
+            {
+                playerManager.SetHP(playerManager.MaxHP);
+                GameEventBus.Publish(new AnyaRespawnCompletedEvent());
+            }
+        }
+    }
+}

@@ -1,0 +1,3709 @@
+{
+  "before_sha256": "9f7b92e72d144728f8b0abae8fffd32f3a3778cdedb205e3dc7027818347a540",
+  "after_sha256": "c6e2af6e04b449047ad47e7c3f745fc1ad0531cd660c53a0c293c0444f30ff77",
+  "counts_before": {
+    "OcclusionCullingSettings": 1,
+    "RenderSettings": 1,
+    "LightmapSettings": 1,
+    "NavMeshSettings": 1,
+    "GameObject": 1589,
+    "Transform": 1588,
+    "SpriteRenderer": 1470,
+    "MonoBehaviour": 263,
+    "BoxCollider2D": 164,
+    "TilemapRenderer": 5,
+    "Tilemap": 5,
+    "Grid": 4,
+    "Rigidbody2D": 2,
+    "Canvas": 1,
+    "RectTransform": 1,
+    "PolygonCollider2D": 4,
+    "Camera": 1,
+    "CircleCollider2D": 1,
+    "SceneRoots": 1
+  },
+  "counts_after": {
+    "OcclusionCullingSettings": 1,
+    "RenderSettings": 1,
+    "LightmapSettings": 1,
+    "NavMeshSettings": 1,
+    "GameObject": 2050,
+    "Transform": 2049,
+    "SpriteRenderer": 1902,
+    "PolygonCollider2D": 31,
+    "MonoBehaviour": 263,
+    "Canvas": 1,
+    "RectTransform": 1,
+    "BoxCollider2D": 165,
+    "TilemapRenderer": 5,
+    "Tilemap": 5,
+    "Grid": 4,
+    "Rigidbody2D": 2,
+    "Camera": 1,
+    "CircleCollider2D": 1,
+    "SceneRoots": 1
+  },
+  "exterior_after": {
+    "GameObject": 965,
+    "Transform": 965,
+    "SpriteRenderer": 936,
+    "PolygonCollider2D": 28
+  },
+  "id_differences": {},
+  "registry_differences": {},
+  "registry_counts_before": {
+    "SceneRuntimeReferences#CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller/_treeNodes": 71,
+    "SceneRuntimeReferences#CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller/_farmPlots": 4,
+    "Trees#CindarsHope.Runtime::CindarsHope.World.TreeRegistry/_trees": 68
+  },
+  "registry_counts_after": {
+    "Trees#CindarsHope.Runtime::CindarsHope.World.TreeRegistry/_trees": 68,
+    "SceneRuntimeReferences#CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller/_treeNodes": 71,
+    "SceneRuntimeReferences#CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller/_farmPlots": 4
+  },
+  "monobehaviour_differences": {
+    "SceneRuntimeReferences#CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller": {
+      "before": "MonoBehaviour:\n  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {ref: null}\n  m_PrefabInstance: {ref: null}\n  m_PrefabAsset: {ref: null}\n  m_GameObject: {ref: SceneRuntimeReferences#GameObject}\n  m_Enabled: 1\n  m_EditorHideFlags: 0\n  m_Script: {fileID: 11500000, guid: d4030820605a48f49aa5e385b29c210b, type: 3}\n  m_Name: \n  m_EditorClassIdentifier: CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller\n  _farmPlots:\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_200#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_203#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_202#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_201#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  _treeNodes:\n  - {ref: Trees/TreeNode_04#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_16#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_41#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_63#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_53#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_42#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_10#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_49#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_35#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_26#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_33#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_27#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_51#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_06#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_15#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_11#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_52#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_21#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_38#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_55#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: PerimeterTreeline/TreeNode_202#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_22#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_12#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_24#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_00#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_09#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_31#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_03#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_14#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_17#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_59#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_57#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_66#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_36#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_40#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_64#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_28#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_05#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_34#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_07#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_29#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_08#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_58#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_44#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_45#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_25#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_30#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_62#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_48#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_56#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_01#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_60#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_02#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_39#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_20#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_46#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: PerimeterTreeline/TreeNode_201#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_13#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_67#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_32#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: PerimeterTreeline/TreeNode_200#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_47#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_54#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_43#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_61#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_18#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_37#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_23#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_50#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_19#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_65#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  _fishingSpot: {ref: FishingSpot#CindarsHope.Runtime::CindarsHope.World.FishingSpot}\n  _seedShopPoint: {ref: null}\n  _sellAllPoint: {ref: null}\n  _craftingPoint: {ref: CraftingStation_Forge#CindarsHope.Runtime::CindarsHope.Craft.CraftingPoint}\n  _farmPlotRegistry: {ref: FarmPlots#CindarsHope.Runtime::CindarsHope.Farm.FarmPlotRegistry}\n  _treeRegistry: {ref: Trees#CindarsHope.Runtime::CindarsHope.World.TreeRegistry}\n  _itemPickupRegistry: {ref: ItemPickups#CindarsHope.Runtime::CindarsHope.World.ItemPickupRegistry}\n  _playerTransform: {ref: Player#Transform}\n",
+      "after": "MonoBehaviour:\n  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {ref: null}\n  m_PrefabInstance: {ref: null}\n  m_PrefabAsset: {ref: null}\n  m_GameObject: {ref: SceneRuntimeReferences#GameObject}\n  m_Enabled: 1\n  m_EditorHideFlags: 0\n  m_Script: {fileID: 11500000, guid: d4030820605a48f49aa5e385b29c210b, type: 3}\n  m_Name: \n  m_EditorClassIdentifier: CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller\n  _farmPlots:\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_201#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_203#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_202#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  - {ref: FarmProcessing/Greenhouse/FarmPlot_200#CindarsHope.Runtime::CindarsHope.Farm.FarmPlot}\n  _treeNodes:\n  - {ref: Trees/TreeNode_27#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_45#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_22#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_66#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_12#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_35#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_32#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_10#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_40#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_49#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_07#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_08#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_67#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_21#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_23#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_29#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_47#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_61#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_56#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_04#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_11#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_63#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_44#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_58#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_03#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: PerimeterTreeline/TreeNode_202#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_64#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_20#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_13#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_62#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_26#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_54#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_19#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_14#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_37#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_38#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: PerimeterTreeline/TreeNode_201#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_25#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_09#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_31#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_51#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_30#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: PerimeterTreeline/TreeNode_200#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_02#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_46#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_52#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_00#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_01#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_28#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_59#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_33#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_55#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_06#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_24#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_15#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_17#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_36#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_50#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_05#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_60#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_16#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_53#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_39#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_43#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_48#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_41#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_34#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_42#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_57#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_18#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  - {ref: Trees/TreeNode_65#CindarsHope.Runtime::CindarsHope.World.TreeNode}\n  _fishingSpot: {ref: FishingSpot#CindarsHope.Runtime::CindarsHope.World.FishingSpot}\n  _seedShopPoint: {ref: null}\n  _sellAllPoint: {ref: null}\n  _craftingPoint: {ref: CraftingStation_CookingStation#CindarsHope.Runtime::CindarsHope.Craft.CraftingPoint}\n  _farmPlotRegistry: {ref: FarmPlots#CindarsHope.Runtime::CindarsHope.Farm.FarmPlotRegistry}\n  _treeRegistry: {ref: Trees#CindarsHope.Runtime::CindarsHope.World.TreeRegistry}\n  _itemPickupRegistry: {ref: ItemPickups#CindarsHope.Runtime::CindarsHope.World.ItemPickupRegistry}\n  _playerTransform: {ref: Player#Transform}\n"
+    }
+  },
+  "existing_transform_changes": {
+    "Trees/TreeNode_66#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -15.717669, y: -11.765952, z: 0}",
+        "m_LocalScale": "{x: 0.9970018, y: 0.9970018, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.659237, y: -21.125378, z: 0}",
+        "m_LocalScale": "{x: 0.9970018, y: 0.9970018, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -16.66004, y: 2.4895124, z: 0.1}",
+        "m_LocalScale": "{x: 0.11582705, y: 0.06370488, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.992824, w: -0.11958467}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 6.296122, y: -15.466754, z: 0.1}",
+        "m_LocalScale": "{x: 0.10296852, y: 0.056632686, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.36689743, w: 0.9302614}"
+      }
+    },
+    "FarmSceneFoundationZones/Zone_Construction#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -5.5, y: -15.5, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -3.5, y: -10.5, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.485, y: -18.152, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 23.485, y: -16.352001, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_32#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -16.39758, y: 0.5484048, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.527086, y: -0.3179705, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_0_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.4882555, y: -13.801584, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.728089, y: -11.809331, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_52#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -29.857449, y: 2.4000256, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.798119, y: -5.624116, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -12.110707, y: -7.0035167, z: 0.1}",
+        "m_LocalScale": "{x: 0.12717555, y: 0.06994656, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7020384, w: -0.71213907}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -8.976426, y: -3.5201657, z: 0.1}",
+        "m_LocalScale": "{x: 0.06440418, y: 0.035422303, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.8233213, w: 0.5675757}"
+      }
+    },
+    "Trees/TreeNode_58#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.138655, y: 1.8988822, z: 0}",
+        "m_LocalScale": "{x: 1.1435632, y: 1.1435632, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 21.64291, y: -19.11712, z: 0}",
+        "m_LocalScale": "{x: 1.1435632, y: 1.1435632, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_FieldSouthCrate#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -9.1, y: -9.3, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -6.975, y: -5.24, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_11#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.095804, y: -1.891192, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -31.578157, y: 12.791827, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_6_6_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.6148496, y: -10.827415, z: 0.1}",
+        "m_LocalScale": "{x: 0.04277, y: 0.0235235, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.5547004, w: -0.83205014}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -25.73482, y: -3.1840873, z: 0.1}",
+        "m_LocalScale": "{x: 0.120076284, y: 0.066041954, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.8879882, w: 0.45986623}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_HouseGardenEast#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.9, y: 7.6, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.2, y: 9.1, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_45#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.768274, y: 1.7619916, z: 0}",
+        "m_LocalScale": "{x: 1.1088512, y: 1.1088512, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 10.471642, y: -22.421753, z: 0}",
+        "m_LocalScale": "{x: 1.1088512, y: 1.1088512, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_55#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -15.791504, y: -5.6360226, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -14.074797, y: -22.82053, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_006#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.90569, y: -20.608704, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -17.994404, y: -20.763197, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "MioloDebris_Pedras/RockResource_01#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -25.2, y: -7.8, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1.3}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -25.2, y: -10, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1.3}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_36#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -21.750013, y: 8.470104, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -3.1948302, y: -23.659483, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_HouseSuppliesSmall#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 12.55, y: 5.5, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.85, y: 7, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_35#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.695114, y: 9.861973, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -17.314716, y: -22.854048, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmRichness/Visual_CentralWell#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -7, y: 10, z: 0}",
+        "m_LocalScale": "{x: 4.4, y: 4.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -7.44, y: 12.69, z: 0}",
+        "m_LocalScale": "{x: 4.4, y: 4.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_WaterEdge_035#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 30.734997, y: -6.3670454, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.019266, y: -18.193739, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_39#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -21.52896, y: -1.8038805, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 22.046547, y: -22.303051, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Portals/Portal_Farm_To_Town#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 31, y: 3, z: 0}",
+        "m_LocalScale": "{x: 1.8, y: 1.8, z: 1.8}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 34.5, y: 3, z: 0}",
+        "m_LocalScale": "{x: 1.8, y: 1.8, z: 1.8}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_56#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -30.463636, y: 10.902417, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 14.10736, y: -20.786137, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_4_0_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.636772, y: -9.886829, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.51111, y: -7.747917, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_5_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 28.03138, y: -12.210237, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.98457, y: -10.212004, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_8_1_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -25.526936, y: 8.386585, z: 0.1}",
+        "m_LocalScale": "{x: 0.14625366, y: 0.080439515, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.75144494, w: 0.6597958}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -17.765688, y: -9.976736, z: 0.1}",
+        "m_LocalScale": "{x: 0.12904248, y: 0.07097337, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.8108892, w: 0.5851998}"
+      }
+    },
+    "Trees/TreeNode_34#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.155415, y: -3.1307797, z: 0}",
+        "m_LocalScale": "{x: 0.92372125, y: 0.92372125, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -15.944948, y: -22.872782, z: 0}",
+        "m_LocalScale": "{x: 0.92372125, y: 0.92372125, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_00#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -29, y: 12, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -30, y: 16, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_BarnHayStack#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -6.55, y: -18.1, z: 0}",
+        "m_LocalScale": "{x: 1.8, y: 1.8, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -5, y: -14.700001, z: 0}",
+        "m_LocalScale": "{x: 1.5, y: 1.5, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_HouseGardenWest#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.8, y: 7.2, z: 0}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.1, y: 8.7, z: 0}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 13.743051, y: -6.7499833, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.256884, y: -5.2795496, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_5_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 4.2349734, y: -19.453535, z: 0.1}",
+        "m_LocalScale": "{x: 0.16045542, y: 0.08825048, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.0022420245, w: 0.9999975}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28.357307, y: 7.102947, z: 0.1}",
+        "m_LocalScale": "{x: 0.13436048, y: 0.07389826, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.6436548, w: 0.765316}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_6_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 24.040428, y: -17.786093, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 30.540817, y: -15.111338, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_CourtyardFenceWest_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -4.45, y: -17.75, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -3.175, y: -14.200001, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_02#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -17.82252, y: 6.0770655, z: 0}",
+        "m_LocalScale": "{x: 1.1802033, y: 1.1802033, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.723698, y: -6.1581492, z: 0}",
+        "m_LocalScale": "{x: 1.1802033, y: 1.1802033, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_54#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -24.201962, y: -2.935326, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.175077, y: -22.765516, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 12.183759, y: -6.842746, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.722184, y: -5.570577, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_7_1_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 16.8175, y: -17.950607, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.8175, y: -16.150608, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_6_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -11.252768, y: 11.399749, z: 0.1}",
+        "m_LocalScale": "{x: 0.117779076, y: 0.06477849, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.311123, w: -0.95036966}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -16.079082, y: -14.936321, z: 0.1}",
+        "m_LocalScale": "{x: 0.13385415, y: 0.07361978, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.70239484, w: 0.7117875}"
+      }
+    },
+    "RiverAndBridge/Visual_Reeds_farm_spatial_lake_6_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 22.596989, y: -18.074951, z: 0.018509455}",
+        "m_LocalScale": "{x: 0.18509455, y: 0.18509455, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 29.110828, y: -15.519816, z: 0.018509455}",
+        "m_LocalScale": "{x: 0.18509455, y: 0.18509455, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_8_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -25.072542, y: 10.540679, z: 0.1}",
+        "m_LocalScale": "{x: 0.16328362, y: 0.08980599, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.5183794, w: 0.85515076}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -19.207397, y: -12.558749, z: 0.1}",
+        "m_LocalScale": "{x: 0.09545763, y: 0.052501697, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9867612, w: 0.16217995}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_8_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -23.853668, y: 3.2639277, z: 0.1}",
+        "m_LocalScale": "{x: 0.1204148, y: 0.066228144, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.026288493, w: -0.9996544}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 6.555375, y: -16.52432, z: 0.1}",
+        "m_LocalScale": "{x: 0.15219794, y: 0.08370887, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.9358299, w: 0.35245204}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_6_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 26.148659, y: -17.357912, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.179436, y: -14.923737, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_28#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -29.779737, y: 14.330038, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 14.182845, y: -22.153412, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_0_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.147133, y: -6.9926147, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.283016, y: -5.437671, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmSceneFoundationZones/Zone_HouseEntrance#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 16, y: 9, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.299999, y: 10.5, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_6_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 23.550476, y: -17.78386, z: 0.18200001}",
+        "m_LocalScale": "{x: 1.82, y: 1.82, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 30.052208, y: -15.147634, z: 0.18200001}",
+        "m_LocalScale": "{x: 1.82, y: 1.82, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_16#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -31.205133, y: 1.5424819, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -4.7876415, y: -23.457523, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_6_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 24.120623, y: -17.747202, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 29.18828, y: -15.471268, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_2_7_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 4.0699587, y: 5.1955757, z: 0.1}",
+        "m_LocalScale": "{x: 0.09019488, y: 0.049607184, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.96124876, w: 0.27568254}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 6.2402673, y: 7.1672034, z: 0.1}",
+        "m_LocalScale": "{x: 0.15122801, y: 0.083175406, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7614559, w: 0.6482167}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_5_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.569168, y: -12.652426, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.454807, y: -10.501531, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_23#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.193405, y: 6.5886755, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -25.576332, y: -7.4110475, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_8_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.919067, y: -16.846203, z: 0.1}",
+        "m_LocalScale": "{x: 0.22576082, y: 0.3273532, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.99513334, w: 0.09853758}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 16.198502, y: -14.788584, z: 0.1}",
+        "m_LocalScale": "{x: 0.23176989, y: 0.33606637, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9765755, w: 0.21517508}"
+      }
+    },
+    "Trees/TreeNode_67#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -13.917669, y: -11.765952, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.734732, y: -18.359365, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_57#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -23.138832, y: 8.385644, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 4.792836, y: -22.854824, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_26#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -25.637749, y: -4.864914, z: 0}",
+        "m_LocalScale": "{x: 1.0702825, y: 1.0702825, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -8.050144, y: -23.670094, z: 0}",
+        "m_LocalScale": "{x: 1.0702825, y: 1.0702825, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_4_1_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.558397, y: -8.729055, z: 0.1}",
+        "m_LocalScale": "{x: 0.12539126, y: 0.0689652, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.71328163, w: -0.7008775}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.39707, y: 3.886674, z: 0.1}",
+        "m_LocalScale": "{x: 0.14285952, y: 0.078572735, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.013620446, w: 0.99990726}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_2_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.633696, y: -7.2470255, z: 0.1}",
+        "m_LocalScale": "{x: 0.26728684, y: 0.38756594, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.055300385, w: 0.99846977}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 21.988726, y: -5.1332893, z: 0.1}",
+        "m_LocalScale": "{x: 0.22601092, y: 0.32771584, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.11903888, w: 0.99288964}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_003#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 1.22, y: -21.5, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -18.479162, y: -20.618177, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmSceneFoundationZones/Zone_LakeFishing#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17, y: -12, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 22.78, y: -10.070001, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_60#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -15.537546, y: 1.8721237, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -31.113195, y: 16.993572, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 21.02, y: -18.232, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 25.02, y: -16.432001, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_1_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -16.074556, y: -20.859985, z: 0.1}",
+        "m_LocalScale": "{x: 0.15537691, y: 0.0854573, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -26.686846, y: 10.699351, z: 0.1}",
+        "m_LocalScale": "{x: 0.12196733, y: 0.06708203, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.76047456, w: 0.6493677}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_10_1_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 21.157013, y: -2.7019992, z: 0.1}",
+        "m_LocalScale": "{x: 0.06923982, y: 0.0380819, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9819564, w: -0.18910754}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.367509, y: -7.1928387, z: 0.1}",
+        "m_LocalScale": "{x: 0.15242685, y: 0.083834775, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.35658592, w: 0.9342626}"
+      }
+    },
+    "FarmDecoration/Decoration_Forest_059#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -22.495026, y: 12.930021, z: 0}",
+        "m_LocalScale": "{x: 1.8, y: 1.8, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -16.584852, y: -7.4151473, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_0_1_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 31.304668, y: 2.9935787, z: 0.1}",
+        "m_LocalScale": "{x: 0.12645036, y: 0.0695477, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7071068, w: -0.7071068}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -20.555748, y: 16.965267, z: 0.1}",
+        "m_LocalScale": "{x: 0.13534829, y: 0.07444156, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.2275123, w: 0.9737752}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_FieldSouthFlowers#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -8.3, y: -9.1, z: 0}",
+        "m_LocalScale": "{x: 0.8, y: 0.8, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -6.175, y: -5.04, z: 0}",
+        "m_LocalScale": "{x: 0.8, y: 0.8, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_22#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.172039, y: 14.221079, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -31.325294, y: -5.524314, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_6_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 23.058449, y: -16.8507, z: 0.1}",
+        "m_LocalScale": "{x: 0.22576082, y: 0.3273532, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.99513334, w: 0.09853758}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 28.786655, y: -14.63131, z: 0.1}",
+        "m_LocalScale": "{x: 0.18407279, y: 0.26690555, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.99048644, w: 0.13761055}"
+      }
+    },
+    "Trees/TreeNode_03#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -29.23581, y: 0.9959114, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -25.23581, y: -4.5040884, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FishingSpot#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 10, y: -10, z: 0}",
+        "m_LocalScale": "{x: 6, y: 6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 13.56, y: -8.75, z: 0}",
+        "m_LocalScale": "{x: 6, y: 6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmSceneFoundationZones/Zone_CropField#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -3, y: -1, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -1.3125, y: 2.6250002, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_7_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -15.903438, y: 12.385167, z: 0.1}",
+        "m_LocalScale": "{x: 0.15080352, y: 0.08294194, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.21390368, w: 0.97685474}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -16.579779, y: -2.877773, z: 0.1}",
+        "m_LocalScale": "{x: 0.09428332, y: 0.05185583, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.8823365, w: 0.47061914}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_1_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -13.60789, y: -20.859985, z: 0.1}",
+        "m_LocalScale": "{x: 0.15537691, y: 0.0854573, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -26.988804, y: 8.795472, z: 0.1}",
+        "m_LocalScale": "{x: 0.12196733, y: 0.06708203, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.76047456, w: 0.6493677}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_4_4_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 7.842666, y: 2.0292604, z: 0.1}",
+        "m_LocalScale": "{x: 0.030969145, y: 0.01703303, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.830888, w: -0.55643976}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 34.815025, y: 2.3293245, z: 0.1}",
+        "m_LocalScale": "{x: 0.14844765, y: 0.08164621, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: 0.000005797544}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_6_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 25.331053, y: -17.37458, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 30.365667, y: -15.004636, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_CheeseSupplies#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -4.4, y: -18.7, z: 0}",
+        "m_LocalScale": "{x: 1.5, y: 1.5, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -2.875, y: -14.800001, z: 0}",
+        "m_LocalScale": "{x: 1.2, y: 1.2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.337282, y: -6.6195636, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.829609, y: -5.0743504, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_30#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -30.628262, y: -2.055046, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -31.419199, y: 19.46409, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_48#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -15.86366, y: -9.166375, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.926829, y: -18.992191, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_1_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.324785, y: 2.1563563, z: 0.1}",
+        "m_LocalScale": "{x: 0.10242801, y: 0.05633541, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9980676, w: -0.062137406}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -7.4164853, y: -16.13235, z: 0.1}",
+        "m_LocalScale": "{x: 0.14916337, y: 0.082039855, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.00021051109, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_001#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 0.66436565, y: -21.714205, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 0.5366055, y: -21.081598, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_43#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -30.32652, y: 3.7304182, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28.359068, y: -4.2719374, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_005#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.354929, y: -20.272284, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -18.90569, y: -20.608704, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_1_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 9.549922, y: -9.964493, z: 0.1}",
+        "m_LocalScale": "{x: 0.22137669, y: 0.3209962, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.31622776, w: 0.9486833}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.972442, y: -8.53587, z: 0.1}",
+        "m_LocalScale": "{x: 0.16603252, y: 0.24074717, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.31622776, w: 0.9486833}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_1_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17.573353, y: -6.0581074, z: 0.2}",
+        "m_LocalScale": "{x: 2, y: 2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.077564, y: -4.3209586, z: 0.2}",
+        "m_LocalScale": "{x: 2, y: 2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_8#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17.853203, y: -6.1162167, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 21.252523, y: -4.126358, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_51#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.087141, y: -0.54628164, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.432127, y: 7.17143, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_61#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -28.26074, y: -3.8695846, z: 0}",
+        "m_LocalScale": "{x: 1.1546515, y: 1.1546515, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -31.358294, y: 11.136342, z: 0}",
+        "m_LocalScale": "{x: 1.1546515, y: 1.1546515, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_27#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.262043, y: -3.953164, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 3.0755064, y: -23.000147, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_10#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.38765, y: -6.026215, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 22.762934, y: -3.8412402, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_7_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.024, y: -18.26869, z: 0.14600001}",
+        "m_LocalScale": "{x: 1.46, y: 1.46, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 23.024, y: -16.46869, z: 0.14600001}",
+        "m_LocalScale": "{x: 1.46, y: 1.46, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmRichness/Visual_ShedCrate#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 7.5, y: -17.8, z: 0}",
+        "m_LocalScale": "{x: 2, y: 2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 8.190001, y: -12.900001, z: 0}",
+        "m_LocalScale": "{x: 2, y: 2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_1_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -11.141224, y: -20.859985, z: 0.1}",
+        "m_LocalScale": "{x: 0.15537691, y: 0.0854573, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.290762, y: 6.8915925, z: 0.1}",
+        "m_LocalScale": "{x: 0.12196733, y: 0.06708203, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.76047456, w: 0.6493677}"
+      }
+    },
+    "Trees/TreeNode_29#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -24.458525, y: 15.099512, z: 0}",
+        "m_LocalScale": "{x: 1.4752542, y: 1.4752542, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 23.18922, y: -20.36037, z: 0}",
+        "m_LocalScale": "{x: 1.4752542, y: 1.4752542, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_ShedSupplies#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 2.6, y: -18.6, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 7.69, y: -14.800001, z: 0}",
+        "m_LocalScale": "{x: 1.2, y: 1.2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 13.703765, y: -7.042053, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 16.857763, y: -5.6709332, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_HouseSupplies#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 13.3, y: 5.85, z: 0}",
+        "m_LocalScale": "{x: 1.5, y: 1.5, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.6, y: 7.35, z: 0}",
+        "m_LocalScale": "{x: 1.5, y: 1.5, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_0_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.9031463, y: -13.01228, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.756189, y: -10.91807, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "SpawnPoints/Spawn_farm_from_town#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 30, y: 3, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33, y: 3, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_Reeds_farm_spatial_lake_4_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.613792, y: -10.33195, z: 0.015021133}",
+        "m_LocalScale": "{x: 0.15021133, y: 0.15021133, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.611893, y: -8.204344, z: 0.015021133}",
+        "m_LocalScale": "{x: 0.15021133, y: 0.15021133, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_11_3_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.833519, y: 1.3394022, z: 0.1}",
+        "m_LocalScale": "{x: 0.13078034, y: 0.07192919, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.8112422, w: -0.58471024}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.781452, y: -0.4544577, z: 0.1}",
+        "m_LocalScale": "{x: 0.1528141, y: 0.08404776, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.99999243, w: 0.003889388}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_10#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.375, y: -18.184, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.375, y: -16.384, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_4_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.813465, y: -10.363268, z: 0.163}",
+        "m_LocalScale": "{x: 1.63, y: 1.63, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.666798, y: -7.8624, z: 0.163}",
+        "m_LocalScale": "{x: 1.63, y: 1.63, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_8_6#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 8.49737, y: -17.287119, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.789467, y: -14.452636, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_42#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -31.34827, y: 15.287451, z: 0}",
+        "m_LocalScale": "{x: 1.1069227, y: 1.1069227, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28.47918, y: -2.5925, z: 0}",
+        "m_LocalScale": "{x: 1.1069227, y: 1.1069227, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_05#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -23.110935, y: -7.840536, z: 0}",
+        "m_LocalScale": "{x: 1.200452, y: 1.200452, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -12.663456, y: -23.334726, z: 0}",
+        "m_LocalScale": "{x: 1.200452, y: 1.200452, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmProcessing/Greenhouse/GreenhouseRuntimeHost#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -23, y: -8, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -23.2, y: -10.06, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmProcessing/Greenhouse#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 23, y: 8, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 23.2, y: 10.06, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_4_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.27358, y: -8.13776, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.305601, y: -6.0207996, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_0_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.568368, y: -6.437149, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.629908, y: -4.8329835, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_21#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -28.663073, y: 9.627332, z: 0}",
+        "m_LocalScale": "{x: 1.2462523, y: 1.2462523, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28.23661, y: 10.363805, z: 0}",
+        "m_LocalScale": "{x: 1.2462523, y: 1.2462523, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_5_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 26.846203, y: -13.080933, z: 0.1}",
+        "m_LocalScale": "{x: 0.22576082, y: 0.3273532, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.77334213, w: 0.6339889}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.888084, y: -10.8621235, z: 0.1}",
+        "m_LocalScale": "{x: 0.16352308, y: 0.23710847, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.8384922, w: 0.5449136}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 18.73, y: -18.216, z: 0.163}",
+        "m_LocalScale": "{x: 1.63, y: 1.63, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 22.73, y: -16.416, z: 0.163}",
+        "m_LocalScale": "{x: 1.63, y: 1.63, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_8_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 9.807034, y: -17.418516, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 14.031955, y: -14.887041, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_6_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -16.95453, y: 3.806027, z: 0.1}",
+        "m_LocalScale": "{x: 0.12890548, y: 0.07089801, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.09853756, w: 0.99513334}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 9.213628, y: -6.9618616, z: 0.1}",
+        "m_LocalScale": "{x: 0.12532493, y: 0.06892872, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.45808986, w: 0.8889059}"
+      }
+    },
+    "Trees/TreeNode_14#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -30.68341, y: 12.976011, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -26.15253, y: -19.551315, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_5_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -0.862169, y: -19.47639, z: 0.1}",
+        "m_LocalScale": "{x: 0.16045542, y: 0.08825048, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.0022420245, w: 0.9999975}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.627888, y: 11.295189, z: 0.1}",
+        "m_LocalScale": "{x: 0.13436048, y: 0.07389826, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.6436548, w: 0.765316}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_6_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 24.774866, y: -17.551086, z: 0.114}",
+        "m_LocalScale": "{x: 1.14, y: 1.14, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 29.82508, y: -15.224321, z: 0.114}",
+        "m_LocalScale": "{x: 1.14, y: 1.14, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_Meadow_089#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.85, y: -14.25, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -5.5219812, y: 13.919424, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_5_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.586195, y: -14.35457, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.0805, y: -12.206754, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_01#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -24.537302, y: 13.408677, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -31.613226, y: 9.130697, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_5_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.817966, y: -13.191692, z: 0.18200001}",
+        "m_LocalScale": "{x: 1.82, y: 1.82, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.579445, y: -11.082198, z: 0.18200001}",
+        "m_LocalScale": "{x: 1.82, y: 1.82, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_15#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -25.143248, y: 11.449704, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -18.730433, y: -22.873642, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmProcessing/Station_WineBarrel#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 5, y: -18, z: 0}",
+        "m_LocalScale": "{x: 1.4728034, y: 1.4728034, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 5.69, y: -13.1, z: 0}",
+        "m_LocalScale": "{x: 1.4728034, y: 1.4728034, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_7_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 20.48651, y: -16.918142, z: 0.1}",
+        "m_LocalScale": "{x: 0.26565203, y: 0.38519546, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 24.48651, y: -15.118143, z: 0.1}",
+        "m_LocalScale": "{x: 0.26565203, y: 0.38519546, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      }
+    },
+    "Trees/TreeNode_31#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -30.388956, y: -3.4676158, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -30.119741, y: 8.618275, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FonteAnya#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -24, y: 4, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28, y: 3.1, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmAnimalHousings/Visual_CoopPen#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 0, y: 0, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 2.8999996, y: 4.8999996, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_6_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 26.82742, y: -17.156893, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.840288, y: -14.669976, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_6#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17.244999, y: -18.136, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 21.244999, y: -16.336, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_2_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 16.633696, y: -7.5803585, z: 0.1}",
+        "m_LocalScale": "{x: 0.26728684, y: 0.38756594, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.055300385, w: 0.99846977}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.508726, y: -5.736623, z: 0.1}",
+        "m_LocalScale": "{x: 0.22601092, y: 0.32771584, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.11903888, w: 0.99288964}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_8_3_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -22.32095, y: 12.399554, z: 0.1}",
+        "m_LocalScale": "{x: 0.10343206, y: 0.056887634, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.15538882, w: 0.9878534}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -18.876255, y: -9.870344, z: 0.1}",
+        "m_LocalScale": "{x: 0.11800086, y: 0.06490047, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.58072555, w: 0.8140994}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_014#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.260508, y: -14.624672, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -7.495812, y: -19.380074, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_CourtyardFenceEast_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -6.55, y: -17.75, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -4.7, y: -14.200001, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_7_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.504002, y: -17.653725, z: 0.254}",
+        "m_LocalScale": "{x: 2.54, y: 2.54, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 23.504002, y: -15.853725, z: 0.254}",
+        "m_LocalScale": "{x: 2.54, y: 2.54, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_1_6#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.6904, y: -7.1622, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.250401, y: -5.9122, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_33#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -29.0215, y: -8.318469, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.0215, y: -7.818469, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_0_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -17.703207, y: -20.758842, z: 0.1}",
+        "m_LocalScale": "{x: 0.06629746, y: 0.036463603, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9680283, w: 0.250841}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -22.452139, y: 15.376489, z: 0.1}",
+        "m_LocalScale": "{x: 0.13661242, y: 0.07513683, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.93465954, w: 0.35554412}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_1_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.549922, y: -8.464493, z: 0.1}",
+        "m_LocalScale": "{x: 0.22137669, y: 0.3209962, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.31622776, w: 0.9486833}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.109922, y: -7.2144933, z: 0.1}",
+        "m_LocalScale": "{x: 0.22137669, y: 0.3209962, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.31622776, w: 0.9486833}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_8_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.083907, y: -17.716513, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.138282, y: -15.445507, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_015#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.643648, y: -14.1053295, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -7.6892457, y: -19.692577, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_49#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -28.215687, y: 14.385166, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.95868, y: -20.373098, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmProcessing/Station_CheesePress#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -2, y: -18, z: 0}",
+        "m_LocalScale": "{x: 1.4308943, y: 1.4308943, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -0.875, y: -13.1, z: 0}",
+        "m_LocalScale": "{x: 1.4308943, y: 1.4308943, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_5_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 1.6864026, y: -19.464964, z: 0.1}",
+        "m_LocalScale": "{x: 0.16045542, y: 0.08825048, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.0022420245, w: 0.9999975}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.992598, y: 9.199068, z: 0.1}",
+        "m_LocalScale": "{x: 0.13436048, y: 0.07389826, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.6436548, w: 0.765316}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_013#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.615911, y: -14.531058, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -8.32917, y: -19.11631, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_7_1_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.099648, y: 15.351406, z: 0.1}",
+        "m_LocalScale": "{x: 0.10790029, y: 0.059345163, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.5424082, w: 0.8401151}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -16.69804, y: -2.0670335, z: 0.1}",
+        "m_LocalScale": "{x: 0.08925913, y: 0.049092524, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.29112792, w: 0.9566841}"
+      }
+    },
+    "Trees/TreeNode_12#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -27.750479, y: -7.0106363, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -31.750479, y: -4.0106363, z: 0}",
+        "m_LocalScale": "{x: 1.2053916, y: 1.2053916, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_5_5#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.454798, y: -15.664233, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.66543, y: -13.4558325, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_HouseGardenEastFlowers#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.7, y: 6.9, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19, y: 8.4, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_7#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 16.515, y: -18.2, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.515, y: -16.400002, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_40#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -24.60059, y: -9.056582, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.013042, y: 17.236767, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_4_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.53118, y: -8.923682, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.040035, y: -6.901224, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_37#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -28.524433, y: -0.8484917, z: 0}",
+        "m_LocalScale": "{x: 1.2920527, y: 1.2920527, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 13.414516, y: -19.401793, z: 0}",
+        "m_LocalScale": "{x: 1.2920527, y: 1.2920527, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_5_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.970583, y: -12.840553, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.787186, y: -10.813699, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_Reeds_farm_spatial_lake_7_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.040609, y: -18.144344, z: 0.015021133}",
+        "m_LocalScale": "{x: 0.15021133, y: 0.15021133, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.04061, y: -16.344345, z: 0.015021133}",
+        "m_LocalScale": "{x: 0.15021133, y: 0.15021133, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_CourtyardFenceEast_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 0.45000005, y: -17.75, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 1.425, y: -14.200001, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 20.14, y: -18.088, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 24.14, y: -16.288, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_3_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.7501116, y: -19.993317, z: 0.1}",
+        "m_LocalScale": "{x: 0.06477405, y: 0.03562573, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.74145263, w: -0.6710052}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28.004847, y: 3.2474558, z: 0.1}",
+        "m_LocalScale": "{x: 0.09545763, y: 0.052501697, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      }
+    },
+    "Trees/TreeNode_50#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.345816, y: 0.442268, z: 0}",
+        "m_LocalScale": "{x: 0.9603616, y: 0.9603616, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.620232, y: 18.854206, z: 0}",
+        "m_LocalScale": "{x: 0.9603616, y: 0.9603616, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmHouse#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 16, y: 9, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.3, y: 10.5, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_Meadow_090#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.65, y: -13.7, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -5.8625646, y: 13.060174, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Board_Zrix/Visual#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -0.0006291601, y: -0.23431577, z: 0.016124967}",
+        "m_LocalScale": "{x: 0.16124968, y: 0.16124968, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -0.0006291601, y: -0.23431642, z: 0.016124967}",
+        "m_LocalScale": "{x: 0.16124968, y: 0.16124968, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_9#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.08, y: -18.12, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.08, y: -16.320002, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.3023133, y: -14.561796, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.893183, y: -12.57434, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_9_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -13.995144, y: 4.8365197, z: 0.1}",
+        "m_LocalScale": "{x: 0.048746333, y: 0.026810484, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7349776, w: 0.6780914}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -10.091341, y: -1.7903591, z: 0.1}",
+        "m_LocalScale": "{x: 0.14062883, y: 0.077345856, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.711243, w: 0.7029463}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_4_1_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.523614, y: -10.711664, z: 0.1}",
+        "m_LocalScale": "{x: 0.12539126, y: 0.0689652, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.71328163, w: -0.7008775}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.133184, y: 3.9483614, z: 0.1}",
+        "m_LocalScale": "{x: 0.14285952, y: 0.078572735, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.013620446, w: 0.99990726}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.030904, y: -6.478101, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.4995, y: -4.845513, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_3_8#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 26.895117, y: -7.889145, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 29.01241, y: -5.4138465, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_11_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.631608, y: -0.31379583, z: 0.1}",
+        "m_LocalScale": "{x: 0.07711981, y: 0.0424159, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.6771093, w: -0.73588246}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.86212, y: -0.0045326957, z: 0.1}",
+        "m_LocalScale": "{x: 0.08925908, y: 0.049092494, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.7071068, w: 0.7071068}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_8#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.684999, y: -18.056, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.685, y: -16.256, z: 0.093}",
+        "m_LocalScale": "{x: 0.93, y: 0.93, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_7_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -12.0857115, y: 11.499686, z: 0.1}",
+        "m_LocalScale": "{x: 0.0793828, y: 0.04366054, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.5117211, w: 0.85915166}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -15.377456, y: -9.278599, z: 0.1}",
+        "m_LocalScale": "{x: 0.11294053, y: 0.06211729, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.2962443, w: 0.9551122}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_4_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -12.192362, y: 7.3192196, z: 0.1}",
+        "m_LocalScale": "{x: 0.09915816, y: 0.05453699, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7733422, w: -0.6339888}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -14.9679785, y: -14.048906, z: 0.1}",
+        "m_LocalScale": "{x: 0.1545557, y: 0.08500563, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.7017951, w: 0.71237886}"
+      }
+    },
+    "SpawnPoints/Spawn_farm_from_cave#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.5, y: 14.5, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -22.75, y: 18, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_59#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.740797, y: -0.67172813, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.531488, y: -19.778244, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_09#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -20.581146, y: 7.7614083, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.368467, y: -20.824198, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_25#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.675245, y: 0.822057, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -11.091519, y: -23.66606, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmAnimalHousings/Coop_01#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -16, y: -18, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -13.1, y: -13.1, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_6_0_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 22.654825, y: -18.200668, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 29.192099, y: -15.633568, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_8_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -21.95367, y: 3.1639276, z: 0.1}",
+        "m_LocalScale": "{x: 0.1204148, y: 0.066228144, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.026288493, w: -0.9996544}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 8.3706665, y: -14.9309635, z: 0.1}",
+        "m_LocalScale": "{x: 0.15219794, y: 0.08370887, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.9358299, w: 0.35245204}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_0_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.0785685, y: -15.764294, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.162039, y: -13.330726, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_Meadow_088#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -27.4, y: -13.9, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -5.3074226, y: 13.310755, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_HouseGardenWestFlowers#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.2, y: 6.5, z: 0}",
+        "m_LocalScale": "{x: 0.9, y: 0.9, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 10.5, y: 8, z: 0}",
+        "m_LocalScale": "{x: 0.9, y: 0.9, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.147995, y: -15.227139, z: 0.114}",
+        "m_LocalScale": "{x: 1.14, y: 1.14, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.045247, y: -13.240202, z: 0.114}",
+        "m_LocalScale": "{x: 1.14, y: 1.14, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_47#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -25.046284, y: -6.300708, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.999993, y: -20.523403, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.600697, y: -6.4212713, z: 0.18200001}",
+        "m_LocalScale": "{x: 1.82, y: 1.82, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.668123, y: -4.940747, z: 0.18200001}",
+        "m_LocalScale": "{x: 1.82, y: 1.82, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_1_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.924788, y: 1.9563563, z: 0.1}",
+        "m_LocalScale": "{x: 0.10242801, y: 0.05633541, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9980676, w: -0.062137406}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -9.782909, y: -16.131353, z: 0.1}",
+        "m_LocalScale": "{x: 0.14916337, y: 0.082039855, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.00021051109, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_4_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.036343, y: -9.542164, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.823984, y: -7.6632633, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.0252986, y: -15.797614, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.184279, y: -13.806918, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_4_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -12.498244, y: 5.789808, z: 0.1}",
+        "m_LocalScale": "{x: 0.09915816, y: 0.05453699, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7733422, w: -0.6339888}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -15.0047, y: -11.595764, z: 0.1}",
+        "m_LocalScale": "{x: 0.1545557, y: 0.08500563, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.7017951, w: 0.71237886}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_11#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 13.57, y: -18.04, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.57, y: -16.240002, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_5_6#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.15572, y: -16.42536, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.206898, y: -14.132966, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_3_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 21.966076, y: -6.279862, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 23.983227, y: -4.151876, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_Reeds_farm_spatial_lake_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.497404, y: -14.818465, z: 0.013526141}",
+        "m_LocalScale": "{x: 0.1352614, y: 0.1352614, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.074503, y: -12.336372, z: 0.013526141}",
+        "m_LocalScale": "{x: 0.1352614, y: 0.1352614, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_6_5#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 23.368322, y: -17.96293, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 28.455269, y: -15.745473, z: 0.17}",
+        "m_LocalScale": "{x: 1.7, y: 1.7, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_65#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 8.9, y: 12.5, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.549545, y: -22.960934, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_Reeds_farm_spatial_lake_2_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.45368, y: -6.7881746, z: 0.01701446}",
+        "m_LocalScale": "{x: 0.1701446, y: 0.1701446, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.540712, y: -5.2067847, z: 0.01701446}",
+        "m_LocalScale": "{x: 0.1701446, y: 0.1701446, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_7_1_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.8975, y: -18.12538, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.897501, y: -16.32538, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_CourtyardFenceWest_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 2.55, y: -17.75, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 3.39, y: -14.200001, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_000#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 0.38182306, y: -21.479162, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 0.66436565, y: -21.714205, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_8_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.32105, y: -17.802904, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.413876, y: -15.615253, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_8_0_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 9.713529, y: -17.225819, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 13.920897, y: -14.647577, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_0_3_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 9.046975, y: 3.9751287, z: 0.1}",
+        "m_LocalScale": "{x: 0.11951479, y: 0.065733135, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.1360808, w: -0.99069774}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -6.5968604, y: 11.593068, z: 0.1}",
+        "m_LocalScale": "{x: 0.1581351, y: 0.08697431, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.00043189785, w: 0.99999994}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_10_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -13.339634, y: -2.1527033, z: 0.1}",
+        "m_LocalScale": "{x: 0.14717121, y: 0.08094417, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7171331, w: 0.69693625}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -10.133185, y: 7.2667856, z: 0.1}",
+        "m_LocalScale": "{x: 0.15905158, y: 0.08747837, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.70119685, w: 0.7129678}"
+      }
+    },
+    "Trees/TreeNode_13#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -14.967251, y: -7.6723466, z: 0}",
+        "m_LocalScale": "{x: 1.4294538, y: 1.4294538, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -22.96725, y: -6.1723466, z: 0}",
+        "m_LocalScale": "{x: 1.4294538, y: 1.4294538, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_46#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -15.653015, y: -1.8172628, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -6.0796337, y: -22.966465, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_5_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.890175, y: -13.56893, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.549187, y: -11.506773, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_5_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.530302, y: -14.960373, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.893272, y: -12.785603, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_0_5#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 7.04956, y: -12.370653, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.607384, y: -10.276994, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 21.8, y: -18.168, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 25.8, y: -16.368, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_5_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.886345, y: -13.694873, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.535946, y: -11.588137, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmSceneFoundationZones/Zone_CaveEntrance#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.5, y: 17, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -22.75, y: 20.1, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_7_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17.48651, y: -16.918142, z: 0.1}",
+        "m_LocalScale": "{x: 0.26565203, y: 0.38519546, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 21.48651, y: -15.118143, z: 0.1}",
+        "m_LocalScale": "{x: 0.26565203, y: 0.38519546, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_7_5#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17.875, y: -18.072, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 21.875, y: -16.272001, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmRichness/Visual_CheeseCrate#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 0.8, y: -18, z: 0}",
+        "m_LocalScale": "{x: 1.8, y: 1.8, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 1.925, y: -13.1, z: 0}",
+        "m_LocalScale": "{x: 1.8, y: 1.8, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_004#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.479162, y: -20.618177, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -18.354929, y: -20.272284, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_8_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 10.098389, y: -17.749044, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 14.1725445, y: -15.246373, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_0_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 30.273392, y: 3.7538347, z: 0.1}",
+        "m_LocalScale": "{x: 0.15566356, y: 0.085614964, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.0023255898, w: 0.9999973}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -14.755092, y: 14.220643, z: 0.1}",
+        "m_LocalScale": "{x: 0.13173889, y: 0.07245639, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.17930819, w: 0.98379296}"
+      }
+    },
+    "Trees/TreeNode_10#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -28.795088, y: -2.5839407, z: 0}",
+        "m_LocalScale": "{x: 1.0336422, y: 1.0336422, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.795088, y: 13.4160595, z: 0}",
+        "m_LocalScale": "{x: 1.0336422, y: 1.0336422, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_19#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.157768, y: -2.386421, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.842232, y: -17.886421, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_62#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -1.9, y: 13, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -29.91274, y: -4.1882896, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_8_5#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 9.20123, y: -17.362623, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 13.45608, y: -14.690851, z: 0.12100001}",
+        "m_LocalScale": "{x: 1.21, y: 1.21, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_9#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 18.743721, y: -6.1621556, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 22.141624, y: -4.0582585, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_3_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 21.247923, y: -5.888688, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 23.239565, y: -3.8116858, z: 0.149}",
+        "m_LocalScale": "{x: 1.49, y: 1.49, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_AnimalPen_007#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -17.994404, y: -20.763197, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -5.2470984, y: -20.405443, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_8_3_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -23.87095, y: 11.899554, z: 0.1}",
+        "m_LocalScale": "{x: 0.10343206, y: 0.056887634, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.15538882, w: 0.9878534}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -19.482914, y: -11.632528, z: 0.1}",
+        "m_LocalScale": "{x: 0.11800086, y: 0.06490047, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.58072555, w: 0.8140994}"
+      }
+    },
+    "FarmRichness/Visual_BarnHay#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -12.2, y: -17.5, z: 0}",
+        "m_LocalScale": "{x: 2.2, y: 2.2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -10.2, y: -12.6, z: 0}",
+        "m_LocalScale": "{x: 2.2, y: 2.2, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_5_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 26.572153, y: -15.623199, z: 0.1}",
+        "m_LocalScale": "{x: 0.16932061, y: 0.2455149, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.77334213, w: 0.6339889}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.888083, y: -13.1121235, z: 0.1}",
+        "m_LocalScale": "{x: 0.16352308, y: 0.23710847, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.8384922, w: 0.5449136}"
+      }
+    },
+    "Trees/TreeNode_38#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -27.128435, y: -1.0056051, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 10.565682, y: -19.972813, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_0_5_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 5.666606, y: 3.155477, z: 0.1}",
+        "m_LocalScale": "{x: 0.107854724, y: 0.0593201, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7071068, w: 0.7071068}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 11.47289, y: 7.478071, z: 0.1}",
+        "m_LocalScale": "{x: 0.16247049, y: 0.08935877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.03797192, w: 0.9992788}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_4_0_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.719471, y: -10.360928, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.771305, y: -8.152772, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_4_5#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 28.096018, y: -11.823332, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.493797, y: -9.0984, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_WaterEdge_036#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 30.090765, y: -6.405521, z: 0}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.68635, y: -19.195467, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_4_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 26.710758, y: -9.141977, z: 0.1}",
+        "m_LocalScale": "{x: 0.13691391, y: 0.19852518, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.61541224, w: 0.78820544}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.035507, y: -7.549922, z: 0.1}",
+        "m_LocalScale": "{x: 0.22137669, y: 0.3209962, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.44721362, w: 0.8944272}"
+      }
+    },
+    "Trees/TreeNode_17#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -31.44543, y: 0.06311138, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -0.07838702, y: -23.529694, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_4_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.347311, y: -9.026411, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.718401, y: -6.8111997, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_18#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -17.209665, y: -1.7903334, z: 0}",
+        "m_LocalScale": "{x: 0.88708097, y: 0.88708097, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.923798, y: -21.604748, z: 0}",
+        "m_LocalScale": "{x: 0.88708097, y: 0.88708097, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_FieldNorthSmallCrate#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 2.5, y: 8.8, z: 0}",
+        "m_LocalScale": "{x: 0.9, y: 0.9, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 3.75, y: 11.990001, z: 0}",
+        "m_LocalScale": "{x: 0.9, y: 0.9, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_5#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.846882, y: -6.5323224, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.315725, y: -4.7951417, z: 0.086}",
+        "m_LocalScale": "{x: 0.86, y: 0.86, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_24#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -28.478718, y: 2.6349254, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -20.582119, y: -23.053308, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_63#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -0.100000024, y: 13, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.163115, y: -3.469051, z: 0}",
+        "m_LocalScale": "{x: 1.0724955, y: 1.0724955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_2_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -14.883725, y: 2.923723, z: 0.1}",
+        "m_LocalScale": "{x: 0.11582705, y: 0.06370488, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.992824, w: -0.11958467}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 7.48083, y: -14.360107, z: 0.1}",
+        "m_LocalScale": "{x: 0.10296852, y: 0.056632686, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.36689743, w: 0.9302614}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_1_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 18.097868, y: -6.43217, z: 0.254}",
+        "m_LocalScale": "{x: 2.54, y: 2.54, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.645535, y: -4.625014, z: 0.254}",
+        "m_LocalScale": "{x: 2.54, y: 2.54, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmSceneFoundationZones/Zone_TownExit#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 31, y: 3, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 34.5, y: 3, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_0_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.477961, y: -15.39146, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.358263, y: -12.820808, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_7_1_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.377501, y: -18.160137, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.3775, y: -16.360138, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "CaveEntrance#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.5, y: 17, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -22.75, y: 20.1, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_6_0_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 23.00031, y: -17.48056, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 29.479898, y: -14.888524, z: 0.23600002}",
+        "m_LocalScale": "{x: 2.3600001, y: 2.3600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_2_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 13.633697, y: -7.9136925, z: 0.1}",
+        "m_LocalScale": "{x: 0.26728684, y: 0.38756594, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.055300385, w: 0.99846977}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.028727, y: -6.339956, z: 0.1}",
+        "m_LocalScale": "{x: 0.22601092, y: 0.32771584, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.11903888, w: 0.99288964}"
+      }
+    },
+    "Trees/TreeNode_44#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -27.774137, y: 0.72327614, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -22.407862, y: -22.833933, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_7_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.486509, y: -16.918142, z: 0.1}",
+        "m_LocalScale": "{x: 0.26565203, y: 0.38519546, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.48651, y: -15.118143, z: 0.1}",
+        "m_LocalScale": "{x: 0.26565203, y: 0.38519546, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 1, w: -0.00000004371139}"
+      }
+    },
+    "Trees/TreeNode_53#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -20.938004, y: 1.3121485, z: 0}",
+        "m_LocalScale": "{x: 1.3378531, y: 1.3378531, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.240257, y: -7.176136, z: 0}",
+        "m_LocalScale": "{x: 1.3378531, y: 1.3378531, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_04#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -21.304869, y: -0.40641057, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -26.10634, y: -21.816263, z: 0}",
+        "m_LocalScale": "{x: 1.3825865, y: 1.3825865, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_river_9_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 25.457981, y: -3.5766647, z: 0.1}",
+        "m_LocalScale": "{x: 0.26657283, y: 0.3865306, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.6771095, w: 0.7358823}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 24.717663, y: -3.5242572, z: 0.1}",
+        "m_LocalScale": "{x: 0.08434531, y: 0.12230071, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.6771095, w: 0.7358823}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_4_3_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.9118657, y: -1.6290746, z: 0.1}",
+        "m_LocalScale": "{x: 0.04786586, y: 0.026326224, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.784368, w: -0.6202958}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 35.82382, y: 2.9942083, z: 0.1}",
+        "m_LocalScale": "{x: 0.11405328, y: 0.06272931, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.7071068, w: 0.7071068}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 5.785296, y: -20.616348, z: 0.1}",
+        "m_LocalScale": "{x: 0.12598461, y: 0.06929154, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.98832756, w: -0.15234396}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.392168, y: 5.2074037, z: 0.1}",
+        "m_LocalScale": "{x: 0.08976306, y: 0.049369685, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.7065177, w: 0.70769536}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_8_4_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -20.484768, y: 12.897164, z: 0.1}",
+        "m_LocalScale": "{x: 0.13785774, y: 0.07582176, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.13870122, w: 0.9903343}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -18.646976, y: -7.812964, z: 0.1}",
+        "m_LocalScale": "{x: 0.138781, y: 0.07632955, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7423369, w: 0.6700268}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_6#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 16.416267, y: -6.4046636, z: 0.114}",
+        "m_LocalScale": "{x: 1.14, y: 1.14, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.86416, y: -4.5958524, z: 0.114}",
+        "m_LocalScale": "{x: 1.14, y: 1.14, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_10_2_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 21.550768, y: -2.113229, z: 0.1}",
+        "m_LocalScale": "{x: 0.064774044, y: 0.035625726, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.6710052, w: -0.74145263}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 13.39887, y: -6.7387843, z: 0.1}",
+        "m_LocalScale": "{x: 0.07479579, y: 0.041137684, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.41986114, w: 0.90758836}"
+      }
+    },
+    "Trees/TreeNode_64#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 7.1, y: 12.5, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 18.876099, y: -22.319715, z: 0}",
+        "m_LocalScale": "{x: 1.2496903, y: 1.2496903, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_0_0_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 5.746526, y: 2.3484113, z: 0.1}",
+        "m_LocalScale": "{x: 0.03317903, y: 0.018248467, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9999834, w: 0.0057689385}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -21.931156, y: 19.603909, z: 0.1}",
+        "m_LocalScale": "{x: 0.08660989, y: 0.047635444, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.63957393, w: 0.7687296}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_7_1_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 16.3375, y: -18.291294, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.3375, y: -16.491295, z: 0.21800001}",
+        "m_LocalScale": "{x: 2.18, y: 2.18, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Board_Zrix#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -16.5, y: 15.5, z: 0}",
+        "m_LocalScale": "{x: 1.44, y: 1.44, z: 1.44}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -18.8, y: 19, z: 0}",
+        "m_LocalScale": "{x: 1.44, y: 1.44, z: 1.44}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_FieldNorthCrate#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 3.2, y: 9, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 4.45, y: 12.190001, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_8_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 10.694333, y: -17.216854, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 14.876535, y: -14.868517, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_41#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.874832, y: -9.942898, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28.766811, y: 8.949138, z: 0}",
+        "m_LocalScale": "{x: 1.1610929, y: 1.1610929, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_4_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -12.246613, y: 4.627527, z: 0.1}",
+        "m_LocalScale": "{x: 0.07814232, y: 0.04297828, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.46181062, w: -0.88697857}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 8.134081, y: -7.397659, z: 0.1}",
+        "m_LocalScale": "{x: 0.10402306, y: 0.057212684, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.8983874, w: 0.439204}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_6_6#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 22.477169, y: -17.994308, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 27.569342, y: -15.846818, z: 0.10700001}",
+        "m_LocalScale": "{x: 1.07, y: 1.07, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 7.724236, y: -13.23142, z: 0.1}",
+        "m_LocalScale": "{x: 0.18668121, y: 0.27068776, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.58471024, w: 0.8112422}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.441305, y: -9.960337, z: 0.1}",
+        "m_LocalScale": "{x: 0.17583337, y: 0.2549584, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7517672, w: 0.6594286}"
+      }
+    },
+    "FarmDecoration/Decoration_Forest_060#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -22.018227, y: 14.035065, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -16.488222, y: -7.769743, z: 0}",
+        "m_LocalScale": "{x: 0.32914284, y: 0.32914284, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_8_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 12.761522, y: -18.172583, z: 0.163}",
+        "m_LocalScale": "{x: 1.63, y: 1.63, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 16.727741, y: -16.311947, z: 0.163}",
+        "m_LocalScale": "{x: 1.63, y: 1.63, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_CourtyardFenceEast_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 7.45, y: -17.75, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 7.99, y: -14.200001, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 12.9022255, y: -6.698522, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 16.416367, y: -5.3358297, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_6_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -14.95453, y: 4.206027, z: 0.1}",
+        "m_LocalScale": "{x: 0.12890548, y: 0.07089801, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.09853756, w: 0.99513334}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 8.06355, y: -5.347853, z: 0.1}",
+        "m_LocalScale": "{x: 0.12532493, y: 0.06892872, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.45808986, w: 0.8889059}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_4_4#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.881132, y: -11.227664, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 33.064598, y: -8.632801, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_1_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17.166843, y: -6.746119, z: 0.14600001}",
+        "m_LocalScale": "{x: 1.46, y: 1.46, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.762196, y: -5.0552287, z: 0.14600001}",
+        "m_LocalScale": "{x: 1.46, y: 1.46, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/FarmSettlementDetails/Visual_CourtyardFenceWest_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -11.45, y: -17.75, z: 0}",
+        "m_LocalScale": "{x: 1.6, y: 1.6, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -9.3, y: -14.200001, z: 0}",
+        "m_LocalScale": "{x: 1.4, y: 1.4, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_7_1_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 15.8575, y: -17.661228, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 19.8575, y: -15.861229, z: 0.11000001}",
+        "m_LocalScale": "{x: 1.1, y: 1.1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_6_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 25.606337, y: -16.575525, z: 0.1}",
+        "m_LocalScale": "{x: 0.16932061, y: 0.2455149, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.99513334, w: 0.09853758}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 30.786655, y: -14.064644, z: 0.1}",
+        "m_LocalScale": "{x: 0.18407279, y: 0.26690555, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.99048644, w: 0.13761055}"
+      }
+    },
+    "Trees/TreeNode_20#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -19.094105, y: -8.303906, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -27.902525, y: 14.011455, z: 0}",
+        "m_LocalScale": "{x: 1.4268852, y: 1.4268852, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_10_4_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 19.59882, y: -1.5775249, z: 0.1}",
+        "m_LocalScale": "{x: 0.11492323, y: 0.063207775, z: 1}",
+        "m_LocalRotation": "{x: 0, y: -0, z: -0.00000008742278, w: -1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 10.910303, y: -8.855785, z: 0.1}",
+        "m_LocalScale": "{x: 0.10498451, y: 0.05774148, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9955223, w: 0.094527006}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_4_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.03101, y: -11.189303, z: 0.1}",
+        "m_LocalScale": "{x: 0.18255189, y: 0.26470026, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.61541224, w: 0.78820544}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.71413, y: -9.412441, z: 0.1}",
+        "m_LocalScale": "{x: 0.16603252, y: 0.24074717, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0.44721362, w: 0.8944272}"
+      }
+    },
+    "FarmAnimalHousings/Barn_01#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -9, y: -18, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -7, y: -13.1, z: 0}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_8_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 9.419067, y: -16.346203, z: 0.1}",
+        "m_LocalScale": "{x: 0.22576082, y: 0.3273532, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.99513334, w: 0.09853758}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 13.727001, y: -13.903937, z: 0.1}",
+        "m_LocalScale": "{x: 0.17382741, y: 0.25204974, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.9765755, w: 0.21517508}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_4_2#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.56826, y: -9.646332, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 32.1626, y: -7.2968, z: 0.135}",
+        "m_LocalScale": "{x: 1.35, y: 1.35, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_6_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -17.505869, y: -19.646034, z: 0.1}",
+        "m_LocalScale": "{x: 0.098706774, y: 0.054288726, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.12993325, w: 0.9915227}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -26.671509, y: 12.968617, z: 0.1}",
+        "m_LocalScale": "{x: 0.1411898, y: 0.07765439, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.36079693, w: 0.9326444}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_5_4_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.175002, y: -19.488768, z: 0.1}",
+        "m_LocalScale": "{x: 0.0912291, y: 0.05017601, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.10535053, w: -0.99443513}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -28.602142, y: 3.8505268, z: 0.1}",
+        "m_LocalScale": "{x: 0.09495388, y: 0.052224636, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.70655084, w: 0.7076623}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_8_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 10.592674, y: -17.722494, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 14.724577, y: -15.366529, z: 0.156}",
+        "m_LocalScale": "{x: 1.5600001, y: 1.5600001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_2_7#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 17.08504, y: -6.2659616, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 20.509758, y: -4.3729243, z: 0.142}",
+        "m_LocalScale": "{x: 1.4200001, y: 1.4200001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_9_9_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -24.652544, y: 2.7548475, z: 0.1}",
+        "m_LocalScale": "{x: 0.09545763, y: 0.052501697, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7071068, w: 0.7071068}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 4.598334, y: -17.258982, z: 0.1}",
+        "m_LocalScale": "{x: 0.15155476, y: 0.08335512, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -1, w: 0.00020702282}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 14.160246, y: -6.8037996, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.2801, y: -5.376364, z: 0.128}",
+        "m_LocalScale": "{x: 1.28, y: 1.28, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_4_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 27.08425, y: -8.540643, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 31.479486, y: -6.7216353, z: 0.16400002}",
+        "m_LocalScale": "{x: 1.6400001, y: 1.6400001, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmPaths/Visual_BankStrip_path_1_10_0_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -13.272967, y: -4.486037, z: 0.1}",
+        "m_LocalScale": "{x: 0.14717121, y: 0.08094417, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7171331, w: 0.69693625}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -10.091139, y: 9.792385, z: 0.1}",
+        "m_LocalScale": "{x: 0.15905158, y: 0.08747837, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.70119685, w: 0.7129678}"
+      }
+    },
+    "RiverAndBridge/Visual_BankStrip_farm_spatial_lake_0_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 6.8765106, y: -15.173565, z: 0.1}",
+        "m_LocalScale": "{x: 0.14001091, y: 0.20301582, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.58471024, w: 0.8112422}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 12.786305, y: -12.585337, z: 0.1}",
+        "m_LocalScale": "{x: 0.17583337, y: 0.2549584, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: 0.7517672, w: 0.6594286}"
+      }
+    },
+    "Trees/TreeNode_06#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -18.390982, y: -5.5408354, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -9.242883, y: -22.83137, z: 0}",
+        "m_LocalScale": "{x: 1.3382877, y: 1.3382877, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_08#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -26.47954, y: 12.261623, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 15.458868, y: -21.541075, z: 0}",
+        "m_LocalScale": "{x: 1.2939891, y: 1.2939891, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "Trees/TreeNode_07#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: -31.198582, y: 9.697547, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: -1.519831, y: -22.952929, z: 0}",
+        "m_LocalScale": "{x: 1.1167941, y: 1.1167941, z: 1}",
+        "m_LocalRotation": "{x: -0, y: -0, z: -0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_BankRock_farm_spatial_lake_2_1_3#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 18.582256, y: -6.445075, z: 0.14600001}",
+        "m_LocalScale": "{x: 1.46, y: 1.46, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 21.12761, y: -4.5759873, z: 0.14600001}",
+        "m_LocalScale": "{x: 1.46, y: 1.46, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_Reeds_farm_spatial_lake_8_0#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 9.688113, y: -17.481623, z: 0.016516129}",
+        "m_LocalScale": "{x: 0.16516128, y: 0.16516128, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 13.875499, y: -14.877508, z: 0.016516129}",
+        "m_LocalScale": "{x: 0.16516128, y: 0.16516128, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "FarmDecoration/Decoration_WaterEdge_034#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 30.462917, y: -6.6141267, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 17.91362, y: -18.427067, z: 0}",
+        "m_LocalScale": "{x: 1.3, y: 1.3, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    },
+    "RiverAndBridge/Visual_ShorePebble_farm_spatial_lake_8_1#Transform": {
+      "before": {
+        "m_LocalPosition": "{x: 11.951367, y: -17.863699, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      },
+      "after": {
+        "m_LocalPosition": "{x: 16.012434, y: -15.821949, z: 0.1}",
+        "m_LocalScale": "{x: 1, y: 1, z: 1}",
+        "m_LocalRotation": "{x: 0, y: 0, z: 0, w: 1}"
+      }
+    }
+  },
+  "limitations": "Text parser for saved Unity YAML; local references normalized by hierarchy/type, list order retained except registries explicitly sorted. Duplicate same-type components on one object can collide in map. External asset contents not compared. Does not prove runtime/visual behavior."
+}

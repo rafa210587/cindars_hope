@@ -1,0 +1,359 @@
+{
+    "status": "FAIL",
+    "stage": "exiting",
+    "failure": "",
+    "startedUtc": "2026-09-09T02:08:43.3942194Z",
+    "finishedUtc": "2026-09-09T02:08:54.0974078Z",
+    "playStartedUtc": "2026-09-09T02:08:47.2874959Z",
+    "scenePath": "Assets/_Game/Scenes/FarmScene.unity",
+    "sceneSha256Before": "1036e1d21a5b501218f86d1937d66d34c77d155525a2b78cfe2e4202402edc74",
+    "sceneSha256After": "1036e1d21a5b501218f86d1937d66d34c77d155525a2b78cfe2e4202402edc74",
+    "unityVersion": "6000.5.7f1",
+    "persistentRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope",
+    "saveRoot": "C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\\saves",
+    "saveHashScope": "All files recursively under SaveManager's saves directory; Unity Editor Analytics is outside the player save directory.",
+    "saveIsolation": "Direct Farm bootstrap; SaveInput disabled in memory before Play Mode. No save/load calls. Scene reopened without saving on exit.",
+    "limitations": "Static camera views at current gameplay aspect. Teleports are framing only; do not prove movement, collision traversal, animation fluidity or human acceptance. Bounds include sprite geometry, not alpha-only silhouette. Screen Space Overlay UI is not rendered by Camera.Render.",
+    "disabledSaveInputs": 1,
+    "saveHashesBefore": [],
+    "saveHashesAfter": [],
+    "views": [
+        {
+            "id": "spawn",
+            "utc": "2026-09-09T02:08:49.4223819Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\spawn.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": 24.0,
+                "y": 3.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": 23.5859375,
+                "y": 2.4921875,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_04.png",
+                    "spriteName": "idle_right_04",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 24.0,
+                        "y": 3.59375,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529441833496097
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 24.0,
+                        "y": 2.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.58530807495117,
+                        "y": 56.47060012817383
+                    }
+                }
+            ]
+        },
+        {
+            "id": "bridge",
+            "utc": "2026-09-09T02:08:51.4460680Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\bridge.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": 15.0,
+                "y": 2.8600003719329836,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": 15.53125,
+                "y": 2.7578125,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_04.png",
+                    "spriteName": "idle_right_04",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 15.0,
+                        "y": 3.4537503719329836,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.08826446533203,
+                        "y": 33.529415130615237
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 24.0,
+                        "y": 2.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.5853271484375,
+                        "y": 56.47060012817383
+                    }
+                }
+            ]
+        },
+        {
+            "id": "cultivation",
+            "utc": "2026-09-09T02:08:53.4683969Z",
+            "path": "docs/validation/playmode/farm_gameplay_review\\cultivation.png",
+            "cameraObjectPath": "Main Camera",
+            "playerPosition": {
+                "x": -2.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "cameraPosition": {
+                "x": -1.578125,
+                "y": 0.421875,
+                "z": -10.0
+            },
+            "orthographicSize": 8.5,
+            "cameraAspect": 1.3333333730697632,
+            "width": 640,
+            "height": 480,
+            "sprites": [
+                {
+                    "objectPath": "Player",
+                    "spritePath": "Assets/_Game/Resources/PlayerSprites/idle/right/idle_right_04.png",
+                    "spriteName": "idle_right_04",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_player.asset",
+                    "textureWidth": 41,
+                    "textureHeight": 76,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 41.0,
+                        "height": 76.0
+                    },
+                    "localScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "lossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 2.0,
+                        "y": 2.0,
+                        "z": 2.0
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": -2.0,
+                        "y": 0.59375,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 0.640625,
+                        "y": 1.1875,
+                        "z": 0.4000000059604645
+                    },
+                    "projectedPixels": {
+                        "x": 18.088226318359376,
+                        "y": 33.529457092285159
+                    }
+                },
+                {
+                    "objectPath": "ShippingBin_farm_shipping_bin_01/Visual",
+                    "spritePath": "Assets/_Game/Art/Generated/World/props/shipping_bin.png",
+                    "spriteName": "shipping_bin",
+                    "scaleProfilePath": "Assets/_Game/Data/Scale/VisualScaleProfile_shipping_bin.asset",
+                    "textureWidth": 427,
+                    "textureHeight": 398,
+                    "pixelsPerUnit": 128.0,
+                    "spriteRect": {
+                        "serializedVersion": "2",
+                        "x": 0.0,
+                        "y": 0.0,
+                        "width": 427.0,
+                        "height": 398.0
+                    },
+                    "localScale": {
+                        "x": 0.35734227299690249,
+                        "y": 0.35734227299690249,
+                        "z": 1.0
+                    },
+                    "lossyScale": {
+                        "x": 0.643216073513031,
+                        "y": 0.643216073513031,
+                        "z": 1.7999999523162842
+                    },
+                    "scaleRootLossyScale": {
+                        "x": 1.7999999523162842,
+                        "y": 1.7999999523162842,
+                        "z": 1.7999999523162842
+                    },
+                    "spriteWorldBoundsCenter": {
+                        "x": 24.0,
+                        "y": 2.0,
+                        "z": 0.0
+                    },
+                    "spriteWorldBoundsSize": {
+                        "x": 2.145728588104248,
+                        "y": 2.0,
+                        "z": 0.35999998450279238
+                    },
+                    "projectedPixels": {
+                        "x": 60.58540344238281,
+                        "y": 56.470584869384769
+                    }
+                }
+            ]
+        }
+    ],
+    "runtimeErrors": []
+}

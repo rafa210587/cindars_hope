@@ -1,0 +1,429 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace CindarsHope.Farm
+{
+    /// <summary>
+    /// Approved enclosed-valley v2 layout. Existing tile/world identity is fixed; the76x50 envelope
+    /// includes an irregular clearing defined by FarmEnclosedValleyBoundaryContract.
+    /// Existing resource and save IDs are preserved when landmarks move.
+    /// </summary>
+    public static class FarmLevel1LayoutContract
+    {
+        // Tile(0,0) still starts at world(-32,-22), preserving every existing save coordinate.
+        public const int GridOriginTileX = -8;
+        public const int GridOriginTileY = -3;
+
+        // Approved enclosed-valley v2 anchors; values are world units, never global art scale.
+        public const float OrchardMinX = -22.75f;
+        public const float OrchardMinY = -1.75f;
+        public const float OrchardWidth = 12.25f;
+        public const float OrchardHeight = 10.95f;
+        public const float PastureMinX = -37.65f;
+        public const float PastureMinY = -13f;
+        public const float PastureWidth = 18.4f;
+        public const float PastureHeight = 8.75f;
+        public const float WellX = -7.44f;
+        public const float WellY = 12.69f;
+        public const float CoopX = -13.1f;
+        public const float CoopY = -13.1f;
+        public const float BarnX = -7.2f;
+        public const float BarnY = -13.1f;
+        public const float ProcessingAX = -1.0f;
+        public const float ProcessingAY = -13.1f;
+        public const float ProcessingBX = 4.9f;
+        public const float ProcessingBY = -13.1f;
+        public const string FishingSpotId = "farm_spot_7_-10";
+        public const float FishingSpotX = 13.56f;
+        public const float FishingSpotY = -8.75f;
+        public const float DockEntranceX = 13.56f;
+        public const float DockEntranceY = -6.75f;
+        // ── Dimensoes v6 ─────────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Farm envelope width:76 tiles, x in[-40,36]. Only the western pasture expands.
+        /// </summary>
+        public const float Level1WidthTiles = 76f;
+
+        /// <summary>
+        /// Farm envelope height: 50 tiles, y in [-25,25].
+        /// </summary>
+        public const float Level1HeightTiles = 50f;
+
+        /// <summary>
+        /// Limite minimo de X (canto esquerdo da fazenda).
+        /// </summary>
+        public const float MinX = -40f;
+
+        /// <summary>
+        /// Limite maximo de X (canto direito da fazenda).
+        /// </summary>
+        public const float MaxX = 36f;
+
+        /// <summary>
+        /// Limite minimo de Y (borda sul da fazenda).
+        /// </summary>
+        public const float MinY = -25f;
+
+        /// <summary>
+        /// Limite maximo de Y (borda norte da fazenda — montanha).
+        /// </summary>
+        public const float MaxY = 25f;
+
+        // ── Ancora: NORTE — Montanha / Caverna / Minerio ─────────────────────────────────────────
+
+        /// <summary>
+        /// Y base da montanha (colisao intransponivel ao norte). Faixa y in [18,22].
+        /// </summary>
+        public const float MountainBaseY = 21f;
+
+        /// <summary>
+        /// Fixed anchor: Cave entrance location X (canto noroeste da montanha). v6: maior (~5x4).
+        /// </summary>
+        public const float CaveEntranceX = -22.75f;
+
+        /// <summary>
+        /// Fixed anchor: Cave entrance location Y. v6: embutida na montanha.
+        /// </summary>
+        public const float CaveEntranceY = 20.1f;
+
+        /// <summary>
+        /// Fixed anchor: Spawn ao sair da caverna (abaixo do canto NO).
+        /// </summary>
+        public const float SpawnFromCaveX = -22.75f;
+
+        /// <summary>
+        /// Fixed anchor: Spawn ao sair da caverna Y.
+        /// </summary>
+        public const float SpawnFromCaveY = 18f;
+
+        // ── Ancora: LESTE — Base / Casa / Saida da Cidade ────────────────────────────────────────
+
+        /// <summary>
+        /// Fixed anchor: Portal da cidade (extrema direita, altura central) X. v6: (31,0).
+        /// </summary>
+        public const float CityExitX = 34.5f;
+
+        /// <summary>
+        /// Fixed anchor: Portal da cidade Y.
+        /// </summary>
+        public const float CityExitY = 3f;
+
+        /// <summary>
+        /// Fixed anchor: Spawn ao chegar da cidade X. v6: (29,0).
+        /// </summary>
+        public const float SpawnFromTownX = 33f;
+
+        /// <summary>
+        /// Fixed anchor: Spawn ao chegar da cidade Y.
+        /// </summary>
+        public const float SpawnFromTownY = 3f;
+
+        /// <summary>
+        /// Fixed anchor: Spawn padrao do jogador (em frente a casa, lado leste da ponte) X. v6: (14,2).
+        /// </summary>
+        public const float DefaultSpawnX = 16f;
+
+        /// <summary>
+        /// Fixed anchor: Spawn padrao do jogador Y.
+        /// </summary>
+        public const float DefaultSpawnY = 3f;
+
+        /// <summary>
+        /// Fixed anchor: Fonte de Anya (respawn + Agua Viva, clareira sul do bosque) X. v6: (-16,8).
+        /// </summary>
+        public const float FonteAnchorX = -28f;
+
+        /// <summary>
+        /// Fixed anchor: Fonte de Anya Y.
+        /// </summary>
+        public const float FonteAnchorY = 3.1f;
+
+        /// <summary>
+        /// House anchor X (centro da casa WALK-IN). v6: (24,8).
+        /// </summary>
+        public const float HouseStartX = 15.3f;
+
+        /// <summary>
+        /// House anchor Y.
+        /// </summary>
+        public const float HouseStartY = 13.5f;
+
+        /// <summary>
+        /// SellPoint anchor X. v6: (16,4).
+        /// </summary>
+        public const float SellPointStartX = 13.5f;
+
+        /// <summary>
+        /// SellPoint anchor Y.
+        /// </summary>
+        public const float SellPointStartY = 6f;
+
+        /// <summary>
+        /// Fixed anchor: Evolution Board (Quadro de Evolucoes) X. v6: (27,3).
+        /// </summary>
+        public const float EvolutionBoardX = 19.2f;
+
+        /// <summary>
+        /// Fixed anchor: Evolution Board Y.
+        /// </summary>
+        public const float EvolutionBoardY = 6f;
+
+        // ── Ancora: SUDESTE — Agua (acude, rio, ponte, lago) ─────────────────────────────────────
+
+        /// <summary>
+        /// Fixed anchor: Centro do lago v6 (~28x17, 3x maior). Centro (18,-12).
+        /// </summary>
+        public const float LakeCenterX = 22.78f;
+
+        /// <summary>
+        /// Fixed anchor: Centro do lago Y.
+        /// </summary>
+        public const float LakeCenterY = -10.07f;
+
+        /// <summary>
+        /// Fixed anchor: Largura do lago em tiles (~28x17, organico). v6: spans x[4,32].
+        /// </summary>
+        public const float LakeWidthTiles = 22.44f;
+
+        /// <summary>
+        /// Fixed anchor: Altura do lago em tiles. v6: spans y[-20.5,-3.5].
+        /// </summary>
+        public const float LakeHeightTiles = 12.26f;
+
+        /// <summary>
+        /// Fixed anchor: Centro da ponte (trilha farm_default<->centro) X. v6: (11,2).
+        /// </summary>
+        public const float BridgeCenterX = 27f;
+
+        /// <summary>
+        /// Fixed anchor: Centro da ponte Y.
+        /// </summary>
+        public const float BridgeCenterY = 3f;
+
+        // Spatial contract extents. These retain the materialized v7 scene geometry in one place.
+        public const float LakeMinX = 11.56f;
+        public const float LakeMinY = -16.2f;
+        public const float LakeWidth = 22.44f;
+        public const float LakeHeight = 12.26f;
+        public const float RiverMinX = 24f;
+        public const float RiverMinY = -8f;
+        public const float RiverWidth = 7.5f;
+        public const float RiverHeight = 28f;
+        public const float BridgeMinX = 24.7f;
+        public const float BridgeMinY = 2f;
+        public const float BridgeWidth = 4.6f;
+        public const float BridgeHeight = 2f;
+        public const float HouseMinX = 11.05f;
+        public const float HouseMinY = 10.125f;
+        public const float HouseWidth = 8.5f;
+        public const float HouseHeight = 6.75f;
+        public const float GreenhouseMinX = 20.7f;
+        public const float GreenhouseMinY = 10.8f;
+        public const float GreenhouseWidth = 5f;
+        public const float GreenhouseHeight = 4.5f;
+        public const float AnimalBuildingsMinX = -16f;
+        public const float AnimalBuildingsMinY = -14f;
+        public const float AnimalBuildingsWidth = 25f;
+        public const float AnimalBuildingsHeight = 7f;
+        public const float CraftingYardMinX = 10f;
+        public const float CraftingYardMinY = -2f;
+        public const float CraftingYardWidth = 13f;
+        public const float CraftingYardHeight = 3f;
+        public const float CaveMouthMinX = -24.75f;
+        public const float CaveMouthMinY = 18.35f;
+        public const float CaveMouthWidth = 4f;
+        public const float CaveMouthHeight = 3.5f;
+        public const float CaveBoardX = -18.8f;
+        public const float CaveBoardY = 19f;
+        public const float TownExitMinX = 33.5f;
+        public const float TownExitMinY = 1.5f;
+        public const float TownExitWidth = 2f;
+        public const float TownExitHeight = 3f;
+        // Keyart correction: the farm field is a central landmark, not the whole free middle.
+        // Leaves circulation, lake approach and visual breathing room around every mass.
+        public const float CropFieldMinX = -8f;
+        public const float CropFieldMinY = -3.94f;
+        public const float CropFieldWidth = 13f;
+        public const float CropFieldHeight = 13.13f;
+
+        // ── Ancora: AREAS DE EXPANSAO RESERVADAS (v6) ───────────────────────────────────────────
+
+        /// <summary>
+        /// Expansao Norte — centro X. Nao-aravel ate desbloquear.
+        /// </summary>
+        public const float ExpNorthX = -6f;
+
+        /// <summary>
+        /// Expansao Norte — centro Y.
+        /// </summary>
+        public const float ExpNorthY = 17f;
+
+        /// <summary>
+        /// Expansao Oeste — centro X.
+        /// </summary>
+        public const float ExpWestX = -30f;
+
+        /// <summary>
+        /// Expansao Oeste — centro Y.
+        /// </summary>
+        public const float ExpWestY = -4f;
+
+        /// <summary>
+        /// Expansao Sul — centro X.
+        /// </summary>
+        public const float ExpSouthX = -16f;
+
+        /// <summary>
+        /// Expansao Sul — centro Y.
+        /// </summary>
+        public const float ExpSouthY = -18f;
+
+        // ── Campos legados removidos / renomeados (stub de compatibilidade) ──────────────────────
+
+        // NOTE: InitialFieldWidthTiles / InitialFieldHeightTiles / InitialFieldStartX /
+        //       InitialFieldStartY nao se aplicam mais (solo aravel e por tile — Spec B).
+        //       CaveEntranceX/Y e CityExitX/Y foram remapeados para world-units centradas acima.
+
+        // ── Validacoes ───────────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Valida que as dimensoes passadas correspondem ao contrato v6 (64x44).
+        /// </summary>
+        public static bool IsLevel1SizeValid(float widthTiles, float heightTiles)
+        {
+            return Mathf.Approximately(widthTiles, Level1WidthTiles) &&
+                   Mathf.Approximately(heightTiles, Level1HeightTiles);
+        }
+
+        /// <summary>
+        /// Valida que a Fonte de Anya esta dentro dos bounds.
+        /// </summary>
+        public static bool IsFonteInBounds()
+        {
+            return FonteAnchorX >= MinX && FonteAnchorX < MaxX &&
+                   FonteAnchorY >= MinY && FonteAnchorY < MaxY;
+        }
+
+        /// <summary>
+        /// Valida que o lago esta dentro dos bounds.
+        /// </summary>
+        public static bool IsLakeInBounds()
+        {
+            float lakeStartX = LakeCenterX - LakeWidthTiles / 2f;
+            float lakeStartY = LakeCenterY - LakeHeightTiles / 2f;
+            float lakeEndX = lakeStartX + LakeWidthTiles;
+            float lakeEndY = lakeStartY + LakeHeightTiles;
+
+            return lakeStartX >= MinX && lakeEndX <= MaxX &&
+                   lakeStartY >= MinY && lakeEndY <= MaxY;
+        }
+
+        /// <summary>
+        /// Valida que a entrada da caverna esta dentro dos bounds.
+        /// </summary>
+        public static bool IsCaveEntranceInBounds()
+        {
+            return CaveEntranceX >= MinX && CaveEntranceX < MaxX &&
+                   CaveEntranceY >= MinY && CaveEntranceY < MaxY;
+        }
+
+        /// <summary>
+        /// Valida que a saida da cidade esta dentro dos bounds.
+        /// </summary>
+        public static bool IsCityExitAccessible()
+        {
+            return CityExitX >= MinX && CityExitX < MaxX &&
+                   CityExitY >= MinY && CityExitY < MaxY;
+        }
+
+        /// <summary>
+        /// Valida que a montanha esta no topo (acima de MountainBaseY).
+        /// </summary>
+        public static bool IsMountainInBounds()
+        {
+            return MountainBaseY > 0f && MountainBaseY < MaxY;
+        }
+
+        /// <summary>
+        /// Valida que a ponte esta dentro dos bounds.
+        /// </summary>
+        public static bool IsBridgeInBounds()
+        {
+            return BridgeCenterX >= MinX && BridgeCenterX < MaxX &&
+                   BridgeCenterY >= MinY && BridgeCenterY < MaxY;
+        }
+    }
+
+    /// <summary>Pure landmark inventory for the FarmScene art composition.</summary>
+    public enum FarmLandmarkId
+    {
+        CentralField,
+        HomesteadYard,
+        AnimalPens,
+        WestForest,
+        AnyaClearing,
+        NorthCliff,
+        SouthEastLake
+    }
+
+    /// <summary>
+    /// Declares the visual roots and approachable bounds for the seven FarmScene landmarks.
+    /// This stays beside the level layout anchors because it is editor-agnostic data only.
+    /// </summary>
+    public static class FarmLandmarkCompositionContract
+    {
+        private static readonly string[] CentralFieldObjects = { "FarmPlots", "Visual_CentralFieldSoil" };
+        private static readonly string[] HomesteadObjects = { "FarmHouse", "Visual_HomesteadWell", "Visual_HomesteadHay" };
+        private static readonly string[] AnimalPenObjects = { "FarmAnimalHousings", "Coop_01", "Barn_01", "Visual_CoopPen", "Visual_CoopPenHay", "Visual_CoopPenTrough" };
+        private static readonly string[] WestForestObjects = { "Trees", "Visual_WestForestFoliage" };
+        private static readonly string[] AnyaClearingObjects = { "FonteAnya", "Visual_AnyaClearing" };
+        private static readonly string[] NorthCliffObjects = { "MountainBarrier", "CaveEntrance", "LockedOreNodes", "Visual_NorthCliffOre" };
+        private static readonly string[] LakeObjects = { "RiverAndBridge", "FishingSpot", "Visual_LakeFoliage" };
+
+        public static IReadOnlyList<string> RequiredSceneObjects(FarmLandmarkId landmark)
+        {
+            return landmark switch
+            {
+                FarmLandmarkId.CentralField => CentralFieldObjects,
+                FarmLandmarkId.HomesteadYard => HomesteadObjects,
+                FarmLandmarkId.AnimalPens => AnimalPenObjects,
+                FarmLandmarkId.WestForest => WestForestObjects,
+                FarmLandmarkId.AnyaClearing => AnyaClearingObjects,
+                FarmLandmarkId.NorthCliff => NorthCliffObjects,
+                FarmLandmarkId.SouthEastLake => LakeObjects,
+                _ => throw new System.ArgumentOutOfRangeException(nameof(landmark), landmark, null)
+            };
+        }
+
+        public static Bounds GetBounds(FarmLandmarkId landmark)
+        {
+            return landmark switch
+            {
+                FarmLandmarkId.CentralField => new Bounds(new Vector3(-1.5f, 2.625f, 0f), new Vector3(13f, 13.13f, 1f)),
+                FarmLandmarkId.HomesteadYard => new Bounds(new Vector3(18f, 8f, 0f), new Vector3(18f, 16f, 1f)),
+                FarmLandmarkId.AnimalPens => new Bounds(new Vector3(-3.5f, -11f, 0f), new Vector3(25f, 7f, 1f)),
+                FarmLandmarkId.WestForest => new Bounds(new Vector3(-23f, 3f, 0f), new Vector3(18f, 28f, 1f)),
+                FarmLandmarkId.AnyaClearing => new Bounds(new Vector3(-28f, 3.1f, 0f), new Vector3(4f, 4f, 1f)),
+                FarmLandmarkId.NorthCliff => GetNorthCliffBounds(),
+                FarmLandmarkId.SouthEastLake => new Bounds(new Vector3(22.78f, -10.07f, 0f), new Vector3(22.44f, 12.26f, 1f)),
+                _ => throw new System.ArgumentOutOfRangeException(nameof(landmark), landmark, null)
+            };
+        }
+
+        private static Bounds GetNorthCliffBounds()
+        {
+            // Landmark approaches belong to the playable mountain footprint. Decorative cliff
+            // sprites extend beyond the envelope and must not enlarge this navigation contract.
+            if (!Scene.FarmSceneSpatialContract.TryGet(Scene.FarmSceneSpatialContract.Mountain, out var mountain))
+                throw new System.InvalidOperationException("Farm mountain footprint is missing.");
+            var bounds = mountain.Bounds;
+            return new Bounds(bounds.center, new Vector3(bounds.size.x, bounds.size.y, 1f));
+        }
+
+        public static int RequiredApproachCount(FarmLandmarkId landmark)
+        {
+            return landmark == FarmLandmarkId.CentralField ? 4 : 1;
+        }
+    }
+}

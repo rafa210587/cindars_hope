@@ -1,0 +1,137 @@
+[
+  {
+    "path": "Assets/_Game/Scripts/Skills/SkillCooldownTracker.cs",
+    "sha256": "3FF796BD3199AEC54DE9CB6E814C17647052C113CFA1EB0FDBD679A0F1D79148",
+    "lastWriteUtc": "2026-09-10T02:58:04.9286490Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/SkillTreeManager.cs",
+    "sha256": "79EC31BFB6A9A5047C9311432C7023F6EB6390A270CCF77F15DD3005481948C7",
+    "lastWriteUtc": "2026-09-10T03:00:49.9185848Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/SkillPurchaseService.cs",
+    "sha256": "FA40686DB8A57AEC49C8DAE9E91FF161F885D3519D1A606567B0C2E1E5EDF51B",
+    "lastWriteUtc": "2026-09-10T02:49:35.5315676Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/SkillRespecService.cs",
+    "sha256": "986D9AA6F8B41C3BB531B2389D768D5C77A41D6A6F72588F5F4C712E5A227923",
+    "lastWriteUtc": "2026-09-10T03:00:49.9195875Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/SkillTreeState.cs",
+    "sha256": "EA6EC8E89D5B5C520522AA46ECD82C6103A705BBB257B654D44B6726316C11AB",
+    "lastWriteUtc": "2026-09-10T03:08:34.4163967Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/SkillTreeSaveData.cs",
+    "sha256": "4B571EBA457C7ADEB8C5AD1641F5F68C9D6EC98899BC650AC0A0ED0448DEDC4F",
+    "lastWriteUtc": "2026-09-10T03:08:34.4179066Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutionController.cs",
+    "sha256": "74B3CC3032FC6189C9E90E09F67C399125499DB7FE05FD844B3C03C5B0102ACF",
+    "lastWriteUtc": "2026-09-10T03:17:15.6972605Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/Runtime/Effects/MeleeStrikeSkillEffectExecutor.cs",
+    "sha256": "D8EAB89E4894CBBD79114D3ACDC492447BEC446C03F433027B0A37378B1F4937",
+    "lastWriteUtc": "2026-09-10T02:59:46.9871223Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/Runtime/Effects/ProjectileSkillEffectExecutor.cs",
+    "sha256": "A9E9215EA41EA90C137AA4B32588F738AACFA12AF0A83903DBE67F6E342AFC8D",
+    "lastWriteUtc": "2026-09-10T02:53:15.8378203Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Skills/Runtime/Effects/ActiveSkillExecutorCatalog.cs",
+    "sha256": "22C0F9749DCEB7549B7E2A1C80DFADD60FE7FEB37751BB71EF58985B6C158842",
+    "lastWriteUtc": "2026-09-10T02:53:16.0373251Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Player/Movement/PlayerMovementDisplacementResolver.cs",
+    "sha256": "3AB848C16FB559338C89C6D6BB4FA073F946012A32691D9A49A356866C708130",
+    "lastWriteUtc": "2026-09-10T02:52:14.6131709Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Player/Progression/PlayerProgressionManager.cs",
+    "sha256": "400EDEC95297CA324EC57A01050E60E9EA9C325C08DE1A84FE91686DC78A86FF",
+    "lastWriteUtc": "2026-09-10T02:48:54.8853954Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Save/SaveManager.cs",
+    "sha256": "B3A01E7BF7FE1405E0264EABFDE1258D9649C506DF0CB056FF623E5ECB994CEB",
+    "lastWriteUtc": "2026-09-10T03:10:31.3308237Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Fonte/FonteInteractable.cs",
+    "sha256": "0000EDFCB217B6F8FF29EC5918540CC0A0D22064F8A354B5955CC46BB31354DD",
+    "lastWriteUtc": "2026-09-10T03:00:49.9185848Z"
+  },
+  {
+    "path": "Assets/_Game/Scripts/UI/Locations/AnyaFountainMenu.cs",
+    "sha256": "1759B0D87F39ADD99B7AD675BB531CA27E55F4EF9D0CC986F5E571BFC9DFE99C",
+    "lastWriteUtc": "2026-09-10T03:00:25.2441009Z"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Skills/SkillPointTransactionTests.cs",
+    "sha256": "D5983DEA9134643A7B1A1A536F1BFBE62F7D8C4766D098584E7025800379C986",
+    "lastWriteUtc": "2026-09-10T03:09:29.2353379Z"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Skills/SkillExecutionFoundationTests.cs",
+    "sha256": "4025E5E240CA95898BC6C709D7EA53FDBB47341E3CC96FFBA68126231C81ECD3",
+    "lastWriteUtc": "2026-09-10T03:13:10.6518492Z"
+  },
+  {
+    "path": "Assets/_Game/Tests/EditMode/Skills/SkillCooldownTrackerTests.cs",
+    "sha256": "7F3DD1FBB7BE744A9C00ED3F9665D98604DAC742CAE880EB40165EA443881A59",
+    "lastWriteUtc": "2026-09-10T02:58:04.9291652Z"
+  },
+  {
+    "path": "Assets/_Game/Tests/PlayMode/Composition/SkillExecutionFoundationPlayModeTests.cs",
+    "sha256": "C1658F5E6400526F06317403B9A174998CD6FC4E3FC493BFCF3487CACFFE263A",
+    "lastWriteUtc": "2026-09-10T03:21:27.6058110Z"
+  },
+  {
+    "path": "ProjectSettings/ProjectVersion.txt",
+    "sha256": "4B72A68F7B9E250D7F392F9964A8CE91959FA26628A05117AB911EDFEC912313",
+    "lastWriteUtc": "2026-08-11T22:19:06.5134792Z"
+  },
+  {
+    "path": "ProjectSettings/ProjectSettings.asset",
+    "sha256": "CC7299C00F65FB92108463C5CC8734B69F38FBAF0C3B16E53F778A56845462E0",
+    "lastWriteUtc": "2026-09-10T03:21:43.7727745Z"
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "sha256": "35F8B0D3E3F3620BCC96F06E1FFE39A502FCFF29516AAFADE08C39BCCABFF84C",
+    "lastWriteUtc": "2026-08-11T20:40:06.7712434Z"
+  },
+  {
+    "path": "Packages/manifest.json",
+    "sha256": "0DF35B3CF0DDAB003497C34466B81AE4CB700CC22CF1A4D448FC6C7A128F7FA2",
+    "lastWriteUtc": "2026-08-11T22:19:44.6740047Z"
+  },
+  {
+    "path": "Packages/packages-lock.json",
+    "sha256": "A74EDA3BA0BEC2163E71E4CEE972D88BE7BBB065272B88428CD49FD1A59C14DB",
+    "lastWriteUtc": "2026-08-11T22:19:44.8014052Z"
+  },
+  {
+    "path": "Assets/_Game/Scenes/FarmScene.unity",
+    "sha256": "4AEECA3A17F897663F9E42FC7614D1362F29B6598074DA221AF49DED4CE52958",
+    "lastWriteUtc": "2026-09-10T03:06:06.9447216Z"
+  },
+  {
+    "path": "Assets/_Game/Scenes/TownScene.unity",
+    "sha256": "9F2E4F6C817465100D8F6F86BCED7D56F57972D686B8CEA22317BE4F4CAE336C",
+    "lastWriteUtc": "2026-09-10T03:06:10.0384986Z"
+  },
+  {
+    "path": "Assets/_Game/Scenes/CaveScene.unity",
+    "sha256": "37D04F466F39E355C178585977D8F310AA2CD80BB2DE56254F5925822903577B",
+    "lastWriteUtc": "2026-09-10T03:06:10.3252574Z"
+  }
+]

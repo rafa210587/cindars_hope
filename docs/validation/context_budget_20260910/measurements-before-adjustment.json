@@ -1,0 +1,335 @@
+{
+  "method": "o200k_base reference tokenizer; normalized LF; catalog reconstructed with 110-character description cap and r8 paths, not actual serialized prompts",
+  "project_skill_count": 94,
+  "project_catalog_110": {
+    "characters": 16494,
+    "o200k_base": 4215
+  },
+  "project_catalog_full_descriptions": {
+    "characters": 29345,
+    "o200k_base": 7013
+  },
+  "two_new_catalog_110": {
+    "characters": 365,
+    "o200k_base": 84
+  },
+  "files": {
+    "AGENTS.md": {
+      "characters": 5500,
+      "o200k_base": 1417
+    },
+    "CLAUDE.md": {
+      "characters": 3180,
+      "o200k_base": 636
+    },
+    "docs/project/CURRENT_STATE.md": {
+      "characters": 6219,
+      "o200k_base": 1522
+    },
+    ".claude/HARNESS_INDEX.md": {
+      "characters": 12231,
+      "o200k_base": 2927
+    }
+  },
+  "all_skill_entries_NOT_automatic": {
+    "characters": 409821,
+    "o200k_base": 100266
+  },
+  "scenarios_additional_reads": {
+    "mcp_operation": {
+      "paths": [
+        "unity-mcp-operations/SKILL.md"
+      ],
+      "characters": 3366,
+      "o200k_base": 647
+    },
+    "mcp_validation": {
+      "paths": [
+        "unity-mcp-operations/SKILL.md",
+        "unity-validation/SKILL.md"
+      ],
+      "characters": 8662,
+      "o200k_base": 1731
+    },
+    "aseprite_edit": {
+      "paths": [
+        "aseprite-authoring/SKILL.md",
+        "aseprite-authoring/references/cli-lua.md",
+        "aseprite-authoring/references/acceptance.md"
+      ],
+      "characters": 10771,
+      "o200k_base": 2268
+    },
+    "animation_extra": {
+      "paths": [
+        "pixel-art-animator/SKILL.md",
+        "pixel-art-animator/references/operations.md",
+        "sprite-animation-review/SKILL.md",
+        "sprite-animation-review/references/motion-diagnostics.md"
+      ],
+      "characters": 9293,
+      "o200k_base": 1947
+    },
+    "hud_binding": {
+      "paths": [
+        "hud-canvas-binding/SKILL.md"
+      ],
+      "characters": 3360,
+      "o200k_base": 679
+    },
+    "profiling": {
+      "paths": [
+        "unity-performance-profiling/SKILL.md"
+      ],
+      "characters": 2796,
+      "o200k_base": 543
+    }
+  },
+  "largest_entries": [
+    {
+      "name": "non-regression-review",
+      "path": ".agents/skills/non-regression-review/SKILL.md",
+      "full_entry": {
+        "characters": 15215,
+        "o200k_base": 3821
+      },
+      "description_characters": 179
+    },
+    {
+      "name": "crop-farming-systems",
+      "path": ".agents/skills/crop-farming-systems/SKILL.md",
+      "full_entry": {
+        "characters": 11159,
+        "o200k_base": 2819
+      },
+      "description_characters": 468
+    },
+    {
+      "name": "time-calendar-weather",
+      "path": ".agents/skills/time-calendar-weather/SKILL.md",
+      "full_entry": {
+        "characters": 9680,
+        "o200k_base": 2567
+      },
+      "description_characters": 504
+    },
+    {
+      "name": "tilemap-world-rendering",
+      "path": ".agents/skills/tilemap-world-rendering/SKILL.md",
+      "full_entry": {
+        "characters": 8067,
+        "o200k_base": 2225
+      },
+      "description_characters": 404
+    },
+    {
+      "name": "inventory-transactions",
+      "path": ".agents/skills/inventory-transactions/SKILL.md",
+      "full_entry": {
+        "characters": 8739,
+        "o200k_base": 2216
+      },
+      "description_characters": 426
+    },
+    {
+      "name": "equipment-durability-repair",
+      "path": ".agents/skills/equipment-durability-repair/SKILL.md",
+      "full_entry": {
+        "characters": 8152,
+        "o200k_base": 2107
+      },
+      "description_characters": 428
+    },
+    {
+      "name": "localization-authoring",
+      "path": ".agents/skills/localization-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 7901,
+        "o200k_base": 2030
+      },
+      "description_characters": 289
+    },
+    {
+      "name": "sprite-generation-pipeline",
+      "path": ".agents/skills/sprite-generation-pipeline/SKILL.md",
+      "full_entry": {
+        "characters": 6643,
+        "o200k_base": 2013
+      },
+      "description_characters": 254
+    },
+    {
+      "name": "quest-authoring",
+      "path": ".agents/skills/quest-authoring/SKILL.md",
+      "full_entry": {
+        "characters": 8001,
+        "o200k_base": 1954
+      },
+      "description_characters": 457
+    },
+    {
+      "name": "player-needs-survival",
+      "path": ".agents/skills/player-needs-survival/SKILL.md",
+      "full_entry": {
+        "characters": 7422,
+        "o200k_base": 1929
+      },
+      "description_characters": 298
+    },
+    {
+      "name": "docs-migration",
+      "path": ".agents/skills/docs-migration/SKILL.md",
+      "full_entry": {
+        "characters": 7021,
+        "o200k_base": 1896
+      },
+      "description_characters": 238
+    },
+    {
+      "name": "scene-interactable-wiring",
+      "path": ".agents/skills/scene-interactable-wiring/SKILL.md",
+      "full_entry": {
+        "characters": 7396,
+        "o200k_base": 1809
+      },
+      "description_characters": 263
+    }
+  ],
+  "legacy_command_entries": [
+    {
+      "name": "audit-spec",
+      "path": ".agents/skills/audit-spec/SKILL.md",
+      "full_entry": {
+        "characters": 2371,
+        "o200k_base": 614
+      },
+      "description_characters": 195
+    },
+    {
+      "name": "implement-spec",
+      "path": ".agents/skills/implement-spec/SKILL.md",
+      "full_entry": {
+        "characters": 1251,
+        "o200k_base": 298
+      },
+      "description_characters": 358
+    },
+    {
+      "name": "resolve-spec-dependency-chain",
+      "path": ".agents/skills/resolve-spec-dependency-chain/SKILL.md",
+      "full_entry": {
+        "characters": 5441,
+        "o200k_base": 1381
+      },
+      "description_characters": 307
+    },
+    {
+      "name": "start-spec",
+      "path": ".agents/skills/start-spec/SKILL.md",
+      "full_entry": {
+        "characters": 2945,
+        "o200k_base": 773
+      },
+      "description_characters": 170
+    }
+  ],
+  "agent_metadata_reconstruction": {
+    "characters": 2503,
+    "o200k_base": 530
+  },
+  "agents": [
+    {
+      "name": "architecture-reviewer",
+      "description": "Revisa a aderência do código à arquitetura do projeto, design patterns e regras estruturais (event bus, MonoBehaviours finos, save DTOs, bootstrap wiring). Audit-only — reporta findings, nunca edita código. Use antes de uma nova wave ou depois de integrações grandes.",
+      "full_entry": {
+        "characters": 4832,
+        "o200k_base": 1193
+      }
+    },
+    {
+      "name": "asset-wiring-specialist",
+      "description": "Wire Unity data assets, prefab references and scene generators through existing composition and Editor APIs. No gameplay logic, save schema changes or manual YAML edits.",
+      "full_entry": {
+        "characters": 2536,
+        "o200k_base": 493
+      }
+    },
+    {
+      "name": "bugfix-investigator",
+      "description": "Investiga e corrige bugs específicos com contexto mínimo e a menor mudança possível. Sem roadmap, sem logs históricos, sem refactoring além do fix.",
+      "full_entry": {
+        "characters": 3736,
+        "o200k_base": 895
+      }
+    },
+    {
+      "name": "docs-curator",
+      "description": "Gerencia a governança de documentação, planejamento de arquivamento, delete candidates e manutenção de índices. Nunca edita runtime code (Assets/**); só docs.",
+      "full_entry": {
+        "characters": 2570,
+        "o200k_base": 657
+      }
+    },
+    {
+      "name": "game-design-reviewer",
+      "description": "Revisa specs de gameplay ANTES da implementação quanto à solidez de design — fechamento do game loop, sinks/sources de economy, pacing de progression, fricção de UX. Só design review — nunca edita código; produz um design assessment com riscos concretos. Use durante /start-spec ou /plan-wave para specs de gameplay.",
+      "full_entry": {
+        "characters": 3841,
+        "o200k_base": 962
+      }
+    },
+    {
+      "name": "non-regression-auditor",
+      "description": "Audita diffs de implementação e documentação em busca de violações de arquitetura e riscos de regressão (forbidden APIs, breach de scope, violações de save DTO, claims de status falsos). Audit-only — reporta findings com evidência, nunca corrige. Use antes do closeout da spec.",
+      "full_entry": {
+        "characters": 4729,
+        "o200k_base": 1234
+      }
+    },
+    {
+      "name": "performance-auditor",
+      "description": "Audit Unity performance risks and measured evidence without implementing fixes. Separate static hypotheses from captured CPU, GPU, allocation, UI and memory costs.",
+      "full_entry": {
+        "characters": 2180,
+        "o200k_base": 431
+      }
+    },
+    {
+      "name": "pixel-art-scene-reviewer",
+      "description": "Reviews sprites, animation and scene composition against approved images and actual evidence. Audit-only; reports fidelity, motion, scale and integration without implementing fixes.",
+      "full_entry": {
+        "characters": 2525,
+        "o200k_base": 501
+      }
+    },
+    {
+      "name": "spec-implementer",
+      "description": "Implementa specs de .specs/a_implementar/ com scope estrito, contexto mínimo e closeout phase-gated. Use quando o humano disser \"implement spec X\" / \"faz a spec X\".",
+      "full_entry": {
+        "characters": 4816,
+        "o200k_base": 1235
+      }
+    },
+    {
+      "name": "test-author",
+      "description": "Escreve EditMode tests para deterministic logic (save DTOs, combat formulas, economy pricing, quest conditions, calendar) seguindo as convenções do projeto. Use quando o Testing Quality Gate exigir testes automatizados para uma spec ou bugfix.",
+      "full_entry": {
+        "characters": 3147,
+        "o200k_base": 767
+      }
+    },
+    {
+      "name": "unity-validator",
+      "description": "Runs Unity and dotnet validation workflows, triages results honestly (PASS / FAIL / NOT RUN), and only reports evidence. Validation-only—never implements changes.",
+      "full_entry": {
+        "characters": 3266,
+        "o200k_base": 670
+      }
+    }
+  ],
+  "external_catalog_reconstruction": {
+    "entries": 24,
+    "characters": 4080,
+    "o200k_base": 1026
+  }
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-09 02:44:43Z" end-time="2026-09-09 02:44:44Z" duration="0,2475299">
+  <test-suite type="TestSuite" id="1000" name="Cindar's Hope" fullname="Cindar's Hope" runstate="Runnable" testcasecount="2918" result="Passed" start-time="2026-09-09 02:44:43Z" end-time="2026-09-09 02:44:44Z" duration="0.247530" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="4206" name="CindarsHope.Tests.EditMode.dll" fullname="D:/Projetos/Cindars_Hope/cindars_hope/Library/ScriptAssemblies/CindarsHope.Tests.EditMode.dll" runstate="Runnable" testcasecount="2918" result="Passed" start-time="2026-09-09 02:44:43Z" end-time="2026-09-09 02:44:44Z" duration="0.210572" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42064" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="4207" name="CindarsHope" fullname="CindarsHope" runstate="Runnable" testcasecount="2918" result="Passed" start-time="2026-09-09 02:44:43Z" end-time="2026-09-09 02:44:44Z" duration="0.148210" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="4210" name="Tests" fullname="CindarsHope.Tests" runstate="Runnable" testcasecount="2830" result="Passed" start-time="2026-09-09 02:44:43Z" end-time="2026-09-09 02:44:44Z" duration="0.116934" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="4212" name="EditMode" fullname="CindarsHope.Tests.EditMode" runstate="Runnable" testcasecount="2813" result="Passed" start-time="2026-09-09 02:44:43Z" end-time="2026-09-09 02:44:44Z" duration="0.086872" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="4233" name="Farm" fullname="CindarsHope.Tests.EditMode.Farm" runstate="Runnable" testcasecount="323" result="Passed" start-time="2026-09-09 02:44:43Z" end-time="2026-09-09 02:44:44Z" duration="0.032780" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="2965" name="FarmSceneCompositionContractTests" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.025209" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="2966" name="AllCompositionGroups_HaveNonEmptyBounds" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.AllCompositionGroups_HaveNonEmptyBounds" methodname="AllCompositionGroups_HaveNonEmptyBounds" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests" runstate="Runnable" seed="138601198" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.009951" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="2967" name="ApprovedAnchorPositions_AreInsideTheirGroups" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.ApprovedAnchorPositions_AreInsideTheirGroups" methodname="ApprovedAnchorPositions_AreInsideTheirGroups" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests" runstate="Runnable" seed="1196495354" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.000585" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="2969" name="BridgeVisualScale_IsReducedWithoutDefiningPhysicalFootprint" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.BridgeVisualScale_IsReducedWithoutDefiningPhysicalFootprint" methodname="BridgeVisualScale_IsReducedWithoutDefiningPhysicalFootprint" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests" runstate="Runnable" seed="1708896073" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.002785" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="2968" name="ScaleRanges_AcceptApprovedValuesAndRejectBridgeOutlier" fullname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests.ScaleRanges_AcceptApprovedValuesAndRejectBridgeOutlier" methodname="ScaleRanges_AcceptApprovedValuesAndRejectBridgeOutlier" classname="CindarsHope.Tests.EditMode.Farm.FarmSceneCompositionContractTests" runstate="Runnable" seed="301965662" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.000494" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="4213" name="World" fullname="CindarsHope.Tests.EditMode.World" runstate="Runnable" testcasecount="213" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.010964" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1294" name="RoofRevealControllerTests" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.006219" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1296" name="LegacyConfiguration_StillControlsOnlyTheRoof" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.LegacyConfiguration_StillControlsOnlyTheRoof" methodname="LegacyConfiguration_StillControlsOnlyTheRoof" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="835199472" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.001458" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1295" name="PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" fullname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests.PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" methodname="PlayerColliders_RevealInteriorUntilLastExit_WithoutChangingInteriorColor" classname="CindarsHope.Tests.EditMode.World.RoofRevealControllerTests" runstate="Runnable" seed="849171906" result="Passed" start-time="2026-09-09 02:44:44Z" end-time="2026-09-09 02:44:44Z" duration="0.004048" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/Rafa/AppData/LocalLow/Cindar's Hope/Cindar's Hope\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

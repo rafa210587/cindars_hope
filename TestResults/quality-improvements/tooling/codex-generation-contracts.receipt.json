@@ -1,0 +1,11 @@
+{
+  "kind": "captured_process_result",
+  "command": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File tools/codex/Test-CodexHarnessGeneration.ps1",
+  "startedUtc": "2026-09-08T03:43:40.3131334Z",
+  "completedUtc": "2026-09-08T03:43:42.7888254Z",
+  "exitCode": 0,
+  "childEnvironment": {
+    "PSModulePath": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\Modules"
+  },
+  "retryReason": "Direct ProcessStartInfo inherited host module path; initial run could not resolve Get-FileHash. Only child module path corrected; scripts unchanged."
+}

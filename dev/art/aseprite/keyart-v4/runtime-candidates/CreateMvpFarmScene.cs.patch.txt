@@ -1,0 +1,170 @@
+*** Begin Patch
+*** Update File: Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
+@@
+-        private static void CreateScenePortal(
+-            Transform parent,
+-            string name,
+-            Vector3 position,
+-            Color color,
+-            string targetSceneName,
+-            string targetScenePath,
+-            string targetSpawnId,
+-            string interactionPrompt)
+-        {
+-            var portalObject = new GameObject(name);
+-            portalObject.transform.SetParent(parent);
+-            portalObject.transform.position = position;
+-            if (!ScaleProfileLibrary.AttachApplicator(portalObject, EntityScaleCategory.CheckpointPortal))
+-            {
+-                portalObject.transform.localScale = new Vector3(1f, 1.35f, 1f);
+-            }
+-
+-            var spriteRenderer = portalObject.AddComponent<SpriteRenderer>();
+-            spriteRenderer.sprite = GetBuiltinSprite();
+-            spriteRenderer.color = color;
+-            spriteRenderer.sortingOrder = 0;
+-            spriteRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+-            TrySetSortingLayer(spriteRenderer, "World", spriteRenderer.sortingOrder);
+-
+-            if (spriteRenderer.sprite == null)
+-            {
+-                Debug.LogWarning($"{name} placeholder SpriteRenderer was created without a sprite. Replace it with portal art in a future art PR.");
+-            }
+-
+-            var collider = portalObject.AddComponent<BoxCollider2D>();
+-            collider.isTrigger = true;
+-            collider.size = Vector2.one;
+-
+-            var portal = portalObject.AddComponent<ScenePortal>();
+-            var serializedPortal = new SerializedObject(portal);
+-            serializedPortal.FindProperty("_targetSceneName").stringValue = targetSceneName;
+-            serializedPortal.FindProperty("_targetScenePath").stringValue = targetScenePath;
+-            serializedPortal.FindProperty("_targetSpawnId").stringValue = targetSpawnId;
+-            serializedPortal.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
+-            serializedPortal.ApplyModifiedPropertiesWithoutUndo();
+-            EditorUtility.SetDirty(portal);
+-        }
++        private static void CreateScenePortal(
++            Transform parent,
++            string name,
++            Vector3 position,
++            Color color,
++            string targetSceneName,
++            string targetScenePath,
++            string targetSpawnId,
++            string interactionPrompt)
++        {
++            var portalObject = new GameObject(name);
++            portalObject.transform.SetParent(parent);
++            portalObject.transform.position = position;
++            // The measured boundary fence is the visible gate. Keep the interaction root unscaled;
++            // a generic colored portal rectangle would conceal the physical support and road.
++            portalObject.transform.localScale = Vector3.one;
++            var region = FarmEntrancePhysicsContract.TownInteractionTrigger;
++            var collider = portalObject.AddComponent<BoxCollider2D>();
++            collider.isTrigger = true;
++            collider.offset = region.Center - (Vector2)position;
++            collider.size = region.Size;
++
++            var portal = portalObject.AddComponent<ScenePortal>();
++            var serializedPortal = new SerializedObject(portal);
++            serializedPortal.FindProperty("_targetSceneName").stringValue = targetSceneName;
++            serializedPortal.FindProperty("_targetScenePath").stringValue = targetScenePath;
++            serializedPortal.FindProperty("_targetSpawnId").stringValue = targetSpawnId;
++            serializedPortal.FindProperty("_interactionPrompt").stringValue = interactionPrompt;
++            serializedPortal.ApplyModifiedPropertiesWithoutUndo();
++            EditorUtility.SetDirty(portal);
++        }
+@@
+-        private static void CreateCaveEntrance()
+-        {
+-            var entrance = new GameObject("CaveEntrance");
+-            // v7: canto NO da montanha embutida — MAIOR ~5x4 (spec_farm_scene_relayout_v4 §15.5 v7).
+-            // Exterior cave anchor follows FarmLevel1LayoutContract.
+-            entrance.transform.position = new Vector3(FarmLevel1LayoutContract.CaveEntranceX, FarmLevel1LayoutContract.CaveEntranceY, 0f);
+-
+-            // Sprite bespoke unico (substitui RockFrame+CaveMouth esticados). Escala aplicada num
+-            // child "Visual" (entrance fica em scale 1) para nao afetar o BoxCollider2D/trigger do root.
+-            var caveVisual = new GameObject("Visual");
+-            caveVisual.transform.SetParent(entrance.transform);
+-            caveVisual.transform.localPosition = Vector3.zero;
+-            var caveSprite = WorldSpriteLibrary.Prop("cave_entrance");
+-            var caveRenderer = caveVisual.AddComponent<SpriteRenderer>();
+-            caveRenderer.sprite = caveSprite != null ? caveSprite : GetBuiltinSprite();
+-            caveRenderer.color = caveSprite != null ? Color.white : new Color(0.36f, 0.33f, 0.3f);
+-            caveRenderer.sortingOrder = 0;
+-            caveRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+-            TrySetSortingLayer(caveRenderer, "World", caveRenderer.sortingOrder);
+-            if (caveSprite != null)
+-            {
+-                ApplyKnownOpaqueHeightScale(caveVisual.transform, caveSprite, 6.75f, 419f / 435f);
+-            }
+-            else
+-            {
+-                caveVisual.transform.localScale = new Vector3(5f, 4f, 1f); // v6: boca proeminente ~5x4
+-            }
+-
+-            var trigger = entrance.AddComponent<BoxCollider2D>();
+-            trigger.isTrigger = true;
+-            trigger.size = new Vector2(FarmLevel1LayoutContract.CaveMouthWidth, FarmLevel1LayoutContract.CaveMouthHeight);
+-
+-            var interactable = entrance.AddComponent<CaveEntranceInteractable>();
+-            var serializedInteractable = new SerializedObject(interactable);
+-            serializedInteractable.FindProperty("_targetSpawnId").stringValue = "cave_from_farm";
+-            serializedInteractable.ApplyModifiedPropertiesWithoutUndo();
+-            EditorUtility.SetDirty(interactable);
+-        }
++        private static void CreateCaveEntrance()
++        {
++            var entrance = new GameObject("CaveEntrance");
++            // v7: canto NO da montanha embutida — MAIOR ~5x4 (spec_farm_scene_relayout_v4 §15.5 v7).
++            // Exterior cave anchor follows FarmLevel1LayoutContract.
++            entrance.transform.position = new Vector3(FarmLevel1LayoutContract.CaveEntranceX, FarmLevel1LayoutContract.CaveEntranceY, 0f);
++
++            // Sprite bespoke unico (substitui RockFrame+CaveMouth esticados). Escala aplicada num
++            // child "Visual" (entrance fica em scale 1) para nao afetar o BoxCollider2D/trigger do root.
++            var caveVisual = new GameObject("Visual");
++            caveVisual.transform.SetParent(entrance.transform);
++            caveVisual.transform.localPosition = Vector3.zero;
++            var caveSprite = WorldSpriteLibrary.Prop("cave_entrance");
++            var caveRenderer = caveVisual.AddComponent<SpriteRenderer>();
++            caveRenderer.sprite = caveSprite != null ? caveSprite : GetBuiltinSprite();
++            caveRenderer.color = caveSprite != null ? Color.white : new Color(0.36f, 0.33f, 0.3f);
++            caveRenderer.sortingOrder = 0;
++            caveRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
++            TrySetSortingLayer(caveRenderer, "World", caveRenderer.sortingOrder);
++            if (caveSprite != null)
++            {
++                ApplyKnownOpaqueHeightScale(caveVisual.transform, caveSprite, FarmEntrancePhysicsContract.CaveOpaqueHeight,
++                    FarmEntrancePhysicsContract.CaveOpaqueHeightPixels / FarmEntrancePhysicsContract.CaveCanvasHeightPixels);
++            }
++            else
++            {
++                caveVisual.transform.localScale = new Vector3(5f, 4f, 1f); // v6: boca proeminente ~5x4
++            }
++
++            var trigger = entrance.AddComponent<BoxCollider2D>();
++            trigger.isTrigger = true;
++            var region = FarmEntrancePhysicsContract.CaveInteractionTrigger;
++            trigger.offset = region.Center - (Vector2)entrance.transform.position;
++            trigger.size = region.Size;
++
++            foreach (var measuredBase in FarmEntrancePhysicsContract.CaveSideBases)
++            {
++                var body = new GameObject("Solid_" + measuredBase.Id);
++                body.transform.SetParent(entrance.transform, false);
++                body.transform.position = measuredBase.Center;
++                CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
++                    body, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
++                var bodyCollider = body.AddComponent<BoxCollider2D>();
++                bodyCollider.isTrigger = false;
++                bodyCollider.size = measuredBase.Size;
++            }
++
++            var interactable = entrance.AddComponent<CaveEntranceInteractable>();
++            var serializedInteractable = new SerializedObject(interactable);
++            serializedInteractable.FindProperty("_targetSpawnId").stringValue = "cave_from_farm";
++            serializedInteractable.ApplyModifiedPropertiesWithoutUndo();
++            EditorUtility.SetDirty(interactable);
++        }
+*** End Patch

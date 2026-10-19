@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fazenda · movimento no jogo</title>
+<style>
+body{margin:24px auto;padding:0 20px;max-width:1080px;background:#17211c;color:#eee7cf;font:17px system-ui;line-height:1.5}h1{font-size:27px;margin-bottom:8px}p{max-width:920px;color:#c7d1be}button,a{color:#f5e1b3}button{background:#304832;border:1px solid #6c8862;border-radius:6px;padding:10px 16px;font:inherit;cursor:pointer;margin:4px}button:disabled{opacity:.5;cursor:wait}img{display:block;width:100%;max-width:960px;height:auto;image-rendering:pixelated;background:#152017;margin-top:16px;border:1px solid #536548}.caption{font-size:14px;color:#b9c8ae}a{margin-right:18px}
+</style>
+<h1>Fazenda: porta, interior e água no Unity</h1>
+<p>Capturas reais do Unity, com os intervalos registrados. O teste conduz o personagem pela porta; há uma pausa de apresentação no fim.</p>
+<p id="status" role="status">Carregando a evidência da cena…</p>
+<div><button id="house" disabled>Porta e interior</button><button id="water" disabled>Água do lago</button><button id="pause" disabled>Pausar</button><button id="restart" disabled>Repetir</button></div>
+<img id="frame" width="640" height="480" alt="Captura da fazenda no Unity">
+<p class="caption" id="caption"></p>
+<p><a href="animation-preview.html">Estudos no Aseprite</a><a href="delivery.html">Comparar a cena com a referência</a></p>
+<script>
+const frame=document.querySelector('#frame'),status=document.querySelector('#status'),caption=document.querySelector('#caption');
+const controls=[...document.querySelectorAll('button')];
+let groups,current,index=0,timer,paused=false;
+const labels={house_approach:'Aproximação da casa',closed_blocked:'A porta fechada bloqueia a passagem',occupied_safe_close:'A porta permanece aberta enquanto o personagem ocupa o vão',inside_revealed:'Interior revelado ao entrar',outside_restored:'Fachada restaurada ao sair',closed_retested:'A porta fechada volta a bloquear a passagem'};
+function label(sample){return labels[sample.phase]||(sample.phase.startsWith('opening_')?'Porta abrindo':sample.phase.startsWith('closing_')?'Porta fechando':sample.waterFrame>=0?'Água do lago em movimento':'Travessia pela porta');}
+function source(sample){return 'gameplay_stage12/motion/'+encodeURIComponent(sample.path.split(/[\\/]/).pop());}
+function show(){clearTimeout(timer);const sample=current[index];frame.src=source(sample);caption.textContent=label(sample)+' · captura '+(index+1)+' de '+current.length;if(paused)return;const next=current[index+1];const duration=next?Math.max(0,(next.time-sample.time)*1000):1000;timer=setTimeout(()=>{index=(index+1)%current.length;show();},duration);}
+function choose(id){current=groups[id];index=0;paused=false;document.querySelector('#pause').textContent='Pausar';show();}
+document.querySelector('#house').onclick=()=>choose('house');document.querySelector('#water').onclick=()=>choose('water');
+document.querySelector('#restart').onclick=()=>{index=0;show();};
+document.querySelector('#pause').onclick=()=>{paused=!paused;document.querySelector('#pause').textContent=paused?'Continuar':'Pausar';show();};
+(async()=>{try{const response=await fetch('gameplay_stage12/capture-metadata.json',{cache:'no-store'});if(!response.ok)throw new Error('Capturas ainda indisponíveis.');const evidence=await response.json();if(evidence.status!=='PASS'||evidence.motion?.status!=='PASS')throw new Error('A sequência ainda não passou na validação completa.');const samples=evidence.motion.samples;groups={house:samples.filter(s=>s.waterFrame<0),water:samples.filter(s=>s.waterFrame>=0)};if(!groups.house.length||!groups.water.length)throw new Error('Sequência incompleta.');await Promise.all(samples.map(s=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=()=>reject(new Error('Uma captura não pôde ser carregada.'));image.src=source(s);})));controls.forEach(c=>c.disabled=false);status.textContent='Porta, interior e água passaram na sequência funcional. Acabamento visual ainda em andamento.';choose('house');}catch(error){status.textContent=error.message;}})();
+</script></html>

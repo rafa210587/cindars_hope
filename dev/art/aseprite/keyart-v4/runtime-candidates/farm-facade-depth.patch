@@ -1,0 +1,62 @@
+--- a/Assets/_Game/Scripts/Editor/Art/FarmHouseDoorArtAuthoring.cs
++++ b/Assets/_Game/Scripts/Editor/Art/FarmHouseDoorArtAuthoring.cs
+@@ -13,6 +13,17 @@
+         internal static float SourcePixelWorldSize => FarmSceneCompositionContract.HomesteadRoofTargetWidth / 177f;
+         // Source stair support is y192; the actual leaf foot is y165 (top-left image coordinates).
+         internal static float DoorGroundY => FarmLevel1LayoutContract.HouseMinY + 27f * SourcePixelWorldSize;
++
++        internal static Sprite FacadeAtDoorDepth()
++        {
++            var source = WorldSpriteLibrary.Building("farmhouse_opening_keyart_v4");
++            if (source == null || source.texture.width != 212 || source.texture.height != 205)
++                throw new InvalidOperationException("Farm facade depth requires the unchanged212x205 opening source.");
++            // Ground sorting follows the leaf support(y165 from top), while the creator still
++            // aligns source stair support(122,13). All rendered pixels retain their world positions.
++            return PersistSprite(source, "farmhouse_opening_depth_v4", new Rect(0f, 0f, 212f, 205f),
++                new Vector2(122f / 212f, 40f / 205f), "building", source.pixelsPerUnit);
++        }
+ 
+         internal static void Configure(HouseDoorInteractable door, Transform leaf, Transform threshold, BoxCollider2D blocker)
+         {
+@@ -48,18 +59,19 @@
+             return renderer;
+         }
+ 
+-        private static Sprite PersistSprite(Sprite source, string name, Rect rect, Vector2 pivot)
++        private static Sprite PersistSprite(Sprite source, string name, Rect rect, Vector2 pivot,
++            string category = "props", float pixelsPerUnit = 32f)
+         {
+-            var path = "Assets/_Game/Art/Generated/World/props/" + name + ".asset";
++            var path = "Assets/_Game/Art/Generated/World/" + category + "/" + name + ".asset";
+             var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+             if (sprite != null)
+             {
+-                if (sprite.texture != source.texture || sprite.rect != rect ||
++                if (sprite.texture != source.texture || sprite.rect != rect || !Mathf.Approximately(sprite.pixelsPerUnit, pixelsPerUnit) ||
+                     Vector2.Distance(sprite.pivot, Vector2.Scale(pivot, rect.size)) > 0.001f)
+                     throw new InvalidOperationException("Existing farm door sprite contract differs: " + name);
+                 return sprite;
+             }
+-            sprite = Sprite.Create(source.texture, rect, pivot, 32f, 0, SpriteMeshType.FullRect);
++            sprite = Sprite.Create(source.texture, rect, pivot, pixelsPerUnit, 0, SpriteMeshType.FullRect);
+             sprite.name = name;
+             AssetDatabase.CreateAsset(sprite, path);
+             return sprite;
+--- a/Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
++++ b/Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
+@@ -1295,12 +1295,12 @@
+             roof.transform.SetParent(house.transform);
+             roof.transform.localPosition = Vector3.zero;
+             var roofSr = roof.AddComponent<SpriteRenderer>();
+-            var houseRoofSprite = WorldSpriteLibrary.Building("farmhouse_opening_keyart_v4");
++            var houseRoofSprite = FarmHouseDoorArtAuthoring.FacadeAtDoorDepth();
+             roofSr.sprite = houseRoofSprite != null ? houseRoofSprite : GetBuiltinSprite();
+             roofSr.color = houseRoofSprite != null ? Color.white : new Color(0.42f, 0.20f, 0.14f); // vermelho-telha
+             roofSr.spriteSortPoint = SpriteSortPoint.Pivot;
+-            roofSr.sortingOrder = 20;
+-            TrySetSortingLayer(roofSr, "Roof", 20);
++            roofSr.sortingOrder = 0;
++            TrySetSortingLayer(roofSr, "World", 0);
+             if (houseRoofSprite != null)
+             {
+                 roofSr.drawMode = SpriteDrawMode.Simple;

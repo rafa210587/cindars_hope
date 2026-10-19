@@ -1,12 +1,13 @@
 # Cindar's Hope — Unity .gitignore
 
-# Unity generated folders
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Ll]ogs/
+# Unity generated folders (anchored to repo root so nested source dirs like
+# Assets/_Game/Scripts/Editor/Build/ are NOT ignored)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
 [Uu]ser[Ss]ettings/
 [Mm]emoryCaptures/
 [Rr]ecordings/
@@ -22,6 +23,7 @@ crashlytics-build.properties
 *.sln
 *.suo
 *.tmp
+*.bak
 *.user
 *.userprefs
 *.pidb
@@ -54,9 +56,68 @@ desktop.ini
 AppData/
 *.log
 
+# Unity Test Runner raw artifacts are local/CI output. Commit compact Markdown/TXT summaries only.
+/TestResults/*.xml
+
 # SpecKit temporary/cache output
 .specify/cache/
 
 # Local environment files
 .env
 .env.*
+
+# Orquestrador runtime outputs
+orquestrador/logs/**
+!orquestrador/logs/.gitkeep
+orquestrador/state/**
+!orquestrador/state/.gitkeep
+orquestrador/orchestrator.log
+orquestrador/*_prompt_*.txt
+orquestrador/temp_*.txt
+orquestrador/__pycache__/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arte-fonte/arquivo (masters do GPT em alta + frames de trabalho). NAO faz parte do build:
+# o jogo usa as copias pequenas em Assets/_Game/Resources/. Mantido localmente/arquivado fora do repo.
+/art/
+
+# Obsidian vault config (local editor state, not project source)
+.obsidian/
+.trash/
+
+# Claude Code local configuration (machine-specific)
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/.runtime/
+.claude/worktrees/
+.claude/*.lock
+.claude/scheduled_tasks.lock
+
+# Evidencia de execucao fica local: o Git ja guarda o historico dos assets.
+/docs/**/*.snapshot
+/docs/**/*.backup
+/docs/validation/**/*.log
+/docs/validation/**/*.jsonl
+/docs/validation/**/*.xml
+/docs/validation/**/*_[0-9]*_[0-9]*/
+# Saidas brutas, capturas e paginas geradas; arquivos ja rastreados sao preservados.
+/docs/validation/**/*.png
+/docs/validation/**/*.html
+/docs/validation/**/*_inputs_*.txt
+/docs/validation/**/*-raw.txt
+/docs/validation/**/*.stderr.txt
+/docs/validation/**/town-all-entries.json
+/docs/validation/**/benchmark_runs_v2/*.json
+/docs/validation/**/benchmark_runs_v2/g*.txt
+/docs/validation/**/agent-cost-*/*.json
+/docs/validation/**/agent-cost-*/protocol.txt
+/docs/validation/**/comparison-*/*.txt
+/docs/validation/**/comparison-*/results.json
+/docs/validation/**/serena/RESULTS.json
+# Cenas temporarias do Test Runner nao sao conteudo do jogo.
+/Assets/InitTestScene*.unity
+/Assets/InitTestScene*.unity.meta

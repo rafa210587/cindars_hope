@@ -1,0 +1,21 @@
+{
+  "SchemaVersion": 3,
+  "CurrentDay": 5,
+  "CurrentSceneName": "CaveScene",
+  "Player": {
+    "CurrentHP": 75,
+    "MaxHP": 100,
+    "Gold": 300,
+    "CurrentHunger": 55,
+    "MaxHunger": 100
+  },
+  "Stamina": {
+    "MaxStamina": 100,
+    "CurrentStamina": 65
+  },
+  "GameTime": {
+    "CurrentDay": 5,
+    "CurrentPhase": 1,
+    "PhaseElapsedSeconds": 15.0
+  }
+}

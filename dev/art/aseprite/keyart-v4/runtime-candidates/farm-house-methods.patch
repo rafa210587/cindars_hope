@@ -1,0 +1,210 @@
+--- a/Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
++++ b/Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs
+@@ -1229,8 +1229,11 @@
+             const float h  = FarmLevel1LayoutContract.HouseHeight;
+             float hw = w * 0.5f;
+             float hh = h * 0.5f;
+-            // Porta ao sul: doorY = -hh.
+-            float doorY = -hh;
++            // The physical door meets the leaf; the approved exterior staircase stays below it.
++            float doorY = FarmHouseDoorArtAuthoring.DoorGroundY - cy;
++            float northY = hh;
++            float interiorHeight = northY - doorY;
++            float interiorCenterY = (northY + doorY) * 0.5f;
+ 
+             var house = new GameObject("FarmHouse");
+             house.transform.position = new Vector3(cx, cy, 0f);
+@@ -1241,19 +1244,23 @@
+             floor.transform.localPosition = new Vector3(0f, -hh, 0f);
+             floor.transform.localScale = Vector3.one;
+             var floorSr = floor.AddComponent<SpriteRenderer>();
+-            var houseFloorSprite = WorldSpriteLibrary.Ground("ground_soil");
++            var houseFloorSprite = WorldSpriteLibrary.Building("wall_plank");
+             floorSr.sprite = houseFloorSprite != null ? houseFloorSprite : GetBuiltinSprite();
+             floorSr.color = houseFloorSprite != null ? Color.white : new Color(0.78f, 0.72f, 0.62f); // fallback piso madeira claro
+             floorSr.drawMode = SpriteDrawMode.Tiled;
+-            floorSr.size = new Vector2(w, h);
++            floorSr.size = new Vector2(w, interiorHeight);
++            // Tiled bounds are pivot-dependent; align the rendered floor to the useful room.
++            var floorPivot = floorSr.sprite.pivot / floorSr.sprite.rect.size;
++            floor.transform.localPosition = new Vector3((floorPivot.x - 0.5f) * w,
++                interiorCenterY + (floorPivot.y - 0.5f) * interiorHeight, 0f);
+             floorSr.sortingOrder = 5;
+             TrySetSortingLayer(floorSr, "Ground", 5);
+ 
+             // Paredes solidas (3 inteiras + vao da porta dividido em 2 laterais).
+-            CreateFarmInteriorWall(house.transform, "Wall_Left",  new Vector3(-hw, 0f, 0f), new Vector2(FarmWallThickness, h));
+-            CreateFarmInteriorWall(house.transform, "Wall_Right", new Vector3( hw, 0f, 0f), new Vector2(FarmWallThickness, h));
++            CreateFarmInteriorWall(house.transform, "Wall_Left",  new Vector3(-hw, interiorCenterY, 0f), new Vector2(FarmWallThickness, interiorHeight));
++            CreateFarmInteriorWall(house.transform, "Wall_Right", new Vector3( hw, interiorCenterY, 0f), new Vector2(FarmWallThickness, interiorHeight));
+             // Parede oposta a porta (norte): inteira.
+-            CreateFarmInteriorWall(house.transform, "Wall_Top",   new Vector3(0f, -doorY, 0f), new Vector2(w, FarmWallThickness));
++            CreateFarmInteriorWall(house.transform, "Wall_Top",   new Vector3(0f, northY, 0f), new Vector2(w, FarmWallThickness));
+             // Parede do lado da porta (sul): dividida ao redor do vao.
+             float sideWidth  = (w - FarmDoorGapWidth) * 0.5f;
+             float sideCenter = (FarmDoorGapWidth + sideWidth) * 0.5f;
+@@ -1261,31 +1268,17 @@
+             CreateFarmInteriorWall(house.transform, "Wall_BottomR", new Vector3( sideCenter, doorY, 0f), new Vector2(sideWidth, FarmWallThickness));
+ 
+             // Porta funcional no vao (HouseDoorInteractable — [E] abre/fecha).
+-            CreateFarmHouseDoor(house.transform, doorY);
+-
+-            // Moveis DENTRO do interior (sem collider — andaveis).
+-            // Cama — canto NW do comodo (posicao relativa ao centro da casa em world).
+-            var bedObj = new GameObject("Bed");
+-            bedObj.transform.SetParent(house.transform);
+-            bedObj.transform.localPosition = new Vector3(-hw + 1.2f, hh - 1.1f, 0f);
+-            bedObj.transform.localScale = new Vector3(1.2f, 0.7f, 1f);
+-            var bedSr = bedObj.AddComponent<SpriteRenderer>();
+-            var houseBedSprite = WorldSpriteLibrary.Interior("bed");
+-            bedSr.sprite = houseBedSprite != null ? houseBedSprite : GetBuiltinSprite();
+-            bedSr.color = houseBedSprite != null ? Color.white : new Color(0.55f, 0.30f, 0.45f);
+-            bedSr.sortingOrder = 0;
+-            bedSr.spriteSortPoint = SpriteSortPoint.Pivot;
+-            TrySetSortingLayer(bedSr, "World", 0);
+-            var bedCol = bedObj.AddComponent<BoxCollider2D>();
+-            bedCol.isTrigger = true;
+-            bedCol.size = Vector2.one;
+-            bedObj.AddComponent<CindarsHope.World.BedInteractable>();
+-            EditorUtility.SetDirty(bedObj);
++            var door = CreateFarmHouseDoor(house.transform, doorY);
++
++            // Furniture roots retain interaction identity; only their visuals are scaled.
++            FarmHouseInteriorAuthoring.CreateFurniture<CindarsHope.World.BedInteractable>(
++                house.transform, "Bed", WorldSpriteLibrary.Interior("bed"),
++                new Vector2(12.7f, 14f), 2.2f, new Vector2(1.75f, 1.4f), 0.08f);
+ 
+             // BedLetter — ao lado da cama.
+             var letterObj = new GameObject("BedLetter");
+             letterObj.transform.SetParent(house.transform);
+-            letterObj.transform.localPosition = new Vector3(-hw + 2.6f, hh - 1.1f, 0f);
++            letterObj.transform.localPosition = new Vector3(14.35f - cx, 14.2f - cy, 0f);
+             letterObj.transform.localScale = new Vector3(0.45f, 0.45f, 1f);
+             var letterSr = letterObj.AddComponent<SpriteRenderer>();
+             letterSr.sprite = GetBuiltinSprite();
+@@ -1299,22 +1292,10 @@
+             letterObj.AddComponent<CindarsHope.World.LetterInteractable>();
+             EditorUtility.SetDirty(letterObj);
+ 
+-            // FarmHouseChest — canto NE do comodo.
+-            var chestObj = new GameObject("FarmHouseChest");
+-            chestObj.transform.SetParent(house.transform);
+-            chestObj.transform.localPosition = new Vector3(hw - 1.2f, hh - 1.1f, 0f);
+-            chestObj.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+-            var chestSr = chestObj.AddComponent<SpriteRenderer>();
+-            chestSr.sprite = GetBuiltinSprite();
+-            chestSr.color = new Color(0.52f, 0.38f, 0.18f);
+-            chestSr.sortingOrder = 0;
+-            chestSr.spriteSortPoint = SpriteSortPoint.Pivot;
+-            TrySetSortingLayer(chestSr, "World", 0);
+-            var chestCol = chestObj.AddComponent<BoxCollider2D>();
+-            chestCol.isTrigger = true;
+-            chestCol.size = Vector2.one;
+-            chestObj.AddComponent<CindarsHope.World.FarmHouseChestInteractable>();
+-            EditorUtility.SetDirty(chestObj);
++            FarmHouseInteriorAuthoring.CreateFurniture<CindarsHope.World.FarmHouseChestInteractable>(
++                house.transform, "FarmHouseChest", AssetDatabase.LoadAssetAtPath<Sprite>(
++                    "Assets/_Game/Art/Generated/World/cave/biome_stone_cavern/chest_closed.png"),
++                new Vector2(18.1f, 15.1f), 1.1f, new Vector2(1f, 0.48f), 0.04f);
+ 
+             // Exterior/telhado: UM sprite bespoke (Building("farmhouse")) cobrindo o footprint da
+             // casa (fachada frontal + telhado). RoofRevealController some ao entrar (mesmo objeto
+@@ -1324,7 +1305,7 @@
+             roof.transform.SetParent(house.transform);
+             roof.transform.localPosition = Vector3.zero;
+             var roofSr = roof.AddComponent<SpriteRenderer>();
+-            var houseRoofSprite = WorldSpriteLibrary.Building("farmhouse_keyart_v4");
++            var houseRoofSprite = WorldSpriteLibrary.Building("farmhouse_opening_keyart_v4");
+             roofSr.sprite = houseRoofSprite != null ? houseRoofSprite : GetBuiltinSprite();
+             roofSr.color = houseRoofSprite != null ? Color.white : new Color(0.42f, 0.20f, 0.14f); // vermelho-telha
+             roofSr.spriteSortPoint = SpriteSortPoint.Pivot;
+@@ -1351,15 +1332,26 @@
+             // Trigger de revelacao do telhado.
+             var revealObj = new GameObject("RoofReveal");
+             revealObj.transform.SetParent(house.transform);
+-            revealObj.transform.localPosition = Vector3.zero;
++            revealObj.transform.localPosition = new Vector3(0f, interiorCenterY, 0f);
+             var revealTrigger = revealObj.AddComponent<BoxCollider2D>();
+             revealTrigger.isTrigger = true;
+-            revealTrigger.size = new Vector2(w, h);
++            revealTrigger.size = new Vector2(w - FarmWallThickness, interiorHeight - FarmWallThickness);
+             var reveal = revealObj.AddComponent<RoofRevealController>();
+             var interiorRenderers = new List<SpriteRenderer>();
++            var exteriorRenderers = new List<SpriteRenderer> { roofSr };
+             foreach (var interiorRenderer in house.GetComponentsInChildren<SpriteRenderer>())
+-                if (interiorRenderer != roofSr) interiorRenderers.Add(interiorRenderer);
+-            reveal.Configure(new[] { roofSr }, interiorRenderers: interiorRenderers.ToArray());
++            {
++                if (interiorRenderer == roofSr) continue;
++                if (interiorRenderer.transform.IsChildOf(door.transform))
++                {
++                    // Leaf remains visible from either side, controlled only by its current pose.
++                    if (interiorRenderer.gameObject.name == "Threshold") exteriorRenderers.Add(interiorRenderer);
++                    continue;
++                }
++                interiorRenderers.Add(interiorRenderer);
++            }
++            reveal.Configure(exteriorRenderers.ToArray(), interiorRenderers: interiorRenderers.ToArray());
++            reveal.ConfigureFeetOccupancy(revealTrigger);
+             EditorUtility.SetDirty(reveal);
+ 
+             EditorUtility.SetDirty(house);
+@@ -1398,48 +1390,26 @@
+         // doorY = posicao Y local da porta (negativo = sul, positivo = norte).
+         private const float FarmDoorPivotEpsilon = 0.01f;
+ 
+-        private static void CreateFarmHouseDoor(Transform house, float doorY)
++        private static HouseDoorInteractable CreateFarmHouseDoor(Transform house, float doorY)
+         {
+             var door = new GameObject("Door");
+-            door.transform.SetParent(house);
+-            door.transform.localPosition = new Vector3(0f, doorY - FarmDoorPivotEpsilon, 0f);
+-
+-            // spec_farm_scene_keyart_visual_corrections_v1 Fase C: a casa agora usa o sprite bespoke
+-            // Building("farmhouse") (ver Roof abaixo), que JA tem a porta desenhada na fachada. O par
+-            // Threshold/Leaf esticado que existia aqui SOMENTE para colisao/interacao renderizava como
+-            // uma "porta gigante" solta embaixo da casa — removido o SpriteRenderer de ambos (o VISUAL
+-            // da porta vem do sprite da casa). Mantidos: os dois GameObjects (Leaf ainda e o transform
+-            // que HouseDoorInteractable anima ao abrir/fechar) e os dois colliders (blocker solido +
+-            // trigger de interacao) sem nenhum SpriteRenderer.
++            door.transform.SetParent(house, false);
++            door.transform.localPosition = new Vector3(0f, doorY, 0f);
++            CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.TryAssignLayer(
++                door, CindarsHope.Editor.Physics.GenerateGameplayPhysicsLayers.WorldSolid);
+             var threshold = new GameObject("Threshold");
+-            threshold.transform.SetParent(door.transform);
+-            threshold.transform.localPosition = Vector3.zero;
+-            threshold.transform.localScale = new Vector3(FarmDoorGapWidth, FarmWallThickness * 1.2f, 1f);
+-
+-            // Folha da porta (sem sprite — so o transform que desliza pra "abrir").
++            threshold.transform.SetParent(door.transform, false);
+             var leaf = new GameObject("Leaf");
+-            leaf.transform.SetParent(door.transform);
+-            var closedLocalPos = Vector3.zero;
+-            var openLocalPos   = new Vector3(FarmDoorGapWidth * 0.92f, 0f, 0f);
+-            leaf.transform.localPosition = closedLocalPos;
+-            leaf.transform.localScale = new Vector3(FarmDoorGapWidth, FarmWallThickness * 2.0f, 1f);
+-
+-            // Collider solido que tranca o vao (desligado quando aberta).
++            leaf.transform.SetParent(door.transform, false);
+             var blocker = door.AddComponent<BoxCollider2D>();
+-            blocker.isTrigger = false;
+             blocker.size = new Vector2(FarmDoorGapWidth, FarmWallThickness);
+-
+-            // Trigger de interacao (sempre ligado).
+             var interact = door.AddComponent<BoxCollider2D>();
+             interact.isTrigger = true;
+-            // The selector measures from the player's feet, while the solid body extends north.
+-            // Keep a usable frontal overlap before the closed leaf stops the body (.325u, not .025u).
+-            const float doorInteractionApproachDepth = 2f;
+-            interact.size = new Vector2(FarmDoorGapWidth + 0.6f, FarmWallThickness + doorInteractionApproachDepth);
+-
++            interact.size = new Vector2(FarmDoorGapWidth + 0.6f, FarmWallThickness + 2f);
+             var interactable = door.AddComponent<HouseDoorInteractable>();
+-            interactable.Configure(leaf.transform, blocker, closedLocalPos, openLocalPos);
++            FarmHouseDoorArtAuthoring.Configure(interactable, leaf.transform, threshold.transform, blocker);
+             EditorUtility.SetDirty(interactable);
++            return interactable;
+         }
+ 
+         // F16: cama dentro da casa v4 — dormir voluntario com confirmacao.

@@ -1,0 +1,1586 @@
+{
+  "frames": [
+    {
+      "t": 0.09707029163837433,
+      "src": "gameplay_b/herd-motion/herd_0000.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 0.2876512110233307,
+      "src": "gameplay_b/herd-motion/herd_0001.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 0.47770750522613525,
+      "src": "gameplay_b/herd-motion/herd_0002.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 0.6682649850845337,
+      "src": "gameplay_b/herd-motion/herd_0003.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 0.8588544726371765,
+      "src": "gameplay_b/herd-motion/herd_0004.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 1.0495773553848267,
+      "src": "gameplay_b/herd-motion/herd_0005.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 1.239786982536316,
+      "src": "gameplay_b/herd-motion/herd_0006.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 1.4303255081176758,
+      "src": "gameplay_b/herd-motion/herd_0007.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 1.6203316450119019,
+      "src": "gameplay_b/herd-motion/herd_0008.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 1.8108083009719849,
+      "src": "gameplay_b/herd-motion/herd_0009.png",
+      "modes": "Idle · Rest · Idle · Idle"
+    },
+    {
+      "t": 2.001312255859375,
+      "src": "gameplay_b/herd-motion/herd_0010.png",
+      "modes": "Idle · Rest · Idle · Idle"
+    },
+    {
+      "t": 2.1916697025299072,
+      "src": "gameplay_b/herd-motion/herd_0011.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 2.3822338581085205,
+      "src": "gameplay_b/herd-motion/herd_0012.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 2.5724987983703613,
+      "src": "gameplay_b/herd-motion/herd_0013.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 2.7627925872802734,
+      "src": "gameplay_b/herd-motion/herd_0014.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 2.953352928161621,
+      "src": "gameplay_b/herd-motion/herd_0015.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 3.1439263820648193,
+      "src": "gameplay_b/herd-motion/herd_0016.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 3.334176778793335,
+      "src": "gameplay_b/herd-motion/herd_0017.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 3.5247650146484375,
+      "src": "gameplay_b/herd-motion/herd_0018.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 3.7153713703155518,
+      "src": "gameplay_b/herd-motion/herd_0019.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 3.9060211181640625,
+      "src": "gameplay_b/herd-motion/herd_0020.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 4.096506595611572,
+      "src": "gameplay_b/herd-motion/herd_0021.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 4.2868475914001465,
+      "src": "gameplay_b/herd-motion/herd_0022.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 4.477593898773193,
+      "src": "gameplay_b/herd-motion/herd_0023.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 4.667694091796875,
+      "src": "gameplay_b/herd-motion/herd_0024.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 4.858340263366699,
+      "src": "gameplay_b/herd-motion/herd_0025.png",
+      "modes": "Walking · Walking · Idle · Idle"
+    },
+    {
+      "t": 5.048487186431885,
+      "src": "gameplay_b/herd-motion/herd_0026.png",
+      "modes": "Walking · Walking · Idle · Idle"
+    },
+    {
+      "t": 5.238757133483887,
+      "src": "gameplay_b/herd-motion/herd_0027.png",
+      "modes": "Walking · Walking · Idle · Idle"
+    },
+    {
+      "t": 5.42926549911499,
+      "src": "gameplay_b/herd-motion/herd_0028.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 5.6196675300598145,
+      "src": "gameplay_b/herd-motion/herd_0029.png",
+      "modes": "Walking · Idle · Walking · Walking"
+    },
+    {
+      "t": 5.809779167175293,
+      "src": "gameplay_b/herd-motion/herd_0030.png",
+      "modes": "Walking · Idle · Walking · Walking"
+    },
+    {
+      "t": 6.000226020812988,
+      "src": "gameplay_b/herd-motion/herd_0031.png",
+      "modes": "Walking · Idle · Idle · Walking"
+    },
+    {
+      "t": 6.190535068511963,
+      "src": "gameplay_b/herd-motion/herd_0032.png",
+      "modes": "Walking · Idle · Idle · Walking"
+    },
+    {
+      "t": 6.380772113800049,
+      "src": "gameplay_b/herd-motion/herd_0033.png",
+      "modes": "Idle · Idle · Idle · Walking"
+    },
+    {
+      "t": 6.570911884307861,
+      "src": "gameplay_b/herd-motion/herd_0034.png",
+      "modes": "Idle · Idle · Idle · Walking"
+    },
+    {
+      "t": 6.7617340087890625,
+      "src": "gameplay_b/herd-motion/herd_0035.png",
+      "modes": "Idle · Walking · Idle · Walking"
+    },
+    {
+      "t": 6.95175838470459,
+      "src": "gameplay_b/herd-motion/herd_0036.png",
+      "modes": "Idle · Idle · Idle · Walking"
+    },
+    {
+      "t": 7.142972469329834,
+      "src": "gameplay_b/herd-motion/herd_0037.png",
+      "modes": "Idle · Idle · Idle · Walking"
+    },
+    {
+      "t": 7.333491802215576,
+      "src": "gameplay_b/herd-motion/herd_0038.png",
+      "modes": "Idle · Idle · Walking · Walking"
+    },
+    {
+      "t": 7.523614406585693,
+      "src": "gameplay_b/herd-motion/herd_0039.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 7.714084625244141,
+      "src": "gameplay_b/herd-motion/herd_0040.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 7.904206275939941,
+      "src": "gameplay_b/herd-motion/herd_0041.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 8.094498634338379,
+      "src": "gameplay_b/herd-motion/herd_0042.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 8.284904479980469,
+      "src": "gameplay_b/herd-motion/herd_0043.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 8.476561546325684,
+      "src": "gameplay_b/herd-motion/herd_0044.png",
+      "modes": "Rest · Idle · Idle · Idle"
+    },
+    {
+      "t": 8.666799545288086,
+      "src": "gameplay_b/herd-motion/herd_0045.png",
+      "modes": "Rest · Rest · Idle · Idle"
+    },
+    {
+      "t": 8.856847763061523,
+      "src": "gameplay_b/herd-motion/herd_0046.png",
+      "modes": "Rest · Rest · Idle · Idle"
+    },
+    {
+      "t": 9.047078132629395,
+      "src": "gameplay_b/herd-motion/herd_0047.png",
+      "modes": "Rest · Rest · Idle · Rest"
+    },
+    {
+      "t": 9.237226486206055,
+      "src": "gameplay_b/herd-motion/herd_0048.png",
+      "modes": "Rest · Rest · Idle · Rest"
+    },
+    {
+      "t": 9.427947998046875,
+      "src": "gameplay_b/herd-motion/herd_0049.png",
+      "modes": "Rest · Rest · Idle · Rest"
+    },
+    {
+      "t": 9.6182222366333,
+      "src": "gameplay_b/herd-motion/herd_0050.png",
+      "modes": "Rest · Rest · Idle · Rest"
+    },
+    {
+      "t": 9.808492660522461,
+      "src": "gameplay_b/herd-motion/herd_0051.png",
+      "modes": "Rest · Rest · Idle · Rest"
+    },
+    {
+      "t": 9.998750686645508,
+      "src": "gameplay_b/herd-motion/herd_0052.png",
+      "modes": "Rest · Rest · Walking · Rest"
+    },
+    {
+      "t": 10.188962936401367,
+      "src": "gameplay_b/herd-motion/herd_0053.png",
+      "modes": "Rest · Rest · Walking · Rest"
+    },
+    {
+      "t": 10.379435539245605,
+      "src": "gameplay_b/herd-motion/herd_0054.png",
+      "modes": "Rest · Rest · Walking · Rest"
+    },
+    {
+      "t": 10.569538116455078,
+      "src": "gameplay_b/herd-motion/herd_0055.png",
+      "modes": "Rest · Rest · Walking · Rest"
+    },
+    {
+      "t": 10.759895324707031,
+      "src": "gameplay_b/herd-motion/herd_0056.png",
+      "modes": "Rest · Rest · Idle · Rest"
+    },
+    {
+      "t": 10.950437545776367,
+      "src": "gameplay_b/herd-motion/herd_0057.png",
+      "modes": "Idle · Rest · Idle · Rest"
+    },
+    {
+      "t": 11.141000747680664,
+      "src": "gameplay_b/herd-motion/herd_0058.png",
+      "modes": "Idle · Peck · Idle · Rest"
+    },
+    {
+      "t": 11.331594467163086,
+      "src": "gameplay_b/herd-motion/herd_0059.png",
+      "modes": "Idle · Peck · Idle · Rest"
+    },
+    {
+      "t": 11.521781921386719,
+      "src": "gameplay_b/herd-motion/herd_0060.png",
+      "modes": "Idle · Peck · Idle · Idle"
+    },
+    {
+      "t": 11.711934089660645,
+      "src": "gameplay_b/herd-motion/herd_0061.png",
+      "modes": "Idle · Peck · Idle · Idle"
+    },
+    {
+      "t": 11.90218448638916,
+      "src": "gameplay_b/herd-motion/herd_0062.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 12.092645645141602,
+      "src": "gameplay_b/herd-motion/herd_0063.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 12.283326148986816,
+      "src": "gameplay_b/herd-motion/herd_0064.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 12.473496437072754,
+      "src": "gameplay_b/herd-motion/herd_0065.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 12.663690567016602,
+      "src": "gameplay_b/herd-motion/herd_0066.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 12.85373306274414,
+      "src": "gameplay_b/herd-motion/herd_0067.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 13.044178009033203,
+      "src": "gameplay_b/herd-motion/herd_0068.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 13.234203338623047,
+      "src": "gameplay_b/herd-motion/herd_0069.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 13.424371719360352,
+      "src": "gameplay_b/herd-motion/herd_0070.png",
+      "modes": "Walking · Peck · Idle · Walking"
+    },
+    {
+      "t": 13.614835739135742,
+      "src": "gameplay_b/herd-motion/herd_0071.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 13.804900169372559,
+      "src": "gameplay_b/herd-motion/herd_0072.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 13.995038032531738,
+      "src": "gameplay_b/herd-motion/herd_0073.png",
+      "modes": "Idle · Peck · Idle · Idle"
+    },
+    {
+      "t": 14.185620307922363,
+      "src": "gameplay_b/herd-motion/herd_0074.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 14.37607192993164,
+      "src": "gameplay_b/herd-motion/herd_0075.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 14.566256523132324,
+      "src": "gameplay_b/herd-motion/herd_0076.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 14.756770133972168,
+      "src": "gameplay_b/herd-motion/herd_0077.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 14.947364807128906,
+      "src": "gameplay_b/herd-motion/herd_0078.png",
+      "modes": "Peck · Idle · Idle · Idle"
+    },
+    {
+      "t": 15.13796615600586,
+      "src": "gameplay_b/herd-motion/herd_0079.png",
+      "modes": "Peck · Idle · Idle · Idle"
+    },
+    {
+      "t": 15.328307151794434,
+      "src": "gameplay_b/herd-motion/herd_0080.png",
+      "modes": "Peck · Idle · Idle · Idle"
+    },
+    {
+      "t": 15.51854133605957,
+      "src": "gameplay_b/herd-motion/herd_0081.png",
+      "modes": "Peck · Idle · Idle · Idle"
+    },
+    {
+      "t": 15.708864212036133,
+      "src": "gameplay_b/herd-motion/herd_0082.png",
+      "modes": "Peck · Walking · Rest · Idle"
+    },
+    {
+      "t": 15.899504661560059,
+      "src": "gameplay_b/herd-motion/herd_0083.png",
+      "modes": "Peck · Walking · Rest · Idle"
+    },
+    {
+      "t": 16.09019660949707,
+      "src": "gameplay_b/herd-motion/herd_0084.png",
+      "modes": "Walking · Idle · Rest · Idle"
+    },
+    {
+      "t": 16.28049087524414,
+      "src": "gameplay_b/herd-motion/herd_0085.png",
+      "modes": "Walking · Idle · Rest · Idle"
+    },
+    {
+      "t": 16.470951080322266,
+      "src": "gameplay_b/herd-motion/herd_0086.png",
+      "modes": "Walking · Idle · Rest · Idle"
+    },
+    {
+      "t": 16.66107940673828,
+      "src": "gameplay_b/herd-motion/herd_0087.png",
+      "modes": "Walking · Idle · Rest · Peck"
+    },
+    {
+      "t": 16.851242065429688,
+      "src": "gameplay_b/herd-motion/herd_0088.png",
+      "modes": "Walking · Idle · Rest · Peck"
+    },
+    {
+      "t": 17.041345596313477,
+      "src": "gameplay_b/herd-motion/herd_0089.png",
+      "modes": "Walking · Walking · Rest · Peck"
+    },
+    {
+      "t": 17.23196792602539,
+      "src": "gameplay_b/herd-motion/herd_0090.png",
+      "modes": "Walking · Idle · Rest · Peck"
+    },
+    {
+      "t": 17.422422409057617,
+      "src": "gameplay_b/herd-motion/herd_0091.png",
+      "modes": "Idle · Idle · Rest · Walking"
+    },
+    {
+      "t": 17.612430572509766,
+      "src": "gameplay_b/herd-motion/herd_0092.png",
+      "modes": "Idle · Idle · Rest · Walking"
+    },
+    {
+      "t": 17.80272674560547,
+      "src": "gameplay_b/herd-motion/herd_0093.png",
+      "modes": "Idle · Idle · Rest · Walking"
+    },
+    {
+      "t": 17.992952346801758,
+      "src": "gameplay_b/herd-motion/herd_0094.png",
+      "modes": "Idle · Idle · Rest · Walking"
+    },
+    {
+      "t": 18.183212280273438,
+      "src": "gameplay_b/herd-motion/herd_0095.png",
+      "modes": "Idle · Idle · Walking · Idle"
+    },
+    {
+      "t": 18.37323570251465,
+      "src": "gameplay_b/herd-motion/herd_0096.png",
+      "modes": "Idle · Idle · Walking · Idle"
+    },
+    {
+      "t": 18.56332015991211,
+      "src": "gameplay_b/herd-motion/herd_0097.png",
+      "modes": "Idle · Walking · Walking · Idle"
+    },
+    {
+      "t": 18.75358009338379,
+      "src": "gameplay_b/herd-motion/herd_0098.png",
+      "modes": "Idle · Walking · Walking · Idle"
+    },
+    {
+      "t": 18.943805694580078,
+      "src": "gameplay_b/herd-motion/herd_0099.png",
+      "modes": "Idle · Walking · Walking · Idle"
+    },
+    {
+      "t": 19.134483337402344,
+      "src": "gameplay_b/herd-motion/herd_0100.png",
+      "modes": "Idle · Walking · Walking · Peck"
+    },
+    {
+      "t": 19.324806213378906,
+      "src": "gameplay_b/herd-motion/herd_0101.png",
+      "modes": "Idle · Idle · Idle · Peck"
+    },
+    {
+      "t": 19.51531410217285,
+      "src": "gameplay_b/herd-motion/herd_0102.png",
+      "modes": "Idle · Idle · Idle · Peck"
+    },
+    {
+      "t": 19.70540428161621,
+      "src": "gameplay_b/herd-motion/herd_0103.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 19.89543914794922,
+      "src": "gameplay_b/herd-motion/herd_0104.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 20.086349487304688,
+      "src": "gameplay_b/herd-motion/herd_0105.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 20.27688217163086,
+      "src": "gameplay_b/herd-motion/herd_0106.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 20.46760368347168,
+      "src": "gameplay_b/herd-motion/herd_0107.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 20.657819747924805,
+      "src": "gameplay_b/herd-motion/herd_0108.png",
+      "modes": "Walking · Idle · Idle · Rest"
+    },
+    {
+      "t": 20.847896575927734,
+      "src": "gameplay_b/herd-motion/herd_0109.png",
+      "modes": "Walking · Idle · Peck · Rest"
+    },
+    {
+      "t": 21.038602828979492,
+      "src": "gameplay_b/herd-motion/herd_0110.png",
+      "modes": "Walking · Idle · Peck · Rest"
+    },
+    {
+      "t": 21.229021072387695,
+      "src": "gameplay_b/herd-motion/herd_0111.png",
+      "modes": "Idle · Idle · Peck · Rest"
+    },
+    {
+      "t": 21.41942024230957,
+      "src": "gameplay_b/herd-motion/herd_0112.png",
+      "modes": "Idle · Walking · Peck · Rest"
+    },
+    {
+      "t": 21.60955810546875,
+      "src": "gameplay_b/herd-motion/herd_0113.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 21.79962921142578,
+      "src": "gameplay_b/herd-motion/herd_0114.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 21.990318298339844,
+      "src": "gameplay_b/herd-motion/herd_0115.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 22.180463790893555,
+      "src": "gameplay_b/herd-motion/herd_0116.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 22.37101936340332,
+      "src": "gameplay_b/herd-motion/herd_0117.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 22.561153411865234,
+      "src": "gameplay_b/herd-motion/herd_0118.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 22.751750946044922,
+      "src": "gameplay_b/herd-motion/herd_0119.png",
+      "modes": "Idle · Idle · Walking · Rest"
+    },
+    {
+      "t": 22.941797256469727,
+      "src": "gameplay_b/herd-motion/herd_0120.png",
+      "modes": "Idle · Idle · Walking · Rest"
+    },
+    {
+      "t": 23.131999969482422,
+      "src": "gameplay_b/herd-motion/herd_0121.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 23.322607040405273,
+      "src": "gameplay_b/herd-motion/herd_0122.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 23.512876510620117,
+      "src": "gameplay_b/herd-motion/herd_0123.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 23.70331573486328,
+      "src": "gameplay_b/herd-motion/herd_0124.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 23.89338493347168,
+      "src": "gameplay_b/herd-motion/herd_0125.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 24.083402633666992,
+      "src": "gameplay_b/herd-motion/herd_0126.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 24.273521423339844,
+      "src": "gameplay_b/herd-motion/herd_0127.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 24.463788986206055,
+      "src": "gameplay_b/herd-motion/herd_0128.png",
+      "modes": "Walking · Rest · Walking · Walking"
+    },
+    {
+      "t": 24.65412712097168,
+      "src": "gameplay_b/herd-motion/herd_0129.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 24.844587326049805,
+      "src": "gameplay_b/herd-motion/herd_0130.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 25.03468894958496,
+      "src": "gameplay_b/herd-motion/herd_0131.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 25.224884033203125,
+      "src": "gameplay_b/herd-motion/herd_0132.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 25.415372848510742,
+      "src": "gameplay_b/herd-motion/herd_0133.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 25.60551643371582,
+      "src": "gameplay_b/herd-motion/herd_0134.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 25.895206451416016,
+      "src": "gameplay_b/herd-motion/herd_0135.png",
+      "modes": "Walking · Rest · Walking · Idle"
+    },
+    {
+      "t": 26.085752487182617,
+      "src": "gameplay_b/herd-motion/herd_0136.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 26.27642822265625,
+      "src": "gameplay_b/herd-motion/herd_0137.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 26.466825485229492,
+      "src": "gameplay_b/herd-motion/herd_0138.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 26.657331466674805,
+      "src": "gameplay_b/herd-motion/herd_0139.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 26.847339630126953,
+      "src": "gameplay_b/herd-motion/herd_0140.png",
+      "modes": "Walking · Walking · Idle · Idle"
+    },
+    {
+      "t": 27.03751564025879,
+      "src": "gameplay_b/herd-motion/herd_0141.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 27.227909088134766,
+      "src": "gameplay_b/herd-motion/herd_0142.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 27.418500900268555,
+      "src": "gameplay_b/herd-motion/herd_0143.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 27.60910415649414,
+      "src": "gameplay_b/herd-motion/herd_0144.png",
+      "modes": "Idle · Idle · Idle · Rest"
+    },
+    {
+      "t": 27.799222946166992,
+      "src": "gameplay_b/herd-motion/herd_0145.png",
+      "modes": "Idle · Idle · Idle · Rest"
+    },
+    {
+      "t": 27.989606857299805,
+      "src": "gameplay_b/herd-motion/herd_0146.png",
+      "modes": "Walking · Idle · Rest · Rest"
+    },
+    {
+      "t": 28.179908752441406,
+      "src": "gameplay_b/herd-motion/herd_0147.png",
+      "modes": "Idle · Idle · Rest · Rest"
+    },
+    {
+      "t": 28.370264053344727,
+      "src": "gameplay_b/herd-motion/herd_0148.png",
+      "modes": "Idle · Idle · Rest · Rest"
+    },
+    {
+      "t": 28.560531616210938,
+      "src": "gameplay_b/herd-motion/herd_0149.png",
+      "modes": "Idle · Idle · Rest · Rest"
+    },
+    {
+      "t": 28.750768661499023,
+      "src": "gameplay_b/herd-motion/herd_0150.png",
+      "modes": "Idle · Idle · Rest · Rest"
+    },
+    {
+      "t": 28.941274642944336,
+      "src": "gameplay_b/herd-motion/herd_0151.png",
+      "modes": "Idle · Idle · Rest · Rest"
+    },
+    {
+      "t": 29.131986618041992,
+      "src": "gameplay_b/herd-motion/herd_0152.png",
+      "modes": "Walking · Peck · Rest · Rest"
+    },
+    {
+      "t": 29.32261085510254,
+      "src": "gameplay_b/herd-motion/herd_0153.png",
+      "modes": "Walking · Peck · Rest · Rest"
+    },
+    {
+      "t": 29.51280403137207,
+      "src": "gameplay_b/herd-motion/herd_0154.png",
+      "modes": "Walking · Peck · Rest · Rest"
+    },
+    {
+      "t": 29.70341682434082,
+      "src": "gameplay_b/herd-motion/herd_0155.png",
+      "modes": "Idle · Peck · Rest · Rest"
+    },
+    {
+      "t": 29.89377212524414,
+      "src": "gameplay_b/herd-motion/herd_0156.png",
+      "modes": "Idle · Walking · Rest · Rest"
+    },
+    {
+      "t": 30.121646881103516,
+      "src": "gameplay_b/herd-motion/herd_0157.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 30.31207847595215,
+      "src": "gameplay_b/herd-motion/herd_0158.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 30.502592086791992,
+      "src": "gameplay_b/herd-motion/herd_0159.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 30.694000244140625,
+      "src": "gameplay_b/herd-motion/herd_0160.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 30.884172439575195,
+      "src": "gameplay_b/herd-motion/herd_0161.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 31.074459075927734,
+      "src": "gameplay_b/herd-motion/herd_0162.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 31.26485252380371,
+      "src": "gameplay_b/herd-motion/herd_0163.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 31.455015182495117,
+      "src": "gameplay_b/herd-motion/herd_0164.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 31.645431518554688,
+      "src": "gameplay_b/herd-motion/herd_0165.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 31.835914611816406,
+      "src": "gameplay_b/herd-motion/herd_0166.png",
+      "modes": "Idle · Rest · Idle · Idle"
+    },
+    {
+      "t": 32.02639389038086,
+      "src": "gameplay_b/herd-motion/herd_0167.png",
+      "modes": "Idle · Rest · Idle · Idle"
+    },
+    {
+      "t": 32.216617584228516,
+      "src": "gameplay_b/herd-motion/herd_0168.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 32.40733337402344,
+      "src": "gameplay_b/herd-motion/herd_0169.png",
+      "modes": "Walking · Rest · Idle · Walking"
+    },
+    {
+      "t": 32.59735870361328,
+      "src": "gameplay_b/herd-motion/herd_0170.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 32.78770065307617,
+      "src": "gameplay_b/herd-motion/herd_0171.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 32.97823715209961,
+      "src": "gameplay_b/herd-motion/herd_0172.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 33.168922424316406,
+      "src": "gameplay_b/herd-motion/herd_0173.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 33.359275817871094,
+      "src": "gameplay_b/herd-motion/herd_0174.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 33.54928207397461,
+      "src": "gameplay_b/herd-motion/herd_0175.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 33.73994445800781,
+      "src": "gameplay_b/herd-motion/herd_0176.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 33.93067169189453,
+      "src": "gameplay_b/herd-motion/herd_0177.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 34.12119674682617,
+      "src": "gameplay_b/herd-motion/herd_0178.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 34.311431884765625,
+      "src": "gameplay_b/herd-motion/herd_0179.png",
+      "modes": "Idle · Walking · Idle · Walking"
+    },
+    {
+      "t": 34.50178909301758,
+      "src": "gameplay_b/herd-motion/herd_0180.png",
+      "modes": "Idle · Walking · Idle · Walking"
+    },
+    {
+      "t": 34.69217300415039,
+      "src": "gameplay_b/herd-motion/herd_0181.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 34.88279724121094,
+      "src": "gameplay_b/herd-motion/herd_0182.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 35.07288360595703,
+      "src": "gameplay_b/herd-motion/herd_0183.png",
+      "modes": "Walking · Walking · Idle · Idle"
+    },
+    {
+      "t": 35.262962341308594,
+      "src": "gameplay_b/herd-motion/herd_0184.png",
+      "modes": "Walking · Walking · Idle · Idle"
+    },
+    {
+      "t": 35.453277587890625,
+      "src": "gameplay_b/herd-motion/herd_0185.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 35.643653869628906,
+      "src": "gameplay_b/herd-motion/herd_0186.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 35.833702087402344,
+      "src": "gameplay_b/herd-motion/herd_0187.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 36.0241584777832,
+      "src": "gameplay_b/herd-motion/herd_0188.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 36.21421813964844,
+      "src": "gameplay_b/herd-motion/herd_0189.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 36.40428924560547,
+      "src": "gameplay_b/herd-motion/herd_0190.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 36.59452819824219,
+      "src": "gameplay_b/herd-motion/herd_0191.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 36.78496551513672,
+      "src": "gameplay_b/herd-motion/herd_0192.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 36.97502136230469,
+      "src": "gameplay_b/herd-motion/herd_0193.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 37.16575622558594,
+      "src": "gameplay_b/herd-motion/herd_0194.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 37.356292724609375,
+      "src": "gameplay_b/herd-motion/herd_0195.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 37.546627044677734,
+      "src": "gameplay_b/herd-motion/herd_0196.png",
+      "modes": "Idle · Idle · Idle · Peck"
+    },
+    {
+      "t": 37.73723602294922,
+      "src": "gameplay_b/herd-motion/herd_0197.png",
+      "modes": "Idle · Idle · Idle · Peck"
+    },
+    {
+      "t": 37.927860260009766,
+      "src": "gameplay_b/herd-motion/herd_0198.png",
+      "modes": "Idle · Idle · Idle · Peck"
+    },
+    {
+      "t": 38.117862701416016,
+      "src": "gameplay_b/herd-motion/herd_0199.png",
+      "modes": "Idle · Idle · Walking · Peck"
+    },
+    {
+      "t": 38.30855941772461,
+      "src": "gameplay_b/herd-motion/herd_0200.png",
+      "modes": "Walking · Idle · Idle · Idle"
+    },
+    {
+      "t": 38.49920654296875,
+      "src": "gameplay_b/herd-motion/herd_0201.png",
+      "modes": "Walking · Idle · Idle · Idle"
+    },
+    {
+      "t": 38.68922805786133,
+      "src": "gameplay_b/herd-motion/herd_0202.png",
+      "modes": "Walking · Idle · Idle · Idle"
+    },
+    {
+      "t": 38.87963104248047,
+      "src": "gameplay_b/herd-motion/herd_0203.png",
+      "modes": "Walking · Rest · Idle · Idle"
+    },
+    {
+      "t": 39.06980895996094,
+      "src": "gameplay_b/herd-motion/herd_0204.png",
+      "modes": "Walking · Rest · Idle · Idle"
+    },
+    {
+      "t": 39.26033401489258,
+      "src": "gameplay_b/herd-motion/herd_0205.png",
+      "modes": "Walking · Rest · Idle · Idle"
+    },
+    {
+      "t": 39.4505500793457,
+      "src": "gameplay_b/herd-motion/herd_0206.png",
+      "modes": "Walking · Rest · Idle · Idle"
+    },
+    {
+      "t": 39.64072799682617,
+      "src": "gameplay_b/herd-motion/herd_0207.png",
+      "modes": "Walking · Rest · Idle · Idle"
+    },
+    {
+      "t": 39.8312873840332,
+      "src": "gameplay_b/herd-motion/herd_0208.png",
+      "modes": "Walking · Rest · Idle · Idle"
+    },
+    {
+      "t": 40.021366119384766,
+      "src": "gameplay_b/herd-motion/herd_0209.png",
+      "modes": "Idle · Rest · Idle · Idle"
+    },
+    {
+      "t": 40.211795806884766,
+      "src": "gameplay_b/herd-motion/herd_0210.png",
+      "modes": "Idle · Rest · Idle · Idle"
+    },
+    {
+      "t": 40.402191162109375,
+      "src": "gameplay_b/herd-motion/herd_0211.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 40.5924072265625,
+      "src": "gameplay_b/herd-motion/herd_0212.png",
+      "modes": "Idle · Rest · Idle · Walking"
+    },
+    {
+      "t": 40.782432556152344,
+      "src": "gameplay_b/herd-motion/herd_0213.png",
+      "modes": "Idle · Rest · Walking · Idle"
+    },
+    {
+      "t": 40.972442626953125,
+      "src": "gameplay_b/herd-motion/herd_0214.png",
+      "modes": "Walking · Rest · Walking · Idle"
+    },
+    {
+      "t": 41.16279983520508,
+      "src": "gameplay_b/herd-motion/herd_0215.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 41.35345458984375,
+      "src": "gameplay_b/herd-motion/herd_0216.png",
+      "modes": "Idle · Peck · Walking · Idle"
+    },
+    {
+      "t": 41.54352951049805,
+      "src": "gameplay_b/herd-motion/herd_0217.png",
+      "modes": "Idle · Peck · Idle · Idle"
+    },
+    {
+      "t": 41.73373794555664,
+      "src": "gameplay_b/herd-motion/herd_0218.png",
+      "modes": "Idle · Peck · Idle · Idle"
+    },
+    {
+      "t": 41.92434310913086,
+      "src": "gameplay_b/herd-motion/herd_0219.png",
+      "modes": "Idle · Peck · Idle · Idle"
+    },
+    {
+      "t": 42.114437103271484,
+      "src": "gameplay_b/herd-motion/herd_0220.png",
+      "modes": "Idle · Peck · Idle · Idle"
+    },
+    {
+      "t": 42.30503845214844,
+      "src": "gameplay_b/herd-motion/herd_0221.png",
+      "modes": "Peck · Peck · Idle · Idle"
+    },
+    {
+      "t": 42.49566650390625,
+      "src": "gameplay_b/herd-motion/herd_0222.png",
+      "modes": "Peck · Peck · Idle · Walking"
+    },
+    {
+      "t": 42.68581008911133,
+      "src": "gameplay_b/herd-motion/herd_0223.png",
+      "modes": "Peck · Peck · Walking · Walking"
+    },
+    {
+      "t": 42.87605667114258,
+      "src": "gameplay_b/herd-motion/herd_0224.png",
+      "modes": "Walking · Peck · Walking · Walking"
+    },
+    {
+      "t": 43.06624984741211,
+      "src": "gameplay_b/herd-motion/herd_0225.png",
+      "modes": "Walking · Peck · Walking · Idle"
+    },
+    {
+      "t": 43.25682830810547,
+      "src": "gameplay_b/herd-motion/herd_0226.png",
+      "modes": "Walking · Peck · Walking · Idle"
+    },
+    {
+      "t": 43.446937561035156,
+      "src": "gameplay_b/herd-motion/herd_0227.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 43.63770294189453,
+      "src": "gameplay_b/herd-motion/herd_0228.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 43.828338623046875,
+      "src": "gameplay_b/herd-motion/herd_0229.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 44.01884460449219,
+      "src": "gameplay_b/herd-motion/herd_0230.png",
+      "modes": "Walking · Peck · Idle · Idle"
+    },
+    {
+      "t": 44.20984649658203,
+      "src": "gameplay_b/herd-motion/herd_0231.png",
+      "modes": "Walking · Walking · Idle · Idle"
+    },
+    {
+      "t": 44.400020599365234,
+      "src": "gameplay_b/herd-motion/herd_0232.png",
+      "modes": "Walking · Idle · Idle · Walking"
+    },
+    {
+      "t": 44.590797424316406,
+      "src": "gameplay_b/herd-motion/herd_0233.png",
+      "modes": "Walking · Idle · Idle · Idle"
+    },
+    {
+      "t": 44.78102111816406,
+      "src": "gameplay_b/herd-motion/herd_0234.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 44.97132873535156,
+      "src": "gameplay_b/herd-motion/herd_0235.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 45.16195297241211,
+      "src": "gameplay_b/herd-motion/herd_0236.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 45.35268783569336,
+      "src": "gameplay_b/herd-motion/herd_0237.png",
+      "modes": "Walking · Walking · Walking · Idle"
+    },
+    {
+      "t": 45.54304504394531,
+      "src": "gameplay_b/herd-motion/herd_0238.png",
+      "modes": "Idle · Walking · Walking · Idle"
+    },
+    {
+      "t": 45.73344039916992,
+      "src": "gameplay_b/herd-motion/herd_0239.png",
+      "modes": "Idle · Idle · Walking · Idle"
+    },
+    {
+      "t": 45.923587799072266,
+      "src": "gameplay_b/herd-motion/herd_0240.png",
+      "modes": "Idle · Idle · Walking · Idle"
+    },
+    {
+      "t": 46.16135025024414,
+      "src": "gameplay_b/herd-motion/herd_0241.png",
+      "modes": "Idle · Idle · Walking · Idle"
+    },
+    {
+      "t": 46.35198974609375,
+      "src": "gameplay_b/herd-motion/herd_0242.png",
+      "modes": "Idle · Idle · Walking · Idle"
+    },
+    {
+      "t": 46.542118072509766,
+      "src": "gameplay_b/herd-motion/herd_0243.png",
+      "modes": "Walking · Idle · Walking · Idle"
+    },
+    {
+      "t": 46.73265075683594,
+      "src": "gameplay_b/herd-motion/herd_0244.png",
+      "modes": "Walking · Walking · Walking · Idle"
+    },
+    {
+      "t": 46.923519134521484,
+      "src": "gameplay_b/herd-motion/herd_0245.png",
+      "modes": "Walking · Idle · Idle · Idle"
+    },
+    {
+      "t": 47.11379623413086,
+      "src": "gameplay_b/herd-motion/herd_0246.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 47.30434799194336,
+      "src": "gameplay_b/herd-motion/herd_0247.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 47.49500274658203,
+      "src": "gameplay_b/herd-motion/herd_0248.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 47.68540954589844,
+      "src": "gameplay_b/herd-motion/herd_0249.png",
+      "modes": "Walking · Idle · Idle · Peck"
+    },
+    {
+      "t": 47.87579345703125,
+      "src": "gameplay_b/herd-motion/herd_0250.png",
+      "modes": "Walking · Idle · Idle · Walking"
+    },
+    {
+      "t": 48.06637954711914,
+      "src": "gameplay_b/herd-motion/herd_0251.png",
+      "modes": "Walking · Walking · Idle · Walking"
+    },
+    {
+      "t": 48.25690841674805,
+      "src": "gameplay_b/herd-motion/herd_0252.png",
+      "modes": "Walking · Walking · Idle · Walking"
+    },
+    {
+      "t": 48.44727325439453,
+      "src": "gameplay_b/herd-motion/herd_0253.png",
+      "modes": "Walking · Walking · Idle · Walking"
+    },
+    {
+      "t": 48.63760757446289,
+      "src": "gameplay_b/herd-motion/herd_0254.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 48.82829666137695,
+      "src": "gameplay_b/herd-motion/herd_0255.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 49.01872253417969,
+      "src": "gameplay_b/herd-motion/herd_0256.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 49.20875930786133,
+      "src": "gameplay_b/herd-motion/herd_0257.png",
+      "modes": "Idle · Idle · Idle · Idle"
+    },
+    {
+      "t": 49.39884948730469,
+      "src": "gameplay_b/herd-motion/herd_0258.png",
+      "modes": "Idle · Idle · Peck · Idle"
+    },
+    {
+      "t": 49.588966369628906,
+      "src": "gameplay_b/herd-motion/herd_0259.png",
+      "modes": "Idle · Idle · Peck · Peck"
+    },
+    {
+      "t": 49.779052734375,
+      "src": "gameplay_b/herd-motion/herd_0260.png",
+      "modes": "Idle · Idle · Peck · Peck"
+    },
+    {
+      "t": 49.96946334838867,
+      "src": "gameplay_b/herd-motion/herd_0261.png",
+      "modes": "Idle · Idle · Peck · Peck"
+    },
+    {
+      "t": 50.159767150878906,
+      "src": "gameplay_b/herd-motion/herd_0262.png",
+      "modes": "Idle · Idle · Walking · Peck"
+    },
+    {
+      "t": 50.350337982177734,
+      "src": "gameplay_b/herd-motion/herd_0263.png",
+      "modes": "Idle · Idle · Walking · Peck"
+    },
+    {
+      "t": 50.541072845458984,
+      "src": "gameplay_b/herd-motion/herd_0264.png",
+      "modes": "Idle · Idle · Walking · Peck"
+    },
+    {
+      "t": 50.731468200683594,
+      "src": "gameplay_b/herd-motion/herd_0265.png",
+      "modes": "Walking · Idle · Walking · Peck"
+    },
+    {
+      "t": 50.92159652709961,
+      "src": "gameplay_b/herd-motion/herd_0266.png",
+      "modes": "Walking · Walking · Walking · Peck"
+    },
+    {
+      "t": 51.111846923828125,
+      "src": "gameplay_b/herd-motion/herd_0267.png",
+      "modes": "Walking · Walking · Walking · Rest"
+    },
+    {
+      "t": 51.30221939086914,
+      "src": "gameplay_b/herd-motion/herd_0268.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 51.49231719970703,
+      "src": "gameplay_b/herd-motion/herd_0269.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 51.68272018432617,
+      "src": "gameplay_b/herd-motion/herd_0270.png",
+      "modes": "Idle · Walking · Walking · Rest"
+    },
+    {
+      "t": 51.87297439575195,
+      "src": "gameplay_b/herd-motion/herd_0271.png",
+      "modes": "Idle · Walking · Idle · Rest"
+    },
+    {
+      "t": 52.06562042236328,
+      "src": "gameplay_b/herd-motion/herd_0272.png",
+      "modes": "Idle · Idle · Idle · Rest"
+    },
+    {
+      "t": 52.25603103637695,
+      "src": "gameplay_b/herd-motion/herd_0273.png",
+      "modes": "Peck · Idle · Idle · Rest"
+    },
+    {
+      "t": 52.44664764404297,
+      "src": "gameplay_b/herd-motion/herd_0274.png",
+      "modes": "Peck · Idle · Idle · Rest"
+    },
+    {
+      "t": 52.63686752319336,
+      "src": "gameplay_b/herd-motion/herd_0275.png",
+      "modes": "Peck · Idle · Idle · Rest"
+    },
+    {
+      "t": 52.827083587646484,
+      "src": "gameplay_b/herd-motion/herd_0276.png",
+      "modes": "Peck · Idle · Idle · Rest"
+    },
+    {
+      "t": 53.01753234863281,
+      "src": "gameplay_b/herd-motion/herd_0277.png",
+      "modes": "Idle · Rest · Idle · Rest"
+    },
+    {
+      "t": 53.20815658569336,
+      "src": "gameplay_b/herd-motion/herd_0278.png",
+      "modes": "Idle · Rest · Peck · Rest"
+    },
+    {
+      "t": 53.3988151550293,
+      "src": "gameplay_b/herd-motion/herd_0279.png",
+      "modes": "Idle · Rest · Peck · Rest"
+    },
+    {
+      "t": 53.58927536010742,
+      "src": "gameplay_b/herd-motion/herd_0280.png",
+      "modes": "Idle · Rest · Peck · Peck"
+    },
+    {
+      "t": 53.779685974121094,
+      "src": "gameplay_b/herd-motion/herd_0281.png",
+      "modes": "Idle · Rest · Peck · Peck"
+    },
+    {
+      "t": 53.969730377197266,
+      "src": "gameplay_b/herd-motion/herd_0282.png",
+      "modes": "Idle · Rest · Walking · Peck"
+    },
+    {
+      "t": 54.16060256958008,
+      "src": "gameplay_b/herd-motion/herd_0283.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 54.35078048706055,
+      "src": "gameplay_b/herd-motion/herd_0284.png",
+      "modes": "Walking · Rest · Walking · Walking"
+    },
+    {
+      "t": 54.5408935546875,
+      "src": "gameplay_b/herd-motion/herd_0285.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 54.73139190673828,
+      "src": "gameplay_b/herd-motion/herd_0286.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 54.92205810546875,
+      "src": "gameplay_b/herd-motion/herd_0287.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 55.11259460449219,
+      "src": "gameplay_b/herd-motion/herd_0288.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 55.30300521850586,
+      "src": "gameplay_b/herd-motion/herd_0289.png",
+      "modes": "Idle · Rest · Walking · Walking"
+    },
+    {
+      "t": 55.49376678466797,
+      "src": "gameplay_b/herd-motion/herd_0290.png",
+      "modes": "Idle · Peck · Idle · Walking"
+    },
+    {
+      "t": 55.68402099609375,
+      "src": "gameplay_b/herd-motion/herd_0291.png",
+      "modes": "Idle · Peck · Idle · Walking"
+    },
+    {
+      "t": 55.874542236328125,
+      "src": "gameplay_b/herd-motion/herd_0292.png",
+      "modes": "Rest · Peck · Idle · Walking"
+    },
+    {
+      "t": 56.06462097167969,
+      "src": "gameplay_b/herd-motion/herd_0293.png",
+      "modes": "Rest · Walking · Idle · Walking"
+    },
+    {
+      "t": 56.25524139404297,
+      "src": "gameplay_b/herd-motion/herd_0294.png",
+      "modes": "Rest · Walking · Idle · Idle"
+    },
+    {
+      "t": 56.44627380371094,
+      "src": "gameplay_b/herd-motion/herd_0295.png",
+      "modes": "Rest · Walking · Idle · Idle"
+    },
+    {
+      "t": 56.63694381713867,
+      "src": "gameplay_b/herd-motion/herd_0296.png",
+      "modes": "Rest · Idle · Idle · Idle"
+    },
+    {
+      "t": 56.82752990722656,
+      "src": "gameplay_b/herd-motion/herd_0297.png",
+      "modes": "Rest · Idle · Idle · Idle"
+    },
+    {
+      "t": 57.0178108215332,
+      "src": "gameplay_b/herd-motion/herd_0298.png",
+      "modes": "Rest · Idle · Peck · Idle"
+    },
+    {
+      "t": 57.20783233642578,
+      "src": "gameplay_b/herd-motion/herd_0299.png",
+      "modes": "Rest · Idle · Peck · Idle"
+    },
+    {
+      "t": 57.39796829223633,
+      "src": "gameplay_b/herd-motion/herd_0300.png",
+      "modes": "Rest · Idle · Peck · Idle"
+    },
+    {
+      "t": 57.588172912597656,
+      "src": "gameplay_b/herd-motion/herd_0301.png",
+      "modes": "Rest · Idle · Peck · Idle"
+    },
+    {
+      "t": 57.7781982421875,
+      "src": "gameplay_b/herd-motion/herd_0302.png",
+      "modes": "Rest · Idle · Peck · Idle"
+    },
+    {
+      "t": 57.96824645996094,
+      "src": "gameplay_b/herd-motion/herd_0303.png",
+      "modes": "Rest · Idle · Peck · Walking"
+    },
+    {
+      "t": 58.158870697021484,
+      "src": "gameplay_b/herd-motion/herd_0304.png",
+      "modes": "Rest · Idle · Peck · Walking"
+    },
+    {
+      "t": 58.34927749633789,
+      "src": "gameplay_b/herd-motion/herd_0305.png",
+      "modes": "Walking · Peck · Walking · Walking"
+    },
+    {
+      "t": 58.54005432128906,
+      "src": "gameplay_b/herd-motion/herd_0306.png",
+      "modes": "Idle · Peck · Walking · Walking"
+    },
+    {
+      "t": 58.73102951049805,
+      "src": "gameplay_b/herd-motion/herd_0307.png",
+      "modes": "Idle · Peck · Walking · Walking"
+    },
+    {
+      "t": 58.92167282104492,
+      "src": "gameplay_b/herd-motion/herd_0308.png",
+      "modes": "Idle · Peck · Idle · Walking"
+    },
+    {
+      "t": 59.112327575683594,
+      "src": "gameplay_b/herd-motion/herd_0309.png",
+      "modes": "Idle · Walking · Idle · Walking"
+    },
+    {
+      "t": 59.302947998046875,
+      "src": "gameplay_b/herd-motion/herd_0310.png",
+      "modes": "Idle · Walking · Idle · Walking"
+    },
+    {
+      "t": 59.493408203125,
+      "src": "gameplay_b/herd-motion/herd_0311.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 59.68423843383789,
+      "src": "gameplay_b/herd-motion/herd_0312.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 59.87497329711914,
+      "src": "gameplay_b/herd-motion/herd_0313.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    },
+    {
+      "t": 60.06526565551758,
+      "src": "gameplay_b/herd-motion/herd_0314.png",
+      "modes": "Idle · Walking · Idle · Idle"
+    }
+  ],
+  "summary": "Integrado: 65/65 testes passaram; quatro animais observados por 60 segundos, com 19 poses cada, interação e restauração verificadas. Proporções revisadas na câmera do jogo.",
+  "contexts": [
+    "gameplay_b/herd-motion/context_herd_start.png",
+    "gameplay_b/herd-motion/context_herd_before_restore.png",
+    "gameplay_b/herd-motion/context_herd_restored.png",
+    "gameplay_b/herd-motion/context_herd_end.png"
+  ]
+}

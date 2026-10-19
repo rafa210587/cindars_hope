@@ -1,0 +1,12 @@
+{
+  "result": "FAIL",
+  "total": 31,
+  "passed": 30,
+  "failed": 1,
+  "failedCase": "FarmDecorationPlannerTests.Plan_AllBiomesAreWithinDeclaredRanges",
+  "reason": "Meadow: count=11",
+  "runnerExit": 1,
+  "unityTestExit": 2,
+  "logScan": "NOT RUN: RunUnityEditModeTests exits on process2 before its scanner",
+  "sourceEvidence": "focal-inputs.json"
+}

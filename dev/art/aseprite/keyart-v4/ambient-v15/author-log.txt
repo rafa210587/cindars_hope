@@ -1,0 +1,3 @@
+PASS fountain_ambient_v15:5frames140ms, structure RGBA and alpha invariant, source mask pixels 2445
+PASS cascade_ambient_v15:5frames140ms, structure RGBA and alpha invariant, source mask pixels 920
+PASS fish authored:8frames120ms, finalframe transparent, contact24,34top

@@ -1,0 +1,28 @@
+{
+  "changedBaselineFiles": [
+    {
+      "path": "Assets/_Game/Scenes/FarmScene.unity",
+      "before": "7E2FFD6919591E634444D943AE8EB26D1EFF4AECA886A8F03F0B8CBE60A2EA2C",
+      "after": "A135037F8CACE731AA7F257CD6F24A375CB77EC79E4B28487D0686A69C048A8C"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Art/FarmLandscapeVisualComposer.cs",
+      "before": "0E57EE07C440D507506328816CAC06EF252A97E0618B6320AF5A5248AAB5EF40",
+      "after": "CCC1ACE76A875723F068762F316642DD65A303943D67E743FF6EC50F5FD57EF6"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/Dev/FarmPlayModeCaptureSession.cs",
+      "before": "605470268EB8908DFC340EC5F976B399A0E9EE349756C7527859A5C90F6E45F1",
+      "after": "430269AA9355E14864D82B3B6A52D7B09B6D97F11790252118A157EE8497ECEC"
+    },
+    {
+      "path": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+      "before": "EED7948D4E58E5275256885FBAD8564474C36EE79067FEE4C484503FE7704C6E",
+      "after": "E30060D1A8F3FBB9C43AEB6CC9A03FB4A4724A00336D12188CED938866005A1C"
+    }
+  ],
+  "newWorldFiles": [],
+  "baselinePngCount": 149,
+  "changedPngs": 0,
+  "sceneSha256": "a135037f8cace731aa7f257cd6f24a375cb77ec79e4b28487d0686a69c048a8c"
+}

@@ -1,0 +1,11 @@
+{
+  "mode": "SCOPED",
+  "gates": [
+    "diff",
+    "quality"
+  ],
+  "exitCode": 0,
+  "scopedFiles": 122,
+  "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/docs/run_strict_validation.ps1 -Gates diff,quality -ScopePath docs/validation/playmode/farm_keyart_delivery_20260909/dock_path_pass/docs-scope.json",
+  "globalDocs": "NOT RUN: unchanged global debt excluded"
+}

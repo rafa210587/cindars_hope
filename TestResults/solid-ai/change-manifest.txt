@@ -1,0 +1,60 @@
+ M .agents/skills/save-load-pattern/SKILL.md
+ M .claude/agents/architecture-reviewer.md
+ M .claude/agents/non-regression-auditor.md
+ M .claude/agents/spec-implementer.md
+ M .claude/hooks/guard-large-files.ps1
+ M .claude/hooks/guard-secrets.ps1
+ M .claude/hooks/protected-path-guard.ps1
+ M .claude/hooks/runtime-code-guard.ps1
+ M .claude/rules/RULES.md
+ M .claude/rules/unity-architecture.md
+ M .claude/skills/save-load-pattern/SKILL.md
+ M .codex/agents/architecture-reviewer.toml
+ M .codex/agents/non-regression-auditor.toml
+ M .codex/agents/spec-implementer.toml
+ M .codex/hooks.json
+ M .codex/rules/RULES.md
+ M .codex/rules/unity-architecture.md
+ M AGENTS.md
+ M Assets/_Game/Scripts/Inventory/InventoryManager.cs
+ M Assets/_Game/Scripts/NPC/NpcController.cs
+ M Assets/_Game/Scripts/NPC/NpcShopController.cs
+ M Assets/_Game/Scripts/Quests/Runtime/QuestGiverInteractable.cs
+ M Assets/_Game/Scripts/Save/Migrations/SaveBackupService.cs
+ M Assets/_Game/Scripts/Save/SaveManager.Migration.cs
+ M Assets/_Game/Scripts/Save/SaveManager.cs
+ M Assets/_Game/Tests/EditMode/Save/SaveAtomicWriteTests.cs
+ M Assets/_Game/Tests/EditMode/UI/InventorySlotMoveMergeTests.cs
+ M CLAUDE.md
+ M PROJECT_LOG.md
+ M docs/IMPLEMENTATION_STATUS.md
+ M docs/project/CURRENT_STATE.md
+ M docs/project/DOCUMENT_INDEX.md
+ M tools/codex/Generate-CodexHarness.ps1
+ M tools/codex/README.md
+ M tools/docs/run_strict_validation.ps1
+?? .agents/skills/solid-refactoring/SKILL.md
+?? .claude/hooks/edit-tool-payload.ps1
+?? .claude/rules/solid-and-ai-context.md
+?? .claude/skills/solid-refactoring/SKILL.md
+?? .codex/rules/keyart-scene-fidelity.md
+?? .codex/rules/solid-and-ai-context.md
+?? .specs/a_implementar/spec_solid_ai_harness_hardening_v1.md
+?? .specs/a_implementar/spec_solid_class_context_v1.md
+?? .specs/a_implementar/spec_solid_inventory_save_refactor_v1.md
+?? Assets/_Game/Scripts/Inventory/InventorySlotOperations.cs
+?? Assets/_Game/Scripts/Inventory/InventorySlotOperations.cs.meta
+?? Assets/_Game/Tests/EditMode/UI/InventorySlotOperationsTests.cs
+?? Assets/_Game/Tests/EditMode/UI/InventorySlotOperationsTests.cs.meta
+?? docs/architecture/AI_CODE_CONTEXT.md
+?? docs/archive/CURRENT_STATE_before_SOLID_AI_2026_09_08.md
+?? docs/validation/SOLID_AI_PROJECT_AUDIT.md
+?? docs/validation/playmode/spec_solid_inventory_save_refactor_v1_human_test_scenario.md
+?? docs/validation/spec_solid_ai_harness_hardening_v1_execution_report.md
+?? docs/validation/spec_solid_class_context_v1_execution_report.md
+?? docs/validation/spec_solid_inventory_save_refactor_v1_execution_report.md
+?? tools/architecture/Get-ClassContext.ps1
+?? tools/architecture/Test-ClassContext.ps1
+?? tools/codex/Test-CodexHarnessGeneration.ps1
+?? tools/codex/Test-EditToolGuards.ps1
+?? tools/docs/Test-StrictValidation.ps1

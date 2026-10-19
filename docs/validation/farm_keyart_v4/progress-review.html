@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fazenda · evolução e próximos ajustes</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101b19;color:#e9edde;font:16px/1.6 system-ui}main{max-width:1500px;margin:auto;padding:32px 24px}h1{font-size:clamp(27px,4vw,46px);line-height:1.1;margin:12px 0}h2{font-size:23px;margin-top:36px}p{max-width:1000px;color:#becabd}.eyebrow{color:#e1ba78;letter-spacing:.13em;font-size:12px;text-transform:uppercase}.pill{display:inline-block;border:1px solid #506253;border-radius:99px;padding:4px 12px;font-size:13px}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}button,select{font:inherit;color:inherit;background:#24382d;border:1px solid #60765e;border-radius:8px;padding:9px 14px;cursor:pointer}input{accent-color:#e4ba71}a{color:#eed098}.board{position:relative;aspect-ratio:1.5;overflow:hidden;border:1px solid #526451;background:#091411}.board img{position:absolute;width:100%;height:100%;image-rendering:pixelated}.board #sceneImage{clip-path:inset(0 50% 0 0)}#line{position:absolute;left:50%;height:100%;width:2px;background:#f4cd86}.tag{position:absolute;top:10px;padding:4px 10px;background:#10241eea;border-radius:5px;font-size:13px}.left{left:10px}.right{right:10px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:#1b2a23;padding:20px;border:1px solid #3d5141;border-radius:12px}.card h3{margin:0}.card p{font-size:14px}.card img{width:100%;image-rendering:pixelated}.note{border-left:3px solid #cfa15d;padding-left:16px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.two img{width:100%;image-rendering:pixelated}figure{margin:0}figcaption{font-size:13px;color:#bdc9b6;margin:8px 0}footer{margin-top:35px;font-size:13px;color:#adbba6}label{display:flex;gap:8px;align-items:center}@media(max-width:800px){.grid,.two{grid-template-columns:1fr}main{padding:20px 12px}}
+</style>
+<main><p><a href="motion_v18/index.html">Rodada18: barco e galinha em movimento real</a></p><p><a href="boat_v17/index.html">Rodada17: barco corrigido e auditoria de recortes</a></p>
+<div class="eyebrow">Cindar’s Hope · revisão da fazenda</div>
+<h1>O que mudou — e o que ainda falta</h1>
+<span class="pill">Cena integrada: rodada 16</span> <span class="pill">Melhora local · acabamento em andamento</span>
+<p>Capturas reais do Unity comparadas à pixel art aprovada. Os marcos principais já estão presentes, mas terreno, vegetação e detalhes de composição ainda diferem. Não há percentual de semelhança medido.</p>
+<div class="controls">
+<label>Captura <select id="version"><option value="stage16">Rodada 16 · atual</option><option value="stage15">Rodada 15 · antes</option><option value="stage14">Rodada 14 · antes</option><option value="stage13">Rodada 13 · antes</option><option value="stage10">Rodada 10 · cercas e jardins</option><option value="stage6">Rodada 6 · cais e materiais</option><option value="stage1">Rodada 1 · início da reconstrução</option></select></label>
+<button id="keyart">Referência: keyart</button><button id="previous">Referência: rodada 13</button>
+<button data-view="0">Só keyart</button><button data-view="100">Só cena</button><button data-view="50">Comparar</button>
+<label>Divisória <input id="split" aria-label="Divisória da comparação" type="range" min="0" max="100" value="50"></label>
+</div>
+<div class="board"><img id="referenceImage" src="../../art_catalog/_reference_keyart_GPT/farm_enclosed_valley_approved_v2.png" alt="Keyart aprovada da fazenda"><img id="sceneImage" src="stage16/farm_capture_keyart_composition.png" alt="Cena da fazenda capturada no Unity, rodada 16"><div id="line"></div><span id="sceneTag" class="tag left">Unity · rodada 16</span><span id="referenceTag" class="tag right">Keyart aprovada</span></div>
+<p class="note">Diferença intencional: os campos começam sem cultivos. Essa decisão de gameplay não é um defeito de fidelidade. A comparação usa o enquadramento geral registrado; não é um alinhamento pixel a pixel de todos os objetos.</p>
+<h2>Melhorias já integradas</h2>
+<p><a href="../../../dev/art/aseprite/keyart-v4/ambient-v15/preview.html">Nova rodada: ver animações da fonte, cascata e peixe</a> · prévias de arte dos clips integrados; o GIF do peixe não representa a espera de 20 segundos do jogo.</p>
+<div class="grid">
+<article class="card"><h3>Construções e paisagem</h3><p>Casa, estufa, construções do sul e cais usam imagens derivadas da referência. Bordas receberam floresta e rochas; rio, cascata e acesso ao cais foram ajustados.</p><img src="stage15/farm_capture_region_water_bridge.png" alt="Rio, ponte e lago na cena atual" loading="lazy"></article>
+<article class="card"><h3>Porta e interior</h3><p>A porta tem quadros de abertura, bloqueio físico e proteção contra fechar sobre o personagem. O interior aparece ao entrar. A rodada 13 corrige a fachada ocultando o personagem na escada.</p><img src="gameplay_stage13/motion/closed_blocked.png" alt="Personagem visível diante da porta fechada" loading="lazy"></article>
+<article class="card"><h3>Colisões e água</h3><p>A rodada 12 passou nas verificações de 24 bases sólidas, 4 acessos locais e 78 células de solo. Na rodada 13, a água mostrou os 6 quadros e o retorno do ciclo, preservando a geometria de colisão.</p><p>Esses resultados comprovam critérios locais; não certificam todas as transições nem a fidelidade artística.</p><a href="REPORT.md">Relatório e limites da evidência</a></article>
+</div>
+<h2>Rodada 15 · detalhes e espaço</h2><p>Sete arbustos baixos decorativos, cais 10% maior com recorte de colisão correspondente e quatro construções do sul mais separadas. Fonte e cascata: cinco quadros por ciclo de 0,7 s. Peixe: oito quadros, com salto no fim de cada ciclo de 20 s. Amostragem nativa Unity e 33/33 testes selecionados passaram; o acompanhamento posterior em Play Mode confirmou dois saltos separados por 20,00 s. <a href="ambient_runtime15/index.html">Ver movimento real no Unity</a>.</p><div class="two"><figure><img src="stage14/farm_capture_region_animals.png" alt="Construções antes"><figcaption>Antes · rodada 14</figcaption></figure><figure><img src="stage15/farm_capture_region_animals.png" alt="Construções separadas"><figcaption>Agora · rodada 15</figcaption></figure></div><h2>Rodada 16 · pixels e contato</h2>
+<p>Grama retrabalhada de 1254 para 314 pixels, preservando o tamanho no mundo; estrada com menos ruído. Fonte ordenada pelo apoio, quatro bases de colunas e zona de pesca na ponta do cais. Geração e 53 testes selecionados passaram. Play Mode passou:16 aproximações físicas, seleção de pesca na ponta e recusa no centro/entrada. Os cinco quadros da fonte foram observados. <a href="contact_v16/index.html">Ver capturas reais e limites do teste</a>.</p>
+<div class="two"><figure><img src="stage15/farm_capture_region_homestead.png" alt="Materiais anteriores"><figcaption>Antes · rodada 15, captura regional</figcaption></figure><figure><img src="stage16/farm_capture_region_homestead.png" alt="Materiais revisados"><figcaption>Agora · rodada 16, mesma câmera regional</figcaption></figure></div>
+<p><a href="contact_v16/REPORT.md">Evidência e limitações da rodada 16</a></p><h2>Onde a referência ainda está melhor</h2>
+<div class="grid">
+<article class="card"><h3>1 · Vegetação e chão</h3><p>O chão atual tem textura miúda e repetitiva, e as árvores formam fileiras. Na keyart, massas irregulares de grama, copas e flores criam clareiras mais naturais. Esta rodada começa pelos agrupamentos decorativos.</p></article>
+<article class="card"><h3>2 · Caminhos e transições</h3><p>Alguns percursos e cercas ainda parecem geométricos. A referência tem margens orgânicas e transições mais suaves entre clareira, estrada e vegetação.</p></article>
+<article class="card"><h3>3 · Contorno da água</h3><p>O rio ainda parece um canal reto, e o lago está mais compacto que na referência. Próxima rodada: recuperar curvas e margens, alterando desenho e colisão juntos. O cais e os acessos precisam ser preservados.</p></article>
+</div>
+<h2>Escala real de jogo</h2><div class="two">
+<figure><img src="stage13/farm_capture_region_homestead.png" alt="Casa e estufa na escala de jogo" loading="lazy"><figcaption>Casa e estufa · captura integrada, rodada 13.</figcaption></figure>
+<figure><img src="gameplay_stage13/motion/inside_revealed.png" alt="Personagem no interior da casa" loading="lazy"><figcaption>Interior funcional · decoração ainda simples e em acabamento.</figcaption></figure></div>
+<p class="note">Caminhada: a sequência da rodada 13 falhou no critério de direção dos quadros. A alteração experimental do animador ainda não está aprovada. Por isso, esta página não apresenta a demonstração antiga como movimento corrigido.</p>
+<h2>Próxima rodada: mais resultado, menos tentativas</h2>
+<p id="round14status" class="note">Rodada 14 integrada e revisada: 16 peças decorativas passaram pela máscara de proteção. As 71 árvores verificadas mantiveram nomes e transformações; 14/14 testes de decoração e navegação passaram. A revisão aceita o ganho local junto à fonte e borda sul, mas considera insuficientes as mudanças dos caminhos. A próxima abordagem precisa redesenhar o percurso em escala de composição, antes de outra integração.</p>
+<p>Comparar → preparar uma correção visual pequena → integrar uma vez → testar apenas o que mudou. Limite de duas tentativas sem melhora clara antes de rever a abordagem. A evidência anterior continua válida somente para entradas e comportamentos equivalentes.</p>
+<footer>Fontes: keyart v2 aprovada; capturas stage1/6/10/13/14; gameplay_stage12 e gameplay_stage13. As imagens de porta e interior são da rodada 13; a comparação geral já mostra a rodada 16.</footer>
+</main>
+<script>
+const scene=document.querySelector('#sceneImage'),split=document.querySelector('#split'),line=document.querySelector('#line');
+function compare(value){split.value=value;scene.style.clipPath=`inset(0 ${100-value}% 0 0)`;line.style.left=value+'%'}
+split.addEventListener('input',()=>compare(split.value));document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>compare(b.dataset.view)));
+document.querySelector('#version').addEventListener('change',e=>{scene.src=e.target.value+'/farm_capture_keyart_composition.png';scene.alt='Captura real do Unity: '+e.target.value;document.querySelector('#sceneTag').textContent='Unity · rodada '+e.target.value.replace('stage','')});
+function reference(path,label){document.querySelector('#referenceImage').src=path;document.querySelector('#referenceImage').alt=label;document.querySelector('#referenceTag').textContent=label;compare(50)}
+document.querySelector('#keyart').onclick=()=>reference('../../art_catalog/_reference_keyart_GPT/farm_enclosed_valley_approved_v2.png','Keyart aprovada');
+document.querySelector('#previous').onclick=()=>reference('stage13/farm_capture_keyart_composition.png','Unity · rodada 13 (antes)');
+</script></html>
+
+
+
+
+
+
+

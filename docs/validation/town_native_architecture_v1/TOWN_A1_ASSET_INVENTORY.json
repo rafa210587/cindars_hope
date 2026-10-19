@@ -1,0 +1,178 @@
+{
+  "schema": "town-native-architecture-v1-inventory",
+  "status": "INTEGRATED_TOWN_GENERATED_HUMAN_REVIEW_PENDING",
+  "scope": "TOWN.A1 native architecture authoring and scoped Town wiring; no Farm/Cave/C1/NPC changes",
+  "reference": {
+    "path": "docs/art_catalog/_reference_keyart_GPT/town_keyart_layout_chatgpt_web_candidate_v2.png",
+    "opened": true,
+    "sha256": "3A2C9EA4D7ABD2E8E6AAEA81401D8CE9CBD8A00AE9F569AF58C1F76AC930E52B"
+  },
+  "contracts": {
+    "buildingPPU": 32,
+    "tilePPU": 64,
+    "filter": "Point",
+    "compression": "None",
+    "mipMaps": false,
+    "scale": "uniform only",
+    "alpha": "real transparency required",
+    "doorAnchors": "visual candidates only; not physics proof"
+  },
+  "families": {
+    "strongReuse": ["temple", "civic-strong", "blacksmith"],
+    "nativePilot": ["bakery", "watermill", "alchemy"],
+    "residentialGableCandidates": ["gable-red", "gable-blue", "gable-green"],
+    "structuralFamilyCount": 4,
+    "structuralFamilies": ["gable", "courtyard-wing", "hipped-stone", "l-dormer"],
+    "fourthResidentialFamily": "courtyard-wing",
+    "nativeCandidates": ["town_house_hipped_stone_native_v01", "town_house_l_dormer_native_v01"],
+    "note": "Four authored silhouettes are structural families; red/blue/green remain palette variants of gable and are not counted separately."
+  },
+  "buildingFamilyIdByLot": {
+    "House_Temple":"gable", "House_Chamber":"courtyard-wing", "House_Prison":"hipped-stone", "House_Manor":"hipped-stone",
+    "House_Registry":"l-dormer", "House_Archive":"hipped-stone", "House_MarketHall":"courtyard-wing", "House_Bakery":"gable",
+    "House_Inn":"courtyard-wing", "House_Fishery":"gable", "House_Blacksmith":"l-dormer", "House_AlchemyLab":"gable",
+    "House_Workshop":"l-dormer", "House_Tannery":"courtyard-wing", "House_Residential_4":"courtyard-wing", "House_CarvalhoTorto":"hipped-stone",
+    "House_Residential_1":"l-dormer", "House_Dagna":"l-dormer", "House_Residential_2":"gable", "House_Pip":"l-dormer",
+    "House_Residential_3":"gable", "House_Tovin":"hipped-stone", "House_GateKeeper":"courtyard-wing", "House_AnimalYard":"gable"
+  },
+  "buildingFamilyDistribution": {"gable":6,"courtyard-wing":6,"hipped-stone":6,"l-dormer":6,"coveredLots":24,"maxShare":0.25},
+  "pilots": [
+    {
+      "id": "bakery",
+      "baseline": "art/town-keyart-rework/assets/candidates/town_bakery_keyart_v02.aseprite",
+      "baselineSha256": "39F494BD35C8A0A50779774E16901DC02DD121EFBE70D11570BBECC3BBB24166",
+      "baselineExport": "Assets/_Game/Art/Generated/World/building/town_bakery_keyart.png",
+      "nativeCandidate": "art/town-keyart-rework/assets/candidates/town_bakery_native_web_half_v01.aseprite",
+      "nativeCandidateSha256": "71EDBDA64E15FEE43482C5B4581BA47E154C2AFF0F92E2CB7DFCF6D312A74207",
+      "canvas": "543x724",
+      "occupied": "505x649",
+      "alpha": {"transparent": 178906, "opaque": 214226, "partial": 0},
+      "doorSupportPx": [285, 610],
+      "decision": "INTEGRATED_SCOPED",
+      "limits": ["PlayMode traversal remains outside this capture"]
+    },
+    {
+      "id": "watermill",
+      "baseline": "art/town-keyart-rework/assets/candidates/town_watermill_keyart_v03.aseprite",
+      "baselineSha256": "53FD02D2408E7F925BCE98A9095E6F8863F1E73BD458E51EBA78C6EEACF282A8",
+      "baselineExport": "Assets/_Game/Art/Generated/World/building/town_watermill_keyart.png",
+      "nativeCandidate": "art/town-keyart-rework/assets/candidates/town_watermill_native_web_half_v01.aseprite",
+      "nativeCandidateSha256": "3DBDD7AE776492252FF8B66CCFB9B34A439422945054D1F8E2453FC8E520B5C0",
+      "canvas": "627x627",
+      "occupied": "564x585",
+      "alpha": {"transparent": 169990, "opaque": 223139, "partial": 0},
+      "doorSupportPx": [173, 425],
+      "decision": "INTEGRATED_SCOPED",
+      "limits": ["left-oblique door remains anchored to the authored opening"]
+    },
+    {
+      "id": "alchemy",
+      "source": "art/town-keyart-rework/assets/candidates/town_alchemy_keyart_v02.aseprite",
+      "sourceSha256": "36CEA106DE5DFB0227500FF249B2BE9B88935E6EA3A1C32075989A3A6463F3E0",
+      "export": "Assets/_Game/Art/Generated/World/building/town_alchemy_keyart.png",
+      "canvas": "204x229",
+      "occupied": "159x213",
+      "alpha": {"transparent": 23465, "opaque": 23251, "partial": 0},
+      "doorSupportPx": [76, 195],
+      "decision": "INTEGRATED_NATIVE_REPIXEL",
+      "limits": ["native canvas preserved at 204x229; no nearest upscale"]
+    }
+  ],
+  "lots": [
+    {"id":"House_Temple","family":"temple","decision":"REUSE_STRONG","source":"existing-temple-art"},
+    {"id":"House_Chamber","family":"civic-strong","decision":"REUSE_STRONG","source":"town_house_green_gable_keyart_v03"},
+    {"id":"House_Prison","family":"civic-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_Manor","family":"noble-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_Registry","family":"civic-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_Archive","family":"noble-gable-green","decision":"REUSE_CANDIDATE","source":"town_house_green_gable_keyart_v03"},
+    {"id":"House_MarketHall","family":"market-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_Bakery","family":"bakery","decision":"PILOT_STAGED","source":"town_bakery_native_web_half_v01"},
+    {"id":"House_Inn","family":"inn-existing","decision":"REUSE_STRONG","source":"existing-farmhouse"},
+    {"id":"House_Fishery","family":"watermill","decision":"PILOT_STAGED","source":"town_watermill_native_web_half_v01"},
+    {"id":"House_Blacksmith","family":"blacksmith","decision":"REUSE_STRONG","source":"existing-blacksmith-art"},
+    {"id":"House_AlchemyLab","family":"alchemy","decision":"PILOT_STAGED","source":"town_alchemy_keyart_v02"},
+    {"id":"House_Workshop","family":"workshop-gable-green","decision":"REUSE_CANDIDATE","source":"town_house_green_gable_keyart_v03"},
+    {"id":"House_Tannery","family":"tannery-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_Residential_4","family":"residential-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_CarvalhoTorto","family":"residential-gable-green","decision":"REUSE_CANDIDATE","source":"town_house_green_gable_keyart_v03"},
+    {"id":"House_Residential_1","family":"residential-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_Dagna","family":"residential-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_Residential_2","family":"residential-gable-blue","decision":"REUSE_CANDIDATE","source":"town_house_blue_gable_keyart_v03"},
+    {"id":"House_Pip","family":"residential-gable-green","decision":"REUSE_CANDIDATE","source":"town_house_green_gable_keyart_v03"},
+    {"id":"House_Residential_3","family":"residential-gable-blue","decision":"REUSE_CANDIDATE","source":"town_house_blue_gable_keyart_v03"},
+    {"id":"House_Tovin","family":"residential-gable-green","decision":"REUSE_CANDIDATE","source":"town_house_green_gable_keyart_v03"},
+    {"id":"House_GateKeeper","family":"guard-gable-red","decision":"REUSE_CANDIDATE","source":"town_house_red_gable_keyart_v03"},
+    {"id":"House_AnimalYard","family":"animal-shed-annex","decision":"REUSE_WITH_LIMIT","source":"town_animal_shed_keyart_v02"}
+  ],
+  "coverage": {"lotCount": 24, "manifestCoverage": 24, "fallbackGenericUnjustified": 0, "fourthResidentialFamily": false},
+  "evidence": {
+    "nativeReopen": "art/town-keyart-rework/assets/previews/final-delivery-verification.txt",
+    "stagedShopManifest": "art/town-keyart-rework/assets/TOWN05_NATIVE_SHOPS_STAGING_MANIFEST.json",
+    "realCaptureOpened": "art/town-keyart-rework/evidence/town-expansion-v1/playmode-final-r4/watermill.png",
+    "visualReview": "PARTIAL_STATIC_ONLY",
+    "unity": "NOT RUN",
+    "physics": "NOT RUN",
+    "rootApproval": "PENDING",
+    "integration": {
+      "townKeyartBuildingArt": "Assets/_Game/Scripts/Editor/SceneCreation/City/TownKeyartBuildingArt.cs",
+      "townKeyartSpriteImporter": "Assets/_Game/Scripts/Editor/SceneCreation/City/TownKeyartSpriteImporter.cs",
+      "worldSpriteLibrary": "WorldSpriteLibrary.Building",
+      "sceneGenerator": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpTownScene.cs",
+      "facadeAssignments": {"House_Bakery":"town_bakery_native_scale1_v03_facade","House_Fishery":"town_watermill_native_scale1_v03_facade","House_AlchemyLab":"town_alchemy_native_pixel_v04_facade","House_Residential_4":"town_courtyard_native_architecture_facade"},
+      "roofAndDoorLeaf": "TownKeyartBuildingArt.TryGetModularParts; child renderers share fitted shell transform and RoofRevealController",
+      "modularExports": {
+        "bakery": ["town_bakery_native_scale1_v03_facade.png", "town_bakery_native_scale1_v03_roof.png", "town_bakery_native_scale1_v03_door_leaf.png"],
+        "watermill": ["town_watermill_native_scale1_v03_facade.png", "town_watermill_native_scale1_v03_roof.png", "town_watermill_native_scale1_v03_door_leaf.png"],
+        "alchemy": ["town_alchemy_native_pixel_v04_facade.png", "town_alchemy_native_pixel_v04_roof.png", "town_alchemy_native_pixel_v04_door_leaf.png"],
+        "courtyardFamilyD": ["town_courtyard_native_architecture_facade.png", "town_courtyard_native_architecture_roof.png", "town_courtyard_native_architecture_door_leaf.png"]
+      },
+      "lotCountAfterGeneration": 24,
+      "capture": "art/town-keyart-rework/evidence/town-native-a1-20260911/",
+      "savedSceneValidator": "ValidateTownKeyartScene.Validate PASS 8/8 access checks",
+      "importSettings": "Point, Uncompressed, mipmaps disabled, PPU 32, FullRect; all owned platform overrides verified"
+    },
+    "pilotAuthoring": {
+      "tool": "Aseprite 1.3.18.5-x64 CLI/Lua",
+      "script": "art/town-keyart-rework/architecture/create_native_pilots.lua",
+      "sourceHashesPreserved": true,
+      "generatedCandidates": [
+        {
+          "id": "bakery",
+          "aseprite": "art/town-keyart-rework/architecture/pilots/town_bakery_native_architecture_v01.aseprite",
+          "asepriteSha256": "853B533570DE2117CAE5F23F06AADA5C660D0518E17B1623CDBF32E2134ADFC2",
+          "png": "art/town-keyart-rework/architecture/pilots/town_bakery_native_architecture_v01.png",
+          "pngSha256": "86F882B87674C49A5D6115E5EBF0B5243766506D92F809FBEA5941B2A2A215CE",
+          "preview3x": "art/town-keyart-rework/architecture/pilots/town_bakery_native_architecture_v01_3x.png",
+          "canvas": "543x724",
+          "layers": ["Source baseline (hidden, preserved)", "Facade + openings (candidate source)", "Roof separation mask (staging, hidden)", "Door leaf base (TOWN.C1 pilot)"],
+          "alpha": {"transparent": 178906, "opaque": 214226, "partial": 0},
+          "correction": "separate visible door leaf base over the existing entrance; roof mask retained hidden for modular follow-up"
+        },
+        {
+          "id": "watermill",
+          "aseprite": "art/town-keyart-rework/architecture/pilots/town_watermill_native_architecture_v01.aseprite",
+          "asepriteSha256": "1D9C70E4574F5288816FCE265387F27542E1B43021969D7D6830689478188365",
+          "png": "art/town-keyart-rework/architecture/pilots/town_watermill_native_architecture_v01.png",
+          "pngSha256": "28FCC9E4EA344612AA7179768272F1DF2E287E3B76483C2B7320460052E91B64",
+          "preview3x": "art/town-keyart-rework/architecture/pilots/town_watermill_native_architecture_v01_3x.png",
+          "canvas": "627x627",
+          "layers": ["Source baseline (hidden, preserved)", "Facade + openings (candidate source)", "Roof separation mask (staging, hidden)", "Door leaf base (TOWN.C1 pilot)"],
+          "alpha": {"transparent": 169990, "opaque": 223139, "partial": 0},
+          "correction": "separate visible door leaf base on the left-oblique entrance; roof mask retained hidden for modular follow-up"
+        },
+        {
+          "id": "alchemy",
+          "aseprite": "art/town-keyart-rework/architecture/pilots/town_alchemy_native_architecture_v01.aseprite",
+          "asepriteSha256": "9DB09418699577873AB5FF1A1AB9147FB3904D3AAD7EC7427BC9218728E15F08",
+          "png": "art/town-keyart-rework/architecture/pilots/town_alchemy_native_architecture_v01.png",
+          "pngSha256": "09312700263C65A493715C2F88F4EA28C0B974B142C7EA027122DDFCB9E374D6",
+          "preview3x": "art/town-keyart-rework/architecture/pilots/town_alchemy_native_architecture_v01_3x.png",
+          "canvas": "204x229",
+          "layers": ["Source baseline (hidden, preserved)", "Facade + openings (candidate source)", "Attached wing / facade extension (candidate source)", "Roof separation mask (staging, hidden)", "Door leaf base (TOWN.C1 pilot)"],
+          "alpha": {"transparent": 23465, "opaque": 23251, "partial": 0},
+          "correction": "separate visible door leaf base while preserving the existing roof/facade and attached wing layers"
+        }
+      ]
+    }
+  }
+}

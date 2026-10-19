@@ -1,0 +1,49 @@
+{
+  "Docs": {
+    "Status": "NOT RUN this round",
+    "Reason": "Root owns final docs validation; earlier baseline FAIL is not waived."
+  },
+  "PlayModeComposition": {
+    "XmlSeconds": 5.7218797,
+    "UnityExit": 0,
+    "WallSeconds": 21.0102004,
+    "Total": 2,
+    "Status": "PASS",
+    "Passed": 2,
+    "ScannerExit": 0,
+    "Failed": 0
+  },
+  "Preservation": {
+    "UnityProcessesRemaining": 0,
+    "SdkTransientFiles": "absent before and after",
+    "RestoredSHA256": "4c1a9ac0195aa73ab48eafd226cae67f71812a79ec61bef7d1ae6c347bc02c8c",
+    "ProjectSettingsChangedByPlayMode": true,
+    "FingerprintsUnchangedAfterEditMode": true,
+    "ProjectSettingsRestoredByteExact": true
+  },
+  "Dotnet": {
+    "Errors": 0,
+    "WallSeconds": 13.287595,
+    "Exit": 0,
+    "Warnings": 22,
+    "Status": "PASS",
+    "MSBuildSeconds": 12.39,
+    "Projects": 7
+  },
+  "EditorBatch21": {
+    "Status": "NOT RUN",
+    "Reason": "Root will fix ValidateFableCitySchedule OpenScene(Single) ownership before running batch."
+  },
+  "EditMode": {
+    "FailureNamesIdenticalToBaseline": true,
+    "XmlSeconds": 6.6611317,
+    "UnityExit": 2,
+    "WrapperWallSeconds": 26.1695363,
+    "Status": "FAIL",
+    "Failed": 4,
+    "Passed": 2911,
+    "WrapperExit": 1,
+    "Total": 2915,
+    "Scanner": "NOT RUN: updated wrapper aborts before scanner on Unity nonzero exit; raw log/XML inspected"
+  }
+}

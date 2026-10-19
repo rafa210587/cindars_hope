@@ -1,30 +1,37 @@
-# Cindar's Hope — Pacote documental v2.6
+# Cindar's Hope - Documentacao ativa
 
-Este pacote contém os documentos atualizados para iniciar a Fase 8 com Codex e pipeline de sprites com IA + Aseprite.
+> Status: documentacao ativa reconciliada.
+> Historico integral preservado em `docs_old/`.
 
-## Ordem recomendada de leitura
+## Camadas
 
-1. `GDD_v2.6.md`
-2. `ARCH_fase4_v2.2.md`
-3. `FASE5_ambiente_v1.2.md`
-4. `FASE6_INDEX_global_v1.2.md`
-5. `FASE6_FARM_backlog_v1.2.md`
-6. `FASE7_SPEC_MVP_FARM_v2.2.md`
-7. `CORE_CONTRACTS_EVENTS_SAVE_IDS_v1.0.md`
-8. `FASE8_EXECUTION_PLAN_CODEX_v1.0.md`
-9. `SPRITE_PIPELINE_AI_ASEPRITE_v1.0.md`
-10. `CLAUDE_v1.2.md` / `AGENTS.md`
+- `docs/design/` - design ativo do jogo.
+- `docs/architecture/` - arquitetura ativa.
+- `docs/operations/` - operacao, agentes, SpecKit, ambiente e pipeline.
+- `docs/roadmap/` - roadmap ativo.
+- `docs/amendments/` - amendments ativos.
+- `docs/validation/` - smoke tests e validacoes ativas.
+- `docs/backlog/` - backlog ativo e ideias futuras preservadas.
+- `.specs/` - fonte unica oficial de specs.
+- `.specs/implementados/` - specs consolidadas do que ja existe no repo.
+- `.specs/a_implementar/` - specs futuras no padrao SpecKit.
+- `.specs/SPEC_EXECUTION_ORDER.md` - ordem oficial de execucao.
+- `docs/refinements/implementados/` - refinamentos, audits, handoffs e waves implementadas/parciais.
+- `docs/refinements/a_implementar/pre_refinamentos/` - pre-refinamentos vivos.
+- `docs_old/` - historico preservado; nao editar como fonte ativa.
 
-## Decisão principal
+## Arquivos ativos na raiz de docs/
 
-Começar a implementação pela Fase 8 em PRs pequenos, não specs inteiras.
+A raiz de `docs/` deve conter apenas:
 
-## Próximo comando humano
+- `README.md` — este arquivo
+- `IMPLEMENTATION_STATUS.md` — status de implementacao ativa
+- `DOCS_OLD_TO_ACTIVE_CROSSWALK.md` — mapa de migracao de docs_old
 
-Criar branch:
+Auditorias antigas, handoffs concluidos, planos pontuais e templates historicos ficam em `docs/archive/`.
 
-```bash
-git checkout -b feature/fase8-pr-001-core-foundation
-```
+## Regra
 
-Depois abrir o primeiro prompt do `FASE8_EXECUTION_PLAN_CODEX_v1.0.md` no Codex.
+A pasta raiz `specs/` foi removida e nao deve ser recriada. A pasta raiz `spec/` tambem nao deve ser recriada.
+
+Specs antigas nao sao apagadas de `docs_old/`. Mudancas futuras entram como nova spec, amendment, correction ou errata.

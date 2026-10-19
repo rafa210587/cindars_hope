@@ -1,0 +1,10 @@
+--- a/Assets/_Game/Scripts/Farm/Runtime/FarmSceneRuntimeBootstrap.cs
++++ b/Assets/_Game/Scripts/Farm/Runtime/FarmSceneRuntimeBootstrap.cs
+@@ -78,6 +78,7 @@
+             RegisterBlockedSolidRect(zones, grid, FarmSettlementPhysicsContract.CentralWell);
+             foreach (var body in FarmSettlementPhysicsContract.ServiceBodies) RegisterBlockedSolidRect(zones, grid, body);
+             foreach (var fence in FarmSettlementPhysicsContract.AllFenceSegments) RegisterBlockedSolidRect(zones, grid, fence);
++            foreach (var entranceBase in FarmEntrancePhysicsContract.CaveSideBases) RegisterBlockedSolidRect(zones, grid, entranceBase);
+ 
+             // Casa WALK-IN v7: centro (28,9), footprint ~7x6 => x in [24.5,31.5], y in [6,12].
+             RegisterBlockedFootprint(zones, grid, FarmSceneSpatialContract.House);

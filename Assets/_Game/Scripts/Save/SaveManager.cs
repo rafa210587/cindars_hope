@@ -1,0 +1,1364 @@
+﻿using System;
+using System.IO;
+using System.Collections;
+using CindarsHope.Cave.Runtime;
+using CindarsHope.Core;
+using CindarsHope.Core.Bootstrap;
+using CindarsHope.Core.Data;
+using CindarsHope.Core.Events;
+using CindarsHope.Core.Time;
+using CindarsHope.Craft;
+using CindarsHope.Economy;
+using CindarsHope.Enemy;
+using CindarsHope.Equipment;
+using CindarsHope.Farm;
+using CindarsHope.Foundation;
+using CindarsHope.Inventory;
+using CindarsHope.Inventory.Data;
+using CindarsHope.NPC;
+using CindarsHope.Player;
+using CindarsHope.Player.Data;
+using CindarsHope.Player.Death;
+using CindarsHope.Player.Progression;
+using CindarsHope.Save.Migrations;
+using CindarsHope.Save.Providers;
+using CindarsHope.Skills;
+using CindarsHope.World;
+using Unity.Profiling;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
+
+namespace CindarsHope.Save
+{
+    /// <summary>
+    /// Coordenador central de save/load. Delega capture e restore de cada domÃ­nio a um
+    /// <see cref="ISaveSectionProvider"/> registrado, mantendo-se como orquestrador fino
+    /// sem lÃ³gica de domÃ­nio interna. O formato serializado do <see cref="GameSaveData"/> Ã©
+    /// preservado byte-a-byte â€” a refatoraÃ§Ã£o apenas realoca o cÃ³digo de capture/restore para
+    /// os providers sem alterar DTOs, nomes de campo ou ordem de serializaÃ§Ã£o.
+    /// </summary>
+    // arch: quebra do par mutuo Core|Save (2026-07-15) — implementa ISaveRuntime (Foundation, porta
+    // neutra consumida por GameBootstrap/UI/SceneManagement/Editor) e IGameBootstrapRuntimeService
+    // (Core.Bootstrap, mesmo molde de ShopManager) para que GameBootstrap inicialize/desligue este
+    // manager sem nomear CindarsHope.Save.SaveManager.
+    [DisallowMultipleComponent]
+    public partial class SaveManager : MonoBehaviour, ISaveRuntime, IGameBootstrapRuntimeService
+    {
+        private static readonly ProfilerMarker SaveMarker =
+            new ProfilerMarker("CindarsHope.Save.CaptureSerializeWrite");
+        private static readonly ProfilerMarker RestoreMarker =
+            new ProfilerMarker("CindarsHope.Save.Restore");
+
+        private const int CurrentSchemaVersion = 6;
+        private const int Slot = 1;
+        private const string SaveDirectoryName = "saves";
+        private const string SaveFileName = "slot_1.json";
+
+        // â”€â”€ SerializeField refs mantidas para compatibilidade com cenas existentes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Nota: os [SerializeField] abaixo sÃ£o necessÃ¡rios porque as cenas referenciam estes campos
+        // por GUID. NÃ£o remova nem renomeie sem atualizar as cenas correspondentes (permission-gated).
+        [SerializeField] private PlayerManager _playerManager;
+        [SerializeField] private InventoryManager _inventoryManager;
+        [SerializeField] private HungerManager _hungerManager;
+        [SerializeField] private StaminaManager _staminaManager;
+        [SerializeField] private ManaManager _manaManager;
+        [SerializeField] private TimeManager _timeManager;
+        [SerializeField] private Core.GameTimeManager _gameTimeManager;
+        [SerializeField] private Player.StatusEffectManager _statusEffectManager;
+        [SerializeField] private FarmPlotRegistry _farmPlotRegistry;
+        [SerializeField] private TreeRegistry _treeRegistry;
+        [SerializeField] private ItemPickupRegistry _itemPickupRegistry;
+        [SerializeField] private Transform _playerTransform;
+        [SerializeField] private EquipmentManager _equipmentManager;
+        [SerializeField] private PlayerProgressionManager _progressionManager;
+        [SerializeField] private CaveRunManager _caveRunManager;
+        [SerializeField] private ShopManager _shopManager;
+        [SerializeField] private CraftingRuntime _craftingRuntime;
+        [SerializeField] private NpcManager _npcManager;
+        [SerializeField] private Skills.ActiveSkillSlots _activeSkillSlots;
+        [SerializeField] private Skills.SkillTreeManager _skillTreeManager;
+        [SerializeField] private BestiaryManager _bestiaryManager;
+        // UAC1010: CorpseRecoveryManager e classe C# pura (nao [Serializable], nao MonoBehaviour,
+        // construida por fabrica em GameBootstrap.CreateCorpseRecoveryManager) — nunca e assinavel
+        // pelo Inspector, entao o [SerializeField] era morto (nenhuma cena/prefab pode popula-lo).
+        // Nao ha Rebind* deste campo em SaveManager (DeathSystemBootstrap le bootstrap.CorpseRecoveryManager
+        // separadamente); mantido como campo privado comum para preservar o comportamento atual
+        // (sempre null aqui) sem forcar wiring novo fora de escopo desta spec de limpeza.
+        private CorpseRecoveryManager _corpseRecoveryManager;
+        [SerializeField] private PlayerDataSO _playerData;
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
+
+        // â”€â”€ Estado interno â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        private readonly HotbarState _hotbarState = new HotbarState();
+        private Skills.Runtime.SurvivalSkillState _survivalSkillState =
+            new Skills.Runtime.SurvivalSkillState();
+        private Skills.Runtime.CraftingPassiveRngState _craftingPassiveRngState =
+            new Skills.Runtime.CraftingPassiveRngState("save_slot_1");
+        private Skills.Runtime.CraftingSkillState _craftingSkillState =
+            new Skills.Runtime.CraftingSkillState();
+        private Skills.Runtime.CombatCapstoneState _combatCapstoneState =
+            new Skills.Runtime.CombatCapstoneState();
+        private readonly SaveMigrationRegistry _migrationRegistry = new SaveMigrationRegistry(new ISaveMigration[]
+        {
+            new InventorySlotsV1ToV2Migration(),
+            new SaveV2ToV3Migration(),
+            new SaveV3ToV4Migration(),
+            new SaveV4ToV5Migration(),
+            new InventoryOriginV5ToV6Migration()
+        });
+
+        // â”€â”€ Providers registrados (inicializados em Initialize) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        private ISaveSectionProvider _playerProvider;
+        private ISaveSectionProvider _inventoryProvider;
+        private ISaveSectionProvider _equipmentProvider;
+        private ISaveSectionProvider _progressionProvider;
+        private ISaveSectionProvider _staminaProvider;
+        private ISaveSectionProvider _gameTimeProvider;
+        private ISaveSectionProvider _playerStatusEffectsProvider;
+        private ISaveSectionProvider _equipmentDurabilityProvider;
+        private ISaveSectionProvider _bestiaryProvider;
+        private ISaveSectionProvider _activeSkillSlotsProvider;
+        private ISaveSectionProvider _skillTreeProvider;
+        private SurvivalSkillSectionProvider _survivalSkillProvider;
+        private CraftingPassiveRngSectionProvider _craftingPassiveRngProvider;
+        private CraftingSkillSectionProvider _craftingSkillProvider;
+        private CombatCapstoneSectionProvider _combatCapstoneProvider;
+        private ISaveSectionProvider _craftingProvider;
+        private ISaveSectionProvider _economyProvider;
+        private IShopStockRuntime _shopStockRuntime;
+        private ISaveSectionProvider _npcsProvider;
+        private ISaveSectionProvider _caveProvider;
+        private ISaveSectionProvider _caveRunProvider;
+        private ISaveSectionProvider _deathProvider;
+        private ISaveSectionProvider _farmProvider;
+        private ISaveSectionProvider _worldProvider;
+        private ISaveSectionProvider _fonteProvider;
+        private ISaveSectionProvider _mainProgressionProvider;
+        private ISaveSectionProvider _dailyGoalsProvider;
+        private ISaveSectionProvider _friendshipProvider;
+        private ISaveSectionProvider _farmAnimalsProvider;
+        private ISaveSectionProvider _npcServicesProvider;
+        private ISaveSectionProvider _farmLotsProvider;
+        private ISaveSectionProvider _questProvider;
+        // Providers jÃ¡ existentes (SPEC_10 / fable_07 / fable_62)
+        private ISaveSectionProvider _hotbarProvider;
+        private ISaveSectionProvider _spellbookProvider;
+        private ISaveSectionProvider _onboardingHintsProvider;
+        // spec_farm_till_anywhere_tilemap: tiles araveis por coordenada (campo aditivo FarmTiles).
+        private ISaveSectionProvider _farmTilesProvider;
+        private TownInteriorLocationSectionProvider _townInteriorLocationProvider;
+        private ITownInteriorLocationRuntime _townInteriorRuntime;
+        private SceneHandle? _townInteriorSceneHandle;
+        private SceneHandle? _lastTownInteriorSceneHandle;
+        private TownInteriorLocationSnapshot? _frozenTownInteriorSnapshot;
+        private bool _autosaveDeferred;
+        private bool _interiorLoadInProgress;
+        private bool _isApplyingSaveData;
+        private bool _townInteriorFinishedSubscribed;
+        private string _pendingInteriorRestoreToken;
+        private bool _pendingInteriorRestoreFinished;
+        private bool _pendingInteriorRestoreSucceeded;
+        private bool _pendingInteriorStatePreparationCompleted;
+        private bool _pendingInteriorStatePreparationSucceeded;
+        private GameSaveData _pendingInteriorSaveData;
+        private string _pendingInteriorRestoreFailureReason;
+        [SerializeField] private float _townInteriorRestoreTimeoutSeconds = 10f;
+        // Grid de tiles araveis — criado aqui e compartilhado com FarmTilledSoilService.
+        private readonly Farm.FarmTileGrid _farmTileGrid = new Farm.FarmTileGrid(new Farm.FarmNonArableZones());
+        private readonly SaveProviderRegistry _providerRegistry = new SaveProviderRegistry();
+
+        /// <summary>Caminho completo do arquivo de save em disco.</summary>
+        public string SaveFilePath =>
+#if UNITY_EDITOR
+            _validationSaveDirectory != null ? Path.Combine(_validationSaveDirectory, SaveFileName) :
+#endif
+            Path.Combine(Application.persistentDataPath, SaveDirectoryName, SaveFileName);
+
+#if UNITY_EDITOR
+        [NonSerialized] private string _validationSaveDirectory;
+
+        /// <summary>Editor-only isolated slot for real PlayMode validation; never serialized into a scene or Player build.</summary>
+        public void ConfigureTemporarySaveDirectoryForValidation(string directory)
+        {
+            if (string.IsNullOrWhiteSpace(directory))
+                throw new ArgumentException("Validation save directory is required.", nameof(directory));
+            var root = Path.GetFullPath(Path.Combine(Application.temporaryCachePath,
+                "town-interior-save-tests")).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var target = Path.GetFullPath(directory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var parent = Path.GetDirectoryName(target);
+            var leaf = Path.GetFileName(target);
+            if (!string.Equals(parent, root, StringComparison.OrdinalIgnoreCase) ||
+                !Guid.TryParseExact(leaf, "N", out _))
+                throw new ArgumentException("Validation saves require a unique GUID child of the temporary test root.", nameof(directory));
+            _validationSaveDirectory = target;
+        }
+#endif
+
+        /// <summary>Estado do hotbar compartilhado com a HUD; persistido via HotbarSectionProvider.</summary>
+        public HotbarState HotbarState => _hotbarState;
+
+        public Skills.Runtime.SurvivalSkillState SurvivalSkillState => _survivalSkillState;
+        public Skills.Runtime.CraftingPassiveRngState CraftingPassiveRngState => _craftingPassiveRngState;
+        public Skills.Runtime.CraftingSkillState CraftingSkillState => _craftingSkillState;
+        public Skills.Runtime.CombatCapstoneState CombatCapstoneState => _combatCapstoneState;
+
+        /// <summary>
+        /// Grid de tiles araveis da fazenda. Compartilhado com FarmTilledSoilService.
+        /// O FarmTilesRuntimeBootstrap deve registrar as zonas nao-araveis aqui apos carregar a cena.
+        /// </summary>
+        public Farm.FarmTileGrid FarmTileGrid => _farmTileGrid;
+
+        /// <summary>Indica se o SaveManager foi inicializado e estÃ¡ pronto para salvar/carregar.</summary>
+        public bool IsInitialized { get; private set; }
+        public int RegisteredProviderCount => _providerRegistry.Count;
+
+        // arch: quebra do par mutuo Core|Save (2026-07-15) — IGameBootstrapRuntimeService.BootstrapServiceId.
+        public string BootstrapServiceId => "SaveManager";
+
+        /// <summary>
+        /// IGameBootstrapRuntimeService: chamado por GameBootstrap.InitializeBootstrapRuntimeServices()
+        /// (mesmo loop que ja inicializa ShopManager) em vez de GameBootstrap chamar
+        /// RebindStarterInventoryData/Initialize diretamente. Preserva o comportamento anterior:
+        /// sincroniza PlayerDataSO/ItemDatabaseSO recebidos do bootstrap e entao inicializa os providers.
+        /// </summary>
+        public void InitializeFromBootstrap(GameBootstrapRuntimeContext context)
+        {
+            // arch: quebra do par mutuo Core|Inventory (2026-07-15) — context.ItemDatabase agora e
+            // ScriptableObject (Core parou de nomear CindarsHope.Inventory); cast local para o tipo
+            // concreto, permitido pois SaveManager (modulo Save) ja referencia CindarsHope.Inventory.
+            // arch: quebra do par mutuo Core|Player (2026-07-15) — context.PlayerData agora e
+            // ScriptableObject (Core parou de nomear CindarsHope.Player); cast local para o tipo
+            // concreto, permitido pois SaveManager (modulo Save) ja referencia CindarsHope.Player.Data.
+            RebindStarterInventoryData(context.PlayerData as PlayerDataSO, context.ItemDatabase as ItemDatabaseSO);
+            Initialize();
+        }
+
+        /// <summary>IGameBootstrapRuntimeService: chamado por ShutdownBootstrapRuntimeServices().</summary>
+        public void ShutdownFromBootstrap() => Shutdown();
+
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ciclo de vida
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+        /// <summary>
+        /// Inicializa todos os providers de seÃ§Ã£o com as dependÃªncias injetadas via [SerializeField].
+        /// Deve ser chamado pelo GameBootstrap antes do primeiro SaveGame/LoadGame.
+        /// </summary>
+        public void Initialize()
+        {
+            if (IsInitialized)
+            {
+                return;
+            }
+
+            IsInitialized = true;
+
+            // arch: anuncia o FarmTileGrid no DomainManagerRegistry para que consumidores em
+            // CindarsHope.Farm.Runtime (FarmSceneRuntimeBootstrap/FarmTillingInputController) o
+            // resolvam sem nomear SaveManager — quebra do ciclo mutuo Farm|Save
+            // (spec_arch_farm_save_cycle_reduction). Mesmo padrao ja usado para InventoryManager.
+            DomainManagerRegistry.Register(_farmTileGrid);
+
+            // Providers jÃ¡ existentes (SPEC_10 / fable_07 / fable_62)
+            _hotbarProvider = new HotbarSectionProvider(_hotbarState);
+            _spellbookProvider = new SpellbookSectionProvider();
+            _onboardingHintsProvider = new OnboardingHintsSectionProvider();
+
+            // Hotbar: inicializa defaults se novo jogo
+            if (string.IsNullOrWhiteSpace(_hotbarState.GetSlotItemId(0)))
+            {
+                _hotbarState.SetSlot(0, "item_seed_wheat");
+                _hotbarState.SetSlot(1, "item_seed_carrot");
+                _hotbarState.SetSlot(2, "item_tool_fishing_rod_basic");
+                _hotbarState.SetSlot(3, "item_weapon_bow_basic");
+                _hotbarState.SetSlot(4, "item_ammo_arrow_basic");
+                _hotbarState.SetSlot(5, "item_spell_fireball_test");
+            }
+
+            // â”€â”€ Lote 1: singleton puro â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _fonteProvider = new FonteSectionProvider();
+            _mainProgressionProvider = new MainProgressionSectionProvider();
+            _dailyGoalsProvider = new DailyGoalsSectionProvider();
+            _friendshipProvider = new FriendshipSectionProvider();
+            _farmAnimalsProvider = new FarmAnimalsSectionProvider();
+            _npcServicesProvider = new NpcServicesSectionProvider();
+            _farmLotsProvider = new FarmLotsSectionProvider();
+            // arch: quebra do ciclo Quests|Save — provider canônico movido para
+            // CindarsHope.Save.Providers (mesmo precedente de OnboardingHintsSectionProvider,
+            // Save|UI); Save não nomeia mais nenhum tipo de CindarsHope.Quests.
+            _questProvider = new QuestSectionProvider();
+            _caveRunProvider = new CaveRunSectionProvider();
+            _survivalSkillState = DomainManagerRegistry.Get<Skills.Runtime.SurvivalSkillState>()
+                ?? _survivalSkillState;
+            _survivalSkillProvider = new SurvivalSkillSectionProvider(_survivalSkillState);
+            DomainManagerRegistry.Register(_survivalSkillState);
+            _craftingPassiveRngState = DomainManagerRegistry.Get<Skills.Runtime.CraftingPassiveRngState>()
+                ?? _craftingPassiveRngState;
+            _craftingPassiveRngProvider = new CraftingPassiveRngSectionProvider(_craftingPassiveRngState);
+            DomainManagerRegistry.Register(_craftingPassiveRngState);
+            _craftingSkillState = DomainManagerRegistry.Get<Skills.Runtime.CraftingSkillState>()
+                ?? _craftingSkillState;
+            _craftingSkillProvider = new CraftingSkillSectionProvider(_craftingSkillState);
+            DomainManagerRegistry.Register(_craftingSkillState);
+            _combatCapstoneState = DomainManagerRegistry.Get<Skills.Runtime.CombatCapstoneState>()
+                ?? _combatCapstoneState;
+            _combatCapstoneProvider = new CombatCapstoneSectionProvider(_combatCapstoneState);
+            DomainManagerRegistry.Register(_combatCapstoneState);
+
+            // â”€â”€ Lote 2: manager injetado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _playerProvider = new PlayerSectionProvider(
+                _playerManager,
+                _hungerManager,
+                _manaManager,
+                () => _playerTransform != null ? (Vector2)_playerTransform.position : Vector2.zero);
+
+            _inventoryProvider = new InventorySectionProvider(
+                _inventoryManager,
+                _playerData,
+                _itemDatabase,
+                _hotbarState);
+
+            _equipmentProvider = new EquipmentSectionProvider(_equipmentManager);
+            _progressionProvider = new ProgressionSectionProvider(_progressionManager);
+            _staminaProvider = new StaminaSectionProvider(_staminaManager);
+            _gameTimeProvider = new GameTimeSectionProvider(_gameTimeManager, _timeManager);
+            _playerStatusEffectsProvider = new PlayerStatusEffectsSectionProvider(_statusEffectManager);
+            _equipmentDurabilityProvider = new EquipmentDurabilitySectionProvider(_equipmentManager);
+            _bestiaryProvider = new BestiarySectionProvider(_bestiaryManager);
+            _activeSkillSlotsProvider = new ActiveSkillSlotsSectionProvider(_activeSkillSlots);
+
+            _skillTreeProvider = new SkillTreeSectionProvider(
+                _skillTreeManager,
+                () =>
+                {
+                    // NÃ­vel vem da seÃ§Ã£o de progressÃ£o jÃ¡ restaurada (ProgressionSectionProvider).
+                    return _progressionManager != null
+                        ? (_progressionManager.CaptureSaveData()?.Level ?? 1)
+                        : 1;
+                });
+
+            _craftingProvider = new CraftingSectionProvider(_craftingRuntime);
+            _shopStockRuntime = ResolveShopStockRuntime();
+            _economyProvider = new EconomySectionProvider(_shopStockRuntime);
+            _npcsProvider = new NpcsSectionProvider(_npcManager);
+            _caveProvider = new CaveSectionProvider(_caveRunManager);
+            _deathProvider = new DeathSectionProvider(_corpseRecoveryManager);
+
+            // â”€â”€ Lote 3: lÃ³gica condicional de cena â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _farmProvider = new FarmSectionProvider(_farmPlotRegistry);
+            _worldProvider = new WorldSectionProvider(_itemPickupRegistry, _treeRegistry);
+
+            // spec_farm_till_anywhere_tilemap: tiles araveis por coordenada (secao aditiva FarmTiles).
+            _farmTilesProvider = new Providers.FarmTilesSectionProvider(_farmTileGrid);
+            _townInteriorLocationProvider = new TownInteriorLocationSectionProvider(
+                () => _frozenTownInteriorSnapshot, null);
+            RegisterProviderDescriptors();
+            SubscribeTownInteriorFinished();
+        }
+
+        /// <summary>Desliga o SaveManager. Chamado pelo GameBootstrap no shutdown.</summary>
+        public void Shutdown()
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            IsInitialized = false;
+            UnsubscribeTownInteriorFinished();
+        }
+
+        private void OnEnable()
+        {
+            if (IsInitialized) SubscribeTownInteriorFinished();
+        }
+
+        private void OnDisable() => UnsubscribeTownInteriorFinished();
+
+        private void OnDestroy() => UnsubscribeTownInteriorFinished();
+
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Save / Load
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+        /// <summary>
+        /// Serializa o estado atual do jogo para o slot 1. Recusa o save durante boss fight ativa
+        /// na caverna (fable_44). Retorna true se o save foi escrito com sucesso.
+        /// </summary>
+        public bool SaveGame()
+        {
+            using var profilerScope = SaveMarker.Auto();
+
+            if (_isApplyingSaveData || _interiorLoadInProgress ||
+                (_townInteriorRuntime != null && _townInteriorRuntime.IsTransitioning))
+            {
+                const string reason = "Não é possível salvar durante uma transição de interior.";
+                PublishSaveResult(false, reason);
+                return false;
+            }
+
+            // fable_44: polÃ­tica de save em boss fight (CA-3).
+            if (TryGetActiveCaveBossFightGuard(out var blockedReason))
+            {
+                Debug.Log($"SaveManager: manual save blocked â€” {blockedReason}", this);
+                PublishSaveResult(false, blockedReason);
+                return false;
+            }
+
+            try
+            {
+                GameSaveData existingSaveData = null;
+                if (File.Exists(SaveFilePath)
+                    && !TryReadSaveWithMigration(SaveFilePath, true,
+                        out existingSaveData, out var existingSaveResult))
+                {
+                    var reason = "Save existente inválido; escrita bloqueada para preservar o arquivo original: "
+                        + existingSaveResult.ErrorMessage;
+                    PublishSaveResult(false, reason);
+                    return false;
+                }
+                var activeScene = SceneManager.GetActiveScene();
+
+                // Captura de cada seÃ§Ã£o via provider
+                var playerData = _playerProvider?.Capture(existingSaveData) as PlayerSaveData;
+
+                _frozenTownInteriorSnapshot = CaptureTownInteriorSnapshot();
+                TownInteriorLocationSaveData interiorLocation;
+                try { interiorLocation = _townInteriorLocationProvider?.Capture(existingSaveData) as TownInteriorLocationSaveData; }
+                finally { _frozenTownInteriorSnapshot = null; }
+
+                var saveData = new GameSaveData
+                {
+                    SchemaVersion = CurrentSchemaVersion,
+                    CurrentDay = CaptureCurrentDay(),
+                    CurrentSceneName = activeScene.name,
+                    CurrentScenePath = activeScene.path,
+                    Player = playerData,
+                    Inventory = _inventoryProvider?.Capture(existingSaveData) as InventorySaveData,
+                    Equipment = _equipmentProvider?.Capture(existingSaveData) as EquipmentSaveData,
+                    Hotbar = _providerRegistry.Capture<HotbarSaveData>("hotbar", existingSaveData),
+                    Progression = _progressionProvider?.Capture(existingSaveData) as PlayerProgressionSaveData,
+                    Farm = _farmProvider?.Capture(existingSaveData) as FarmSaveData,
+                    World = _worldProvider?.Capture(existingSaveData) as WorldSaveData,
+                    Cave = _caveProvider?.Capture(existingSaveData) as CaveSaveData,
+                    Death = _deathProvider?.Capture(existingSaveData) as DeathSaveData,
+                    Economy = _economyProvider?.Capture(existingSaveData) as EconomySaveData,
+                    Crafting = _craftingProvider?.Capture(existingSaveData) as CraftingRuntimeSaveData,
+                    Stamina = _staminaProvider?.Capture(existingSaveData) as StaminaSaveData,
+                    GameTime = _gameTimeProvider?.Capture(existingSaveData) as GameTimeSaveData,
+                    PlayerStatusEffects = _playerStatusEffectsProvider?.Capture(existingSaveData) as PlayerStatusEffectsSaveData,
+                    EquipmentDurability = _equipmentDurabilityProvider?.Capture(existingSaveData) as EquipmentDurabilitySaveData,
+                    Npcs = _npcsProvider?.Capture(existingSaveData) as NpcManagerSaveData,
+                    ActiveSkillSlots = _activeSkillSlotsProvider?.Capture(existingSaveData) as ActiveSkillSlotsSaveData,
+                    SkillTree = _skillTreeProvider?.Capture(existingSaveData) as Skills.SkillTreeSaveData,
+                    SurvivalSkills = _survivalSkillProvider?.Capture(existingSaveData) as Skills.Runtime.SurvivalSkillSaveData,
+                    CraftingPassiveRng = _craftingPassiveRngProvider?.Capture(existingSaveData) as Skills.Runtime.CraftingPassiveRngSaveData,
+                    CraftingSkills = _craftingSkillProvider?.Capture(existingSaveData) as Skills.Runtime.CraftingSkillSaveData,
+                    CombatCapstones = _combatCapstoneProvider?.Capture(existingSaveData) as Skills.Runtime.CombatCapstoneSaveData,
+                    Bestiary = _bestiaryProvider?.Capture(existingSaveData) as BestiarySaveData,
+                    Quests = _questProvider?.Capture(existingSaveData) as QuestStateSectionSaveData,
+                    Fonte = _fonteProvider?.Capture(existingSaveData) as FonteSaveData,
+                    CaveRun = _caveRunProvider?.Capture(existingSaveData) as CaveRunSaveData,
+                    DailyGoals = _dailyGoalsProvider?.Capture(existingSaveData) as Farm.Runtime.FarmDailyGoalsSaveData,
+                    Spellbook = _spellbookProvider?.Capture(existingSaveData) as Magic.SpellbookSaveData,
+                    FarmLots = _farmLotsProvider?.Capture(existingSaveData) as Farm.Lots.FarmLotsSaveData,
+                    FarmAnimals = _farmAnimalsProvider?.Capture(existingSaveData) as Farm.Animals.FarmAnimalsSaveData,
+                    Friendship = _friendshipProvider?.Capture(existingSaveData) as NPC.Friendship.FriendshipSaveData,
+                    NpcServices = _npcServicesProvider?.Capture(existingSaveData) as NPC.Services.NpcServicesSaveData,
+                    MainProgression = _mainProgressionProvider?.Capture(existingSaveData) as MainProgressionSaveData,
+                    OnboardingHints = _onboardingHintsProvider?.Capture(existingSaveData) as OnboardingHintsSaveData,
+                    FarmTiles = _farmTilesProvider?.Capture(existingSaveData) as FarmTilesSaveData,
+                    TownInteriorLocation = interiorLocation
+                };
+                if (interiorLocation != null && playerData != null)
+                    playerData.PlayerPosition = new Vector2(interiorLocation.SafeTownX, interiorLocation.SafeTownY);
+
+                var savePath = SaveFilePath;
+                var directory = Path.GetDirectoryName(savePath);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                var json = JsonUtility.ToJson(saveData, true);
+                SaveBackupService.WriteTextSafely(savePath, json);
+
+                Debug.Log($"Game saved to {savePath}.", this);
+                PublishSaveResult(true, "Save complete.");
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                PublishSaveResult(false, exception.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Carrega o save do slot 1 e aplica o estado ao jogo. Retorna false se o arquivo nÃ£o
+        /// existir ou estiver corrompido.
+        /// </summary>
+        public bool LoadGame()
+        {
+            if (_isApplyingSaveData || _interiorLoadInProgress ||
+                (_townInteriorRuntime != null && _townInteriorRuntime.IsTransitioning))
+            {
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false,
+                    "Não é possível carregar durante uma transição de interior."));
+                return false;
+            }
+            var savePath = SaveFilePath;
+            TryRecoverFromBackupIfNeeded(savePath);
+
+            if (!File.Exists(savePath))
+            {
+                Debug.Log($"Save file not found at {savePath}.", this);
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, "Nenhum save encontrado neste slot."));
+                return false;
+            }
+
+            try
+            {
+                if (!TryReadSaveWithMigration(savePath, true, out var saveData, out var migrationResult))
+                {
+                    Debug.LogWarning($"Save file at {savePath} could not be loaded. {migrationResult.ErrorMessage}", this);
+                    GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false,
+                        "Não foi possível carregar o save. O progresso atual foi preservado."));
+                    return false;
+                }
+
+                var activeScene = SceneManager.GetActiveScene();
+                ValidateSkillSection(saveData);
+                bool hasInteriorLocation = false;
+                string reason;
+                TownInteriorLocationSnapshot decodedLocation = default;
+                if (saveData.TownInteriorLocation != null &&
+                    !TownInteriorLocationSaveData.TryDecode(saveData.TownInteriorLocation, out decodedLocation, out reason))
+                {
+                    GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, reason));
+                    return false;
+                }
+                if (saveData.TownInteriorLocation != null)
+                    hasInteriorLocation = decodedLocation.IsInside;
+                // JsonUtility may materialize an omitted/null reference section as an empty
+                // exterior DTO. Its presence alone must never route a legacy Town save
+                // through interior restore or replace PlayerPosition with a fallback spawn.
+                if (!hasInteriorLocation &&
+                    IsLegacyLoadBlockedByCurrentInterior(out reason))
+                {
+                    GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, reason));
+                    return false;
+                }
+                if (!string.IsNullOrEmpty(saveData.CurrentSceneName) && saveData.CurrentSceneName != activeScene.name)
+                {
+                    _interiorLoadInProgress = hasInteriorLocation;
+                    StartCoroutine(LoadSceneAndApplySaveData(saveData, hasInteriorLocation));
+                    return true;
+                }
+
+                if (hasInteriorLocation)
+                {
+                    _interiorLoadInProgress = true;
+                    StartCoroutine(ApplyTownInteriorLoad(saveData));
+                    return true;
+                }
+
+                ApplySaveData(saveData);
+                Debug.Log($"Game loaded from {savePath}.", this);
+                GameEventBus.Publish(new GameLoadedEvent(Slot, savePath, true, "Jogo carregado."));
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, "Falha ao carregar save."));
+                return false;
+            }
+        }
+
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        public void BindTownInteriorRuntime(ITownInteriorLocationRuntime runtime, SceneHandle sceneHandle)
+        {
+            if (runtime == null) return;
+            _townInteriorRuntime = runtime;
+            _townInteriorSceneHandle = sceneHandle;
+            _lastTownInteriorSceneHandle = sceneHandle;
+        }
+
+        public void UnbindTownInteriorRuntime(ITownInteriorLocationRuntime runtime)
+        {
+            if (!ReferenceEquals(_townInteriorRuntime, runtime)) return;
+            _townInteriorRuntime = null;
+            _townInteriorSceneHandle = null;
+        }
+
+        public void RequestAutosave()
+        {
+            if (_interiorLoadInProgress ||
+                (_townInteriorRuntime != null && _townInteriorRuntime.IsTransitioning))
+            {
+                _autosaveDeferred = true;
+                return;
+            }
+            SaveGame();
+        }
+
+        private TownInteriorLocationSnapshot? CaptureTownInteriorSnapshot()
+        {
+            if (!IsTownInteriorRuntimeReady() && _lastTownInteriorSceneHandle == SceneManager.GetActiveScene().handle)
+                throw new InvalidOperationException("Town interior runtime is expected but not ready.");
+            if (!IsTownInteriorRuntimeReady()) return null;
+            return _townInteriorRuntime.CaptureCommitted();
+        }
+
+        private bool IsTownInteriorRuntimeReady() => IsInitialized && _townInteriorRuntime != null &&
+            _townInteriorSceneHandle == SceneManager.GetActiveScene().handle;
+
+        private bool IsLegacyLoadBlockedByCurrentInterior(out string reason)
+        {
+            reason = string.Empty;
+            if (!IsTownInteriorRuntimeReady())
+            {
+                if (_lastTownInteriorSceneHandle != SceneManager.GetActiveScene().handle) return false;
+                reason = "Aguarde a cidade estar pronta antes de carregar o save.";
+                return true;
+            }
+
+            try
+            {
+                if (!_townInteriorRuntime.CaptureCommitted().IsInside) return false;
+            }
+            catch (Exception)
+            {
+                reason = "Não é seguro carregar um save sem localização de interior enquanto a casa atual não pode ser verificada.";
+                return true;
+            }
+
+            reason = "Saia da casa atual antes de carregar um save sem localização de interior.";
+            return true;
+        }
+
+        private IEnumerator ApplyTownInteriorLoad(GameSaveData saveData)
+        {
+            bool loadSucceeded = false;
+            try
+            {
+                if (!TownInteriorLocationSaveData.TryDecode(saveData.TownInteriorLocation, out var snapshot, out var reason))
+                {
+                    PublishInteriorLoadFailure(reason);
+                    yield break;
+                }
+
+                if (float.IsNaN(_townInteriorRestoreTimeoutSeconds) ||
+                    float.IsInfinity(_townInteriorRestoreTimeoutSeconds) || _townInteriorRestoreTimeoutSeconds <= 0f)
+                {
+                    PublishInteriorLoadFailure("Town interior restore timeout is invalid.");
+                    yield break;
+                }
+
+                var started = Time.unscaledTime;
+                while (!IsTownInteriorRuntimeReady() && Time.unscaledTime - started < _townInteriorRestoreTimeoutSeconds)
+                    yield return null;
+                if (!IsTownInteriorRuntimeReady())
+                {
+                    PublishInteriorLoadFailure("Town interior runtime did not bind before restore timeout.");
+                    yield break;
+                }
+
+                _pendingInteriorRestoreToken = Guid.NewGuid().ToString("N");
+                _pendingInteriorRestoreFinished = false;
+                _pendingInteriorRestoreSucceeded = false;
+                _pendingInteriorStatePreparationCompleted = false;
+                _pendingInteriorStatePreparationSucceeded = false;
+                _pendingInteriorRestoreFailureReason = string.Empty;
+                _pendingInteriorSaveData = saveData;
+
+                if (!TryRequestTownInteriorRestore(snapshot, _pendingInteriorRestoreToken, out reason))
+                {
+                    PublishInteriorLoadFailure(reason);
+                    yield break;
+                }
+
+                started = Time.unscaledTime;
+                while (!_pendingInteriorRestoreFinished && Time.unscaledTime - started < _townInteriorRestoreTimeoutSeconds)
+                    yield return null;
+                if (!_pendingInteriorRestoreFinished || !_pendingInteriorRestoreSucceeded ||
+                    !_pendingInteriorStatePreparationCompleted || !_pendingInteriorStatePreparationSucceeded)
+                {
+                    PublishInteriorLoadFailure(string.IsNullOrWhiteSpace(_pendingInteriorRestoreFailureReason)
+                        ? "Town interior restore did not finish successfully."
+                        : _pendingInteriorRestoreFailureReason);
+                    yield break;
+                }
+
+                _pendingInteriorRestoreToken = string.Empty;
+                loadSucceeded = true;
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, true, "Jogo carregado."));
+            }
+            finally
+            {
+                _pendingInteriorRestoreToken = string.Empty;
+                _pendingInteriorSaveData = null;
+                _pendingInteriorRestoreFailureReason = string.Empty;
+                _interiorLoadInProgress = false;
+                // A failed restore may have applied only part of the services. Never overwrite
+                // the recoverable slot with that state through an earlier queued autosave.
+                if (loadSucceeded) TryFlushDeferredAutosave();
+                else _autosaveDeferred = false;
+            }
+        }
+
+        private bool TryRequestTownInteriorRestore(TownInteriorLocationSnapshot snapshot, string operationId,
+            out string reason)
+        {
+            try
+            {
+                return _townInteriorRuntime.TryRequestRestore(snapshot, operationId, out reason);
+            }
+            catch (Exception exception)
+            {
+                reason = exception.Message;
+                return false;
+            }
+        }
+
+        private void OnTownInteriorVisitFinished(TownInteriorVisitFinishedEvent evt)
+        {
+            if (evt.OperationId == _pendingInteriorRestoreToken)
+            {
+                _pendingInteriorRestoreFinished = true;
+                _pendingInteriorRestoreSucceeded = evt.Success;
+            }
+            TryFlushDeferredAutosave();
+        }
+
+        private void TryFlushDeferredAutosave()
+        {
+            if (!_autosaveDeferred || _interiorLoadInProgress || !IsTownInteriorRuntimeReady() ||
+                _townInteriorRuntime.IsTransitioning) return;
+            _autosaveDeferred = false;
+            SaveGame();
+        }
+
+        private void OnTownInteriorRestoreStateRequested(TownInteriorRestoreStateRequestedEvent evt)
+        {
+            if (evt.OperationId != _pendingInteriorRestoreToken) return;
+
+            if (_pendingInteriorStatePreparationCompleted)
+            {
+                GameEventBus.Publish(new TownInteriorRestoreStateReadyEvent(evt.OperationId,
+                    _pendingInteriorStatePreparationSucceeded));
+                return;
+            }
+
+            bool success = false;
+            string reason = string.Empty;
+            try
+            {
+                if (_pendingInteriorSaveData == null)
+                {
+                    reason = "Town interior restore state was requested without pending save data.";
+                }
+                else
+                {
+                    ApplySaveData(_pendingInteriorSaveData, false);
+                    success = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                reason = exception.Message;
+            }
+
+            _pendingInteriorStatePreparationCompleted = true;
+            _pendingInteriorStatePreparationSucceeded = success;
+            if (!success) _pendingInteriorRestoreFailureReason = reason;
+            GameEventBus.Publish(new TownInteriorRestoreStateReadyEvent(evt.OperationId, success));
+        }
+
+        private void PublishInteriorLoadFailure(string reason)
+        {
+            _pendingInteriorRestoreToken = string.Empty;
+            GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false,
+                string.IsNullOrWhiteSpace(reason) ? "Falha ao restaurar interior." : reason));
+        }
+
+        private void SubscribeTownInteriorFinished()
+        {
+            if (_townInteriorFinishedSubscribed) return;
+            GameEventBus.Subscribe<TownInteriorVisitFinishedEvent>(OnTownInteriorVisitFinished);
+            GameEventBus.Subscribe<TownInteriorRestoreStateRequestedEvent>(OnTownInteriorRestoreStateRequested);
+            _townInteriorFinishedSubscribed = true;
+        }
+
+        private void UnsubscribeTownInteriorFinished()
+        {
+            if (!_townInteriorFinishedSubscribed) return;
+            GameEventBus.Unsubscribe<TownInteriorVisitFinishedEvent>(OnTownInteriorVisitFinished);
+            GameEventBus.Unsubscribe<TownInteriorRestoreStateRequestedEvent>(OnTownInteriorRestoreStateRequested);
+            _townInteriorFinishedSubscribed = false;
+        }
+
+        // Rebind pÃºblico (chamado por RuntimeBootstraps de cena)
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+        /// <summary>
+        /// Rebinda refs de cena para registries de plots, Ã¡rvores, pickups e transform do player.
+        /// Chamado por sceneRuntimeBootstraps apÃ³s o load de cena.
+        /// </summary>
+        public void RebindSceneReferences(FarmPlotRegistry farmPlotRegistry, TreeRegistry treeRegistry, ItemPickupRegistry itemPickupRegistry, Transform playerTransform)
+        {
+            if (farmPlotRegistry != null)
+            {
+                _farmPlotRegistry = farmPlotRegistry;
+            }
+
+            if (treeRegistry != null)
+            {
+                _treeRegistry = treeRegistry;
+            }
+
+            if (itemPickupRegistry != null)
+            {
+                _itemPickupRegistry = itemPickupRegistry;
+            }
+
+            if (playerTransform != null)
+            {
+                _playerTransform = playerTransform;
+            }
+
+            // Rebinda providers que dependem dessas refs de cena
+            _farmProvider = new FarmSectionProvider(_farmPlotRegistry);
+            _worldProvider = new WorldSectionProvider(_itemPickupRegistry, _treeRegistry);
+        }
+
+        /// <summary>Rebinda managers obrigatÃ³rios de runtime (player, inventory, hunger, time).</summary>
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — playerManager/hungerManager
+        // agora sao MonoBehaviour (nao mais os tipos concretos CindarsHope.Player.*): os
+        // *SceneRuntimeReferenceInstaller (SceneManagement) so tem bootstrap.PlayerManager/
+        // HungerManager como MonoBehaviour (Core nao nomeia mais CindarsHope.Player, ver corte
+        // Core|Player), e casta-los la reintroduziria a aresta SceneManagement->Player. O cast para o
+        // tipo concreto acontece aqui dentro (Save ja referencia CindarsHope.Player normalmente).
+        public void RebindRuntimeManagers(MonoBehaviour playerManagerRef, InventoryManager inventoryManager, MonoBehaviour hungerManagerRef, TimeManager timeManager)
+        {
+            var playerManager = playerManagerRef as PlayerManager;
+            var hungerManager = hungerManagerRef as HungerManager;
+
+            if (playerManager != null)
+            {
+                _playerManager = playerManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null PlayerManager.", this);
+            }
+
+            if (inventoryManager != null)
+            {
+                _inventoryManager = inventoryManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null InventoryManager.", this);
+            }
+
+            if (hungerManager != null)
+            {
+                _hungerManager = hungerManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null HungerManager.", this);
+            }
+
+            if (timeManager != null)
+            {
+                _timeManager = timeManager;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindRuntimeManagers received null TimeManager.", this);
+            }
+
+            // Rebinda providers afetados
+            _playerProvider = new PlayerSectionProvider(
+                _playerManager,
+                _hungerManager,
+                _manaManager,
+                () => _playerTransform != null ? (Vector2)_playerTransform.position : Vector2.zero);
+            _inventoryProvider = new InventorySectionProvider(_inventoryManager, _playerData, _itemDatabase, _hotbarState);
+            _gameTimeProvider = new GameTimeSectionProvider(_gameTimeManager, _timeManager);
+        }
+
+        /// <summary>Rebinda managers opcionais de runtime.</summary>
+        // arch: quebra do par mutuo Player|SceneManagement (2026-07-15) — progressionManager/
+        // staminaManager/statusEffectManager agora sao MonoBehaviour (nao mais os tipos concretos
+        // CindarsHope.Player.*): os *SceneRuntimeReferenceInstaller (SceneManagement) so tem
+        // bootstrap.PlayerProgressionManager/StaminaManager/StatusEffectManager como MonoBehaviour
+        // (Core nao nomeia mais CindarsHope.Player); castar la reintroduziria a aresta
+        // SceneManagement->Player. O cast para o tipo concreto acontece aqui dentro.
+        public void RebindOptionalRuntimeManagers(
+            EquipmentManager equipmentManager,
+            MonoBehaviour progressionManagerRef,
+            Core.GameTimeManager gameTimeManager = null,
+            MonoBehaviour staminaManagerRef = null,
+            MonoBehaviour statusEffectManagerRef = null,
+            Skills.SkillTreeManager skillTreeManager = null,
+            ShopManager shopManager = null,
+            BestiaryManager bestiaryManager = null)
+        {
+            var progressionManager = progressionManagerRef as PlayerProgressionManager;
+            var staminaManager = staminaManagerRef as StaminaManager;
+            var statusEffectManager = statusEffectManagerRef as Player.StatusEffectManager;
+
+            if (equipmentManager != null)
+            {
+                _equipmentManager = equipmentManager;
+            }
+
+            if (progressionManager != null)
+            {
+                _progressionManager = progressionManager;
+            }
+
+            if (gameTimeManager != null)
+            {
+                _gameTimeManager = gameTimeManager;
+            }
+
+            if (staminaManager != null)
+            {
+                _staminaManager = staminaManager;
+            }
+
+            if (statusEffectManager != null)
+            {
+                _statusEffectManager = statusEffectManager;
+            }
+
+            if (skillTreeManager != null)
+            {
+                _skillTreeManager = skillTreeManager;
+            }
+
+            if (shopManager != null)
+            {
+                _shopManager = shopManager;
+            }
+
+            // arch: Core|Enemy (spec_arch_core_enemy_cycle_reduction_v31) — GameBootstrap nao segura
+            // mais essa ref; resolve via BestiaryManager.Instance (self-registro) quando o chamador
+            // (ex.: geradores de cena legados) nao passar uma explicita.
+            _bestiaryManager = bestiaryManager != null ? bestiaryManager : BestiaryManager.Instance;
+
+            // Rebinda providers afetados
+            _equipmentProvider = new EquipmentSectionProvider(_equipmentManager);
+            _equipmentDurabilityProvider = new EquipmentDurabilitySectionProvider(_equipmentManager);
+            _progressionProvider = new ProgressionSectionProvider(_progressionManager);
+            _staminaProvider = new StaminaSectionProvider(_staminaManager);
+            _gameTimeProvider = new GameTimeSectionProvider(_gameTimeManager, _timeManager);
+            _playerStatusEffectsProvider = new PlayerStatusEffectsSectionProvider(_statusEffectManager);
+            _skillTreeProvider = new SkillTreeSectionProvider(
+                _skillTreeManager,
+                () => _progressionManager != null ? (_progressionManager.CaptureSaveData()?.Level ?? 1) : 1);
+            _shopStockRuntime = ResolveShopStockRuntime();
+            _economyProvider = new EconomySectionProvider(_shopStockRuntime);
+            _bestiaryProvider = new BestiarySectionProvider(_bestiaryManager);
+        }
+
+        private IShopStockRuntime ResolveShopStockRuntime()
+        {
+            return DomainManagerRegistry.Get<IShopStockRuntime>() ?? _shopManager;
+        }
+
+        /// <summary>Rebinda os ScriptableObjects de dados para reparo de inventÃ¡rio starter.</summary>
+        public void RebindStarterInventoryData(PlayerDataSO playerData, ItemDatabaseSO itemDatabase)
+        {
+            if (playerData != null)
+            {
+                _playerData = playerData;
+            }
+
+            if (itemDatabase != null)
+            {
+                _itemDatabase = itemDatabase;
+            }
+
+            _inventoryProvider = new InventorySectionProvider(_inventoryManager, _playerData, _itemDatabase, _hotbarState);
+        }
+
+        /// <summary>Rebinda o CaveRunManager apÃ³s entrar na cena de caverna.</summary>
+        /// <remarks>
+        /// arch: quebra do par mutuo Cave|SceneManagement (2026-07-16) â€” recebe o componente como
+        /// MonoBehaviour (o installer em SceneManagement nÃ£o nomeia mais tipos Cave) e faz o cast
+        /// local aqui, jÃ¡ que Save->Cave Ã© aresta existente e nÃ£o-mutua.
+        /// </remarks>
+        public void RebindCaveRuntime(MonoBehaviour caveRunManagerObj)
+        {
+            var caveRunManager = caveRunManagerObj as CaveRunManager;
+            if (caveRunManager != null)
+            {
+                _caveRunManager = caveRunManager;
+            }
+
+            _caveProvider = new CaveSectionProvider(_caveRunManager);
+        }
+
+        /// <summary>
+        /// Rebinda as combat databases do CaveRuntimeMaterializer anexado ao CaveRunManager.
+        /// arch: quebra do par mutuo Cave|SceneManagement (2026-07-16) â€” movido do installer em
+        /// SceneManagement para cÃ¡ (Save->Cave jÃ¡ Ã© aresta existente e nÃ£o-mutua) para que o
+        /// installer nÃ£o precise nomear CaveRuntimeMaterializer.
+        /// </summary>
+        public void RebindCaveMaterializerCombatDatabases(MonoBehaviour caveRunManagerObj, CombatRuntimeDatabasesRegistrySO registry)
+        {
+            if (registry == null)
+            {
+                return;
+            }
+
+            var caveRunManager = caveRunManagerObj as CaveRunManager;
+            if (caveRunManager == null)
+            {
+                return;
+            }
+
+            var materializer = caveRunManager.GetComponent<CaveRuntimeMaterializer>();
+            if (materializer != null)
+            {
+                materializer.RebindCombatDatabases(registry);
+            }
+        }
+
+        /// <summary>Rebinda o Transform do player (chamado apÃ³s respawn ou mudanÃ§a de cena).</summary>
+        public void RebindPlayerTransform(Transform playerTransform)
+        {
+            if (playerTransform != null)
+            {
+                _playerTransform = playerTransform;
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager.RebindPlayerTransform received null Transform.", this);
+            }
+        }
+
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Internos
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+        private int CaptureCurrentDay()
+        {
+            if (_timeManager != null)
+            {
+                return _timeManager.CurrentDay;
+            }
+
+            Debug.LogWarning("SaveManager saved without TimeManager. CurrentDay fallback is 1.", this);
+            return 1;
+        }
+
+        private void RegisterProviderDescriptors()
+        {
+            int order = 0;
+            _providerRegistry.Register<Skills.Runtime.SurvivalSkillSaveData>(_survivalSkillProvider, order++);
+            _providerRegistry.Register<Skills.Runtime.CraftingPassiveRngSaveData>(_craftingPassiveRngProvider, order++);
+            _providerRegistry.Register<Skills.Runtime.CraftingSkillSaveData>(_craftingSkillProvider, order++);
+            _providerRegistry.Register<Skills.Runtime.CombatCapstoneSaveData>(_combatCapstoneProvider, order++);
+            _providerRegistry.Register<PlayerSaveData>(_playerProvider, order++);
+            _providerRegistry.Register<InventorySaveData>(_inventoryProvider, order++);
+            _providerRegistry.Register<HotbarSaveData>(_hotbarProvider, order++);
+            _providerRegistry.Register<CindarsHope.Magic.SpellbookSaveData>(_spellbookProvider, order++);
+            _providerRegistry.Register<EquipmentSaveData>(_equipmentProvider, order++);
+            _providerRegistry.Register<EquipmentDurabilitySaveData>(_equipmentDurabilityProvider, order++);
+            _providerRegistry.Register<PlayerProgressionSaveData>(_progressionProvider, order++);
+            _providerRegistry.Register<ActiveSkillSlotsSaveData>(_activeSkillSlotsProvider, order++);
+            _providerRegistry.Register<SkillTreeSaveData>(_skillTreeProvider, order++);
+            _providerRegistry.Register<StaminaSaveData>(_staminaProvider, order++);
+            _providerRegistry.Register<GameTimeSaveData>(_gameTimeProvider, order++);
+            _providerRegistry.Register<PlayerStatusEffectsSaveData>(_playerStatusEffectsProvider, order++);
+            _providerRegistry.Register<CaveSaveData>(_caveProvider, order++);
+            _providerRegistry.Register<CindarsHope.Cave.Runtime.CaveRunSaveData>(_caveRunProvider, order++);
+            _providerRegistry.Register<WorldSaveData>(_worldProvider, order++);
+            _providerRegistry.Register<FarmSaveData>(_farmProvider, order++);
+            _providerRegistry.Register<EconomySaveData>(_economyProvider, order++);
+            _providerRegistry.Register<NpcManagerSaveData>(_npcsProvider, order++);
+            _providerRegistry.Register<CraftingRuntimeSaveData>(_craftingProvider, order++);
+            _providerRegistry.Register<BestiarySaveData>(_bestiaryProvider, order++);
+            _providerRegistry.Register<FonteSaveData>(_fonteProvider, order++);
+            _providerRegistry.Register<MainProgressionSaveData>(_mainProgressionProvider, order++);
+            _providerRegistry.Register<Farm.Runtime.FarmDailyGoalsSaveData>(_dailyGoalsProvider, order++);
+            _providerRegistry.Register<Farm.Lots.FarmLotsSaveData>(_farmLotsProvider, order++);
+            _providerRegistry.Register<Farm.Animals.FarmAnimalsSaveData>(_farmAnimalsProvider, order++);
+            _providerRegistry.Register<NPC.Friendship.FriendshipSaveData>(_friendshipProvider, order++);
+            _providerRegistry.Register<NPC.Services.NpcServicesSaveData>(_npcServicesProvider, order++);
+            _providerRegistry.Register<DeathSaveData>(_deathProvider, order++);
+            _providerRegistry.Register<QuestStateSectionSaveData>(_questProvider, order++);
+            _providerRegistry.Register<OnboardingHintsSaveData>(_onboardingHintsProvider, order++);
+            _providerRegistry.Register<FarmTilesSaveData>(_farmTilesProvider, order++);
+            _providerRegistry.Register<TownInteriorLocationSaveData>(_townInteriorLocationProvider, order);
+        }
+
+        // fable_44: le o flag de boss fight do CaveLevelRuntimeController via CaveRunManager.Instance.
+        private bool TryGetActiveCaveBossFightGuard(out string reason)
+        {
+            reason = CaveBossFightSaveGate.SaveBlockedReason;
+
+            var runManager = CindarsHope.Cave.Runtime.CaveRunManager.Instance;
+            if (runManager == null)
+            {
+                return false;
+            }
+
+            var levelController = runManager.GetComponent<Cave.CaveLevelRuntimeController>();
+            return levelController != null && levelController.IsBossFightActive;
+        }
+
+        private IEnumerator LoadSceneAndApplySaveData(GameSaveData saveData, bool hasInteriorLocation)
+        {
+            string failure = null;
+            try
+            {
+#if UNITY_EDITOR
+                if (!string.IsNullOrEmpty(saveData.CurrentScenePath))
+                {
+                    EditorSceneManager.LoadSceneInPlayMode(saveData.CurrentScenePath, new LoadSceneParameters(LoadSceneMode.Single));
+                }
+                else
+                {
+                    SceneManager.LoadScene(saveData.CurrentSceneName);
+                }
+#else
+                SceneManager.LoadScene(saveData.CurrentSceneName);
+#endif
+            }
+            catch (Exception exception)
+            {
+                failure = exception.Message;
+            }
+
+            if (failure != null)
+            {
+                _interiorLoadInProgress = false;
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, failure));
+                yield break;
+            }
+            yield return null;
+
+            if (hasInteriorLocation)
+            {
+                yield return ApplyTownInteriorLoad(saveData);
+                yield break;
+            }
+
+            yield return null;
+            bool legacyApplyFailed = false;
+            try
+            {
+                ApplySaveData(saveData);
+            }
+            catch (Exception exception)
+            {
+                legacyApplyFailed = true;
+                failure = exception.Message;
+            }
+
+            if (legacyApplyFailed)
+            {
+                _interiorLoadInProgress = false;
+                GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, false, failure));
+                yield break;
+            }
+
+            _interiorLoadInProgress = false;
+            GameEventBus.Publish(new GameLoadedEvent(Slot, SaveFilePath, true, "Jogo carregado."));
+        }
+
+        /// <summary>
+        /// Aplica os dados do save ao estado do jogo, delegando cada seÃ§Ã£o ao provider
+        /// correspondente. A ordem respeita as dependÃªncias entre seÃ§Ãµes (ex: progressÃ£o
+        /// antes de skill tree; Fonte antes de MainProgression).
+        /// </summary>
+        private void ValidateSkillSection(GameSaveData saveData)
+        {
+            SkillTreeState.ValidateSaveLedger(saveData.SkillTree,
+                saveData.Progression?.UnspentSkillPoints ?? _progressionManager?.UnspentSkillPoints ?? 0);
+        }
+
+        private void ApplySaveData(GameSaveData saveData, bool restorePlayerPosition = true)
+        {
+            if (_isApplyingSaveData)
+                throw new InvalidOperationException("Save restore is already in progress.");
+            _isApplyingSaveData = true;
+            try
+            {
+            ValidateSkillSection(saveData);
+            using var profilerScope = RestoreMarker.Auto();
+
+            // â”€â”€ Dia / tempo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (_timeManager != null)
+            {
+                _timeManager.SetCurrentDay(saveData.CurrentDay);
+            }
+            else
+            {
+                Debug.LogWarning("SaveManager skipped day restore because TimeManager is missing.", this);
+            }
+
+            // â”€â”€ Jogador (HP, fome, mana, fadiga) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            bool restoresActiveCaveRun = saveData.CaveRun?.HasActiveRun == true;
+            string restoredRunId = restoresActiveCaveRun
+                ? saveData.CaveRun.RunId ?? string.Empty
+                : string.Empty;
+            int restoredCaveLevel = restoresActiveCaveRun
+                ? saveData.CaveRun.CurrentLevel
+                : 0;
+            if (!restoresActiveCaveRun)
+            {
+                var restoredScene = SceneManager.GetActiveScene();
+                restoredRunId = Skills.Runtime.SurvivalSkillRuntimeCoordinator.ComposeSceneScopeId(
+                    restoredScene.path, restoredScene.name);
+            }
+            _survivalSkillState.BeginRestore();
+            try
+            {
+                _survivalSkillProvider?.RestoreForContext(
+                    saveData.SurvivalSkills ?? new Skills.Runtime.SurvivalSkillSaveData(),
+                    restoredRunId,
+                    restoredCaveLevel);
+
+                // Survival state must exist before HP is applied so HPChanged subscribers can
+                // observe IsRestoreInProgress and never arm Last Breath from restored health.
+                _playerProvider?.Restore(saveData.Player);
+            }
+            finally
+            {
+                _survivalSkillState.EndRestore();
+            }
+
+            _craftingPassiveRngProvider?.Restore(saveData.CraftingPassiveRng);
+            _craftingSkillProvider?.Restore(saveData.CraftingSkills ??
+                new Skills.Runtime.CraftingSkillSaveData
+                {
+                    CurrentDayIndex = Math.Max(1, saveData.CurrentDay)
+                });
+            _craftingSkillState.ObserveDay(Math.Max(1, saveData.CurrentDay));
+
+            // PosiÃ§Ã£o do player: mantida no SaveManager porque _playerTransform Ã© uma ref serializada
+            // de cena que os providers nÃ£o devem conhecer diretamente.
+            if (restorePlayerPosition && saveData.Player != null && _playerTransform != null)
+            {
+                _playerTransform.position = saveData.Player.PlayerPosition;
+            }
+            else if (_playerTransform == null)
+            {
+                Debug.LogWarning("SaveManager skipped player position restore because player Transform is missing.", this);
+            }
+
+            // â”€â”€ InventÃ¡rio (inclui reparo de starter items e limpeza de hotbar bindings) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _inventoryProvider?.Restore(saveData.Inventory);
+
+            // â”€â”€ Hotbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _providerRegistry.Restore("hotbar", saveData.Hotbar);
+
+            // â”€â”€ GrimÃ³rio (apÃ³s inventÃ¡rio â€” contrato de ordem da spec fable_07) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _spellbookProvider?.Restore(saveData.Spellbook);
+
+            // â”€â”€ Equipamento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (_equipmentProvider is EquipmentSectionProvider equipmentSectionProvider)
+                equipmentSectionProvider.Restore(saveData.Equipment, saveData.SchemaVersion);
+            else _equipmentProvider?.Restore(saveData.Equipment);
+            _equipmentDurabilityProvider?.Restore(saveData.EquipmentDurability);
+
+            // â”€â”€ ProgressÃ£o (antes de skill tree que depende do nÃ­vel) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _progressionProvider?.Restore(saveData.Progression);
+
+            // â”€â”€ Skills â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _activeSkillSlotsProvider?.Restore(saveData.ActiveSkillSlots);
+            _skillTreeProvider?.Restore(saveData.SkillTree);
+
+            // â”€â”€ Stamina / tempo de jogo / status effects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _staminaProvider?.Restore(saveData.Stamina);
+            _combatCapstoneProvider?.Restore(saveData.CombatCapstones);
+            _gameTimeProvider?.Restore(saveData.GameTime);
+            _playerStatusEffectsProvider?.Restore(saveData.PlayerStatusEffects);
+
+            // â”€â”€ Mana (via PlayerSaveData â€” o PlayerSectionProvider jÃ¡ restaura; nenhum passo extra)
+
+            // â”€â”€ Caverna â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _caveProvider?.Restore(saveData.Cave);
+            _caveRunProvider?.Restore(saveData.CaveRun);
+
+            // â”€â”€ Mundo / Farm â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _worldProvider?.Restore(saveData.World);
+            if (_farmProvider is FarmSectionProvider farmSectionProvider)
+                farmSectionProvider.Restore(saveData.Farm, saveData.SchemaVersion);
+            else _farmProvider?.Restore(saveData.Farm);
+
+            // â”€â”€ Economia / NPCs / Crafting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (saveData.Economy != null)
+            {
+                _economyProvider?.Restore(saveData.Economy);
+            }
+
+            _npcsProvider?.Restore(saveData.Npcs);
+            if (_craftingProvider is CraftingSectionProvider craftingSectionProvider)
+                craftingSectionProvider.Restore(saveData.Crafting, saveData.SchemaVersion);
+            else _craftingProvider?.Restore(saveData.Crafting);
+
+            // â”€â”€ BestiÃ¡rio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _bestiaryProvider?.Restore(saveData.Bestiary);
+
+            // â”€â”€ Fonte (antes de MainProgression que depende da seÃ§Ã£o recriada) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            if (saveData.Fonte != null)
+            {
+                _fonteProvider?.Restore(saveData.Fonte);
+
+                if (saveData.MainProgression != null)
+                {
+                    _mainProgressionProvider?.Restore(saveData.MainProgression);
+                }
+            }
+
+            // â”€â”€ DomÃ­nios globais aditivos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _dailyGoalsProvider?.Restore(saveData.DailyGoals);
+            _farmLotsProvider?.Restore(saveData.FarmLots);
+            _farmAnimalsProvider?.Restore(saveData.FarmAnimals);
+            _friendshipProvider?.Restore(saveData.Friendship);
+            if (_npcServicesProvider is NpcServicesSectionProvider npcServicesSectionProvider)
+                npcServicesSectionProvider.Restore(saveData.NpcServices, saveData.SchemaVersion);
+            else _npcServicesProvider?.Restore(saveData.NpcServices);
+
+            // â”€â”€ Morte / cadÃ¡ver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _deathProvider?.Restore(saveData.Death);
+
+            // â”€â”€ Quests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _questProvider?.Restore(saveData.Quests);
+
+            // â”€â”€ Onboarding hints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _onboardingHintsProvider?.Restore(saveData.OnboardingHints);
+
+            // â”€â”€ Tiles araveis (farm tile system — spec_farm_till_anywhere_tilemap) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            _farmTilesProvider?.Restore(saveData.FarmTiles);
+            }
+            finally
+            {
+                _isApplyingSaveData = false;
+            }
+        }
+
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Save infra (leitura, migraÃ§Ã£o, escrita segura)
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+        private void PublishSaveResult(bool wasSuccessful, string message)
+        {
+            GameEventBus.Publish(new GameSavedEvent(Slot, SaveFilePath, wasSuccessful, message));
+        }
+    }
+}

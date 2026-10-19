@@ -1,0 +1,782 @@
+{
+  "status": "OFFLINE_CANDIDATES_FOR_REVIEW",
+  "originalsUnchanged": {
+    "cow_keyart_v4_01.png": "738837d43d27f97f85de34275e35bad1953e503c2af434d09f3bbf51546b9838",
+    "sheep_keyart_v4_01.png": "01bbf4dd768431481de6692a64dc844a71688e9edc3b55a184d9bc8c92c1f732"
+  },
+  "sourceUse": "Existing cow/sheep opened as references; these are original layered drawings, not resized originals. Goat is distinct new art.",
+  "canvas": [
+    48,
+    48
+  ],
+  "sheet": [
+    912,
+    48
+  ],
+  "supportBottomLeft": [
+    24,
+    8
+  ],
+  "supportTopLeft": [
+    24,
+    40
+  ],
+  "targetPPU": 32,
+  "assets": [
+    {
+      "name": "cow_v19",
+      "sha256": "d6a5de990bce8f5dbe887b4cd71dbc9f93608b891ff9aedd14990cb218c04219",
+      "frames": [
+        {
+          "index": 0,
+          "alphaBoundsExclusive": [
+            14,
+            7,
+            35,
+            40
+          ],
+          "opaque": 484,
+          "partial": 0,
+          "durationMs": 400
+        },
+        {
+          "index": 1,
+          "alphaBoundsExclusive": [
+            14,
+            7,
+            35,
+            40
+          ],
+          "opaque": 484,
+          "partial": 0,
+          "durationMs": 400
+        },
+        {
+          "index": 2,
+          "alphaBoundsExclusive": [
+            14,
+            7,
+            35,
+            40
+          ],
+          "opaque": 478,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 3,
+          "alphaBoundsExclusive": [
+            14,
+            6,
+            35,
+            40
+          ],
+          "opaque": 486,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 4,
+          "alphaBoundsExclusive": [
+            14,
+            7,
+            35,
+            40
+          ],
+          "opaque": 478,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 5,
+          "alphaBoundsExclusive": [
+            14,
+            6,
+            35,
+            40
+          ],
+          "opaque": 486,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 6,
+          "alphaBoundsExclusive": [
+            14,
+            7,
+            35,
+            40
+          ],
+          "opaque": 491,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 7,
+          "alphaBoundsExclusive": [
+            14,
+            6,
+            35,
+            40
+          ],
+          "opaque": 499,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 8,
+          "alphaBoundsExclusive": [
+            14,
+            7,
+            35,
+            40
+          ],
+          "opaque": 491,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 9,
+          "alphaBoundsExclusive": [
+            14,
+            6,
+            35,
+            40
+          ],
+          "opaque": 499,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 10,
+          "alphaBoundsExclusive": [
+            5,
+            10,
+            46,
+            40
+          ],
+          "opaque": 599,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 11,
+          "alphaBoundsExclusive": [
+            5,
+            9,
+            46,
+            40
+          ],
+          "opaque": 607,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 12,
+          "alphaBoundsExclusive": [
+            5,
+            10,
+            46,
+            40
+          ],
+          "opaque": 591,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 13,
+          "alphaBoundsExclusive": [
+            5,
+            9,
+            46,
+            40
+          ],
+          "opaque": 601,
+          "partial": 0,
+          "durationMs": 180
+        },
+        {
+          "index": 14,
+          "alphaBoundsExclusive": [
+            5,
+            15,
+            46,
+            40
+          ],
+          "opaque": 588,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 15,
+          "alphaBoundsExclusive": [
+            5,
+            15,
+            46,
+            41
+          ],
+          "opaque": 578,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 16,
+          "alphaBoundsExclusive": [
+            5,
+            13,
+            46,
+            40
+          ],
+          "opaque": 585,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 17,
+          "alphaBoundsExclusive": [
+            9,
+            18,
+            46,
+            40
+          ],
+          "opaque": 397,
+          "partial": 0,
+          "durationMs": 650
+        },
+        {
+          "index": 18,
+          "alphaBoundsExclusive": [
+            9,
+            18,
+            46,
+            40
+          ],
+          "opaque": 397,
+          "partial": 0,
+          "durationMs": 650
+        }
+      ],
+      "standingOpaqueHeightsUnits": [
+        1.03125,
+        1.03125,
+        1.03125,
+        1.0625,
+        1.03125,
+        1.0625,
+        1.03125,
+        1.0625,
+        1.03125,
+        1.0625,
+        0.9375,
+        0.96875,
+        0.9375,
+        0.96875
+      ],
+      "layers": 3
+    },
+    {
+      "name": "sheep_v19",
+      "sha256": "ea68613bc74a98cf100046d7ec516392b1cf7d105c2497788d1721853b0f9c54",
+      "frames": [
+        {
+          "index": 0,
+          "alphaBoundsExclusive": [
+            12,
+            15,
+            37,
+            40
+          ],
+          "opaque": 393,
+          "partial": 0,
+          "durationMs": 400
+        },
+        {
+          "index": 1,
+          "alphaBoundsExclusive": [
+            12,
+            15,
+            37,
+            40
+          ],
+          "opaque": 393,
+          "partial": 0,
+          "durationMs": 400
+        },
+        {
+          "index": 2,
+          "alphaBoundsExclusive": [
+            12,
+            15,
+            37,
+            40
+          ],
+          "opaque": 389,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 3,
+          "alphaBoundsExclusive": [
+            12,
+            14,
+            37,
+            40
+          ],
+          "opaque": 396,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 4,
+          "alphaBoundsExclusive": [
+            12,
+            15,
+            37,
+            40
+          ],
+          "opaque": 389,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 5,
+          "alphaBoundsExclusive": [
+            12,
+            14,
+            37,
+            40
+          ],
+          "opaque": 396,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 6,
+          "alphaBoundsExclusive": [
+            12,
+            15,
+            37,
+            40
+          ],
+          "opaque": 389,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 7,
+          "alphaBoundsExclusive": [
+            12,
+            14,
+            37,
+            40
+          ],
+          "opaque": 396,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 8,
+          "alphaBoundsExclusive": [
+            12,
+            15,
+            37,
+            40
+          ],
+          "opaque": 389,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 9,
+          "alphaBoundsExclusive": [
+            12,
+            14,
+            37,
+            40
+          ],
+          "opaque": 396,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 10,
+          "alphaBoundsExclusive": [
+            11,
+            15,
+            43,
+            40
+          ],
+          "opaque": 487,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 11,
+          "alphaBoundsExclusive": [
+            11,
+            14,
+            43,
+            40
+          ],
+          "opaque": 495,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 12,
+          "alphaBoundsExclusive": [
+            11,
+            15,
+            43,
+            40
+          ],
+          "opaque": 482,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 13,
+          "alphaBoundsExclusive": [
+            11,
+            14,
+            43,
+            40
+          ],
+          "opaque": 491,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 14,
+          "alphaBoundsExclusive": [
+            11,
+            15,
+            43,
+            40
+          ],
+          "opaque": 498,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 15,
+          "alphaBoundsExclusive": [
+            11,
+            15,
+            43,
+            41
+          ],
+          "opaque": 491,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 16,
+          "alphaBoundsExclusive": [
+            11,
+            15,
+            43,
+            40
+          ],
+          "opaque": 490,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 17,
+          "alphaBoundsExclusive": [
+            11,
+            26,
+            43,
+            40
+          ],
+          "opaque": 277,
+          "partial": 0,
+          "durationMs": 650
+        },
+        {
+          "index": 18,
+          "alphaBoundsExclusive": [
+            11,
+            26,
+            43,
+            40
+          ],
+          "opaque": 277,
+          "partial": 0,
+          "durationMs": 650
+        }
+      ],
+      "standingOpaqueHeightsUnits": [
+        0.78125,
+        0.78125,
+        0.78125,
+        0.8125,
+        0.78125,
+        0.8125,
+        0.78125,
+        0.8125,
+        0.78125,
+        0.8125,
+        0.78125,
+        0.8125,
+        0.78125,
+        0.8125
+      ],
+      "layers": 3
+    },
+    {
+      "name": "goat_v19",
+      "sha256": "41150d6be1509ae56a293db4445077ee29050595d9220fc7ac120b9d9f4b0b6b",
+      "frames": [
+        {
+          "index": 0,
+          "alphaBoundsExclusive": [
+            16,
+            11,
+            33,
+            40
+          ],
+          "opaque": 273,
+          "partial": 0,
+          "durationMs": 400
+        },
+        {
+          "index": 1,
+          "alphaBoundsExclusive": [
+            16,
+            11,
+            33,
+            40
+          ],
+          "opaque": 273,
+          "partial": 0,
+          "durationMs": 400
+        },
+        {
+          "index": 2,
+          "alphaBoundsExclusive": [
+            16,
+            11,
+            33,
+            40
+          ],
+          "opaque": 269,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 3,
+          "alphaBoundsExclusive": [
+            16,
+            10,
+            33,
+            40
+          ],
+          "opaque": 276,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 4,
+          "alphaBoundsExclusive": [
+            16,
+            11,
+            33,
+            40
+          ],
+          "opaque": 269,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 5,
+          "alphaBoundsExclusive": [
+            16,
+            10,
+            33,
+            40
+          ],
+          "opaque": 276,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 6,
+          "alphaBoundsExclusive": [
+            16,
+            11,
+            33,
+            40
+          ],
+          "opaque": 269,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 7,
+          "alphaBoundsExclusive": [
+            16,
+            10,
+            33,
+            40
+          ],
+          "opaque": 276,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 8,
+          "alphaBoundsExclusive": [
+            16,
+            11,
+            33,
+            40
+          ],
+          "opaque": 269,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 9,
+          "alphaBoundsExclusive": [
+            16,
+            10,
+            33,
+            40
+          ],
+          "opaque": 276,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 10,
+          "alphaBoundsExclusive": [
+            9,
+            12,
+            42,
+            40
+          ],
+          "opaque": 361,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 11,
+          "alphaBoundsExclusive": [
+            9,
+            11,
+            42,
+            40
+          ],
+          "opaque": 368,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 12,
+          "alphaBoundsExclusive": [
+            9,
+            12,
+            42,
+            40
+          ],
+          "opaque": 353,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 13,
+          "alphaBoundsExclusive": [
+            9,
+            11,
+            42,
+            40
+          ],
+          "opaque": 362,
+          "partial": 0,
+          "durationMs": 160
+        },
+        {
+          "index": 14,
+          "alphaBoundsExclusive": [
+            9,
+            18,
+            42,
+            41
+          ],
+          "opaque": 349,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 15,
+          "alphaBoundsExclusive": [
+            9,
+            21,
+            43,
+            41
+          ],
+          "opaque": 321,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 16,
+          "alphaBoundsExclusive": [
+            9,
+            14,
+            42,
+            40
+          ],
+          "opaque": 353,
+          "partial": 0,
+          "durationMs": 220
+        },
+        {
+          "index": 17,
+          "alphaBoundsExclusive": [
+            12,
+            17,
+            42,
+            40
+          ],
+          "opaque": 280,
+          "partial": 0,
+          "durationMs": 650
+        },
+        {
+          "index": 18,
+          "alphaBoundsExclusive": [
+            12,
+            17,
+            42,
+            40
+          ],
+          "opaque": 280,
+          "partial": 0,
+          "durationMs": 650
+        }
+      ],
+      "standingOpaqueHeightsUnits": [
+        0.90625,
+        0.90625,
+        0.90625,
+        0.9375,
+        0.90625,
+        0.9375,
+        0.90625,
+        0.9375,
+        0.90625,
+        0.9375,
+        0.875,
+        0.90625,
+        0.875,
+        0.90625
+      ],
+      "layers": 3
+    }
+  ],
+  "unity": "NOT RUN: root owns integration",
+  "continuousPlayback": "NOT RUN by art worker; timed GIFs exported, poses/contact/static progression reviewed"
+}

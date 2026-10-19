@@ -1,0 +1,250 @@
+using System.Collections.Generic;
+
+namespace CindarsHope.Localization
+{
+    /// <summary>
+    /// Lightweight id -> string table for quest/dialogue text authored from phase P4 onward
+    /// (ADR-0012 — Localization via String Table from Phase P4). PT-BR is the single authoring
+    /// language populated in v1; a second language can later be added by populating this table,
+    /// not by rewriting call sites.
+    ///
+    /// Pure data, no framework, no runtime locale switch, no .po/.resx, no Unity references and
+    /// no save persistence (the table is a data resource, not game state). The static/lazy/TryGet
+    /// shape intentionally mirrors <see cref="CindarsHope.NPC.NpcDialogueSetRegistry"/> /
+    /// TownNpcDialogueLibrary instead of introducing a new catalogue pattern.
+    ///
+    /// IMPORTANT (ADR-0012 "Registered Debt"): pre-P4 hardcoded text (TownNpcDialogueLibrary,
+    /// DialogueNode.Text, DialogueTreeSO Nodes[].Text) is NOT migrated here. Only NEW quest/dialogue
+    /// text from P4 onward declares keys in this table.
+    ///
+    /// Id convention (PROPOSAL to calibrate with F67 — fable_67 governance; lookup is agnostic to
+    /// the id format, so this convention does not gate resolution):
+    ///   {domain}.{spec_or_npc}.{slot}    e.g. "quest.first_supplies.title",
+    ///                                          "quest.first_supplies.desc",
+    ///                                          "dialogue.pip.greeting"
+    ///   - domain prefix: "quest." or "dialogue." (lowercase)
+    ///   - dot separator, snake_case segments, no spaces.
+    /// A future text spec (F35/F36/F70) DECLARES its keys by adding entries to <see cref="SeedEntries"/>
+    /// (or a partial of this class) using this convention.
+    /// </summary>
+    public static class LocalizationStringTable
+    {
+        /// <summary>
+        /// Stable id -> PT-BR string entry. Simple types only (no Unity references), so the entry
+        /// can implement <see cref="CindarsHope.Core.Data.IIdentifiedData"/> for id-keyed reuse.
+        /// </summary>
+        public sealed class LocalizationEntry : CindarsHope.Core.Data.IIdentifiedData
+        {
+            private readonly string _id;
+            private readonly string _value;
+
+            public LocalizationEntry(string id, string value)
+            {
+                _id = id;
+                _value = value;
+            }
+
+            public string Id => _id;
+            public string Value => _value;
+        }
+
+        // Default authoring language. Single locale in v1 (ADR-0012). No runtime locale switch.
+        public const string DefaultLanguage = "pt-BR";
+
+        private static Dictionary<string, string> s_entries;
+
+        private static Dictionary<string, string> Entries
+        {
+            get
+            {
+                if (s_entries == null)
+                {
+                    s_entries = new Dictionary<string, string>();
+                    foreach (var entry in SeedEntries())
+                    {
+                        if (entry == null || string.IsNullOrEmpty(entry.Id))
+                        {
+                            continue;
+                        }
+
+                        // Last writer wins; deterministic given a fixed seed order.
+                        s_entries[entry.Id] = entry.Value;
+                    }
+                }
+
+                return s_entries;
+            }
+        }
+
+        /// <summary>
+        /// Seed entries for the convention. v1 ships only a tiny set of demonstration keys so the
+        /// CONTRACT and discipline are exercised; production text is populated by the consumer specs
+        /// (F35/F36/F70). These demo keys document the id convention in code.
+        /// </summary>
+        private static IEnumerable<LocalizationEntry> SeedEntries()
+        {
+            yield return new LocalizationEntry("ui.inventory.selected", "Selecionado");
+            yield return new LocalizationEntry("ui.inventory.use_unavailable", "Este item não tem uma ação de uso disponível neste menu.");
+            yield return new LocalizationEntry("ui.inventory.action_drop", "Largar");
+            yield return new LocalizationEntry("ui.inventory.action_destroy", "Destruir");
+            yield return new LocalizationEntry("ui.inventory.action_salvage", "Desmontar");
+            yield return new LocalizationEntry("ui.inventory.action_split", "Dividir pilha");
+            yield return new LocalizationEntry("ui.inventory.action_cancel", "Voltar");
+            yield return new LocalizationEntry("ui.inventory.action_mover/mesclar", "Mover / mesclar");
+            yield return new LocalizationEntry("ui.equipment.slot_righthand", "Mão direita");
+            yield return new LocalizationEntry("ui.equipment.slot_lefthand", "Mão esquerda");
+            yield return new LocalizationEntry("ui.equipment.slot_chest", "Armadura");
+            yield return new LocalizationEntry("ui.equipment.slot_accessory", "Acessório");
+            yield return new LocalizationEntry("ui.skills.title", "Habilidades");
+            yield return new LocalizationEntry("ui.skills.slots", "Habilidades equipadas:");
+            yield return new LocalizationEntry("ui.skills.prerequisite", "Habilidade prévia");
+            yield return new LocalizationEntry("ui.skills.assigned", "Habilidade equipada");
+            yield return new LocalizationEntry("ui.quests.empty", "Nenhuma missão ativa. Converse com os moradores para descobrir oportunidades.");
+            yield return new LocalizationEntry("ui.item.unknown", "Item desconhecido");
+            yield return new LocalizationEntry("ui.crafting.title", "Produção");
+            yield return new LocalizationEntry("ui.crafting.controls", "W/S: receita · A/D: ação · E/Enter: confirmar · Esc: fechar");
+            yield return new LocalizationEntry("ui.crafting.empty", "Nenhuma receita disponível nesta estação.");
+            yield return new LocalizationEntry("ui.crafting.ingredients", "Materiais: {0}");
+            yield return new LocalizationEntry("ui.crafting.remaining", "Em produção: {0:0.0}s restantes");
+            yield return new LocalizationEntry("ui.crafting.ready", "Produção pronta para recolher.");
+            yield return new LocalizationEntry("ui.crafting.idle", "Estação disponível.");
+            yield return new LocalizationEntry("ui.crafting.action_craft", "Produzir");
+            yield return new LocalizationEntry("ui.crafting.action_cancel", "Cancelar");
+            yield return new LocalizationEntry("ui.crafting.action_collect", "Recolher");
+            yield return new LocalizationEntry("ui.crafting.action_close", "Fechar");
+            yield return new LocalizationEntry("ui.crafting.inventory_full", "Sem espaço no inventário. Libere espaço e tente novamente.");
+            yield return new LocalizationEntry("ui.crafting.stamina_missing", "Energia insuficiente para produzir.");
+            yield return new LocalizationEntry("ui.crafting.busy", "A estação já tem uma produção em andamento ou pronta para recolher.");
+            yield return new LocalizationEntry("ui.settings.master", "Volume geral");
+            yield return new LocalizationEntry("ui.settings.music", "Música");
+            yield return new LocalizationEntry("ui.settings.sfx", "Efeitos");
+            yield return new LocalizationEntry("ui.settings.fullscreen", "Alternar tela cheia");
+            yield return new LocalizationEntry("ui.pause.title", "Jogo pausado");
+            yield return new LocalizationEntry("ui.pause.hint", "O mundo aguarda você.");
+            yield return new LocalizationEntry("ui.pause.resume", "Retomar (Esc)");
+            yield return new LocalizationEntry("interact.chest.unavailable", "Baú — armazenamento indisponível");
+            yield return new LocalizationEntry("ui.equipment.stats_unavailable", "Resumo dos bônus indisponível neste painel.");
+            yield return new LocalizationEntry("ui.crafting.created", "Produzido: {0} ×{1}.");
+            yield return new LocalizationEntry("ui.crafting.started", "Produção iniciada: {0}.");
+            yield return new LocalizationEntry("ui.crafting.cancelled", "Produção cancelada; ingredientes devolvidos.");
+            yield return new LocalizationEntry("ui.crafting.collected", "Produção recolhida.");
+            yield return new LocalizationEntry("ui.crafting.cancel_unavailable", "Não há produção em andamento para cancelar.");
+            yield return new LocalizationEntry("ui.crafting.collect_unavailable", "Ainda não há produção pronta para recolher.");
+            yield return new LocalizationEntry("ui.crafting.material_missing", "Faltam materiais para esta receita.");
+            yield return new LocalizationEntry("ui.town_interior.loading", "Entrando…");
+            yield return new LocalizationEntry("ui.town_interior.visit_failed", "Não foi possível concluir a passagem. Afaste-se da porta e tente novamente.");
+            yield return new LocalizationEntry("ui.town_interior.recovery_blocked", "Não há uma posição livre para concluir a passagem. Aguarde e tente novamente.");
+            yield return new LocalizationEntry("ui.town_interior.retry", "Tentar novamente");
+            // Convention demonstration keys (NOT production quest content — that comes from F35/F36/F70).
+            yield return new LocalizationEntry("quest.sample.title", "Missao de Exemplo");
+            yield return new LocalizationEntry("quest.sample.desc", "Descricao de exemplo da missao.");
+            yield return new LocalizationEntry("dialogue.sample.greeting", "Ola, viajante.");
+            // fable_26: rotulo da linha de cabecalho do Conversar ("Amizade: nivel N"). Texto novo
+            // voltado ao jogador declarado aqui via LocalizationService (ADR-0012 / decisao 4.7).
+            yield return new LocalizationEntry("ui.friendship.level_label", "Amizade: nivel");
+            // fable_57: textos novos voltados ao jogador (toast de aniversario + label da diaria da
+            // estalagem) declarados aqui via LocalizationService (ADR-0012). {0} = nome do NPC.
+            yield return new LocalizationEntry("ui.birthday.gift_toast", "Hoje e aniversario de {0}!");
+            yield return new LocalizationEntry("ui.inn.sleep_prompt", "Dormir na estalagem");
+            // fable_39: titulos da CLASSE INFERIDA (Q9.1) — texto novo voltado ao jogador declarado
+            // aqui via LocalizationService (ADR-0012). 5 titulos puros + os 20 compostos hibridos
+            // (dominante_secundario, da tabela 5x4 do doc de decisoes). "Colono" = sem dominante.
+            yield return new LocalizationEntry("ui.class.colono", "Colono");
+            yield return new LocalizationEntry("ui.class.warrior", "Lamina de Cindar");
+            yield return new LocalizationEntry("ui.class.hunter", "Olho da Mata");
+            yield return new LocalizationEntry("ui.class.mystic", "Tecelao");
+            yield return new LocalizationEntry("ui.class.farmer", "Mao da Terra");
+            yield return new LocalizationEntry("ui.class.bond", "Voz do Vale");
+            // Hibridos: dominante = Guerreiro (warrior / Lamina)
+            yield return new LocalizationEntry("ui.class.warrior_hunter", "Lamina Montesa");
+            yield return new LocalizationEntry("ui.class.warrior_mystic", "Lamina Tecela");
+            yield return new LocalizationEntry("ui.class.warrior_farmer", "Lamina da Terra");
+            yield return new LocalizationEntry("ui.class.warrior_bond", "Lamina do Vale");
+            // Hibridos: dominante = Cacador (hunter / Olho)
+            yield return new LocalizationEntry("ui.class.hunter_warrior", "Olho de Lamina");
+            yield return new LocalizationEntry("ui.class.hunter_mystic", "Olho Tecelao");
+            yield return new LocalizationEntry("ui.class.hunter_farmer", "Olho da Terra");
+            yield return new LocalizationEntry("ui.class.hunter_bond", "Olho do Vale");
+            // Hibridos: dominante = Mistico (mystic / Tecelao)
+            yield return new LocalizationEntry("ui.class.mystic_warrior", "Tecelao de Lamina");
+            yield return new LocalizationEntry("ui.class.mystic_hunter", "Tecelao Monteso");
+            yield return new LocalizationEntry("ui.class.mystic_farmer", "Tecelao da Terra");
+            yield return new LocalizationEntry("ui.class.mystic_bond", "Tecelao do Vale");
+            // Hibridos: dominante = Lavrador (farmer / Mao da Terra)
+            yield return new LocalizationEntry("ui.class.farmer_warrior", "Mao de Lamina");
+            yield return new LocalizationEntry("ui.class.farmer_hunter", "Mao Montesa");
+            yield return new LocalizationEntry("ui.class.farmer_mystic", "Mao Tecela");
+            yield return new LocalizationEntry("ui.class.farmer_bond", "Mao do Vale");
+            // Hibridos: dominante = Vinculo (bond / Voz do Vale)
+            yield return new LocalizationEntry("ui.class.bond_warrior", "Voz de Lamina");
+            yield return new LocalizationEntry("ui.class.bond_hunter", "Voz Montesa");
+            yield return new LocalizationEntry("ui.class.bond_mystic", "Voz Tecela");
+            yield return new LocalizationEntry("ui.class.bond_farmer", "Voz da Terra");
+            // fable_51: textos novos voltados ao jogador para o quadro de contratos do Zrix
+            // (entrada da caverna). Declarados aqui via LocalizationService (ADR-0012 / fable_73).
+            yield return new LocalizationEntry("interact.zrix_board.prompt", "Ver contratos do Zrix");
+            yield return new LocalizationEntry("contract.cave.milestone.title", "Primeiro a Profundidade");
+            yield return new LocalizationEntry("contract.cave.milestone.desc", "Zrix paga bem a quem desce mais fundo do que ninguem.");
+            yield return new LocalizationEntry("contract.cave.boss_rematch.title", "Revanche de Portao");
+            yield return new LocalizationEntry("contract.cave.boss_rematch.desc", "Volte e derrube de novo um chefe ja batido. A essencia e garantida.");
+            yield return new LocalizationEntry("contract.cave.no_hit.title", "Sem Um Arranhao");
+            yield return new LocalizationEntry("contract.cave.no_hit.desc", "Limpe um nivel inteiro sem tomar dano. Prove sua maestria.");
+        }
+
+        /// <summary>Number of resolvable keys currently in the table.</summary>
+        public static int Count => Entries.Count;
+
+        /// <summary>True when the table has an entry for <paramref name="id"/>.</summary>
+        public static bool Contains(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+
+            return Entries.ContainsKey(id);
+        }
+
+        /// <summary>
+        /// Looks up the PT-BR string for <paramref name="id"/>. Returns true and the stored value
+        /// when present; false otherwise (value is left as null for the caller to apply its fallback).
+        /// </summary>
+        public static bool TryGetValue(string id, out string value)
+        {
+            value = null;
+            if (string.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+
+            return Entries.TryGetValue(id, out value);
+        }
+
+        /// <summary>
+        /// EditMode-only helper: replace the active table with an explicit map (no scene, no asset).
+        /// Pass null to reset back to the seeded table on next access. Kept minimal and side-effect
+        /// free for deterministic tests (mirrors the lazy-init reset idiom).
+        /// </summary>
+        public static void OverrideForTests(IDictionary<string, string> entries)
+        {
+            if (entries == null)
+            {
+                s_entries = null;
+                return;
+            }
+
+            var replacement = new Dictionary<string, string>();
+            foreach (var pair in entries)
+            {
+                if (string.IsNullOrEmpty(pair.Key))
+                {
+                    continue;
+                }
+
+                replacement[pair.Key] = pair.Value;
+            }
+
+            s_entries = replacement;
+        }
+    }
+}

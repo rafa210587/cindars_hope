@@ -1,0 +1,66 @@
+{
+  "images": 10,
+  "identical": 0,
+  "files": [
+    {
+      "name": "farm_capture_animals.png",
+      "before": "B265EC6530393C64C46C12C3E5A10951EC28E33084A930B476F97183EDBB993C",
+      "after": "E9373D351D077DA33C7E134C046A95D6B849AD310AA6F46168FB7901D24FA0BB",
+      "same": false
+    },
+    {
+      "name": "farm_capture_closeup.png",
+      "before": "97B870C60C8CD2D5972756B603258806EC79CF8E4EB121BB6F4BAA89E9F2AF68",
+      "after": "747FB3CE6F9ACF5964BB08BFBE3560EB0F3CBD27F96B447AEC332746B4D84A32",
+      "same": false
+    },
+    {
+      "name": "farm_capture_keyart_composition.png",
+      "before": "C992B82275725C977E8DC05B5F3061B02E4AD867A566C462A189A2E2922546D2",
+      "after": "898178B8DB4A14D64926C7BD5E5CC5CF07FF245465DC82631860587D360B2C17",
+      "same": false
+    },
+    {
+      "name": "farm_capture_region_animals.png",
+      "before": "B265EC6530393C64C46C12C3E5A10951EC28E33084A930B476F97183EDBB993C",
+      "after": "E9373D351D077DA33C7E134C046A95D6B849AD310AA6F46168FB7901D24FA0BB",
+      "same": false
+    },
+    {
+      "name": "farm_capture_region_cultivation.png",
+      "before": "85DBAB9FD2F688F65ECB0E9BF3401B8E81E65E5D9B48F8D0B3F0A3D2CABF4312",
+      "after": "97EEDBDD6658E2A0C2AA63D2D1D802468DB9205FA989C8770D0010DA1DFB918C",
+      "same": false
+    },
+    {
+      "name": "farm_capture_region_forest.png",
+      "before": "CA6373661C7F19A67DD9B17643A6C0AD2A7F994E7ACB2DCD991BCE3C3395FC1C",
+      "after": "2C1706269D7C1FCD6F3B5004EC1F06A306BC895C1A99AC72A67E103CE2E06820",
+      "same": false
+    },
+    {
+      "name": "farm_capture_region_homestead.png",
+      "before": "8CACA6FB40BC6266FBF32B6682AC3C67EC07AE387DD0E476F713C8F393A4DBC9",
+      "after": "F46477495D62862FE62BE9EFCCB3233CF6EC597B0EF172788404FDB77563F057",
+      "same": false
+    },
+    {
+      "name": "farm_capture_region_mountain.png",
+      "before": "5BE424187B0D8500DB3C364BC7526623A24652A0A94A6BA838DF939AFB9FD9CF",
+      "after": "1CD7FA8D4E0C51AD3C5AAE9FA499C5AB906648D806C98DE8B8A5020F0F8EA7FE",
+      "same": false
+    },
+    {
+      "name": "farm_capture_region_water_bridge.png",
+      "before": "702F5A69A895BEB0D00EDEA45222774E6FAB8039AE4F41DD2CD8E43A2A8CEB26",
+      "after": "18671E395E4C14221793473ADD3848E98D6BD37E2282B91510523DEBE7F59DAC",
+      "same": false
+    },
+    {
+      "name": "farm_capture.png",
+      "before": "2F489627E7E31D1326E56C5B628F6069307F4FA26289D69B52394C1F9065A9E2",
+      "after": "803B1D287C82AB549DFCD0658012C10E51B6AA4BA1C9F173CA9D1A4748753AE0",
+      "same": false
+    }
+  ]
+}

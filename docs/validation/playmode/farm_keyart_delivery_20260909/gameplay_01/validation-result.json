@@ -1,0 +1,11 @@
+{
+  "status": "FAIL",
+  "views": 8,
+  "runtimeErrors": 0,
+  "sceneUnchanged": true,
+  "saveHashesBefore": [],
+  "saveHashesAfter": [],
+  "failure": "Physical route proof failed or absent; inspect physicalRoutes.",
+  "physicalProbeActuallyExecuted": false,
+  "reason": "Log has no Farm physical routes marker; Evidence fields default after JsonUtility rehydration prevented null guard."
+}

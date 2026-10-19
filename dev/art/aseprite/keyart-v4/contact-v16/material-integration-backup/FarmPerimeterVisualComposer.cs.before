@@ -1,0 +1,371 @@
+using System;
+using System.Collections.Generic;
+using CindarsHope.Editor.Validation;
+using CindarsHope.Farm;
+using CindarsHope.Farm.Scene;
+using UnityEngine;
+
+namespace CindarsHope.Editor.Art
+{
+    /// <summary>
+    /// Materializes the permanent enclosing forest from the shared clearing boundary.
+    /// Rock and undergrowth bases support the solid band; trees never become resource nodes.
+    /// </summary>
+    public static class FarmPerimeterVisualComposer
+    {
+        // Authored feet and visible heights: interrupted groups, never an evenly spaced stone row.
+        private static readonly Vector3[] BoulderMasses =
+        {
+            new Vector3(-35.7f,-18.8f,4.8f), new Vector3(-30.8f,-29.5f,6.6f),
+            new Vector3(-27.1f,-30.2f,3.1f), new Vector3(-12.8f,-32.4f,6.7f),
+            new Vector3(3.2f,-26.7f,6.8f), new Vector3(6.8f,-30.4f,3.7f),
+            new Vector3(28.8f,-23.8f,6.3f), new Vector3(32.1f,-28.4f,4.3f),
+            new Vector3(36.7f,-10.2f,5.6f), new Vector3(-38.2f,9.4f,4.7f),
+            new Vector3(37.5f,15.6f,6.2f), new Vector3(-35.8f,2.5f,3.8f)
+        };
+        private static readonly Rect TownCanopyClearance = Rect.MinMaxRect(30f, 1f, 46f, 5.5f);
+        private static readonly Vector2[] SouthernUnderstoryCenters =
+        {
+            new Vector2(-24.1f,-26.7f), new Vector2(-16.8f,-28.5f),
+            new Vector2(-6.6f,-27.2f), new Vector2(11.7f,-26.2f),
+            new Vector2(21.6f,-25.8f), new Vector2(34.2f,-25.5f)
+        };
+
+        public static void Create(Transform parent)
+        {
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            var root = new GameObject("FarmPerimeterVisuals");
+            root.transform.SetParent(parent, false);
+            var pine = WorldSpriteLibrary.Tree("tree_pine_keyart_v4");
+            var oak = WorldSpriteLibrary.Foliage("tree_keyart_v4_01");
+            var measured = new Dictionary<Sprite, Bounds>();
+
+            CreateForestFloor(root.transform);
+            CreateOutskirts(root.transform, pine, oak, measured);
+            CreateDeepForest(root.transform, pine, oak, measured);
+            var boulder = WorldSpriteLibrary.Prop("boulder_keyart_v4_01");
+            for (var i = 0; i < BoulderMasses.Length; i++)
+                Place(root.transform, "BoulderMass_" + i, boulder, BoulderMasses[i], BoulderHeight(BoulderMasses[i]), measured, false);
+            CreateSouthernUnderstory(root.transform, measured);
+
+            var accents = new[] { new Vector2(-30f, -18f), new Vector2(-22f, -14f), new Vector2(9f, 12.8f),
+                new Vector2(19f, -20f), new Vector2(29.8f, -16f) };
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            for (var i = 0; i < accents.Length; i++)
+            {
+                var size = Size(bush, 0.45f, measured);
+                var bounds = new Rect(accents[i].x - size.x * 0.5f, accents[i].y, size.x, size.y);
+                if (IsReserved(bounds)) continue;
+                Place(root.transform, "LowAccent_" + i, bush, accents[i], 0.45f, measured, true);
+            }
+        }
+
+        private const float ForestLayerSpacing = 1.5f;
+        private const float BoundaryBaseSpacing = 0.95f;
+        // Reviewed overview density: preserve the source's 55px bush and 26px flowers.
+        private const float KeyartPixelsPerWorldUnit = 18.285714f;
+        private const float NativeUnderstoryHeight = 55f / KeyartPixelsPerWorldUnit;
+        private const float NativeFlowerHeight = 26f / KeyartPixelsPerWorldUnit;
+
+        private static void CreateOutskirts(Transform parent, Sprite pine, Sprite oak, Dictionary<Sprite, Bounds> measured)
+        {
+            var boundary = FarmEnclosedValleyBoundaryContract.InnerBoundary;
+            var rock = WorldSpriteLibrary.Prop("rock_ore_0");
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            for (var segment = 0; segment < boundary.Count; segment++)
+            {
+                var a = boundary[segment];
+                var b = boundary[(segment + 1) % boundary.Count];
+                var band = FarmEnclosedValleyBoundaryContract.GetSolidBand(segment);
+                var gate = FarmEnclosedValleyBoundaryContract.IsTownGateSegment(segment);
+                var solid = new GameObject(gate ? "NaturalBoundary_TownGate" : "NaturalBoundary_" + segment);
+                solid.transform.SetParent(parent, false);
+                var collider = solid.AddComponent<PolygonCollider2D>();
+                collider.SetPath(0, band);
+                if (gate)
+                {
+                    FarmSettlementVisualComposer.CreateFenceRun(parent, FarmEntrancePhysicsContract.TownGateVisualRun);
+                    continue;
+                }
+                var northEscarpment = FarmEnclosedValleyBoundaryContract.IsNorthEscarpmentSegment(segment);
+                var baseSpacing = northEscarpment ? 1.35f : BoundaryBaseSpacing;
+                var samples = Mathf.CeilToInt(Vector2.Distance(a, b) / baseSpacing);
+                // The cliff art already exposes the northern collision foot. A second accent chain
+                // reads as a man-made wall, so only forest edges and the actual town gate get bases.
+                if (!northEscarpment)
+                for (var step = 0; step <= samples; step++)
+                {
+                    var point = Vector2.Lerp(a, b, step / (float)samples);
+                    var outward = point.normalized;
+                    // The forest edge must explain collision without reading as a constructed stone wall.
+                    // North already has the cliff face, so its accents are wider-spaced. The gate remains fenced.
+                    var variation = Variation(segment * 17 + step);
+                    var useRock = variation > (northEscarpment ? 0.48f : 0.82f);
+                    var baseSprite = useRock ? rock : bush;
+                    var baseKind = useRock ? "Rock" : "Undergrowth";
+                    var height = 0.8f + variation * 0.65f;
+                    if (!useRock && point.y < -18f)
+                    {
+                        // Unequal pairs and singletons, with breaks for exposed roots/stone.
+                        // Enlarging every old 0.95u sample would create a continuous hedge.
+                        var cluster = (segment * 3 + step) % 7;
+                        if (cluster != 0 && cluster != 1 && cluster != 4) continue;
+                        var tangent = (b - a).normalized;
+                        var foot = point + outward * (0.35f + variation * 0.6f)
+                            + tangent * (Variation(step * 11 + segment) - 0.5f) * 0.5f;
+                        TryUnderstory(parent, "BoundaryUndergrowth_" + segment + "_" + step,
+                            bush, foot, NativeUnderstoryHeight * (0.8f + variation * 0.2f), measured, true);
+                        continue;
+                    }
+                    Place(parent, "Boundary" + baseKind + "_" + segment + "_" + step,
+                        baseSprite,
+                        point + outward * 0.2f - Vector2.up * 0.18f, height, measured, false);
+                }
+                var trees = Mathf.CeilToInt(Vector2.Distance(a, b) / 2.1f);
+                for (var layer = 0; layer < (northEscarpment ? 3 : 5); layer++)
+                for (var step = 0; step < trees; step++)
+                {
+                    if (northEscarpment && (segment + step + layer) % 3 == 1) continue;
+                    var t = (step + 0.25f + Variation(segment * 31 + layer * 7 + step) * 0.5f) / trees;
+                    var point = Vector2.Lerp(a, b, t);
+                    var outward = point.normalized;
+                    var foot = point + outward * (0.9f + layer * ForestLayerSpacing);
+                    // North trees live on the plateau behind the cliff, not on its front face.
+                    if (northEscarpment) foot.y = point.y + 2.8f + layer * 1.1f;
+                    var index = segment * 101 + layer * 13 + step;
+                    var sprite = (index * 7 + segment) % 10 < 6 ? pine : oak;
+                    var height = northEscarpment ? 2.8f + Variation(index * 3) * 1.5f : 3.6f + Variation(index * 3) * 1.5f;
+                    if (foot.y < -18f)
+                    {
+                        if (InSouthernUnderstory(foot)) continue;
+                        var group = Mathf.FloorToInt((foot.x + 42f) / 5.8f);
+                        sprite = (index + group * 3) % 10 < 4 ? pine : oak;
+                        height = sprite == pine ? 3f + Variation(index * 3) * 1.8f
+                            : 2.9f + Variation(group * 7 + index) * 1.3f;
+                    }
+                    var size = Size(sprite, height, measured);
+                    var canopy = new Rect(foot.x - size.x * 0.5f, foot.y, size.x, size.y);
+                    if (CanopyHidesBoulderCore(foot, canopy) || canopy.Overlaps(TownCanopyClearance) ||
+                        !FarmDecorationPlanner.IsTreeCanopyClearOfFountain(foot, size)) continue;
+                    Place(parent, "Forest_" + segment + "_" + layer + "_" + step,
+                        sprite, foot, height, measured, false);
+                }
+            }
+        }
+        private static bool CanopyHidesBoulderCore(Vector2 treeFoot, Rect canopy)
+        {
+            for (var i = 0; i < BoulderMasses.Length; i++)
+            {
+                var rock = BoulderMasses[i];
+                var height = BoulderHeight(rock);
+                // Trees may overlap a rock's shoulders and grow behind it. Only its narrow front
+                // sightline is protected; reserving the entire rock rectangle created bare clearances.
+                if (treeFoot.y < rock.y && Mathf.Abs(treeFoot.x - rock.x) < height * 0.18f &&
+                    canopy.Contains(new Vector2(rock.x, rock.y + height * 0.55f))) return true;
+            }
+            return false;
+        }
+
+        private static void CreateDeepForest(Transform parent, Sprite pine, Sprite oak, Dictionary<Sprite, Bounds> measured)
+        {
+            // Fill the visible exterior beyond the collision band. These are scenery renderers only;
+            // the existing edge and town transition still exclusively define traversable space.
+            var boundary = FarmEnclosedValleyBoundaryContract.InnerBoundary;
+            for (var row = 0; row < 31; row++)
+            for (var column = 0; column < 43; column++)
+            {
+                var index = row * 47 + column;
+                var foot = new Vector2(-49f + column * 2.35f + (row % 2) * 1.15f,
+                    -40f + row * 2.35f);
+                foot += new Vector2(Variation(index) - 0.5f, Variation(index * 3) - 0.5f) * 0.85f;
+                if (FarmEnclosedValleyBoundaryContract.ContainsClearing(foot)) continue;
+                var distance = float.MaxValue;
+                for (var edge = 0; edge < boundary.Count; edge++)
+                {
+                    var a = boundary[edge];
+                    var delta = boundary[(edge + 1) % boundary.Count] - a;
+                    var t = Mathf.Clamp01(Vector2.Dot(foot - a, delta) / delta.sqrMagnitude);
+                    distance = Mathf.Min(distance, Vector2.Distance(foot, a + delta * t));
+                }
+                if (distance < 5.4f) continue;
+                var sprite = (index * 7 + row / 3) % 10 < 6 ? pine : oak;
+                var height = 3.5f + Variation(index * 7) * 1.5f;
+                if (foot.y < -18f)
+                {
+                    if (InSouthernUnderstory(foot)) continue;
+                    var group = Mathf.FloorToInt((foot.x + 42f) / 6.2f);
+                    sprite = (index + group * 3) % 10 < 4 ? pine : oak;
+                    height = sprite == pine ? 2.8f + Variation(index * 7) * 1.7f
+                        : 3f + Variation(index + group * 5) * 1.2f;
+                }
+                var size = Size(sprite, height, measured);
+                var canopy = new Rect(foot.x - size.x * 0.5f, foot.y, size.x, size.y);
+                if (canopy.Overlaps(TownCanopyClearance) || CanopyHidesBoulderCore(foot, canopy)) continue;
+                Place(parent, "DeepForest_" + row + "_" + column, sprite, foot, height, measured, false);
+            }
+        }
+
+        private static float BoulderHeight(Vector3 mass) => mass.z * (mass.y < -18f ? 0.8f : 1f);
+
+        private static bool InSouthernUnderstory(Vector2 foot)
+        {
+            foreach (var center in SouthernUnderstoryCenters)
+            {
+                var offset = foot - center;
+                if (offset.x * offset.x / 6.25f + offset.y * offset.y / 3.24f < 1f) return true;
+            }
+            return false;
+        }
+
+        private static void CreateSouthernUnderstory(Transform parent, Dictionary<Sprite, Bounds> measured)
+        {
+            var bush = WorldSpriteLibrary.Foliage("undergrowth_keyart_v4");
+            var rock = WorldSpriteLibrary.Prop("boulder_keyart_v4_01");
+            var flowers = WorldSpriteLibrary.Foliage("wildflowers_keyart_v4");
+            for (var group = 0; group < SouthernUnderstoryCenters.Length; group++)
+            {
+                var center = SouthernUnderstoryCenters[group];
+                var side = group % 2 == 0 ? 1f : -1f;
+                // Keep the six existing canopy gaps. Taller source-sized low growth forms
+                // asymmetric islands within them, with rock and flower shoulders exposed.
+                // Ground sorting keeps these plants below every existing World canopy.
+                TryUnderstory(parent, "SouthUnderstory_Bush_" + group, bush,
+                    center + new Vector2(-0.65f * side, 0.1f + group % 3 * 0.16f),
+                    NativeUnderstoryHeight * (0.86f + group % 3 * 0.07f), measured, true);
+                if (group != 1 && group != 4)
+                    TryUnderstory(parent, "SouthUnderstory_Berry_" + group, bush,
+                        center + new Vector2(0.95f * side, -0.35f),
+                        NativeUnderstoryHeight * (0.66f + group % 2 * 0.11f), measured, true);
+                TryUnderstory(parent, "SouthUnderstory_Rock_" + group, rock,
+                    center + new Vector2(0.9f * side, -0.7f - group % 2 * 0.2f),
+                    1.4f + group % 3 * 0.3f, measured, false);
+                for (var flower = 0; flower < 1 + group % 2; flower++)
+                    TryUnderstory(parent, "SouthUnderstory_Flowers_" + group + "_" + flower, flowers,
+                        center + new Vector2((flower == 0 ? -1.4f : 1.5f) * side,
+                            flower == 0 ? -0.95f : 0.55f),
+                        NativeFlowerHeight * (0.8f + (group + flower) % 3 * 0.1f), measured, true);
+            }
+        }
+
+        private static void TryUnderstory(Transform parent, string name, Sprite sprite, Vector2 foot,
+            float height, Dictionary<Sprite, Bounds> measured, bool groundCover)
+        {
+            var bounds = Measure(sprite, measured);
+            var scale = height / bounds.size.y;
+            var support = FarmSettlementVisualComposer.TryGetKeyartPlantGeometry(sprite, out _, out var plantSupport)
+                ? plantSupport : new Vector2(bounds.center.x, bounds.min.y);
+            // Account for the asymmetric source support, rather than transparent canvas size.
+            var minimum = foot + ((Vector2)bounds.min - support) * scale - Vector2.one * 0.08f;
+            var area = new Rect(minimum, (Vector2)bounds.size * scale + Vector2.one * 0.16f);
+            if (IsReserved(area) || area.Overlaps(TownCanopyClearance)) return;
+            if (!groundCover && CanopyHidesBoulderCore(foot, area)) return;
+            Place(parent, name, sprite, foot, height, measured, groundCover);
+        }
+
+        private static void CreateForestFloor(Transform parent)
+        {
+            // Shade belongs to the enclosed woodland floor, not a camera/global color filter.
+            // One non-colliding Tilemap keeps gaps between smaller crowns dark without more trees.
+            // The detailed FarmGround already extends under the forest. These cells supply
+            // transparent shade only, preserving that material's native pixel density below.
+            var sprite = WorldSpriteLibrary.Ground("ground_grass_keyart_v2");
+            var tile = WorldTilemapGround.GetTile(sprite);
+            var map = WorldTilemapGround.GetOrCreateLayer(parent, "ForestShadeGrid", "ForestFloor", 1f, 1, "Ground");
+            var scale = 1f / sprite.bounds.size.x;
+            var matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+            map.tileAnchor = new Vector3(0.5f, 0f, 0f);
+            for (var y = -41; y <= 34; y++)
+            for (var x = -50; x <= 51; x++)
+            {
+                var point = new Vector2(x + 0.5f, y + 0.5f);
+                if (FarmEnclosedValleyBoundaryContract.ContainsClearing(point) || TownCanopyClearance.Contains(point)) continue;
+                var cell = new Vector3Int(x, y, 0);
+                map.SetTile(cell, tile);
+                map.SetTileFlags(cell, UnityEngine.Tilemaps.TileFlags.None);
+                map.SetTransformMatrix(cell, matrix);
+                var shade = 0.92f + Variation((x / 3) * 29 + y / 3) * 0.08f;
+                map.SetColor(cell, new Color(0f, 0f, 0f, 0.42f * shade));
+            }
+        }
+
+        private static float Variation(int index) => (Mathf.Sin(index * 2.399963f + 0.7f) + 1f) * 0.5f;
+
+        private static Vector2 Size(Sprite sprite, float height, Dictionary<Sprite, Bounds> measured)
+        {
+            var bounds = Measure(sprite, measured);
+            return bounds.size * (height / bounds.size.y);
+        }
+
+        private static Bounds Measure(Sprite sprite, Dictionary<Sprite, Bounds> measured)
+        {
+            if (sprite == null) throw new InvalidOperationException("Missing perimeter sprite.");
+            if (measured.TryGetValue(sprite, out var bounds)) return bounds;
+            if (FarmSettlementVisualComposer.TryGetKeyartPlantGeometry(sprite, out bounds, out _))
+            {
+                measured.Add(sprite, bounds);
+                return bounds;
+            }
+            if (sprite.name == "tree_keyart_v4_01" || sprite.name == "boulder_keyart_v4_01" || sprite.name == "tree_pine_keyart_v4")
+            {
+                var rect = sprite.name == "tree_keyart_v4_01" ? new Rect(19f, 8f, 84f, 105f)
+                    : sprite.name == "tree_pine_keyart_v4" ? new Rect(10f, 23f, 66f, 117f)
+                    : new Rect(6f, 9f, 82f, 70f);
+                var scale = 1f / sprite.pixelsPerUnit;
+                bounds = new Bounds((Vector3)((rect.center - sprite.pivot) * scale), (Vector3)(rect.size * scale));
+                measured.Add(sprite, bounds);
+                return bounds;
+            }
+            // Utility reads alpha when available and otherwise uses a conservative full rectangle;
+            // it never changes importer settings merely to obtain bounds.
+            if (!SpriteOpaqueBoundsUtility.TryGetOpaqueLocalBounds(sprite, 0.05f, out bounds) || bounds.size.y <= 0f)
+                throw new InvalidOperationException("Cannot measure perimeter sprite: " + sprite.name);
+            measured.Add(sprite, bounds);
+            return bounds;
+        }
+
+        private static bool IsReserved(Rect area)
+        {
+            foreach (var footprint in FarmSceneSpatialContract.All)
+            {
+                var bounds = footprint.Bounds;
+                if (area.Overlaps(new Rect(bounds.min, bounds.size))) return true;
+            }
+            foreach (var path in FarmDecorationPlanner.AuthoredPaths)
+            {
+                var footprint = new FarmSceneFootprint("", FarmSpatialUse.Walkable, false, false, path);
+                var bounds = footprint.Bounds;
+                if (area.Overlaps(new Rect(bounds.min, bounds.size))) return true;
+            }
+            return false;
+        }
+
+        private static void Place(Transform parent, string name, Sprite sprite, Vector2 foot, float height,
+            Dictionary<Sprite, Bounds> measured, bool groundCover)
+        {
+            var bounds = Measure(sprite, measured);
+            var scale = height / bounds.size.y;
+            var visual = new GameObject("Visual_Perimeter_" + name);
+            visual.transform.SetParent(parent, false);
+            var support = FarmSettlementVisualComposer.TryGetKeyartPlantGeometry(sprite, out _, out var plantSupport)
+                ? (Vector3)plantSupport : new Vector3(bounds.center.x, bounds.min.y, 0f);
+            visual.transform.position = (Vector3)foot - support * scale;
+            visual.transform.localScale = new Vector3(scale / parent.lossyScale.x, scale / parent.lossyScale.y, 1f);
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.color = Color.white;
+            if (name.StartsWith("Forest_", StringComparison.Ordinal) || name.StartsWith("DeepForest_", StringComparison.Ordinal))
+            {
+                // Local canopy shade keeps the forest mass dark while retaining authored highlights.
+                var deep = name.StartsWith("DeepForest_", StringComparison.Ordinal);
+                renderer.color = sprite.name == "tree_pine_keyart_v4"
+                    ? (deep ? new Color(0.8f, 0.86f, 0.8f) : Color.white)
+                    : deep ? new Color(0.55f, 0.70f, 0.60f)
+                    : sprite.name == "tree_keyart_v4_01" ? new Color(0.64f, 0.75f, 0.63f)
+                    : new Color(0.60f, 0.73f, 0.64f);
+            }
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            renderer.sortingLayerName = groundCover ? "Ground" : "World";
+            renderer.sortingOrder = groundCover ? (foot.y > FarmLevel1LayoutContract.MaxY ? 2 : 4) : 0;
+        }
+    }
+}

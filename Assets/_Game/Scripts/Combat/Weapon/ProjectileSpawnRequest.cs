@@ -1,0 +1,128 @@
+﻿using CindarsHope.Combat.StatusEffect;
+using UnityEngine;
+using CindarsHope.Foundation;
+
+namespace CindarsHope.Combat.Weapon
+{
+    public readonly struct ProjectileImpactDamage
+    {
+        public int Damage { get; }
+        public bool IsCritical { get; }
+
+        public ProjectileImpactDamage(int damage, bool isCritical)
+        {
+            Damage = Mathf.Max(0, damage);
+            IsCritical = isCritical;
+        }
+    }
+
+    public readonly struct ProjectileImpactContext
+    {
+        public bool GuaranteedCritical { get; }
+        public string TargetInstanceId { get; }
+        public float TargetPositionX { get; }
+        public float TargetPositionY { get; }
+
+        public ProjectileImpactContext(bool guaranteedCritical, string targetInstanceId,
+            float targetPositionX, float targetPositionY)
+        {
+            GuaranteedCritical = guaranteedCritical;
+            TargetInstanceId = targetInstanceId ?? string.Empty;
+            TargetPositionX = targetPositionX;
+            TargetPositionY = targetPositionY;
+        }
+    }
+
+    /// <summary>
+    /// SPEC_06: Request object for projectile spawning.
+    /// Contains all parameters needed to spawn and initialize a projectile.
+    /// </summary>
+    public class ProjectileSpawnRequest
+    {
+        public GameObject Prefab { get; set; }
+        public Vector2 SourcePosition { get; set; }
+        public Vector2 Direction { get; set; }
+        public float SpawnOffset { get; set; } = 0.5f;
+
+        public float Speed { get; set; }
+        public float Range { get; set; }
+        public int BaseDamage { get; set; }
+        public DamageType DamageType { get; set; }
+        public float KnockbackForce { get; set; }
+
+        public CindarsHope.Combat.StatusEffect.StatusEffectSO StatusEffect { get; set; }
+        public float StatusApplyChance { get; set; }
+
+        /// <summary>
+        /// fable_48 (aditivo): tags de material/elemento carregadas pelo projÃ©til (ex.: flecha
+        /// "Silver"/"Fire"). Propagadas ao <see cref="DamageRequest.WeaponMaterialTags"/> no impacto,
+        /// onde o matching de vulnerabilidade da F06 concede bÃ´nus SÃ“ contra vulnerabilidade
+        /// declarada. Default null/vazio => sem tags (melee/magia legados inalterados).
+        /// </summary>
+        public string[] AppliedTags { get; set; }
+
+        /// <summary>Visual archetype used when Prefab is null (runtime-built projectile).</summary>
+        public ProjectileVisualStyle VisualStyle { get; set; } = ProjectileVisualStyle.Auto;
+
+        /// <summary>How many enemies the projectile can hit before despawning (1 = no pierce).</summary>
+        public int MaxHits { get; set; } = 1;
+        public IProjectileHitPolicy HitPolicy { get; set; }
+        public float PostureDamageMultiplier { get; set; }
+        public int SourceCasterRuntimeId { get; set; }
+        public bool StopOnSolidObstacle { get; set; }
+        public System.Func<bool, ProjectileImpactDamage> ImpactDamageResolver { get; set; }
+        public System.Func<ProjectileImpactContext, ProjectileImpactDamage>
+            TargetedImpactDamageResolver { get; set; }
+        public DamageSourceKind SourceKind { get; set; } = DamageSourceKind.None;
+        public SpellDiscipline SpellDiscipline { get; set; } = SpellDiscipline.None;
+        public string SourceInstanceId { get; set; } = string.Empty;
+        public string ActionToken { get; set; } = string.Empty;
+        public bool CanTriggerCapstones { get; set; }
+        public bool CanTriggerStatusEffects { get; set; } = true;
+        public bool CanTriggerReactions { get; set; } = true;
+
+        /// <summary>
+        /// Fracao da velocidade inicial atingida no fim do alcance (game-feel de desaceleracao).
+        /// 1 = velocidade constante (default, magias/legado); 0.3 = chega a 30% da velocidade no
+        /// alcance maximo. A flecha usa &lt; 1 para comecar rapida e desacelerar conforme avanca.
+        /// </summary>
+        public float SpeedDecayToFraction { get; set; } = 1f;
+
+        /// <summary>
+        /// Alcance (em unidades/tiles) dentro do qual o projetil PERSEGUE o inimigo mais proximo
+        /// (homing). 0 = sem perseguicao (default, flechas/legado). A magia da Fire Wand usa &gt; 0
+        /// (bolinha de fogo que segue o oponente mais proximo ate N tiles).
+        /// </summary>
+        public float HomingRange { get; set; } = 0f;
+
+        public ProjectileSpawnRequest()
+        {
+        }
+
+        public ProjectileSpawnRequest(
+            GameObject prefab,
+            Vector2 sourcePosition,
+            Vector2 direction,
+            float speed,
+            float range,
+            int baseDamage,
+            DamageType damageType,
+            float knockbackForce,
+            float spawnOffset = 0.5f,
+            CindarsHope.Combat.StatusEffect.StatusEffectSO statusEffect = null,
+            float statusApplyChance = 0f)
+        {
+            Prefab = prefab;
+            SourcePosition = sourcePosition;
+            Direction = direction;
+            SpawnOffset = spawnOffset;
+            Speed = speed;
+            Range = range;
+            BaseDamage = baseDamage;
+            DamageType = damageType;
+            KnockbackForce = knockbackForce;
+            StatusEffect = statusEffect;
+            StatusApplyChance = statusApplyChance;
+        }
+    }
+}

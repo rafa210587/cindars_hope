@@ -1,0 +1,93 @@
+{
+  "beforeSha256": "751A9263324F2A322135E9900E969FC5B22F73955DB31D629A592296FFACF803",
+  "afterSha256": "9F7B92E72D144728F8B0ABAE8FFFD32F3A3778CDEDB205E3DC7027818347A540",
+  "utc": "2026-09-09T20:47:02.5273992Z",
+  "beforeCounts": [
+    {
+      "Name": "50",
+      "Count": 2
+    },
+    {
+      "Name": "58",
+      "Count": 1
+    },
+    {
+      "Name": "60",
+      "Count": 4
+    },
+    {
+      "Name": "61",
+      "Count": 164
+    },
+    {
+      "Name": "114",
+      "Count": 263
+    }
+  ],
+  "afterCounts": [
+    {
+      "Name": "50",
+      "Count": 2
+    },
+    {
+      "Name": "58",
+      "Count": 1
+    },
+    {
+      "Name": "60",
+      "Count": 4
+    },
+    {
+      "Name": "61",
+      "Count": 164
+    },
+    {
+      "Name": "114",
+      "Count": 263
+    }
+  ],
+  "rawDifferenceCount": 2,
+  "rawDifferences": [
+    {
+      "InputObject": "{\"path\":\"SceneRuntimeReferences\",\"classId\":114,\"script\":\"d4030820605a48f49aa5e385b29c210b\",\"body\":\"MonoBehaviour:\\n  m_ObjectHideFlags: 0\\n  m_CorrespondingSourceObject: {fileID: 0}\\n  m_PrefabInstance: {fileID: 0}\\n  m_PrefabAsset: {fileID: 0}\\n  m_GameObject: {object: SceneRuntimeReferences#GameObject}\\n  m_Enabled: 1\\n  m_EditorHideFlags: 0\\n  m_Script: {fileID: 11500000, guid: d4030820605a48f49aa5e385b29c210b, type: 3}\\n  m_Name: \\n  m_EditorClassIdentifier: CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller\\n  _farmPlots:\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_200#114#baa81afe81acddb47a2507b556283706}\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_203#114#baa81afe81acddb47a2507b556283706}\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_202#114#baa81afe81acddb47a2507b556283706}\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_201#114#baa81afe81acddb47a2507b556283706}\\n  _treeNodes:\\n  - {object: Trees/TreeNode_04#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_16#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_41#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_63#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_53#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_42#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_10#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_49#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_35#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_26#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_33#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_27#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_51#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_06#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_15#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_11#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_52#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_21#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_38#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_55#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: PerimeterTreeline/TreeNode_202#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_22#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_12#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_24#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_00#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_09#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_31#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_03#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_14#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_17#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_59#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_57#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_66#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_36#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_40#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_64#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_28#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_05#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_34#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_07#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_29#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_08#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_58#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_44#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_45#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_25#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_30#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_62#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_48#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_56#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_01#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_60#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_02#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_39#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_20#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_46#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: PerimeterTreeline/TreeNode_201#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_13#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_67#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_32#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: PerimeterTreeline/TreeNode_200#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_47#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_54#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_43#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_61#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_18#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_37#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_23#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_50#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_19#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_65#114#2d6fe6915d4244d4955856359f15d1f4}\\n  _fishingSpot: {object: FishingSpot#114#5aa0b936782d461982c4e2263c1c1b4b}\\n  _seedShopPoint: {fileID: 0}\\n  _sellAllPoint: {fileID: 0}\\n  _craftingPoint: {object: CraftingStation_Forge#114#362dc16f411d4f4b8b79917a2a2d4e76}\\n  _farmPlotRegistry: {object: FarmPlots#114#acedd15141a12314a8be2c0a68ea3c94}\\n  _treeRegistry: {object: Trees#114#b45c980e79a44b4298f79a5aaeb5c890}\\n  _itemPickupRegistry: {object: ItemPickups#114#b4e6f260f1b04b53ab4e77f0b1d2a59a}\\n  _playerTransform: {object: Player#4#}\",\"chain\":[{\"path\":\"SceneRuntimeReferences\",\"transform\":[\"m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}\",\"m_LocalPosition: {x: 0, y: 0, z: 0}\",\"m_LocalScale: {x: 1, y: 1, z: 1}\"],\"state\":[\"m_Layer: 0\",\"m_TagString: Untagged\",\"m_IsActive: 1\"]}]}",
+      "SideIndicator": "=>"
+    },
+    {
+      "InputObject": "{\"path\":\"SceneRuntimeReferences\",\"classId\":114,\"script\":\"d4030820605a48f49aa5e385b29c210b\",\"body\":\"MonoBehaviour:\\n  m_ObjectHideFlags: 0\\n  m_CorrespondingSourceObject: {fileID: 0}\\n  m_PrefabInstance: {fileID: 0}\\n  m_PrefabAsset: {fileID: 0}\\n  m_GameObject: {object: SceneRuntimeReferences#GameObject}\\n  m_Enabled: 1\\n  m_EditorHideFlags: 0\\n  m_Script: {fileID: 11500000, guid: d4030820605a48f49aa5e385b29c210b, type: 3}\\n  m_Name: \\n  m_EditorClassIdentifier: CindarsHope.Runtime::CindarsHope.SceneManagement.FarmSceneRuntimeReferenceInstaller\\n  _farmPlots:\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_203#114#baa81afe81acddb47a2507b556283706}\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_202#114#baa81afe81acddb47a2507b556283706}\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_200#114#baa81afe81acddb47a2507b556283706}\\n  - {object: FarmProcessing/Greenhouse/FarmPlot_201#114#baa81afe81acddb47a2507b556283706}\\n  _treeNodes:\\n  - {object: Trees/TreeNode_13#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_53#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: PerimeterTreeline/TreeNode_200#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_17#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_51#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_04#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_55#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_10#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_56#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_38#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_18#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_20#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_19#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_25#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_63#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_66#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_33#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_26#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_30#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_35#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_41#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_47#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_06#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_52#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_37#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_01#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_29#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_02#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_14#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_58#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_54#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_34#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_24#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_62#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_00#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_40#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_44#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_07#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_60#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_32#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_16#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_65#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_57#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_03#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_15#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_39#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_36#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_09#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_11#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_46#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_05#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_67#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_27#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_50#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_61#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_64#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_43#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_28#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_59#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_49#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_21#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_42#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_31#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_48#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_08#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_45#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_12#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: PerimeterTreeline/TreeNode_202#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: PerimeterTreeline/TreeNode_201#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_23#114#2d6fe6915d4244d4955856359f15d1f4}\\n  - {object: Trees/TreeNode_22#114#2d6fe6915d4244d4955856359f15d1f4}\\n  _fishingSpot: {object: FishingSpot#114#5aa0b936782d461982c4e2263c1c1b4b}\\n  _seedShopPoint: {fileID: 0}\\n  _sellAllPoint: {fileID: 0}\\n  _craftingPoint: {object: CraftingStation_CookingStation#114#362dc16f411d4f4b8b79917a2a2d4e76}\\n  _farmPlotRegistry: {object: FarmPlots#114#acedd15141a12314a8be2c0a68ea3c94}\\n  _treeRegistry: {object: Trees#114#b45c980e79a44b4298f79a5aaeb5c890}\\n  _itemPickupRegistry: {object: ItemPickups#114#b4e6f260f1b04b53ab4e77f0b1d2a59a}\\n  _playerTransform: {object: Player#4#}\",\"chain\":[{\"path\":\"SceneRuntimeReferences\",\"transform\":[\"m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}\",\"m_LocalPosition: {x: 0, y: 0, z: 0}\",\"m_LocalScale: {x: 1, y: 1, z: 1}\"],\"state\":[\"m_Layer: 0\",\"m_TagString: Untagged\",\"m_IsActive: 1\"]}]}",
+      "SideIndicator": "<="
+    }
+  ],
+  "physicalDifferenceCount": 0,
+  "idComponentCount": 54,
+  "idDifferenceCount": 0,
+  "aliasBefore": "_craftingPoint: {object: CraftingStation_CookingStation#114#362dc16f411d4f4b8b79917a2a2d4e76}",
+  "aliasAfter": "_craftingPoint: {object: CraftingStation_Forge#114#362dc16f411d4f4b8b79917a2a2d4e76}",
+  "installerArrayChanges": [
+    {
+      "field": "_farmPlots",
+      "beforeCount": 4,
+      "afterCount": 4,
+      "orderChanged": true,
+      "membershipDifferences": 0
+    },
+    {
+      "field": "_treeNodes",
+      "beforeCount": 71,
+      "afterCount": 71,
+      "orderChanged": true,
+      "membershipDifferences": 0
+    }
+  ],
+  "behaviorDifferencesExcludingDocumentedInstallerOrderAndNoopAlias": 0,
+  "exteriorCounts": [
+    {
+      "Name": "4",
+      "Count": 621
+    },
+    {
+      "Name": "212",
+      "Count": 620
+    }
+  ],
+  "exteriorUnexpected": []
+}

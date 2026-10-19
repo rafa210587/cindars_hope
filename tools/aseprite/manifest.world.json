@@ -1,0 +1,600 @@
+{
+  "_schema": {
+    "id": "slug curto unico para o asset",
+    "kind": "primitiva de desenho — tile|tree|ore_node|crystal|barrel|crate|potion|ingot|rock|fence|sign|building|crop|animal|item_icon",
+    "w": "largura em pixels (do guia ou inferido)",
+    "h": "altura em pixels (do guia ou inferido)",
+    "c1": "cor principal hex (sem #)",
+    "c2": "cor secundaria/detalhe hex (sem #)",
+    "category": "terrain|crop|tree|farm_animal|farm_building|farm_prop|city_building|ore|item",
+    "source": "cabecalho ou linha aproximada no guia",
+    "note": "observacoes extras (estagios, variantes, etc.)"
+  },
+  "props": [
+    {
+      "id": "soil_grass",
+      "kind": "tile",
+      "w": 32, "h": 32,
+      "c1": "6AB04C", "c2": "4A8A30",
+      "category": "terrain",
+      "source": "PARTE 2 — TERRENO E TILES DA FAZENDA / Solo",
+      "note": "Verde medio com variacao organica de 1-2 px; pequenas pedras, flores, folhas esparsas. Varias variantes aleatorias."
+    },
+    {
+      "id": "soil_dry",
+      "kind": "tile",
+      "w": 32, "h": 32,
+      "c1": "A07850", "c2": "7A5830",
+      "category": "terrain",
+      "source": "PARTE 2 — TERRENO E TILES DA FAZENDA / Solo",
+      "note": "Solo aravel nao plantado. Terra marrom-ocre com textura de pedrinhas e torraes; 3-4 tons de marrom alternados."
+    },
+    {
+      "id": "soil_wet",
+      "kind": "tile",
+      "w": 32, "h": 32,
+      "c1": "6B4226", "c2": "4A2A10",
+      "category": "terrain",
+      "source": "PARTE 2 — TERRENO E TILES DA FAZENDA / Solo",
+      "note": "Solo regado, marrom-escuro e rico, levemente brilhante, textura mais lisa."
+    },
+    {
+      "id": "soil_planted",
+      "kind": "tile",
+      "w": 32, "h": 32,
+      "c1": "6B4226", "c2": "3A7A2A",
+      "category": "terrain",
+      "source": "PARTE 2 — TERRENO E TILES DA FAZENDA / Solo",
+      "note": "Como solo molhado + pequeno broto emergindo (2-4 px de altura)."
+    },
+    {
+      "id": "terrain_stone_path",
+      "kind": "tile",
+      "w": 32, "h": 32,
+      "c1": "8C8070", "c2": "5A5040",
+      "category": "terrain",
+      "source": "PARTE 2 — TERRENO E TILES DA FAZENDA / Solo",
+      "note": "Pedra/caminho; juntas escuras 5A5040, levemente irregular."
+    },
+    {
+      "id": "terrain_wood_deck",
+      "kind": "tile",
+      "w": 32, "h": 32,
+      "c1": "8B5E3C", "c2": "C89060",
+      "category": "terrain",
+      "source": "PARTE 2 — TERRENO E TILES DA FAZENDA / Solo",
+      "note": "Madeira (deck/cerca); veios horizontais mais claros C89060."
+    },
+    {
+      "id": "crop_carrot",
+      "kind": "crop",
+      "w": 32, "h": 64,
+      "c1": "3A7A2A", "c2": "E87820",
+      "category": "crop",
+      "source": "PARTE 2 — CULTIVOS (CROPS) / Cenoura",
+      "note": "5 estagios: broto 2px ate folhagem verde-escura com pontinha laranja; fase adulta usa tile 32x64. Estado especial: seca/morta em marrom opaco. c1=folha, c2=raiz."
+    },
+    {
+      "id": "crop_wheat",
+      "kind": "crop",
+      "w": 32, "h": 64,
+      "c1": "D4A020", "c2": "8A7020",
+      "category": "crop",
+      "source": "PARTE 2 — CULTIVOS (CROPS) / Trigo/Centeio",
+      "note": "5 estagios; fase final: espiga dourada inclinada com espigas pequenas no topo. c1=palha, c2=talo."
+    },
+    {
+      "id": "crop_pumpkin",
+      "kind": "crop",
+      "w": 32, "h": 32,
+      "c1": "E86010", "c2": "3A8A20",
+      "category": "crop",
+      "source": "PARTE 2 — CULTIVOS (CROPS) / Abobora",
+      "note": "5 estagios; ocupa 1x1 tile mas abobora madura vaza levemente nas bordas. c1=laranja-vibrante, c2=folhas verdes grandes."
+    },
+    {
+      "id": "crop_flower",
+      "kind": "crop",
+      "w": 32, "h": 32,
+      "c1": "E040A0", "c2": "3A7A2A",
+      "category": "crop",
+      "source": "PARTE 2 — CULTIVOS (CROPS) / Flores",
+      "note": "5 estagios; pequenas, coloridas, delicadas; petala claramente distinta em 6-8 px. c1 varia por tipo (rosa/amarelo/branco — baixa confianca na cor exata, guia nao especifica hex)."
+    },
+    {
+      "id": "tree_young",
+      "kind": "tree",
+      "w": 32, "h": 64,
+      "c1": "4AAA30", "c2": "5C3D1E",
+      "category": "tree",
+      "source": "PARTE 2 — ARVORES / Arvore Jovem",
+      "note": "1x2 tiles (32x64); tronco fino 4px, copa oval pequena, 3 tons de verde."
+    },
+    {
+      "id": "tree_adult",
+      "kind": "tree",
+      "w": 64, "h": 96,
+      "c1": "4AAA30", "c2": "5C3D1E",
+      "category": "tree",
+      "source": "PARTE 2 — ARVORES / Arvore Adulta (fruteira)",
+      "note": "2x3 tiles (64x96); tronco medio 8px, copa arredondada densa; frutos 2-3px em fase colheita. Copa: 3A8A20/4AAA30/6AC040. Tronco: 5C3D1E."
+    },
+    {
+      "id": "tree_large",
+      "kind": "tree",
+      "w": 96, "h": 128,
+      "c1": "3A6A20", "c2": "4A3020",
+      "category": "tree",
+      "source": "PARTE 2 — ARVORES / Arvore Grande (floresta/borda)",
+      "note": "3x4 tiles (96x128); tronco grosso 14px, copa massiva e irregular, musgo na base."
+    },
+    {
+      "id": "tree_mana_special",
+      "kind": "tree",
+      "w": 160, "h": 160,
+      "c1": "A0C8A0", "c2": "E8D880",
+      "category": "tree",
+      "source": "PARTE 2 — ARVORES / Arvore de Fruto Mana (especial)",
+      "note": "5x5 tiles (160x160); UNICA, nao cultivavel. Tronco prateado-palido, copa azul-esverdeada, particulas douradas flutuando, frutos brancos-dourados. c1 e c2 inferidos — guia descreve por nome, nao hex."
+    },
+    {
+      "id": "animal_chicken",
+      "kind": "animal",
+      "w": 32, "h": 32,
+      "c1": "F0F0E0", "c2": "C82020",
+      "category": "farm_animal",
+      "source": "PARTE 2 — ANIMAIS DA FAZENDA / Galinha / Pato",
+      "note": "Corpo oval, crista vermelha pequena C82020, bico amarelo, patas finas. Variedades: branca F0F0E0, caramelo D4902A, preta 3A3028."
+    },
+    {
+      "id": "animal_duck",
+      "kind": "animal",
+      "w": 32, "h": 32,
+      "c1": "F0F0E0", "c2": "2A6030",
+      "category": "farm_animal",
+      "source": "PARTE 2 — ANIMAIS DA FAZENDA / Galinha / Pato",
+      "note": "Similar a galinha; pescoco mais longo, bico achatado. Macho: cabeca verde-escura 2A6030 com anel branco no pescoco."
+    },
+    {
+      "id": "animal_sheep",
+      "kind": "animal",
+      "w": 48, "h": 40,
+      "c1": "EEE8D8", "c2": "C8C0A8",
+      "category": "farm_animal",
+      "source": "PARTE 2 — ANIMAIS DA FAZENDA / Ovelha / Cabra",
+      "note": "Corpo bloboso arredondado de la; pernas pequenas. La cheia: c1=EEE8D8 / c2=C8C0A8. La tosada: menor, pele rosada C8A0A0 (variante)."
+    },
+    {
+      "id": "animal_goat",
+      "kind": "animal",
+      "w": 48, "h": 40,
+      "c1": "D8C8A8", "c2": "A08060",
+      "category": "farm_animal",
+      "source": "PARTE 2 — ANIMAIS DA FAZENDA / Ovelha / Cabra",
+      "note": "Corpo mais angular, pescoco visivel, barbinha, chifres curvados. Variedades: branca, marrom, mesclada. Cores sao inferidas — guia nao da hex especifico para cabra."
+    },
+    {
+      "id": "animal_cow",
+      "kind": "animal",
+      "w": 64, "h": 48,
+      "c1": "F0EDE0", "c2": "2A2822",
+      "category": "farm_animal",
+      "source": "PARTE 2 — ANIMAIS DA FAZENDA / Vaca",
+      "note": "Corpo grande retangular, focinho largo, chifres curtos, ubere 2-3px. Manchas preto 2A2822 ou marrom 6A3A1A. Focinho rosa-claro E8A8A0."
+    },
+    {
+      "id": "house_farm",
+      "kind": "building",
+      "w": 320, "h": 256,
+      "c1": "D8C8A8", "c2": "A04030",
+      "category": "farm_building",
+      "source": "PARTE 2 — CONSTRUCOES DA FAZENDA / Casa da Fazenda",
+      "note": "10x8 tiles exterior (320x256); interior 16x12 (512x384). Chale 2 andares, paredes bege-sujo D8C8A8, telhado telha vermelha-tijolo A04030, chamine pedra 8C8070, janelas moldura branca + vidro A8C8B8, porta 7A5030."
+    },
+    {
+      "id": "chicken_coop",
+      "kind": "building",
+      "w": 256, "h": 192,
+      "c1": "A07850", "c2": "C8A870",
+      "category": "farm_building",
+      "source": "PARTE 2 — CONSTRUCOES DA FAZENDA / Galinheiro",
+      "note": "8x6 tiles exterior (256x192); interior 14x10 (448x320). Construcao baixa de madeira com ripas e frestas, porta baixa, teto de palha/colmo, cercado de estacas. Cor inferida do material madeira."
+    },
+    {
+      "id": "barn",
+      "kind": "building",
+      "w": 320, "h": 256,
+      "c1": "8A3020", "c2": "E8E0D0",
+      "category": "farm_building",
+      "source": "PARTE 2 — CONSTRUCOES DA FAZENDA / Celeiro (Barn)",
+      "note": "10x8 tiles exterior (320x256); interior 18x14 (576x448). Porta dupla dobravel, teto pontiagudo com claraboia, paredes vermelho-escuro 8A3020 com detalhes brancos E8E0D0."
+    },
+    {
+      "id": "greenhouse",
+      "kind": "building",
+      "w": 320, "h": 256,
+      "c1": "B0D8C0", "c2": "7A5030",
+      "category": "farm_building",
+      "source": "PARTE 2 — CONSTRUCOES DA FAZENDA / Estufa Pequena",
+      "note": "10x8 tiles exterior (320x256); interior 16x12 (512x384). Armacao de madeira com paineis de vidro verde-azulado B0D8C0, vapores por frestas."
+    },
+    {
+      "id": "workshop_small",
+      "kind": "building",
+      "w": 192, "h": 160,
+      "c1": "8C8070", "c2": "7A5030",
+      "category": "farm_building",
+      "source": "PARTE 2 — CONSTRUCOES DA FAZENDA / Oficina (Workshop)",
+      "note": "6x5 tiles pequena (192x160); versao grande 10x8 (320x256). Pedra e madeira, chamine pequena, janela com grade, ferramentas na fachada."
+    },
+    {
+      "id": "fountain_anya",
+      "kind": "building",
+      "w": 192, "h": 192,
+      "c1": "E0E8F0", "c2": "E0C040",
+      "category": "farm_building",
+      "source": "PARTE 2 — CONSTRUCOES DA FAZENDA / Fonte da Anya (ESPECIAL)",
+      "note": "6x6 tiles (192x192). UNICA e FIXA. Fonte circular pedra branca-prateada com veios azuis 60A8E0, Agua Viva animada azul-dourado, runas douradas E0C040. Flores ao redor nao removiveis."
+    },
+    {
+      "id": "mana_root_dormant",
+      "kind": "building",
+      "w": 160, "h": 160,
+      "c1": "E8E0D0", "c2": "60A0E0",
+      "category": "farm_building",
+      "source": "PARTE 2 — CONSTRUCOES DA FAZENDA / Raiz Dormente de Mana (ESPECIAL)",
+      "note": "5x5 tiles (160x160). UNICA e FIXA. Raiz gigante palida com veios azuis 60A0E0 e dourados D4A820, broto fechado 80C0F0; endgame abre flor azul-branca."
+    },
+    {
+      "id": "planter_box",
+      "kind": "tile",
+      "w": 32, "h": 32,
+      "c1": "6B4226", "c2": "8B5E3C",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Canteiro",
+      "note": "Rectangulo de terra escura delimitado por tabuas de madeira."
+    },
+    {
+      "id": "fence_segment",
+      "kind": "fence",
+      "w": 32, "h": 32,
+      "c1": "C8A870", "c2": "A07850",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Cerca (segmento)",
+      "note": "Duas estacas de madeira com um ripao horizontal. Madeira clara desgastada."
+    },
+    {
+      "id": "fence_gate",
+      "kind": "fence",
+      "w": 64, "h": 32,
+      "c1": "C8A870", "c2": "707870",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Portao de cerca",
+      "note": "Como dois segmentos de cerca com dobradicas metalicas 707870. Abre/fecha animado."
+    },
+    {
+      "id": "well",
+      "kind": "building",
+      "w": 96, "h": 96,
+      "c1": "8C8070", "c2": "7A5030",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Poco",
+      "note": "3x3 tiles (96x96). Cilindro de pedra, telhado triangular de madeira, balde pendurado em corda."
+    },
+    {
+      "id": "barrel",
+      "kind": "barrel",
+      "w": 32, "h": 32,
+      "c1": "8B5E3C", "c2": "8898A8",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Barril",
+      "note": "Barril de madeira com arcos de metal 8898A8. Inclinado levemente."
+    },
+    {
+      "id": "crate",
+      "kind": "crate",
+      "w": 32, "h": 32,
+      "c1": "A07850", "c2": "7A5030",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Caixote",
+      "note": "Caixa simples de madeira com tampa semi-aberta."
+    },
+    {
+      "id": "scarecrow",
+      "kind": "sign",
+      "w": 32, "h": 64,
+      "c1": "D4A020", "c2": "A07850",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Espantalho",
+      "note": "Estaca com chapeu de palha D4A020, roupa velha recheada de palha, bracos abertos. Levemente torto."
+    },
+    {
+      "id": "compost_bin",
+      "kind": "crate",
+      "w": 64, "h": 64,
+      "c1": "5A3A10", "c2": "3A7A2A",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Composteira",
+      "note": "Caixa de madeira sem tampa, restos vegetais coloridos dentro."
+    },
+    {
+      "id": "lantern_post",
+      "kind": "sign",
+      "w": 32, "h": 64,
+      "c1": "7A5030", "c2": "E09030",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Lanterna de poste",
+      "note": "Poste de madeira 7A5030, lanterna de vidro no topo. Luz laranja-quente E09030 a noite."
+    },
+    {
+      "id": "bench_farm",
+      "kind": "tile",
+      "w": 64, "h": 32,
+      "c1": "C8A870", "c2": "8B5E3C",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Banco",
+      "note": "Banco simples de madeira, dois suportes, tabua horizontal."
+    },
+    {
+      "id": "sign_post",
+      "kind": "sign",
+      "w": 32, "h": 32,
+      "c1": "A07850", "c2": "D8C8A8",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Sinal/Placa",
+      "note": "Poste de madeira com placa retangular. Texto gravado."
+    },
+    {
+      "id": "rock_small",
+      "kind": "rock",
+      "w": 32, "h": 32,
+      "c1": "8C8070", "c2": "6A6050",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Pedra pequena",
+      "note": "Pedra arredondada cinza, removivel."
+    },
+    {
+      "id": "rock_medium",
+      "kind": "rock",
+      "w": 64, "h": 64,
+      "c1": "8C8070", "c2": "5A5040",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Pedra media",
+      "note": "Amontoado de 2-3 pedras, mais resistente."
+    },
+    {
+      "id": "rock_large",
+      "kind": "rock",
+      "w": 96, "h": 96,
+      "c1": "7A7060", "c2": "4A4838",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Rocha grande",
+      "note": "Rocha macica, impoe presenca, bloqueia caminho. Cor inferida de pedra cinza-escuro."
+    },
+    {
+      "id": "tree_stump",
+      "kind": "rock",
+      "w": 32, "h": 32,
+      "c1": "8B5E3C", "c2": "4A6A30",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Toco de arvore",
+      "note": "Toco cortado, veios visiveis, musgo na borda. c2=musgo verde 4A6A30."
+    },
+    {
+      "id": "fallen_log",
+      "kind": "rock",
+      "w": 64, "h": 64,
+      "c1": "7A5030", "c2": "4A6A30",
+      "category": "farm_prop",
+      "source": "PARTE 2 — Props Gerais da Fazenda (tabela) / Tronco caido",
+      "note": "Tronco medio caido com galhos menores. kind=rock pois nenhum primitivo encaixa melhor; serve como obstaculo removivel."
+    },
+    {
+      "id": "temple_kanthor",
+      "kind": "building",
+      "w": 576, "h": 448,
+      "c1": "C8C0B0", "c2": "3060A0",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Templo de Kanthor",
+      "note": "18x14 tiles exterior (576x448); interior 24x18 (768x576). Pedra cinza-clara C8C0B0, arcos goticos, porta dupla 3x3 madeira escura 4A3020, vidro azul-royal 3060A0 + dourado D0A020, escadaria 3 degraus."
+    },
+    {
+      "id": "town_hall",
+      "kind": "building",
+      "w": 512, "h": 384,
+      "c1": "A0A090", "c2": "7A5030",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Camara Municipal",
+      "note": "16x12 tiles exterior (512x384); interior 22x16 (704x512). Dois andares, bandeira no topo, janelas grandes, porta dupla madeira escura, relogio decorativo na fachada."
+    },
+    {
+      "id": "tavern_inn",
+      "kind": "building",
+      "w": 640, "h": 448,
+      "c1": "D8A858", "c2": "A83010",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Taverna e Estalagem",
+      "note": "20x14 tiles exterior (640x448); interior 28x20 (896x640). Letreiro colorido, toldo listrado vermelho-bege, janelas com luz ambar E09030, barris na calcada, 2 andares (estalagem acima)."
+    },
+    {
+      "id": "blacksmith_brumdar",
+      "kind": "building",
+      "w": 448, "h": 384,
+      "c1": "6A3020", "c2": "E06010",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Ferraria de Brumdar",
+      "note": "14x12 tiles exterior (448x384); interior 18x15 (576x480). Pedra escura e tijolo 6A3020, fumaca densa, bigorna exposta na entrada, brilho de forja laranja E06010 pela janela."
+    },
+    {
+      "id": "seed_shop_sylveth",
+      "kind": "building",
+      "w": 384, "h": 320,
+      "c1": "7A9A5A", "c2": "8B5E3C",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Loja de Sementes (Sylveth)",
+      "note": "12x10 tiles exterior (384x320); interior 16x13 (512x416). Fachada verde-clara 7A9A5A, flores na janela, letreiro madeira natural, toldo verde."
+    },
+    {
+      "id": "alchemy_shop_ozzra",
+      "kind": "building",
+      "w": 384, "h": 320,
+      "c1": "2A1A30", "c2": "C02020",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Alquimia de Ozzra",
+      "note": "12x10 tiles exterior (384x320); interior 17x14 (544x448). Vidrace com pocoes coloridas (C02020 vermelho, 2050C0 azul, 20A040 verde, 8020C0 roxo), fumaca colorida por tubo."
+    },
+    {
+      "id": "archive_thalindra",
+      "kind": "building",
+      "w": 448, "h": 384,
+      "c1": "5A5850", "c2": "4A3020",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Arquivo (Thalindra)",
+      "note": "14x12 tiles exterior (448x384); interior 20x16 (640x512). Pedra escura 5A5850, porta com tranca visivel, janelas pequenas com grades, simbolo de livro ou coruja gravado."
+    },
+    {
+      "id": "shop_yael_night",
+      "kind": "building",
+      "w": 320, "h": 256,
+      "c1": "1A1420", "c2": "4020A0",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Loja Noturna de Yael (ESPECIAL)",
+      "note": "10x8 tiles exterior (320x256); interior 14x10 (448x320). Parece fechada de dia; a noite: vela acende, porta entreaberta, luz roxa-azulada 4020A0 fraca interna."
+    },
+    {
+      "id": "fishing_cabin_sael",
+      "kind": "building",
+      "w": 384, "h": 320,
+      "c1": "6A6258", "c2": "8A7848",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Cabana de Pesca (Sael)",
+      "note": "12x10 tiles exterior (384x320); interior 16x12 (512x384). Madeira cinza-umida 6A6258 sobre estacas, doca de tabuas avancando sobre a agua, redes secando B8A878, defumador com fumaca, barris de peixe."
+    },
+    {
+      "id": "bakery_mill_mella",
+      "kind": "building",
+      "w": 448, "h": 352,
+      "c1": "C8C0A8", "c2": "A04830",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Padaria e Moinho (Mella)",
+      "note": "14x11 tiles exterior (448x352); interior 18x14 (576x448). Pedra clara C8C0A8, moinho anexo animado, forno de tijolo A04830 com chamine, pao exposto na janela, toldo bege-trigo D8C088."
+    },
+    {
+      "id": "tannery_hess",
+      "kind": "building",
+      "w": 384, "h": 320,
+      "c1": "4A3826", "c2": "C8B088",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Tanoaria (Hess)",
+      "note": "12x10 tiles exterior (384x320); interior 16x13 (512x416). Madeira escura 4A3826, bastidores de pele C8B088 secando ao sol, tanques de tanino marrom-escuro 2E1E12."
+    },
+    {
+      "id": "sacristy_tibbet",
+      "kind": "building",
+      "w": 256, "h": 192,
+      "c1": "6A6858", "c2": "3A2E20",
+      "category": "city_building",
+      "source": "PARTE 3 — CONSTRUCOES DA CIDADE / Sacristia / Casinha do Coveiro (Tibbet)",
+      "note": "8x6 tiles exterior (256x192); interior 12x8 (384x256). Pedra cinza-musgo 6A6858, madeira escura 3A2E20, anexa ao Templo, voltada ao cemiterio, ferramentas de cova na parede externa."
+    },
+    {
+      "id": "cave_gate",
+      "kind": "building",
+      "w": 768, "h": 640,
+      "c1": "3A3830", "c2": "4080C0",
+      "category": "city_building",
+      "source": "PARTE 3 — PORTAO DA CAVERNA",
+      "note": "24x20 tiles exterior (768x640). Pedra macica quase negra 3A3830, runas azul-frio 4080C0 pulsando, dois postos de guarda laterais, arco escuro com correntes pesadas simbolicas."
+    },
+    {
+      "id": "streetlamp",
+      "kind": "sign",
+      "w": 32, "h": 64,
+      "c1": "404848", "c2": "E09030",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Lampiao de rua",
+      "note": "Poste de ferro forjado 404848, globo de vidro no topo. Luz laranja E09030 a noite."
+    },
+    {
+      "id": "market_tent",
+      "kind": "building",
+      "w": 96, "h": 96,
+      "c1": "D04030", "c2": "D8C8A8",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Tenda de feira",
+      "note": "3x3 tiles (96x96). Tenda triangular com lona listrada (c1 e c2), mesa exposta de produtos."
+    },
+    {
+      "id": "plaza_bench",
+      "kind": "tile",
+      "w": 64, "h": 32,
+      "c1": "A09080", "c2": "7A7060",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Banco de praca",
+      "note": "Banco de pedra, dois bracos laterais esculpidos. Cor inferida — guia nao da hex especifico para banco de pedra."
+    },
+    {
+      "id": "plaza_fountain",
+      "kind": "building",
+      "w": 64, "h": 64,
+      "c1": "A0A090", "c2": "60A8F0",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Fonte da praca",
+      "note": "2x2 tiles (64x64). Fonte circular de pedra funcional, menor que a Fonte de Anya. Sem hex especifico — pedra cinza inferida."
+    },
+    {
+      "id": "statue_medium",
+      "kind": "building",
+      "w": 64, "h": 96,
+      "c1": "909080", "c2": "6A6858",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Estatua (media)",
+      "note": "2x3 tiles (64x96). Figura esculpida em pedra, levemente desgastada. Cor inferida de pedra cinza."
+    },
+    {
+      "id": "statue_large",
+      "kind": "building",
+      "w": 96, "h": 128,
+      "c1": "909080", "c2": "7A7868",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Estatua (grande)",
+      "note": "3x4 tiles (96x128). Estatua imponente, sugestao de Anya ou figura historica. Cor inferida de pedra cinza."
+    },
+    {
+      "id": "plaza_tree",
+      "kind": "tree",
+      "w": 64, "h": 96,
+      "c1": "4AAA30", "c2": "5C3D1E",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Arvore de praca",
+      "note": "2x3 tiles (64x96). Arvore ornamental bem cuidada, formato oval bonito. Reutiliza paleta da tree_adult."
+    },
+    {
+      "id": "barrel_street",
+      "kind": "barrel",
+      "w": 32, "h": 32,
+      "c1": "8B5E3C", "c2": "707870",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Barril de rua",
+      "note": "Barril de madeira encostado na parede de alguma loja. Visual identico ao barrel da fazenda, contexto diferente."
+    },
+    {
+      "id": "shop_sign",
+      "kind": "sign",
+      "w": 48, "h": 32,
+      "c1": "8B5E3C", "c2": "D8C8A8",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Placa de loja",
+      "note": "32x32 a 64x32 px; w=48 como media. Placa de madeira pendurada, icone pintado identificando o servico."
+    },
+    {
+      "id": "stray_dog",
+      "kind": "animal",
+      "w": 32, "h": 32,
+      "c1": "C08040", "c2": "9A5C20",
+      "category": "city_building",
+      "source": "PARTE 3 — Props da Cidade (tabela) / Cachorro de rua",
+      "note": "NPC animal vagando, gordinho, sem coleira. Mesmo esquema visual do pet cachorro. Cor caramelo inferida."
+    }
+  ]
+}

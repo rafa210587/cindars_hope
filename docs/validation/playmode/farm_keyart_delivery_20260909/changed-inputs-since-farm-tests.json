@@ -1,0 +1,18 @@
+[
+  {
+    "path": "Assets/_Game/Scripts/Editor/Dev/FarmPlayModeCaptureSession.cs",
+    "sha256": "605470268EB8908DFC340EC5F976B399A0E9EE349756C7527859A5C90F6E45F1"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/SceneCreation/CreateMvpFarmScene.cs",
+    "sha256": "12EAAEED94DC50B6BA5DB455F17030001B1BDF3FB61F5261D8F3F0389DB9DE4F"
+  },
+  {
+    "path": "Assets/_Game/Scripts/Editor/Validation/FarmPhysicalRouteProbe.cs",
+    "sha256": "371C47586569E2F07A2756DA0D1CD6486068227850B0C01D23070751AE80D548"
+  },
+  {
+    "path": "Assets/_Game/Scripts/World/Scale/FarmSceneCompositionContract.cs",
+    "sha256": "CAA8755A6BF88FCEA8258807D4D82257757DD5FE0579E3ED4B132B8B4F90A16D"
+  }
+]
